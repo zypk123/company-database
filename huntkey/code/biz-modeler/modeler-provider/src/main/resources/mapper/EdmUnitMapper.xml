@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmUnitMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmUnit">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edun_edmp_id" jdbcType="VARCHAR" property="edunEdmpId" />
+    <result column="edun_qty_edmp_id" jdbcType="VARCHAR" property="edunQtyEdmpId" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edun_edmp_id, edun_qty_edmp_id, is_del, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmUnitExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_unit
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_unit
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_unit
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmUnitExample">
+    delete from edm_unit
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmUnit">
+    insert into edm_unit (id, edun_edmp_id, edun_qty_edmp_id, 
+      is_del, addtime, adduser, 
+      modtime, moduser, acctid
+      )
+    values (#{id,jdbcType=VARCHAR}, #{edunEdmpId,jdbcType=VARCHAR}, #{edunQtyEdmpId,jdbcType=VARCHAR}, 
+      #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, 
+      #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmUnit">
+    insert into edm_unit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edunEdmpId != null">
+        edun_edmp_id,
+      </if>
+      <if test="edunQtyEdmpId != null">
+        edun_qty_edmp_id,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edunEdmpId != null">
+        #{edunEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edunQtyEdmpId != null">
+        #{edunQtyEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmUnitExample" resultType="java.lang.Long">
+    select count(*) from edm_unit
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_unit
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edunEdmpId != null">
+        edun_edmp_id = #{record.edunEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edunQtyEdmpId != null">
+        edun_qty_edmp_id = #{record.edunQtyEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_unit
+    set id = #{record.id,jdbcType=VARCHAR},
+      edun_edmp_id = #{record.edunEdmpId,jdbcType=VARCHAR},
+      edun_qty_edmp_id = #{record.edunQtyEdmpId,jdbcType=VARCHAR},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmUnit">
+    update edm_unit
+    <set>
+      <if test="edunEdmpId != null">
+        edun_edmp_id = #{edunEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edunQtyEdmpId != null">
+        edun_qty_edmp_id = #{edunQtyEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmUnit">
+    update edm_unit
+    set edun_edmp_id = #{edunEdmpId,jdbcType=VARCHAR},
+      edun_qty_edmp_id = #{edunQtyEdmpId,jdbcType=VARCHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--批量插入-->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO edm_unit (id, edun_edmp_id, edun_qty_edmp_id, is_del, addtime,
+    adduser, modtime, moduser,
+    acctid)
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.edunEdmpId,jdbcType=VARCHAR}, #{item.edunQtyEdmpId,jdbcType=VARCHAR}, 0,
+      #{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR},
+      #{item.modtime,jdbcType=TIMESTAMP}, #{item.moduser,jdbcType=VARCHAR},
+      #{item.acctid,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+
+  <!-- 根据属性id 查单位-->
+  <select id="selectEdmUnitListByPropertyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_unit WHERE is_del !=1 AND edun_edmp_id = #{propertyId,jdbcType=VARCHAR}
+  </select>
+
+  <update id="LogicDeleteByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_unit SET is_del= 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

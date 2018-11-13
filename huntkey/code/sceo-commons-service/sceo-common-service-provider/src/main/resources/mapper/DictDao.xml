@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.sceo.common.service.provider.dao.DictDao">
+	<sql id="columns">
+		id,code,value,label,type,parent_id AS 'parentId',sort,creator,remark,delete_flag AS 'deleteFlag'
+	</sql>
+	
+	<select id="selAllDicts" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			parent_id = '0'
+		ORDER BY 
+			sort
+	</select>
+	
+	<select id="getDictByCodeVal" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict" parameterType="java.util.Map">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			code = #{code}
+		AND
+			value = #{value}
+		ORDER BY 
+			sort
+	</select>
+	
+	<select id="selDictsByParent" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict" parameterType="java.lang.String">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			parent_id = #{pid}
+		ORDER BY 
+			sort
+	</select>
+	
+	<select id="isHaveChild" resultType="int" parameterType="java.lang.String">
+		SELECT 
+			count(1)
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			parent_id = #{value}
+	</select>
+	
+	<select id="selDictById" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict" parameterType="java.lang.String">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			id = #{value}
+	</select>
+	
+	<select id="getDictsByCode" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict" parameterType="java.util.Map">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			code = #{code}
+		AND
+			type &lt;&gt; #{type}
+		ORDER BY
+			sort
+	</select>
+	
+	<select id="getDictsByCodes" resultType="com.huntkey.rx.sceo.common.service.common.model.Dict" parameterType="String">
+		SELECT 
+			<include refid="columns"/>
+		From 
+			sys_dict
+		WHERE 
+			delete_flag = '0'
+		AND
+			type = '2'
+		AND
+			code in
+		<foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+		ORDER BY
+			sort
+	</select>
+	
+	<insert id="insert" parameterType="com.huntkey.rx.sceo.common.service.common.model.Dict">
+		INSERT INTO
+			sys_dict(id,code,value,label,type,parent_id,sort,creator,remark,delete_flag)
+		VALUES
+			(#{id},#{code},#{value},#{label},#{type},#{parentId},#{sort},#{creator},#{remark},#{deleteFlag})
+	</insert>
+	
+	<update id="update" parameterType="com.huntkey.rx.sceo.common.service.common.model.Dict">
+		UPDATE 
+			sys_dict
+		SET 
+			code = #{code},
+			value = #{value},
+			label = #{label},
+			type = #{type},
+			parent_id = #{parentId},
+			sort = #{sort},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="java.util.List">
+		DELETE FROM
+			sys_dict
+		WHERE
+			id in
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</delete>
+</mapper>

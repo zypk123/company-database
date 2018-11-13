@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.variant.dao.TvmVariantMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TvmVariant" >
+    <id column="vrnt_id" property="vrntId" jdbcType="VARCHAR" />
+    <result column="vrnt_var_name" property="vrntVarName" jdbcType="VARCHAR" />
+    <result column="vrnt_var_desc" property="vrntVarDesc" jdbcType="VARCHAR" />
+    <result column="formula_id" property="formulaId" jdbcType="VARCHAR" />
+    <result column="vrnt_var_type" property="vrntVarType" jdbcType="CHAR" />
+    <result column="vrnt_var_scope" property="vrntVarScope" jdbcType="CHAR" />
+    <result column="vrnt_formula_id" property="vrntFormulaId" jdbcType="VARCHAR" />
+    <result column="vrnt_state" property="vrntState" jdbcType="CHAR" />
+    <result column="vrnt_modify_remarks" property="vrntModifyRemarks" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    vrnt_id, vrnt_var_name, vrnt_var_desc, formula_id, vrnt_var_type, vrnt_var_scope, 
+    vrnt_formula_id, vrnt_state, vrnt_modify_remarks, isenable, addtime, adduser, modtime, 
+    moduser, acctid
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariantExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tvm_variant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tvm_variant
+    where vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tvm_variant
+    where vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariantExample" >
+    delete from tvm_variant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariant" >
+    insert into tvm_variant (vrnt_id, vrnt_var_name, vrnt_var_desc, 
+      formula_id, vrnt_var_type, vrnt_var_scope, 
+      vrnt_formula_id, vrnt_state, vrnt_modify_remarks, 
+      isenable, addtime, adduser, 
+      modtime, moduser, acctid
+      )
+    values (#{vrntId,jdbcType=VARCHAR}, #{vrntVarName,jdbcType=VARCHAR}, #{vrntVarDesc,jdbcType=VARCHAR}, 
+      #{formulaId,jdbcType=VARCHAR}, #{vrntVarType,jdbcType=CHAR}, #{vrntVarScope,jdbcType=CHAR}, 
+      #{vrntFormulaId,jdbcType=VARCHAR}, #{vrntState,jdbcType=CHAR}, #{vrntModifyRemarks,jdbcType=VARCHAR}, 
+      #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, 
+      #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariant" >
+    insert into tvm_variant
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vrntId != null" >
+        vrnt_id,
+      </if>
+      <if test="vrntVarName != null" >
+        vrnt_var_name,
+      </if>
+      <if test="vrntVarDesc != null" >
+        vrnt_var_desc,
+      </if>
+      <if test="formulaId != null" >
+        formula_id,
+      </if>
+      <if test="vrntVarType != null" >
+        vrnt_var_type,
+      </if>
+      <if test="vrntVarScope != null" >
+        vrnt_var_scope,
+      </if>
+      <if test="vrntFormulaId != null" >
+        vrnt_formula_id,
+      </if>
+      <if test="vrntState != null" >
+        vrnt_state,
+      </if>
+      <if test="vrntModifyRemarks != null" >
+        vrnt_modify_remarks,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vrntId != null" >
+        #{vrntId,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntVarName != null" >
+        #{vrntVarName,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntVarDesc != null" >
+        #{vrntVarDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="formulaId != null" >
+        #{formulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntVarType != null" >
+        #{vrntVarType,jdbcType=CHAR},
+      </if>
+      <if test="vrntVarScope != null" >
+        #{vrntVarScope,jdbcType=CHAR},
+      </if>
+      <if test="vrntFormulaId != null" >
+        #{vrntFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntState != null" >
+        #{vrntState,jdbcType=CHAR},
+      </if>
+      <if test="vrntModifyRemarks != null" >
+        #{vrntModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariantExample" resultType="java.lang.Integer" >
+    select count(*) from tvm_variant
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tvm_variant
+    <set >
+      <if test="record.vrntId != null" >
+        vrnt_id = #{record.vrntId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.vrntVarName != null" >
+        vrnt_var_name = #{record.vrntVarName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.vrntVarDesc != null" >
+        vrnt_var_desc = #{record.vrntVarDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.formulaId != null" >
+        formula_id = #{record.formulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.vrntVarType != null" >
+        vrnt_var_type = #{record.vrntVarType,jdbcType=CHAR},
+      </if>
+      <if test="record.vrntVarScope != null" >
+        vrnt_var_scope = #{record.vrntVarScope,jdbcType=CHAR},
+      </if>
+      <if test="record.vrntFormulaId != null" >
+        vrnt_formula_id = #{record.vrntFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.vrntState != null" >
+        vrnt_state = #{record.vrntState,jdbcType=CHAR},
+      </if>
+      <if test="record.vrntModifyRemarks != null" >
+        vrnt_modify_remarks = #{record.vrntModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tvm_variant
+    set vrnt_id = #{record.vrntId,jdbcType=VARCHAR},
+      vrnt_var_name = #{record.vrntVarName,jdbcType=VARCHAR},
+      vrnt_var_desc = #{record.vrntVarDesc,jdbcType=VARCHAR},
+      formula_id = #{record.formulaId,jdbcType=VARCHAR},
+      vrnt_var_type = #{record.vrntVarType,jdbcType=CHAR},
+      vrnt_var_scope = #{record.vrntVarScope,jdbcType=CHAR},
+      vrnt_formula_id = #{record.vrntFormulaId,jdbcType=VARCHAR},
+      vrnt_state = #{record.vrntState,jdbcType=CHAR},
+      vrnt_modify_remarks = #{record.vrntModifyRemarks,jdbcType=VARCHAR},
+      isenable = #{record.isenable,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariant" >
+    update tvm_variant
+    <set >
+      <if test="vrntVarName != null" >
+        vrnt_var_name = #{vrntVarName,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntVarDesc != null" >
+        vrnt_var_desc = #{vrntVarDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="formulaId != null" >
+        formula_id = #{formulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntVarType != null" >
+        vrnt_var_type = #{vrntVarType,jdbcType=CHAR},
+      </if>
+      <if test="vrntVarScope != null" >
+        vrnt_var_scope = #{vrntVarScope,jdbcType=CHAR},
+      </if>
+      <if test="vrntFormulaId != null" >
+        vrnt_formula_id = #{vrntFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="vrntState != null" >
+        vrnt_state = #{vrntState,jdbcType=CHAR},
+      </if>
+      <if test="vrntModifyRemarks != null" >
+        vrnt_modify_remarks = #{vrntModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TvmVariant" >
+    update tvm_variant
+    set vrnt_var_name = #{vrntVarName,jdbcType=VARCHAR},
+      vrnt_var_desc = #{vrntVarDesc,jdbcType=VARCHAR},
+      formula_id = #{formulaId,jdbcType=VARCHAR},
+      vrnt_var_type = #{vrntVarType,jdbcType=CHAR},
+      vrnt_var_scope = #{vrntVarScope,jdbcType=CHAR},
+      vrnt_formula_id = #{vrntFormulaId,jdbcType=VARCHAR},
+      vrnt_state = #{vrntState,jdbcType=CHAR},
+      vrnt_modify_remarks = #{vrntModifyRemarks,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </update>
+  <select id="getVrntIdByFormualIdExceptSelf" resultType="java.lang.String">
+    SELECT vrnt_id FROM tvm_variant WHERE vrnt_formula_id = #{formulaId,jdbcType=VARCHAR} AND vrnt_id!= #{vrntId,jdbcType=VARCHAR}
+  </select>
+  <select id="getVarNameByVrntId" parameterType="java.lang.String" resultType="java.lang.String" >
+    SELECT vrnt_var_name FROM tvm_variant WHERE vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </select>
+  <select id="getVrntIdByFormualId" parameterType="java.lang.String" resultType="java.lang.String">
+     SELECT vrnt_id FROM tvm_variant WHERE vrnt_formula_id = #{formulaId,jdbcType=VARCHAR}
+  </select>
+  <select id="getFormualIdByVrntId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT vrnt_formula_id FROM tvm_variant WHERE vrnt_id = #{vrntId,jdbcType=VARCHAR}
+  </select>
+  <select id="getLocalVarIdByFormualIdExceptSelf" resultType="java.lang.String">
+    SELECT a.vrnt_id
+    FROM tvm_variant a,tfd_formula b,tvm_locale_variant_mapping c
+    WHERE a.vrnt_formula_id = b.frmu_id
+    AND c.lclv_var_id = a.vrnt_id
+    AND a.vrnt_formula_id = #{formulaId,jdbcType=VARCHAR}
+    AND a.vrnt_id!=#{vrntId,jdbcType=VARCHAR}
+    AND a.isenable = 1
+  </select>
+</mapper>

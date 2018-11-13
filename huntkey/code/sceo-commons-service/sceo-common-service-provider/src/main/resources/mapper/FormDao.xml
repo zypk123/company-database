@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.sceo.common.service.provider.dao.FormDao">
+	<sql id="columns">
+		id,name,type,tables,form,creator,remark,delete_flag as 'deleteFlag'
+	</sql>
+	<select id="getFormTables" resultType="java.lang.String" parameterType="java.lang.String">
+		select table_name from INFORMATION_SCHEMA.TABLES  where table_name like 'test_%' and table_schema = #{db}
+	</select>
+	<select id="getFormTableColumns" parameterType="com.huntkey.rx.sceo.common.service.common.model.TableColumn" resultType="com.huntkey.rx.sceo.common.service.common.model.TableColumn">
+		SELECT t.table_schema AS 'tableSchema',
+			   t.column_name AS 'columnName',
+			   t.column_comment AS 'columnComment',
+			   t.data_type AS 'dataType' ,
+			   t.column_type AS 'columnType'
+		FROM INFORMATION_SCHEMA.COLUMNS t WHERE table_schema = #{tableSchema} AND table_name = #{tableName}
+	</select>
+	<select id="listByType" resultType="com.huntkey.rx.sceo.common.service.common.model.Form">
+		SELECT <include refid="columns"/>
+		FROM sys_form
+		WHERE type = #{type} AND delete_flag = '0'
+	</select>
+	<select id="get" resultType="com.huntkey.rx.sceo.common.service.common.model.Form">
+		SELECT <include refid="columns"/>
+		FROM sys_form
+		WHERE id = #{id}
+	</select>
+	<insert id="insert" parameterType="com.huntkey.rx.sceo.common.service.common.model.Form">
+		INSERT INTO sys_form(id,name,type,tables,form,creator,remark)
+		VALUES(#{id},#{name},#{type},#{tables},#{form},#{creator},#{remark})
+	</insert>
+	<update id="update" parameterType="com.huntkey.rx.sceo.common.service.common.model.Form">
+		UPDATE sys_form
+		SET name = #{name},
+			type = #{type},
+			form = #{form},
+			remark = #{remark},
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insertFormData" parameterType="java.util.Map">
+		insert into
+			${tableName}(<foreach collection="columnList" item="column"  separator=",">
+					${column.columnName}
+				</foreach>)
+			values(<foreach collection="columnList" item="column"  separator=",">
+				#{column.columnValue}
+				</foreach>)
+	</insert>
+	<update id="updateFormData" parameterType="java.util.Map">
+		update 
+			${tableName}
+		set
+			<foreach collection="columnList" item="column"  separator=",">
+				${column.columnName} = #{column.columnValue}
+			</foreach>
+		where id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.related.condition.dao.TacConditionRelatedMapper" >
+    <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TacConditionRelated" >
+        <id column="cndr_id" property="cndrId" jdbcType="VARCHAR" />
+        <result column="cndr_prop_related_id" property="cndrPropRelatedId" jdbcType="VARCHAR" />
+        <result column="cndr_prop_related" property="cndrPropRelated" jdbcType="VARCHAR" />
+        <result column="cndr_seq" property="cndrSeq" jdbcType="INTEGER" />
+        <result column="cndr_prop" property="cndrProp" jdbcType="VARCHAR" />
+        <result column="cndr_prop2" property="cndrProp2" jdbcType="VARCHAR" />
+        <result column="cndr_operate" property="cndrOperate" jdbcType="VARCHAR" />
+        <result column="cndr_value" property="cndrValue" jdbcType="VARCHAR" />
+        <result column="cndr_value_type" property="cndrValueType" jdbcType="CHAR" />
+        <result column="isenable" property="isenable" jdbcType="TINYINT" />
+        <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+        <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+        <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+        <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+        <result column="acctid" property="acctid" jdbcType="INTEGER" />
+        <result column="cndr_prop_origin_code" property="cndrPropOriginCode" jdbcType="VARCHAR" />
+        <result column="cndr_prop2_origin_code" property="cndrProp2OriginCode" jdbcType="VARCHAR" />
+        <result column="cndr_class1_name_en" property="cndrClass1NameEn" jdbcType="VARCHAR" />
+        <result column="cndr_prop1_code" property="cndrProp1Code" jdbcType="VARCHAR" />
+        <result column="cndr_class2_name_en" property="cndrClass2NameEn" jdbcType="VARCHAR" />
+        <result column="cndr_prop2_code" property="cndrProp2Code" jdbcType="VARCHAR" />
+        <result column="cndr_type_flag" property="cndrTypeFlag" jdbcType="INTEGER" />
+        <result column="class_type_flag" property="classTypeFlag" jdbcType="INTEGER" />
+		<result column="link_class_or_class_id" jdbcType="VARCHAR" property="linkClassOrClassId" />
+		<result column="link_clss_id" jdbcType="VARCHAR" property="linkClssId" />
+        <result column="const_type" jdbcType="INTEGER" property="constType" />
+        <result column="cndt_object_number" jdbcType="VARCHAR" property="cndtObjectNumber" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause" >
+        <where >
+            <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        cndr_id, cndr_prop_related_id, cndr_prop_related, cndr_seq, cndr_prop, cndr_prop2,
+        cndr_operate, cndr_value, cndr_value_type, isenable, addtime, adduser, modtime, moduser,
+        acctid, cndr_prop_origin_code, cndr_prop2_origin_code, cndr_class1_name_en, cndr_prop1_code,
+        cndr_class2_name_en, cndr_prop2_code, cndr_type_flag, class_type_flag, link_class_or_class_id,link_clss_id,const_type,cndt_object_number
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelatedExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        'true' as QUERYID,
+        <include refid="Base_Column_List" />
+        from tac_condition_related
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from tac_condition_related
+        where cndr_id = #{cndrId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from tac_condition_related
+        where cndr_id = #{cndrId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelatedExample" >
+        delete from tac_condition_related
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelated" >
+        insert into tac_condition_related (cndr_id, cndr_prop_related_id, cndr_prop_related,
+        cndr_seq, cndr_prop, cndr_prop2,
+        cndr_operate, cndr_value, cndr_value_type,
+        isenable, addtime, adduser,
+        modtime, moduser, acctid,
+        cndr_prop_origin_code, cndr_prop2_origin_code,
+        cndr_class1_name_en, cndr_prop1_code, cndr_class2_name_en,
+        cndr_prop2_code,cndr_type_flag, class_type_flag, 
+        link_class_or_class_id, link_clss_id,const_type,cndt_object_number)
+        values (#{cndrId,jdbcType=VARCHAR}, #{cndrPropRelatedId,jdbcType=VARCHAR}, #{cndrPropRelated,jdbcType=VARCHAR},
+        #{cndrSeq,jdbcType=INTEGER}, #{cndrProp,jdbcType=VARCHAR}, #{cndrProp2,jdbcType=VARCHAR},
+        #{cndrOperate,jdbcType=VARCHAR}, #{cndrValue,jdbcType=VARCHAR}, #{cndrValueType,jdbcType=CHAR},
+        #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+        #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER},
+        #{cndrPropOriginCode,jdbcType=VARCHAR}, #{cndrProp2OriginCode,jdbcType=VARCHAR},
+        #{cndrClass1NameEn,jdbcType=VARCHAR}, #{cndrProp1Code,jdbcType=VARCHAR}, #{cndrClass2NameEn,jdbcType=VARCHAR},
+        #{cndrProp2Code,jdbcType=VARCHAR},#{cndrTypeFlag,jdbcType=INTEGER},#{classTypeFlag,jdbcType=INTEGER},
+		#{linkClassOrClassId,jdbcType=VARCHAR}, #{linkClssId,jdbcType=VARCHAR},#{constType,jdbcType=INTEGER},#{cndtObjectNumber,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelated" >
+        insert into tac_condition_related
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="cndrId != null" >
+                cndr_id,
+            </if>
+            <if test="cndrPropRelatedId != null" >
+                cndr_prop_related_id,
+            </if>
+            <if test="cndrPropRelated != null" >
+                cndr_prop_related,
+            </if>
+            <if test="cndrSeq != null" >
+                cndr_seq,
+            </if>
+            <if test="cndrProp != null" >
+                cndr_prop,
+            </if>
+            <if test="cndrProp2 != null" >
+                cndr_prop2,
+            </if>
+            <if test="cndrOperate != null" >
+                cndr_operate,
+            </if>
+            <if test="cndrValue != null" >
+                cndr_value,
+            </if>
+            <if test="cndrValueType != null" >
+                cndr_value_type,
+            </if>
+            <if test="isenable != null" >
+                isenable,
+            </if>
+            <if test="addtime != null" >
+                addtime,
+            </if>
+            <if test="adduser != null" >
+                adduser,
+            </if>
+            <if test="modtime != null" >
+                modtime,
+            </if>
+            <if test="moduser != null" >
+                moduser,
+            </if>
+            <if test="acctid != null" >
+                acctid,
+            </if>
+            <if test="cndrPropOriginCode != null" >
+                cndr_prop_origin_code,
+            </if>
+            <if test="cndrProp2OriginCode != null" >
+                cndr_prop2_origin_code,
+            </if>
+            <if test="cndrClass1NameEn != null" >
+                cndr_class1_name_en,
+            </if>
+            <if test="cndrProp1Code != null" >
+                cndr_prop1_code,
+            </if>
+            <if test="cndrClass2NameEn != null" >
+                cndr_class2_name_en,
+            </if>
+            <if test="cndrProp2Code != null" >
+                cndr_prop2_code,
+            </if>
+            <if test="cndrTypeFlag != null" >
+                cndr_type_flag,
+            </if>
+            <if test="classTypeFlag != null" >
+                class_type_flag,
+            </if>
+			<if test="linkClassOrClassId != null">
+				link_class_or_class_id,
+			</if>
+			<if test="linkClssId != null">
+                link_clss_id,
+            </if>
+            <if test="constType != null">
+                const_type,
+            </if>
+            <if test="cndtObjectNumber != null">
+                cndt_object_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="cndrId != null" >
+                #{cndrId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrPropRelatedId != null" >
+                #{cndrPropRelatedId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrPropRelated != null" >
+                #{cndrPropRelated,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrSeq != null" >
+                #{cndrSeq,jdbcType=INTEGER},
+            </if>
+            <if test="cndrProp != null" >
+                #{cndrProp,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2 != null" >
+                #{cndrProp2,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrOperate != null" >
+                #{cndrOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrValue != null" >
+                #{cndrValue,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrValueType != null" >
+                #{cndrValueType,jdbcType=CHAR},
+            </if>
+            <if test="isenable != null" >
+                #{isenable,jdbcType=TINYINT},
+            </if>
+            <if test="addtime != null" >
+                #{addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="adduser != null" >
+                #{adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="modtime != null" >
+                #{modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="moduser != null" >
+                #{moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="acctid != null" >
+                #{acctid,jdbcType=INTEGER},
+            </if>
+            <if test="cndrPropOriginCode != null" >
+                #{cndrPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2OriginCode != null" >
+                #{cndrProp2OriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrClass1NameEn != null" >
+                #{cndrClass1NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp1Code != null" >
+                #{cndrProp1Code,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrClass2NameEn != null" >
+                #{cndrClass2NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2Code != null" >
+                #{cndrProp2Code,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrTypeFlag != null" >
+                #{cndrTypeFlag,jdbcType=INTEGER},
+            </if>
+            <if test="classTypeFlag != null" >
+                #{classTypeFlag,jdbcType=INTEGER},
+            </if>
+			<if test="linkClassOrClassId != null">
+				#{linkClassOrClassId,jdbcType=VARCHAR},
+			</if>
+			<if test="linkClssId != null">
+                #{linkClssId,jdbcType=VARCHAR},
+            </if>
+            <if test="constType != null">
+                #{constType,jdbcType=INTEGER},
+            </if>
+            <if test="cndtObjectNumber != null">
+                #{cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelatedExample" resultType="java.lang.Integer" >
+        select count(*) from tac_condition_related
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map" >
+        update tac_condition_related
+        <set >
+            <if test="record.cndrId != null" >
+                cndr_id = #{record.cndrId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrPropRelatedId != null" >
+                cndr_prop_related_id = #{record.cndrPropRelatedId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrPropRelated != null" >
+                cndr_prop_related = #{record.cndrPropRelated,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrSeq != null" >
+                cndr_seq = #{record.cndrSeq,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndrProp != null" >
+                cndr_prop = #{record.cndrProp,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrProp2 != null" >
+                cndr_prop2 = #{record.cndrProp2,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrOperate != null" >
+                cndr_operate = #{record.cndrOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrValue != null" >
+                cndr_value = #{record.cndrValue,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrValueType != null" >
+                cndr_value_type = #{record.cndrValueType,jdbcType=CHAR},
+            </if>
+            <if test="record.isenable != null" >
+                isenable = #{record.isenable,jdbcType=TINYINT},
+            </if>
+            <if test="record.addtime != null" >
+                addtime = #{record.addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.adduser != null" >
+                adduser = #{record.adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="record.modtime != null" >
+                modtime = #{record.modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.moduser != null" >
+                moduser = #{record.moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="record.acctid != null" >
+                acctid = #{record.acctid,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndrPropOriginCode != null" >
+                cndr_prop_origin_code = #{record.cndrPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrProp2OriginCode != null" >
+                cndr_prop2_origin_code = #{record.cndrProp2OriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrClass1NameEn != null" >
+                cndr_class1_name_en = #{record.cndrClass1NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrProp1Code != null" >
+                cndr_prop1_code = #{record.cndrProp1Code,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrClass2NameEn != null" >
+                cndr_class2_name_en = #{record.cndrClass2NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrProp2Code != null" >
+                cndr_prop2_code = #{record.cndrProp2Code,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndrTypeFlag != null" >
+                cndr_type_flag = #{record.cndrTypeFlag,jdbcType=INTEGER},
+            </if>
+            <if test="record.classTypeFlag != null" >
+                class_type_flag = #{record.classTypeFlag,jdbcType=INTEGER},
+            </if>
+			<if test="record.linkClassOrClassId != null">
+			    link_class_or_class_id = #{record.linkClassOrClassId,jdbcType=VARCHAR},
+			 </if>
+			 <if test="record.linkClssId != null">
+                link_clss_id = #{record.linkClssId,jdbcType=VARCHAR},
+             </if>
+            <if test="record.constType != null">
+                const_type = #{record.constType,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndtObjectNumber != null">
+                cndt_object_number = #{record.cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null" >
+            <include refid="Update_By_Example_Where_Clause" />
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map" >
+        update tac_condition_related
+        set cndr_id = #{record.cndrId,jdbcType=VARCHAR},
+        cndr_prop_related_id = #{record.cndrPropRelatedId,jdbcType=VARCHAR},
+        cndr_prop_related = #{record.cndrPropRelated,jdbcType=VARCHAR},
+        cndr_seq = #{record.cndrSeq,jdbcType=INTEGER},
+        cndr_prop = #{record.cndrProp,jdbcType=VARCHAR},
+        cndr_prop2 = #{record.cndrProp2,jdbcType=VARCHAR},
+        cndr_operate = #{record.cndrOperate,jdbcType=VARCHAR},
+        cndr_value = #{record.cndrValue,jdbcType=VARCHAR},
+        cndr_value_type = #{record.cndrValueType,jdbcType=CHAR},
+        isenable = #{record.isenable,jdbcType=TINYINT},
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+        acctid = #{record.acctid,jdbcType=INTEGER},
+        cndr_prop_origin_code = #{record.cndrPropOriginCode,jdbcType=VARCHAR},
+        cndr_prop2_origin_code = #{record.cndrProp2OriginCode,jdbcType=VARCHAR},
+        cndr_class1_name_en = #{record.cndrClass1NameEn,jdbcType=VARCHAR},
+        cndr_prop1_code = #{record.cndrProp1Code,jdbcType=VARCHAR},
+        cndr_class2_name_en = #{record.cndrClass2NameEn,jdbcType=VARCHAR},
+        cndr_prop2_code = #{record.cndrProp2Code,jdbcType=VARCHAR},
+        cndr_type_flag = #{record.cndrTypeFlag,jdbcType=INTEGER},
+        class_type_flag = #{record.classTypeFlag,jdbcType=INTEGER},
+		link_class_or_class_id = #{record.linkClassOrClassId,jdbcType=VARCHAR},
+		link_clss_id = #{record.linkClssId,jdbcType=VARCHAR},
+        const_type = #{record.constType,jdbcType=INTEGER},
+        cndt_object_number = #{record.cndtObjectNumber,jdbcType=VARCHAR}
+        <if test="_parameter != null" >
+            <include refid="Update_By_Example_Where_Clause" />
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelated" >
+        update tac_condition_related
+        <set >
+            <if test="cndrPropRelatedId != null" >
+                cndr_prop_related_id = #{cndrPropRelatedId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrPropRelated != null" >
+                cndr_prop_related = #{cndrPropRelated,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrSeq != null" >
+                cndr_seq = #{cndrSeq,jdbcType=INTEGER},
+            </if>
+            <if test="cndrProp != null" >
+                cndr_prop = #{cndrProp,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2 != null" >
+                cndr_prop2 = #{cndrProp2,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrOperate != null" >
+                cndr_operate = #{cndrOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrValue != null" >
+                cndr_value = #{cndrValue,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrValueType != null" >
+                cndr_value_type = #{cndrValueType,jdbcType=CHAR},
+            </if>
+            <if test="isenable != null" >
+                isenable = #{isenable,jdbcType=TINYINT},
+            </if>
+            <if test="addtime != null" >
+                addtime = #{addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="adduser != null" >
+                adduser = #{adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="modtime != null" >
+                modtime = #{modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="moduser != null" >
+                moduser = #{moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="acctid != null" >
+                acctid = #{acctid,jdbcType=INTEGER},
+            </if>
+            <if test="cndrPropOriginCode != null" >
+                cndr_prop_origin_code = #{cndrPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2OriginCode != null" >
+                cndr_prop2_origin_code = #{cndrProp2OriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrClass1NameEn != null" >
+                cndr_class1_name_en = #{cndrClass1NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp1Code != null" >
+                cndr_prop1_code = #{cndrProp1Code,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrClass2NameEn != null" >
+                cndr_class2_name_en = #{cndrClass2NameEn,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrProp2Code != null" >
+                cndr_prop2_code = #{cndrProp2Code,jdbcType=VARCHAR},
+            </if>
+            <if test="cndrTypeFlag != null" >
+                cndr_type_flag = #{cndrTypeFlag,jdbcType=INTEGER},
+            </if>
+            <if test="classTypeFlag != null" >
+                class_type_flag = #{classTypeFlag,jdbcType=INTEGER},
+            </if>
+			<if test="linkClassOrClassId != null">
+				link_class_or_class_id = #{linkClassOrClassId,jdbcType=VARCHAR},
+			</if>
+			<if test="linkClssId != null">
+                link_clss_id = #{linkClssId,jdbcType=VARCHAR},
+            </if>
+            <if test="constType != null">
+                const_type = #{constType,jdbcType=INTEGER},
+            </if>
+            <if test="cndtObjectNumber != null">
+                cndt_object_number = #{cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where cndr_id = #{cndrId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TacConditionRelated" >
+        update tac_condition_related
+        set cndr_prop_related_id = #{cndrPropRelatedId,jdbcType=VARCHAR},
+        cndr_prop_related = #{cndrPropRelated,jdbcType=VARCHAR},
+        cndr_seq = #{cndrSeq,jdbcType=INTEGER},
+        cndr_prop = #{cndrProp,jdbcType=VARCHAR},
+        cndr_prop2 = #{cndrProp2,jdbcType=VARCHAR},
+        cndr_operate = #{cndrOperate,jdbcType=VARCHAR},
+        cndr_value = #{cndrValue,jdbcType=VARCHAR},
+        cndr_value_type = #{cndrValueType,jdbcType=CHAR},
+        isenable = #{isenable,jdbcType=TINYINT},
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+        adduser = #{adduser,jdbcType=VARCHAR},
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+        moduser = #{moduser,jdbcType=VARCHAR},
+        acctid = #{acctid,jdbcType=INTEGER},
+        cndr_prop_origin_code = #{cndrPropOriginCode,jdbcType=VARCHAR},
+        cndr_prop2_origin_code = #{cndrProp2OriginCode,jdbcType=VARCHAR},
+        cndr_class1_name_en = #{cndrClass1NameEn,jdbcType=VARCHAR},
+        cndr_prop1_code = #{cndrProp1Code,jdbcType=VARCHAR},
+        cndr_class2_name_en = #{cndrClass2NameEn,jdbcType=VARCHAR},
+        cndr_prop2_code = #{cndrProp2Code,jdbcType=VARCHAR},
+        cndr_type_flag = #{cndrTypeFlag,jdbcType=INTEGER},
+        class_type_flag = #{classTypeFlag,jdbcType=INTEGER},
+		link_class_or_class_id = #{linkClassOrClassId,jdbcType=VARCHAR},
+		link_clss_id = #{linkClssId,jdbcType=VARCHAR},
+        const_type = #{constType,jdbcType=INTEGER},
+        cndt_object_number = #{cndtObjectNumber,jdbcType=VARCHAR}
+        where cndr_id = #{cndrId,jdbcType=VARCHAR}
+    </update>
+
+    <!--删除关联条件的条件接口(逻辑删除)-->
+    <update id="updateIsEnaleByPrimaryKey" parameterType="java.lang.String">
+        UPDATE tac_condition_related
+        SET isenable = 0
+        WHERE cndr_id = #{cndrId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getConditionRelatedListByPrplId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from tac_condition_related WHERE cndr_prop_related_id = #{prplId,jdbcType=VARCHAR}
+        AND isenable = 1 order by cndr_seq asc
+    </select>
+
+    <update id="updateIsEnaleByPropRelatedId" parameterType="java.lang.String">
+        UPDATE tac_condition_related
+        SET isenable = 0
+        WHERE cndr_prop_related_id = #{prplId,jdbcType=VARCHAR}
+    </update>
+</mapper>

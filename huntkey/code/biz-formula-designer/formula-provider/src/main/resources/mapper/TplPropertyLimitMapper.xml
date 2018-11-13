@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.property.dao.TplPropertyLimitMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimit" >
+    <id column="prpr_id" property="prprId" jdbcType="VARCHAR" />
+    <result column="prpr_prop_mata" property="prprPropMata" jdbcType="VARCHAR" />
+    <result column="prpr_prop_display" property="prprPropDisplay" jdbcType="VARCHAR" />
+    <result column="prpr_condition_formula" property="prprConditionFormula" jdbcType="VARCHAR" />
+    <result column="prpr_condition_name" property="prprConditionName" jdbcType="VARCHAR" />
+    <result column="prpr_condition_desc" property="prprConditionDesc" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    prpr_id, prpr_prop_mata, prpr_prop_display, prpr_condition_formula, prpr_condition_name, 
+    prpr_condition_desc, isenable, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimitExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tpl_property_limit
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tpl_property_limit
+    where prpr_id = #{prprId,jdbcType=VARCHAR} AND isenable = 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tpl_property_limit
+    where prpr_id = #{prprId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimitExample" >
+    delete from tpl_property_limit
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimit" >
+    insert into tpl_property_limit (prpr_id, prpr_prop_mata, prpr_prop_display, 
+      prpr_condition_formula, prpr_condition_name, 
+      prpr_condition_desc, isenable, addtime, 
+      adduser, modtime, moduser, 
+      acctid)
+    values (#{prprId,jdbcType=VARCHAR}, #{prprPropMata,jdbcType=VARCHAR}, #{prprPropDisplay,jdbcType=VARCHAR}, 
+      #{prprConditionFormula,jdbcType=VARCHAR}, #{prprConditionName,jdbcType=VARCHAR}, 
+      #{prprConditionDesc,jdbcType=VARCHAR}, #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, 
+      #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, 
+      #{acctid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimit" >
+    insert into tpl_property_limit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="prprId != null" >
+        prpr_id,
+      </if>
+      <if test="prprPropMata != null" >
+        prpr_prop_mata,
+      </if>
+      <if test="prprPropDisplay != null" >
+        prpr_prop_display,
+      </if>
+      <if test="prprConditionFormula != null" >
+        prpr_condition_formula,
+      </if>
+      <if test="prprConditionName != null" >
+        prpr_condition_name,
+      </if>
+      <if test="prprConditionDesc != null" >
+        prpr_condition_desc,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="prprId != null" >
+        #{prprId,jdbcType=VARCHAR},
+      </if>
+      <if test="prprPropMata != null" >
+        #{prprPropMata,jdbcType=VARCHAR},
+      </if>
+      <if test="prprPropDisplay != null" >
+        #{prprPropDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionFormula != null" >
+        #{prprConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionName != null" >
+        #{prprConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionDesc != null" >
+        #{prprConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimitExample" resultType="java.lang.Integer" >
+    select count(*) from tpl_property_limit where isenable = 1
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tpl_property_limit
+    <set >
+      <if test="record.prprId != null" >
+        prpr_id = #{record.prprId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prprPropMata != null" >
+        prpr_prop_mata = #{record.prprPropMata,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prprPropDisplay != null" >
+        prpr_prop_display = #{record.prprPropDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prprConditionFormula != null" >
+        prpr_condition_formula = #{record.prprConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prprConditionName != null" >
+        prpr_condition_name = #{record.prprConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prprConditionDesc != null" >
+        prpr_condition_desc = #{record.prprConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tpl_property_limit
+    set prpr_id = #{record.prprId,jdbcType=VARCHAR},
+      prpr_prop_mata = #{record.prprPropMata,jdbcType=VARCHAR},
+      prpr_prop_display = #{record.prprPropDisplay,jdbcType=VARCHAR},
+      prpr_condition_formula = #{record.prprConditionFormula,jdbcType=VARCHAR},
+      prpr_condition_name = #{record.prprConditionName,jdbcType=VARCHAR},
+      prpr_condition_desc = #{record.prprConditionDesc,jdbcType=VARCHAR},
+      isenable = #{record.isenable,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimit" >
+    update tpl_property_limit
+    <set >
+      <if test="prprPropMata != null" >
+        prpr_prop_mata = #{prprPropMata,jdbcType=VARCHAR},
+      </if>
+      <if test="prprPropDisplay != null" >
+        prpr_prop_display = #{prprPropDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionFormula != null" >
+        prpr_condition_formula = #{prprConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionName != null" >
+        prpr_condition_name = #{prprConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="prprConditionDesc != null" >
+        prpr_condition_desc = #{prprConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where prpr_id = #{prprId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TplPropertyLimit" >
+    update tpl_property_limit
+    set prpr_prop_mata = #{prprPropMata,jdbcType=VARCHAR},
+      prpr_prop_display = #{prprPropDisplay,jdbcType=VARCHAR},
+      prpr_condition_formula = #{prprConditionFormula,jdbcType=VARCHAR},
+      prpr_condition_name = #{prprConditionName,jdbcType=VARCHAR},
+      prpr_condition_desc = #{prprConditionDesc,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where prpr_id = #{prprId,jdbcType=VARCHAR}
+  </update>
+</mapper>

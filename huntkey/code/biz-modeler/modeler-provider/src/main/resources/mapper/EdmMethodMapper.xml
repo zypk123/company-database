@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmMethodMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmMethod">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edmm_edmc_id" jdbcType="VARCHAR" property="edmmEdmcId" />
+    <result column="edmm_type" jdbcType="VARCHAR" property="edmmType" />
+    <result column="is_cover" jdbcType="TINYINT" property="isCover" />
+    <result column="edmm_name" jdbcType="VARCHAR" property="edmmName" />
+    <result column="edmm_desc" jdbcType="VARCHAR" property="edmmDesc" />
+    <result column="edmm_program_type" jdbcType="VARCHAR" property="edmmProgramType" />
+    <result column="edmm_program_storage" jdbcType="VARCHAR" property="edmmProgramStorage" />
+    <result column="edmm_program_source_name" jdbcType="VARCHAR" property="edmmProgramSourceName" />
+    <result column="edmm_trigger_cond" jdbcType="VARCHAR" property="edmmTriggerCond" />
+    <result column="edmm_ver" jdbcType="VARCHAR" property="edmmVer" />
+    <result column="edmm_develop_dept" jdbcType="VARCHAR" property="edmmDevelopDept" />
+    <result column="edmm_programmer" jdbcType="VARCHAR" property="edmmProgrammer" />
+    <result column="edmm_seq" jdbcType="INTEGER" property="edmmSeq" />
+    <result column="edmm_status" jdbcType="VARCHAR" property="edmmStatus" />
+    <result column="edmm_update_desc" jdbcType="VARCHAR" property="edmmUpdateDesc" />
+    <result column="is_defined" jdbcType="TINYINT" property="isDefined" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+    <result column="edmm_arithmetic_desc" jdbcType="VARCHAR" property="edmmArithmeticDesc" />
+    <result column="edmm_arithmetic_storage" jdbcType="VARCHAR" property="edmmArithmeticStorage" />
+    <result column="edmm_arithmetic_source_name" jdbcType="VARCHAR" property="edmmArithmeticSourceName" />
+    <result column="edmm_request_type" jdbcType="VARCHAR" property="edmmRequestType" />
+    <result column="edmm_execute_type" jdbcType="CHAR" property="edmmExecuteType"/>
+    <result column="edmm_exec_rate" jdbcType="CHAR" property="edmmExecRate" />
+    <result column="edmm_plan_id" jdbcType="VARCHAR" property="edmmPlanId" />
+    <result column="edmm_job_id" jdbcType="VARCHAR" property="edmmJobId" />
+    <result column="edmm_method_type" jdbcType="CHAR" property="edmmMethodType" />
+    <result column="timeout" jdbcType="INTEGER" property="timeout" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edmm_edmc_id, edmm_type, is_cover, edmm_name, edmm_desc, edmm_program_type, edmm_program_storage, 
+    edmm_program_source_name, edmm_trigger_cond, edmm_ver, edmm_develop_dept, edmm_programmer, 
+    edmm_seq, edmm_status, edmm_update_desc, is_defined, is_del, addtime, adduser, modtime, 
+    moduser, acctid, edmm_arithmetic_desc, edmm_arithmetic_storage, edmm_arithmetic_source_name, 
+    edmm_request_type, edmm_execute_type, edmm_exec_rate, edmm_plan_id, edmm_job_id,  edmm_method_type, timeout
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_method
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_method
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_method
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodExample">
+    delete from edm_method
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmMethod">
+    insert into edm_method (id, edmm_edmc_id, edmm_type, 
+      is_cover, edmm_name, edmm_desc, 
+      edmm_program_type, edmm_program_storage, edmm_program_source_name, 
+      edmm_trigger_cond, edmm_ver, edmm_develop_dept, 
+      edmm_programmer, edmm_seq, edmm_status, 
+      edmm_update_desc, is_defined, is_del, 
+      addtime, adduser, modtime, 
+      moduser, acctid, edmm_arithmetic_desc, 
+      edmm_arithmetic_storage, edmm_arithmetic_source_name, 
+      edmm_request_type, edmm_execute_type, edmm_exec_rate,
+      edmm_plan_id, edmm_job_id, edmm_method_type, timeout)
+    values (#{id,jdbcType=VARCHAR}, #{edmmEdmcId,jdbcType=VARCHAR}, #{edmmType,jdbcType=VARCHAR}, 
+      #{isCover,jdbcType=TINYINT}, #{edmmName,jdbcType=VARCHAR}, #{edmmDesc,jdbcType=VARCHAR}, 
+      #{edmmProgramType,jdbcType=VARCHAR}, #{edmmProgramStorage,jdbcType=VARCHAR}, #{edmmProgramSourceName,jdbcType=VARCHAR}, 
+      #{edmmTriggerCond,jdbcType=VARCHAR}, #{edmmVer,jdbcType=VARCHAR}, #{edmmDevelopDept,jdbcType=VARCHAR}, 
+      #{edmmProgrammer,jdbcType=VARCHAR}, #{edmmSeq,jdbcType=INTEGER}, #{edmmStatus,jdbcType=VARCHAR}, 
+      #{edmmUpdateDesc,jdbcType=VARCHAR}, #{isDefined,jdbcType=TINYINT}, #{isDel,jdbcType=TINYINT}, 
+      #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, 
+      #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT}, #{edmmArithmeticDesc,jdbcType=VARCHAR}, 
+      #{edmmArithmeticStorage,jdbcType=VARCHAR}, #{edmmArithmeticSourceName,jdbcType=VARCHAR}, 
+      #{edmmRequestType,jdbcType=VARCHAR}, #{edmmExecuteType, jdbcType=CHAR}, #{edmmExecRate,jdbcType=CHAR},
+      #{edmmPlanId,jdbcType=VARCHAR}, #{edmmJobId,jdbcType=VARCHAR}, #{edmmMethodType,jdbcType=CHAR},
+      #{timeout, jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmMethod">
+    insert into edm_method
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edmmEdmcId != null">
+        edmm_edmc_id,
+      </if>
+      <if test="edmmType != null">
+        edmm_type,
+      </if>
+      <if test="isCover != null">
+        is_cover,
+      </if>
+      <if test="edmmName != null">
+        edmm_name,
+      </if>
+      <if test="edmmDesc != null">
+        edmm_desc,
+      </if>
+      <if test="edmmProgramType != null">
+        edmm_program_type,
+      </if>
+      <if test="edmmProgramStorage != null">
+        edmm_program_storage,
+      </if>
+      <if test="edmmProgramSourceName != null">
+        edmm_program_source_name,
+      </if>
+      <if test="edmmTriggerCond != null">
+        edmm_trigger_cond,
+      </if>
+      <if test="edmmVer != null">
+        edmm_ver,
+      </if>
+      <if test="edmmDevelopDept != null">
+        edmm_develop_dept,
+      </if>
+      <if test="edmmProgrammer != null">
+        edmm_programmer,
+      </if>
+      <if test="edmmSeq != null">
+        edmm_seq,
+      </if>
+      <if test="edmmStatus != null">
+        edmm_status,
+      </if>
+      <if test="edmmUpdateDesc != null">
+        edmm_update_desc,
+      </if>
+      <if test="isDefined != null">
+        is_defined,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+      <if test="edmmArithmeticDesc != null">
+        edmm_arithmetic_desc,
+      </if>
+      <if test="edmmArithmeticStorage != null">
+        edmm_arithmetic_storage,
+      </if>
+      <if test="edmmArithmeticSourceName != null">
+        edmm_arithmetic_source_name,
+      </if>
+      <if test="edmmRequestType != null">
+        edmm_request_type,
+      </if>
+      <if test="edmmExecuteType != null">
+        edmm_execute_type,
+      </if>
+      <if test="edmmExecRate != null">
+        edmm_exec_rate,
+      </if>
+      <if test="edmmPlanId != null">
+        edmm_plan_id,
+      </if>
+      <if test="edmmJobId != null">
+        edmm_job_id,
+      </if>
+      <if test="edmmMethodType != null">
+        edmm_method_type,
+      </if>
+      <if test="timeout != null">
+        timeout,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmEdmcId != null">
+        #{edmmEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmType != null">
+        #{edmmType,jdbcType=VARCHAR},
+      </if>
+      <if test="isCover != null">
+        #{isCover,jdbcType=TINYINT},
+      </if>
+      <if test="edmmName != null">
+        #{edmmName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmDesc != null">
+        #{edmmDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramType != null">
+        #{edmmProgramType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramStorage != null">
+        #{edmmProgramStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramSourceName != null">
+        #{edmmProgramSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmTriggerCond != null">
+        #{edmmTriggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmVer != null">
+        #{edmmVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmDevelopDept != null">
+        #{edmmDevelopDept,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgrammer != null">
+        #{edmmProgrammer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmSeq != null">
+        #{edmmSeq,jdbcType=INTEGER},
+      </if>
+      <if test="edmmStatus != null">
+        #{edmmStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmUpdateDesc != null">
+        #{edmmUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefined != null">
+        #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="edmmArithmeticDesc != null">
+        #{edmmArithmeticDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmArithmeticStorage != null">
+        #{edmmArithmeticStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmArithmeticSourceName != null">
+        #{edmmArithmeticSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmRequestType != null">
+        #{edmmRequestType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmExecuteType != null">
+        #{edmmExecuteType,jdbcType=CHAR},
+      </if>
+      <if test="edmmExecRate != null">
+        #{edmmExecRate,jdbcType=CHAR},
+      </if>
+      <if test="edmmPlanId != null">
+        #{edmmPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmJobId != null">
+        #{edmmJobId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmMethodType != null">
+        #{edmmMethodType,jdbcType=CHAR},
+      </if>
+      <if test="timeout != null">
+        #{timeout,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodExample" resultType="java.lang.Long">
+    select count(*) from edm_method
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_method
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmEdmcId != null">
+        edmm_edmc_id = #{record.edmmEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmType != null">
+        edmm_type = #{record.edmmType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isCover != null">
+        is_cover = #{record.isCover,jdbcType=TINYINT},
+      </if>
+      <if test="record.edmmName != null">
+        edmm_name = #{record.edmmName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmDesc != null">
+        edmm_desc = #{record.edmmDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmProgramType != null">
+        edmm_program_type = #{record.edmmProgramType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmProgramStorage != null">
+        edmm_program_storage = #{record.edmmProgramStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmProgramSourceName != null">
+        edmm_program_source_name = #{record.edmmProgramSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmTriggerCond != null">
+        edmm_trigger_cond = #{record.edmmTriggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmVer != null">
+        edmm_ver = #{record.edmmVer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmDevelopDept != null">
+        edmm_develop_dept = #{record.edmmDevelopDept,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmProgrammer != null">
+        edmm_programmer = #{record.edmmProgrammer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmSeq != null">
+        edmm_seq = #{record.edmmSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.edmmStatus != null">
+        edmm_status = #{record.edmmStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmUpdateDesc != null">
+        edmm_update_desc = #{record.edmmUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDefined != null">
+        is_defined = #{record.isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+      <if test="record.edmmArithmeticDesc != null">
+        edmm_arithmetic_desc = #{record.edmmArithmeticDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmArithmeticStorage != null">
+        edmm_arithmetic_storage = #{record.edmmArithmeticStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmArithmeticSourceName != null">
+        edmm_arithmetic_source_name = #{record.edmmArithmeticSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmRequestType != null">
+        edmm_request_type = #{record.edmmRequestType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmExecuteType != null">
+        edmm_execute_type = #{record.edmmExecuteType,jdbcType=CHAR},
+      </if>
+      <if test="record.edmmExecRate != null">
+        edmm_exec_rate = #{record.edmmExecRate,jdbcType=CHAR},
+      </if>
+      <if test="record.edmmPlanId != null">
+        edmm_plan_id = #{record.edmmPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmJobId != null">
+        edmm_job_id = #{record.edmmJobId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmmMethodType != null">
+        edmm_method_type = #{record.edmmMethodType,jdbcType=CHAR},
+      </if>
+      <if test="record.timeout != null">
+        timeout = #{record.timeout,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_method
+    set id = #{record.id,jdbcType=VARCHAR},
+      edmm_edmc_id = #{record.edmmEdmcId,jdbcType=VARCHAR},
+      edmm_type = #{record.edmmType,jdbcType=VARCHAR},
+      is_cover = #{record.isCover,jdbcType=TINYINT},
+      edmm_name = #{record.edmmName,jdbcType=VARCHAR},
+      edmm_desc = #{record.edmmDesc,jdbcType=VARCHAR},
+      edmm_program_type = #{record.edmmProgramType,jdbcType=VARCHAR},
+      edmm_program_storage = #{record.edmmProgramStorage,jdbcType=VARCHAR},
+      edmm_program_source_name = #{record.edmmProgramSourceName,jdbcType=VARCHAR},
+      edmm_trigger_cond = #{record.edmmTriggerCond,jdbcType=VARCHAR},
+      edmm_ver = #{record.edmmVer,jdbcType=VARCHAR},
+      edmm_develop_dept = #{record.edmmDevelopDept,jdbcType=VARCHAR},
+      edmm_programmer = #{record.edmmProgrammer,jdbcType=VARCHAR},
+      edmm_seq = #{record.edmmSeq,jdbcType=INTEGER},
+      edmm_status = #{record.edmmStatus,jdbcType=VARCHAR},
+      edmm_update_desc = #{record.edmmUpdateDesc,jdbcType=VARCHAR},
+      is_defined = #{record.isDefined,jdbcType=TINYINT},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT},
+      edmm_arithmetic_desc = #{record.edmmArithmeticDesc,jdbcType=VARCHAR},
+      edmm_arithmetic_storage = #{record.edmmArithmeticStorage,jdbcType=VARCHAR},
+      edmm_arithmetic_source_name = #{record.edmmArithmeticSourceName,jdbcType=VARCHAR},
+      edmm_request_type = #{record.edmmRequestType,jdbcType=VARCHAR},
+      edmm_execute_type = #{record.edmmExecuteType, jdbcType=VARCHAR},
+      edmm_exec_rate = #{record.edmmExecRate,jdbcType=CHAR},
+      edmm_plan_id = #{record.edmmPlanId,jdbcType=VARCHAR},
+      edmm_job_id = #{record.edmmJobId,jdbcType=VARCHAR},
+      edmm_method_type = #{record.edmmMethodType,jdbcType=CHAR},
+      timeout = #{record.timeout,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmMethod">
+    update edm_method
+    <set>
+      <if test="edmmEdmcId != null">
+        edmm_edmc_id = #{edmmEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmType != null">
+        edmm_type = #{edmmType,jdbcType=VARCHAR},
+      </if>
+      <if test="isCover != null">
+        is_cover = #{isCover,jdbcType=TINYINT},
+      </if>
+      <if test="edmmName != null">
+        edmm_name = #{edmmName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmDesc != null">
+        edmm_desc = #{edmmDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramType != null">
+        edmm_program_type = #{edmmProgramType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramStorage != null">
+        edmm_program_storage = #{edmmProgramStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgramSourceName != null">
+        edmm_program_source_name = #{edmmProgramSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmTriggerCond != null">
+        edmm_trigger_cond = #{edmmTriggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmVer != null">
+        edmm_ver = #{edmmVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmDevelopDept != null">
+        edmm_develop_dept = #{edmmDevelopDept,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmProgrammer != null">
+        edmm_programmer = #{edmmProgrammer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmSeq != null">
+        edmm_seq = #{edmmSeq,jdbcType=INTEGER},
+      </if>
+      <if test="edmmStatus != null">
+        edmm_status = #{edmmStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmUpdateDesc != null">
+        edmm_update_desc = #{edmmUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefined != null">
+        is_defined = #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="edmmArithmeticDesc != null">
+        edmm_arithmetic_desc = #{edmmArithmeticDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmArithmeticStorage != null">
+        edmm_arithmetic_storage = #{edmmArithmeticStorage,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmArithmeticSourceName != null">
+        edmm_arithmetic_source_name = #{edmmArithmeticSourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmRequestType != null">
+        edmm_request_type = #{edmmRequestType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmExecuteType != null">
+        edmm_execute_type = #{edmmExecuteType,jdbcType=CHAR},
+      </if>
+      <if test="edmmExecRate != null">
+        edmm_exec_rate = #{edmmExecRate,jdbcType=CHAR},
+      </if>
+      <if test="edmmPlanId != null">
+        edmm_plan_id = #{edmmPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmJobId != null">
+        edmm_job_id = #{edmmJobId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmmMethodType != null">
+        edmm_method_type = #{edmmMethodType,jdbcType=CHAR},
+      </if>
+      <if test="timeout != null">
+        timeout = #{timeout,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmMethod">
+    update edm_method
+    set edmm_edmc_id = #{edmmEdmcId,jdbcType=VARCHAR},
+      edmm_type = #{edmmType,jdbcType=VARCHAR},
+      is_cover = #{isCover,jdbcType=TINYINT},
+      edmm_name = #{edmmName,jdbcType=VARCHAR},
+      edmm_desc = #{edmmDesc,jdbcType=VARCHAR},
+      edmm_program_type = #{edmmProgramType,jdbcType=VARCHAR},
+      edmm_program_storage = #{edmmProgramStorage,jdbcType=VARCHAR},
+      edmm_program_source_name = #{edmmProgramSourceName,jdbcType=VARCHAR},
+      edmm_trigger_cond = #{edmmTriggerCond,jdbcType=VARCHAR},
+      edmm_ver = #{edmmVer,jdbcType=VARCHAR},
+      edmm_develop_dept = #{edmmDevelopDept,jdbcType=VARCHAR},
+      edmm_programmer = #{edmmProgrammer,jdbcType=VARCHAR},
+      edmm_seq = #{edmmSeq,jdbcType=INTEGER},
+      edmm_status = #{edmmStatus,jdbcType=VARCHAR},
+      edmm_update_desc = #{edmmUpdateDesc,jdbcType=VARCHAR},
+      is_defined = #{isDefined,jdbcType=TINYINT},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT},
+      edmm_arithmetic_desc = #{edmmArithmeticDesc,jdbcType=VARCHAR},
+      edmm_arithmetic_storage = #{edmmArithmeticStorage,jdbcType=VARCHAR},
+      edmm_arithmetic_source_name = #{edmmArithmeticSourceName,jdbcType=VARCHAR},
+      edmm_request_type = #{edmmRequestType,jdbcType=VARCHAR},
+      edmm_execute_type = #{edmmExecuteType,jdbcType=CHAR},
+      edmm_exec_rate = #{edmmExecRate,jdbcType=CHAR},
+      edmm_plan_id = #{edmmPlanId,jdbcType=VARCHAR},
+      edmm_job_id = #{edmmJobId,jdbcType=VARCHAR},
+      edmm_method_type = #{edmmMethodType,jdbcType=CHAR},
+      timeout = #{timeout,jdbcType=INTEGER},
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 通过程序类型代码查找程序类型名称 -->
+  <select id="selectProgramTypeNameByProgramTypeCode" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_type = 'edm_program_type' AND code_value =#{edmmProgramType,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 通过方法状态码查找方法状态名 -->
+  <select id="selectEdmtStatusNameByEdmtStatusCode" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_type = 'edm_edmd_status' AND code_value=#{edmmStatus,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 通过类的id查找该类的方法id集合 -->
+  <select id="selectMethodIdListByClassId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT id FROM edm_method WHERE edmm_edmc_id = #{edmmEdmcId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 通过方法程序类型代码查找代码表对应的代码含义值 -->
+  <select id="selectEdmProgramTypeNameByEdmmProgramType" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_type = 'edm_program_type' AND code_value=#{edmmProgramType,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 通过方法id查找输入参数的参数名称 -->
+  <select id="selectEdmEdmdInsertArgNameByEdmaEdmmId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edma_name FROM edm_method_arg WHERE edma_edmm_id=#{edmaEdmmId,jdbcType=VARCHAR} AND edma_type = '1' AND is_del != 1
+  </select>
+
+  <!-- 通过方法id查找输出参数的参数名称 -->
+  <select id="selectEdmEdmdReturnNameByEdmaEdmmId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edma_name FROM edm_method_arg WHERE edma_edmm_id=#{edmaEdmmId,jdbcType=VARCHAR} AND edma_type = '2' AND is_del != 1
+  </select>
+
+  <!-- 通过方法id查找输入参数的参数描述 -->
+  <select id="selectEdmEdmaInsertArgDescByEdmaEdmmId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edma_desc FROM edm_method_arg WHERE edma_edmm_id =#{edmaEdmmId,jdbcType=VARCHAR} AND edma_type='1' AND is_del != 1
+  </select>
+
+  <!-- 通过方法id查找返回参数的参数描述 -->
+  <select id="selectEdmEdmaReturnDescByEdmaEdmmId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edma_desc FROM edm_method_arg WHERE edma_edmm_id =#{edmaEdmmId,jdbcType=VARCHAR} AND edma_type='2' AND is_del != 1
+  </select>
+
+  <!-- 通过方法id查找方法 -->
+  <select id="selectEdmMethodById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_method WHERE id = #{edcm_edmm_id,jdbcType=VARCHAR} AND is_del != 1 ORDER BY edmm_seq ASC
+  </select>
+
+  <!-- 修改排序字段 -->
+  <update id="updateSeqById">
+    UPDATE edm_method SET
+    edmm_seq = #{seq,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 逻辑删除 -->
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_method SET
+    is_del = 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--通过方法id查找方法名  -->
+  <select id="geMethodNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmm_name FROM edm_method WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 方法树节点的本级下的方法移动到指定节点 -->
+  <update id="moveMethodtypeMethodToMethodtype">
+    UPDATE edm_method SET edmm_type= #{aimMethodtypeId}
+    WHERE edmm_type = #{sourceMethodtypeId}
+  </update>
+
+  <!-- 根据edmmType来查询方法 -->
+  <select id="selectEdmMethodByIdStr" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM edm_method
+    WHERE edmm_type IN
+    <foreach close=")" collection="array" index="index" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+    AND is_del != 1
+  </select>
+
+  <!-- 根据edmmType, edmmProgramType,edmmName, edmmCls, edmmStatus条件查询方法列表-->
+  <select id="selectEdmMethodByCondition" resultMap="BaseResultMap">
+    SELECT
+      <include refid="Base_Column_List" />FROM edm_method m WHERE 1=1 AND m.is_del != 1
+    <if test="edmmType !=null and edmmType != ''">
+      AND edmm_type = #{edmmType}
+    </if>
+    <if test="edmmProgramType !=null and edmmProgramType!= ''">
+      AND edmm_program_type = #{edmmProgramType}
+    </if>
+    <if test="edmmName !=null and edmmName!= ''">
+      <bind name="pattern" value="'%'+edmmName+'%'" />
+      AND  edmm_name LIKE  #{pattern}
+    </if>
+    <if test="edmmStatus !=null and edmmStatus !=''">
+      AND edmm_status = #{edmmStatus}
+    </if>
+    <if test="edmmCls != null and edmmCls.length &gt;0">
+      AND edmm_edmc_id IN
+      <foreach close=")" collection="edmmCls" item="item" open="(" separator=",">
+        #{item}
+      </foreach>
+    </if>
+    ORDER BY addtime DESC
+
+  </select>
+
+  <!-- 根据方法id 启用或禁用方法-->
+  <update id="updateEdmmStatus">
+    UPDATE edm_method
+    SET edmm_status = #{edmmStatus}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 根据方法id 保存触发条件id-->
+  <update id="updateTriggerCond">
+    UPDATE edm_method
+    SET edmm_trigger_cond = #{edmmTriggerCond}
+    WHERE id = #{id}
+  </update>
+
+
+  <!-- 根据方法id 删除触发条件id-->
+  <update id="deleteTriggerCond">
+    UPDATE edm_method
+    SET edmm_trigger_cond = NULL
+    WHERE id = #{id}
+  </update>
+
+  <!-- 根据类的id获取该类下最大的排序 -->
+  <select id="getMaxSeqByCid" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT
+    MAX(edmm_seq)
+    FROM edm_method WHERE 1=1  AND edmm_edmc_id = #{edmmEdmcId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 通过类id查找方法 -->
+  <select id="selectEdmMethodByCid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_method WHERE edmm_edmc_id = #{edmmEdmcId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 批量插入方法 -->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO edm_method (id, edmm_edmc_id, edmm_type,
+    is_cover, edmm_name, edmm_desc,
+    edmm_program_type, edmm_program_storage, edmm_program_source_name,
+    edmm_trigger_cond, edmm_ver, edmm_develop_dept,
+    edmm_programmer, edmm_seq, edmm_status,
+    edmm_update_desc, is_defined, is_del,
+    addtime, adduser, modtime,
+    moduser, acctid, edmm_arithmetic_desc,
+    edmm_arithmetic_storage, edmm_arithmetic_source_name,
+    edmm_request_type, edmm_execute_type, edmm_exec_rate,
+    edmm_plan_id, edmm_method_type)
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.edmmEdmcId,jdbcType=VARCHAR}, #{item.edmmType,jdbcType=VARCHAR},
+      #{item.isCover,jdbcType=TINYINT}, #{item.edmmName,jdbcType=VARCHAR}, #{item.edmmDesc,jdbcType=VARCHAR},
+      #{item.edmmProgramType,jdbcType=VARCHAR}, #{item.edmmProgramStorage,jdbcType=VARCHAR}, #{item.edmmProgramSourceName,jdbcType=VARCHAR},
+      #{item.edmmTriggerCond,jdbcType=VARCHAR}, #{item.edmmVer,jdbcType=VARCHAR}, #{item.edmmDevelopDept,jdbcType=VARCHAR},
+      #{item.edmmProgrammer,jdbcType=VARCHAR}, #{item.edmmSeq,jdbcType=INTEGER}, #{item.edmmStatus,jdbcType=VARCHAR},
+      #{item.edmmUpdateDesc,jdbcType=VARCHAR}, #{item.isDefined,jdbcType=TINYINT}, #{item.isDel,jdbcType=TINYINT},
+      #{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR}, #{item.modtime,jdbcType=TIMESTAMP},
+      #{item.moduser,jdbcType=VARCHAR}, #{item.acctid,jdbcType=TINYINT}, #{item.edmmArithmeticDesc,jdbcType=VARCHAR},
+      #{item.edmmArithmeticStorage,jdbcType=VARCHAR}, #{item.edmmArithmeticSourceName,jdbcType=VARCHAR},
+      #{item.edmmRequestType,jdbcType=CHAR}, #{item.edmmExecuteType,jdbcType=CHAR}, #{item.edmmExecRate,jdbcType=CHAR},
+      #{item.edmmPlanId,jdbcType=VARCHAR},  #{item.edmmMethodType,jdbcType=CHAR})
+    </foreach>
+  </insert>
+
+  <!-- 根据方法id 删除触发条件id-->
+  <update id="updateEdmcIdPrimaryKey">
+    UPDATE edm_method
+    SET edmm_edmc_id = NULL
+    WHERE id = #{id}
+  </update>
+
+  <select id="selectByEdmcIdAndEdmmName" resultMap="BaseResultMap">
+    SELECT  <include refid="Base_Column_List" />
+    FROM edm_method WHERE edmm_edmc_id = #{edmcId, jdbcType=VARCHAR} AND  edmm_name = #{edmmName, jdbcType=VARCHAR} AND is_del != 1
+  </select>
+</mapper>

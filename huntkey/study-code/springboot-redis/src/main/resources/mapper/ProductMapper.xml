@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhang.mapper.ProductMapper">
+    
+    <resultMap id="BaseResultMap" type="com.zhang.entity.Product">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!-- 开启基于redis的mybatis二级缓存 -->
+    <cache type="com.zhang.config.RedisCache"/>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM product WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--设置flushCache为true，这样在更新product信息时，能够自动更新缓存-->
+    <update id="updateProduct" parameterType="com.zhang.entity.Product" flushCache="true">
+        UPDATE product
+        <set>
+            <if test="name!=null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="price!=null">
+                price = #{price,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

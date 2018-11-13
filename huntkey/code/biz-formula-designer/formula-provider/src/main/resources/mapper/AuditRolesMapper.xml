@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.audit.dao.AuditRolesMapper">
+  <!--namespace="com.huntkey.rx.sceo.formula.provider.audit.dao.AuditRolesMapper"-->
+  <!--type="com.huntkey.rx.sceo.formula.common.model.AuditRoles"-->
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.AuditRoles">
+    <id column="adit_id" jdbcType="VARCHAR" property="aditId" />
+    <result column="process_docu_obj_id" jdbcType="VARCHAR" property="processDocuObjId" />
+    <result column="audit_seq" jdbcType="INTEGER" property="auditSeq" />
+    <result column="audit_pattern" jdbcType="VARCHAR" property="auditPattern" />
+    <result column="audit_roles_staff" jdbcType="VARCHAR" property="auditRolesStaff" />
+    <result column="audit_condition" jdbcType="VARCHAR" property="auditCondition" />
+    <result column="isenable" jdbcType="TINYINT" property="isenable" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="alternate_field1" jdbcType="VARCHAR" property="alternateField1" />
+    <result column="alternate_field2" jdbcType="VARCHAR" property="alternateField2" />
+    <result column="alternate_field3" jdbcType="VARCHAR" property="alternateField3" />
+    <result column="alternate_field4" jdbcType="VARCHAR" property="alternateField4" />
+    <result column="alternate_field5" jdbcType="VARCHAR" property="alternateField5" />
+    <result column="mark" jdbcType="VARCHAR" property="mark" />
+    <result column="choose_code" jdbcType="VARCHAR" property="chooseCode" />
+    <result column="beiyong1" jdbcType="VARCHAR" property="beiyong1" />
+    <result column="beiyong2" jdbcType="VARCHAR" property="beiyong2" />
+    <result column="beiyong3" jdbcType="VARCHAR" property="beiyong3" />
+    <result column="post_operate" jdbcType="VARCHAR" property="postOperate" />
+    <result column="post_value" jdbcType="VARCHAR" property="postValue" />
+    <result column="dept_operate" jdbcType="VARCHAR" property="deptOperate" />
+    <result column="dept_value" jdbcType="VARCHAR" property="deptValue" />
+    <result column="beiyong4" jdbcType="VARCHAR" property="beiyong4" />
+    <result column="beiyong5" jdbcType="VARCHAR" property="beiyong5" />
+    <result column="beiyong6" jdbcType="VARCHAR" property="beiyong6" />
+    <result column="beiyong7" jdbcType="VARCHAR" property="beiyong7" />
+    <result column="beiyong8" jdbcType="VARCHAR" property="beiyong8" />
+    <result column="beiyong9" jdbcType="VARCHAR" property="beiyong9" />
+  </resultMap>
+
+
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+
+
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+
+
+  <sql id="Base_Column_List">
+    adit_id, process_docu_obj_id, audit_seq, audit_pattern, audit_roles_staff, audit_condition,
+    isenable, addtime, adduser, modtime, moduser, alternate_field1, alternate_field2,
+    alternate_field3, alternate_field4, alternate_field5, mark, choose_code, beiyong1,
+    beiyong2, beiyong3, post_operate, post_value, dept_operate, dept_value, beiyong4,
+    beiyong5, beiyong6, beiyong7, beiyong8, beiyong9
+  </sql>
+
+
+  <select id="selectByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRolesExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from audit_roles_setting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from audit_roles_setting
+    where adit_id = #{aditId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from audit_roles_setting
+    where adit_id = #{aditId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRolesExample">
+    delete from audit_roles_setting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+
+
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRoles">
+    insert into audit_roles_setting (adit_id, process_docu_obj_id, audit_seq,
+    audit_pattern, audit_roles_staff, audit_condition,
+    isenable, addtime, adduser,
+    modtime, moduser, alternate_field1,
+    alternate_field2, alternate_field3, alternate_field4,
+    alternate_field5, mark, choose_code,
+    beiyong1, beiyong2, beiyong3,
+    post_operate, post_value, dept_operate,
+    dept_value, beiyong4, beiyong5,
+    beiyong6, beiyong7, beiyong8,
+    beiyong9)
+    values (#{aditId,jdbcType=VARCHAR}, #{processDocuObjId,jdbcType=VARCHAR}, #{auditSeq,jdbcType=INTEGER},
+    #{auditPattern,jdbcType=VARCHAR}, #{auditRolesStaff,jdbcType=VARCHAR}, #{auditCondition,jdbcType=VARCHAR},
+    #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+    #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{alternateField1,jdbcType=VARCHAR},
+    #{alternateField2,jdbcType=VARCHAR}, #{alternateField3,jdbcType=VARCHAR}, #{alternateField4,jdbcType=VARCHAR},
+    #{alternateField5,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, #{chooseCode,jdbcType=VARCHAR},
+    #{beiyong1,jdbcType=VARCHAR}, #{beiyong2,jdbcType=VARCHAR}, #{beiyong3,jdbcType=VARCHAR},
+    #{postOperate,jdbcType=VARCHAR}, #{postValue,jdbcType=VARCHAR}, #{deptOperate,jdbcType=VARCHAR},
+    #{deptValue,jdbcType=VARCHAR}, #{beiyong4,jdbcType=VARCHAR}, #{beiyong5,jdbcType=VARCHAR},
+    #{beiyong6,jdbcType=VARCHAR}, #{beiyong7,jdbcType=VARCHAR}, #{beiyong8,jdbcType=VARCHAR},
+    #{beiyong9,jdbcType=VARCHAR})
+  </insert>
+
+
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRoles">
+    insert into audit_roles_setting
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="aditId != null">
+        adit_id,
+      </if>
+      <if test="processDocuObjId != null">
+        process_docu_obj_id,
+      </if>
+      <if test="auditSeq != null">
+        audit_seq,
+      </if>
+      <if test="auditPattern != null">
+        audit_pattern,
+      </if>
+      <if test="auditRolesStaff != null">
+        audit_roles_staff,
+      </if>
+      <if test="auditCondition != null">
+        audit_condition,
+      </if>
+      <if test="isenable != null">
+        isenable,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="alternateField1 != null">
+        alternate_field1,
+      </if>
+      <if test="alternateField2 != null">
+        alternate_field2,
+      </if>
+      <if test="alternateField3 != null">
+        alternate_field3,
+      </if>
+      <if test="alternateField4 != null">
+        alternate_field4,
+      </if>
+      <if test="alternateField5 != null">
+        alternate_field5,
+      </if>
+      <if test="mark != null">
+        mark,
+      </if>
+      <if test="chooseCode != null">
+        choose_code,
+      </if>
+      <if test="beiyong1 != null">
+        beiyong1,
+      </if>
+      <if test="beiyong2 != null">
+        beiyong2,
+      </if>
+      <if test="beiyong3 != null">
+        beiyong3,
+      </if>
+      <if test="postOperate != null">
+        post_operate,
+      </if>
+      <if test="postValue != null">
+        post_value,
+      </if>
+      <if test="deptOperate != null">
+        dept_operate,
+      </if>
+      <if test="deptValue != null">
+        dept_value,
+      </if>
+      <if test="beiyong4 != null">
+        beiyong4,
+      </if>
+      <if test="beiyong5 != null">
+        beiyong5,
+      </if>
+      <if test="beiyong6 != null">
+        beiyong6,
+      </if>
+      <if test="beiyong7 != null">
+        beiyong7,
+      </if>
+      <if test="beiyong8 != null">
+        beiyong8,
+      </if>
+      <if test="beiyong9 != null">
+        beiyong9,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="aditId != null">
+        #{aditId,jdbcType=VARCHAR},
+      </if>
+      <if test="processDocuObjId != null">
+        #{processDocuObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditSeq != null">
+        #{auditSeq,jdbcType=INTEGER},
+      </if>
+      <if test="auditPattern != null">
+        #{auditPattern,jdbcType=VARCHAR},
+      </if>
+      <if test="auditRolesStaff != null">
+        #{auditRolesStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="auditCondition != null">
+        #{auditCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null">
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField1 != null">
+        #{alternateField1,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField2 != null">
+        #{alternateField2,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField3 != null">
+        #{alternateField3,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField4 != null">
+        #{alternateField4,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField5 != null">
+        #{alternateField5,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null">
+        #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="chooseCode != null">
+        #{chooseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong1 != null">
+        #{beiyong1,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong2 != null">
+        #{beiyong2,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong3 != null">
+        #{beiyong3,jdbcType=VARCHAR},
+      </if>
+      <if test="postOperate != null">
+        #{postOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="postValue != null">
+        #{postValue,jdbcType=VARCHAR},
+      </if>
+      <if test="deptOperate != null">
+        #{deptOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="deptValue != null">
+        #{deptValue,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong4 != null">
+        #{beiyong4,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong5 != null">
+        #{beiyong5,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong6 != null">
+        #{beiyong6,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong7 != null">
+        #{beiyong7,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong8 != null">
+        #{beiyong8,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong9 != null">
+        #{beiyong9,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRolesExample" resultType="java.lang.Long">
+    select count(*) from audit_roles_setting
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+
+
+  <update id="updateByExampleSelective" parameterType="map">
+    update audit_roles_setting
+    <set>
+      <if test="record.aditId != null">
+        adit_id = #{record.aditId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.processDocuObjId != null">
+        process_docu_obj_id = #{record.processDocuObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditSeq != null">
+        audit_seq = #{record.auditSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.auditPattern != null">
+        audit_pattern = #{record.auditPattern,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditRolesStaff != null">
+        audit_roles_staff = #{record.auditRolesStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditCondition != null">
+        audit_condition = #{record.auditCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null">
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alternateField1 != null">
+        alternate_field1 = #{record.alternateField1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alternateField2 != null">
+        alternate_field2 = #{record.alternateField2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alternateField3 != null">
+        alternate_field3 = #{record.alternateField3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alternateField4 != null">
+        alternate_field4 = #{record.alternateField4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alternateField5 != null">
+        alternate_field5 = #{record.alternateField5,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mark != null">
+        mark = #{record.mark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chooseCode != null">
+        choose_code = #{record.chooseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong1 != null">
+        beiyong1 = #{record.beiyong1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong2 != null">
+        beiyong2 = #{record.beiyong2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong3 != null">
+        beiyong3 = #{record.beiyong3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.postOperate != null">
+        post_operate = #{record.postOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.postValue != null">
+        post_value = #{record.postValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deptOperate != null">
+        dept_operate = #{record.deptOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deptValue != null">
+        dept_value = #{record.deptValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong4 != null">
+        beiyong4 = #{record.beiyong4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong5 != null">
+        beiyong5 = #{record.beiyong5,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong6 != null">
+        beiyong6 = #{record.beiyong6,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong7 != null">
+        beiyong7 = #{record.beiyong7,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong8 != null">
+        beiyong8 = #{record.beiyong8,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beiyong9 != null">
+        beiyong9 = #{record.beiyong9,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+
+  <update id="updateByExample" parameterType="map">
+    update audit_roles_setting
+    set adit_id = #{record.aditId,jdbcType=VARCHAR},
+    process_docu_obj_id = #{record.processDocuObjId,jdbcType=VARCHAR},
+    audit_seq = #{record.auditSeq,jdbcType=INTEGER},
+    audit_pattern = #{record.auditPattern,jdbcType=VARCHAR},
+    audit_roles_staff = #{record.auditRolesStaff,jdbcType=VARCHAR},
+    audit_condition = #{record.auditCondition,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    alternate_field1 = #{record.alternateField1,jdbcType=VARCHAR},
+    alternate_field2 = #{record.alternateField2,jdbcType=VARCHAR},
+    alternate_field3 = #{record.alternateField3,jdbcType=VARCHAR},
+    alternate_field4 = #{record.alternateField4,jdbcType=VARCHAR},
+    alternate_field5 = #{record.alternateField5,jdbcType=VARCHAR},
+    mark = #{record.mark,jdbcType=VARCHAR},
+    choose_code = #{record.chooseCode,jdbcType=VARCHAR},
+    beiyong1 = #{record.beiyong1,jdbcType=VARCHAR},
+    beiyong2 = #{record.beiyong2,jdbcType=VARCHAR},
+    beiyong3 = #{record.beiyong3,jdbcType=VARCHAR},
+    post_operate = #{record.postOperate,jdbcType=VARCHAR},
+    post_value = #{record.postValue,jdbcType=VARCHAR},
+    dept_operate = #{record.deptOperate,jdbcType=VARCHAR},
+    dept_value = #{record.deptValue,jdbcType=VARCHAR},
+    beiyong4 = #{record.beiyong4,jdbcType=VARCHAR},
+    beiyong5 = #{record.beiyong5,jdbcType=VARCHAR},
+    beiyong6 = #{record.beiyong6,jdbcType=VARCHAR},
+    beiyong7 = #{record.beiyong7,jdbcType=VARCHAR},
+    beiyong8 = #{record.beiyong8,jdbcType=VARCHAR},
+    beiyong9 = #{record.beiyong9,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRoles">
+    update audit_roles_setting
+    <set>
+      <if test="processDocuObjId != null">
+        process_docu_obj_id = #{processDocuObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditSeq != null">
+        audit_seq = #{auditSeq,jdbcType=INTEGER},
+      </if>
+      <if test="auditPattern != null">
+        audit_pattern = #{auditPattern,jdbcType=VARCHAR},
+      </if>
+      <if test="auditRolesStaff != null">
+        audit_roles_staff = #{auditRolesStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="auditCondition != null">
+        audit_condition = #{auditCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null">
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField1 != null">
+        alternate_field1 = #{alternateField1,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField2 != null">
+        alternate_field2 = #{alternateField2,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField3 != null">
+        alternate_field3 = #{alternateField3,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField4 != null">
+        alternate_field4 = #{alternateField4,jdbcType=VARCHAR},
+      </if>
+      <if test="alternateField5 != null">
+        alternate_field5 = #{alternateField5,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null">
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="chooseCode != null">
+        choose_code = #{chooseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong1 != null">
+        beiyong1 = #{beiyong1,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong2 != null">
+        beiyong2 = #{beiyong2,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong3 != null">
+        beiyong3 = #{beiyong3,jdbcType=VARCHAR},
+      </if>
+      <if test="postOperate != null">
+        post_operate = #{postOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="postValue != null">
+        post_value = #{postValue,jdbcType=VARCHAR},
+      </if>
+      <if test="deptOperate != null">
+        dept_operate = #{deptOperate,jdbcType=VARCHAR},
+      </if>
+      <if test="deptValue != null">
+        dept_value = #{deptValue,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong4 != null">
+        beiyong4 = #{beiyong4,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong5 != null">
+        beiyong5 = #{beiyong5,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong6 != null">
+        beiyong6 = #{beiyong6,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong7 != null">
+        beiyong7 = #{beiyong7,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong8 != null">
+        beiyong8 = #{beiyong8,jdbcType=VARCHAR},
+      </if>
+      <if test="beiyong9 != null">
+        beiyong9 = #{beiyong9,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where adit_id = #{aditId,jdbcType=VARCHAR}
+  </update>
+
+
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.AuditRoles">
+    update audit_roles_setting
+    set process_docu_obj_id = #{processDocuObjId,jdbcType=VARCHAR},
+    audit_seq = #{auditSeq,jdbcType=INTEGER},
+    audit_pattern = #{auditPattern,jdbcType=VARCHAR},
+    audit_roles_staff = #{auditRolesStaff,jdbcType=VARCHAR},
+    audit_condition = #{auditCondition,jdbcType=VARCHAR},
+    isenable = #{isenable,jdbcType=TINYINT},
+    addtime = #{addtime,jdbcType=TIMESTAMP},
+    adduser = #{adduser,jdbcType=VARCHAR},
+    modtime = #{modtime,jdbcType=TIMESTAMP},
+    moduser = #{moduser,jdbcType=VARCHAR},
+    alternate_field1 = #{alternateField1,jdbcType=VARCHAR},
+    alternate_field2 = #{alternateField2,jdbcType=VARCHAR},
+    alternate_field3 = #{alternateField3,jdbcType=VARCHAR},
+    alternate_field4 = #{alternateField4,jdbcType=VARCHAR},
+    alternate_field5 = #{alternateField5,jdbcType=VARCHAR},
+    mark = #{mark,jdbcType=VARCHAR},
+    choose_code = #{chooseCode,jdbcType=VARCHAR},
+    beiyong1 = #{beiyong1,jdbcType=VARCHAR},
+    beiyong2 = #{beiyong2,jdbcType=VARCHAR},
+    beiyong3 = #{beiyong3,jdbcType=VARCHAR},
+    post_operate = #{postOperate,jdbcType=VARCHAR},
+    post_value = #{postValue,jdbcType=VARCHAR},
+    dept_operate = #{deptOperate,jdbcType=VARCHAR},
+    dept_value = #{deptValue,jdbcType=VARCHAR},
+    beiyong4 = #{beiyong4,jdbcType=VARCHAR},
+    beiyong5 = #{beiyong5,jdbcType=VARCHAR},
+    beiyong6 = #{beiyong6,jdbcType=VARCHAR},
+    beiyong7 = #{beiyong7,jdbcType=VARCHAR},
+    beiyong8 = #{beiyong8,jdbcType=VARCHAR},
+    beiyong9 = #{beiyong9,jdbcType=VARCHAR}
+    where adit_id = #{aditId,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateIsEnaleByAuditId" parameterType="java.lang.String">
+    UPDATE audit_roles_setting
+    SET isenable = 0
+    WHERE alternate_field4 = #{auditId,jdbcType=VARCHAR}
+    /*占位符要与mapper里面的传入参数名称匹配*/
+  </update>
+
+  <!--批量插入 -->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO audit_roles_setting (adit_id, process_docu_obj_id,audit_seq,audit_pattern,audit_roles_staff,audit_condition,isenable,
+    addtime,adduser,modtime,moduser,alternate_field1,alternate_field2,alternate_field3,alternate_field4,alternate_field5,mark,choose_code,beiyong1,beiyong2,beiyong3,post_operate,post_value,dept_operate,dept_value,beiyong4,beiyong5,beiyong6,beiyong7,beiyong8,beiyong9
+    )
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.aditId,jdbcType=VARCHAR}, #{item.processDocuObjId,jdbcType=VARCHAR}, #{item.auditSeq,jdbcType=INTEGER},#{item.auditPattern,jdbcType=VARCHAR},#{item.auditRolesStaff,jdbcType=VARCHAR},
+      #{item.auditCondition,jdbcType=VARCHAR},#{item.isenable,jdbcType=TINYINT},#{item.addtime,jdbcType=TIMESTAMP},#{item.adduser,jdbcType=VARCHAR},#{item.modtime,jdbcType=TIMESTAMP},#{item.moduser,jdbcType=VARCHAR},
+      #{item.alternateField1,jdbcType=VARCHAR},#{item.alternateField2,jdbcType=VARCHAR},#{item.alternateField3,jdbcType=VARCHAR},#{item.alternateField4,jdbcType=VARCHAR},#{item.alternateField5,jdbcType=VARCHAR},
+      #{item.mark,jdbcType=VARCHAR},#{item.chooseCode,jdbcType=VARCHAR},#{item.beiyong1,jdbcType=VARCHAR},#{item.beiyong2,jdbcType=VARCHAR},#{item.beiyong3,jdbcType=VARCHAR},#{item.postOperate,jdbcType=VARCHAR},#{item.postValue,jdbcType=VARCHAR},#{item.deptOperate,jdbcType=VARCHAR},#{item.deptValue,jdbcType=VARCHAR},#{item.beiyong4,jdbcType=VARCHAR},#{item.beiyong5,jdbcType=VARCHAR},#{item.beiyong6,jdbcType=VARCHAR},#{item.beiyong7,jdbcType=VARCHAR},#{item.beiyong8,jdbcType=VARCHAR},#{item.beiyong9,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <!--批量删除-->
+  <update id="updateIsEnaleByClassId" parameterType="java.lang.String">
+    UPDATE audit_roles_setting
+    SET isenable = 0
+    WHERE process_docu_obj_id IN
+    <foreach collection="list" index="index" item="item" separator=",">
+      #{item.alternateField4,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+
+  <!--查询所有记录按照相关类id-->
+  <select id="selectByClassId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from audit_roles_setting
+    WHERE alternate_field4 = #{alternateField4,jdbcType=VARCHAR} AND isenable = 1
+  </select>
+
+</mapper>

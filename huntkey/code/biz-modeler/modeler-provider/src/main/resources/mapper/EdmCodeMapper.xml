@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmCodeMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmCode">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="code_type" jdbcType="VARCHAR" property="codeType" />
+    <result column="code_value" jdbcType="VARCHAR" property="codeValue" />
+    <result column="code_name" jdbcType="VARCHAR" property="codeName" />
+    <result column="code_desc" jdbcType="VARCHAR" property="codeDesc" />
+    <result column="code_seq" jdbcType="INTEGER" property="codeSeq" />
+    <result column="code_status" jdbcType="TINYINT" property="codeStatus" />
+    <result column="code_ext1" jdbcType="VARCHAR" property="codeExt1" />
+    <result column="code_ext2" jdbcType="VARCHAR" property="codeExt2" />
+    <result column="code_ext3" jdbcType="VARCHAR" property="codeExt3" />
+    <result column="code_ext4" jdbcType="VARCHAR" property="codeExt4" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, code_type, code_value, code_name, code_desc, code_seq, code_status, code_ext1, 
+    code_ext2, code_ext3, code_ext4
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmCodeExample" resultMap="BaseResultMap">
+    SELECT
+    <if test="distinct">
+      DISTINCT
+    </if>
+    <include refid="Base_Column_List" />
+    FROM edm_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      ORDER BY ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM edm_code
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM edm_code
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmCodeExample">
+    DELETE FROM edm_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmCode">
+    INSERT INTO edm_code (id, code_type, code_value, 
+      code_name, code_desc, code_seq, 
+      code_status, code_ext1, code_ext2, 
+      code_ext3, code_ext4)
+    VALUES (#{id,jdbcType=VARCHAR}, #{codeType,jdbcType=VARCHAR}, #{codeValue,jdbcType=VARCHAR}, 
+      #{codeName,jdbcType=VARCHAR}, #{codeDesc,jdbcType=VARCHAR}, #{codeSeq,jdbcType=INTEGER}, 
+      #{codeStatus,jdbcType=TINYINT}, #{codeExt1,jdbcType=VARCHAR}, #{codeExt2,jdbcType=VARCHAR}, 
+      #{codeExt3,jdbcType=VARCHAR}, #{codeExt4,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmCode">
+    INSERT INTO edm_code
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="codeType != null">
+        code_type,
+      </if>
+      <if test="codeValue != null">
+        code_value,
+      </if>
+      <if test="codeName != null">
+        code_name,
+      </if>
+      <if test="codeDesc != null">
+        code_desc,
+      </if>
+      <if test="codeSeq != null">
+        code_seq,
+      </if>
+      <if test="codeStatus != null">
+        code_status,
+      </if>
+      <if test="codeExt1 != null">
+        code_ext1,
+      </if>
+      <if test="codeExt2 != null">
+        code_ext2,
+      </if>
+      <if test="codeExt3 != null">
+        code_ext3,
+      </if>
+      <if test="codeExt4 != null">
+        code_ext4,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="codeType != null">
+        #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeValue != null">
+        #{codeValue,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null">
+        #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeDesc != null">
+        #{codeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="codeSeq != null">
+        #{codeSeq,jdbcType=INTEGER},
+      </if>
+      <if test="codeStatus != null">
+        #{codeStatus,jdbcType=TINYINT},
+      </if>
+      <if test="codeExt1 != null">
+        #{codeExt1,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt2 != null">
+        #{codeExt2,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt3 != null">
+        #{codeExt3,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt4 != null">
+        #{codeExt4,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmCodeExample" resultType="java.lang.Long">
+    SELECT COUNT(*) FROM edm_code
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    UPDATE edm_code
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeType != null">
+        code_type = #{record.codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeValue != null">
+        code_value = #{record.codeValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeName != null">
+        code_name = #{record.codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeDesc != null">
+        code_desc = #{record.codeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeSeq != null">
+        code_seq = #{record.codeSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.codeStatus != null">
+        code_status = #{record.codeStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.codeExt1 != null">
+        code_ext1 = #{record.codeExt1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeExt2 != null">
+        code_ext2 = #{record.codeExt2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeExt3 != null">
+        code_ext3 = #{record.codeExt3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeExt4 != null">
+        code_ext4 = #{record.codeExt4,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    UPDATE edm_code
+    SET id = #{record.id,jdbcType=VARCHAR},
+      code_type = #{record.codeType,jdbcType=VARCHAR},
+      code_value = #{record.codeValue,jdbcType=VARCHAR},
+      code_name = #{record.codeName,jdbcType=VARCHAR},
+      code_desc = #{record.codeDesc,jdbcType=VARCHAR},
+      code_seq = #{record.codeSeq,jdbcType=INTEGER},
+      code_status = #{record.codeStatus,jdbcType=TINYINT},
+      code_ext1 = #{record.codeExt1,jdbcType=VARCHAR},
+      code_ext2 = #{record.codeExt2,jdbcType=VARCHAR},
+      code_ext3 = #{record.codeExt3,jdbcType=VARCHAR},
+      code_ext4 = #{record.codeExt4,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmCode">
+    UPDATE edm_code
+    <set>
+      <if test="codeType != null">
+        code_type = #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeValue != null">
+        code_value = #{codeValue,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null">
+        code_name = #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeDesc != null">
+        code_desc = #{codeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="codeSeq != null">
+        code_seq = #{codeSeq,jdbcType=INTEGER},
+      </if>
+      <if test="codeStatus != null">
+        code_status = #{codeStatus,jdbcType=TINYINT},
+      </if>
+      <if test="codeExt1 != null">
+        code_ext1 = #{codeExt1,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt2 != null">
+        code_ext2 = #{codeExt2,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt3 != null">
+        code_ext3 = #{codeExt3,jdbcType=VARCHAR},
+      </if>
+      <if test="codeExt4 != null">
+        code_ext4 = #{codeExt4,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmCode">
+    UPDATE edm_code
+    SET code_type = #{codeType,jdbcType=VARCHAR},
+      code_value = #{codeValue,jdbcType=VARCHAR},
+      code_name = #{codeName,jdbcType=VARCHAR},
+      code_desc = #{codeDesc,jdbcType=VARCHAR},
+      code_seq = #{codeSeq,jdbcType=INTEGER},
+      code_status = #{codeStatus,jdbcType=TINYINT},
+      code_ext1 = #{codeExt1,jdbcType=VARCHAR},
+      code_ext2 = #{codeExt2,jdbcType=VARCHAR},
+      code_ext3 = #{codeExt3,jdbcType=VARCHAR},
+      code_ext4 = #{codeExt4,jdbcType=VARCHAR}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 通过codevalue查找类型ParaType的codeName的值 -->
+  <select id="selectParaTypeCodeNameByCodeValue" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value=#{edmaDataType,jdbcType=VARCHAR} AND code_type='edm_para_type'
+  </select>
+
+<!-- 查找属性值类型 -->
+  <select id="selectPropertyValueBycodeValue" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value = #{codeValue,jdbcType=VARCHAR} AND code_type = 'edm_field_type'
+  </select>
+
+  <!-- 查找行业列表 -->
+  <select id="selectIndustriesByCode" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />  FROM edm_code WHERE code_type = 'edm_industry_code'
+  </select>
+  <!-- 查找行业名 -->
+  <select id="selectIndustryBycodeValue" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM edm_code WHERE code_value = #{codeValue,jdbcType=VARCHAR} AND code_type = 'edm_industry_code'
+  </select>
+
+  <!-- 查找文档类型 -->
+  <select id="selectAttachMentTypeByCodeValue" parameterType="java.lang.Byte" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value = #{codeValue,jdbcType=TINYINT} AND code_type = 'edm_attachment_type'
+  </select>
+
+  <!-- 查找模型版本 -->
+  <select id="selectEdmdStatusNameBycodeValue" parameterType="java.lang.Integer" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value = #{codeValue,jdbcType=TINYINT} AND code_type = 'edm_edmd_status'
+  </select>
+
+  <!-- 查找属性值类型 -->
+  <select id="selectCodeNameByTypeAndValue"  resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_type = #{codeType,jdbcType=VARCHAR}  AND code_value = #{codeValue,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

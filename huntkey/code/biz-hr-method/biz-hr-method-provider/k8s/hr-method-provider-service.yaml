@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hr-method-provider
+spec:
+  type: NodePort
+  ports:
+    - port: 9000
+      nodePort: 30900
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    name: hr-method-provider

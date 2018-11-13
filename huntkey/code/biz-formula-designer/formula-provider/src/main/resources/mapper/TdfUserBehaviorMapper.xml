@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.behavior.dao.TdfUserBehaviorMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    <id column="usrb_id" property="usrbId" jdbcType="VARCHAR" />
+    <result column="usrb_user_id" property="usrbUserId" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" extends="BaseResultMap" >
+    <result column="usrb_recent_use" property="usrbRecentUse" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    usrb_id, usrb_user_id, isenable, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <sql id="Blob_Column_List" >
+    usrb_recent_use
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehaviorExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tdf_user_behavior
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehaviorExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tdf_user_behavior
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tdf_user_behavior
+    where usrb_id = #{usrbId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tdf_user_behavior
+    where usrb_id = #{usrbId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehaviorExample" >
+    delete from tdf_user_behavior
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    insert into tdf_user_behavior (usrb_id, usrb_user_id, isenable, 
+      addtime, adduser, modtime, 
+      moduser, acctid, usrb_recent_use
+      )
+    values (#{usrbId,jdbcType=VARCHAR}, #{usrbUserId,jdbcType=VARCHAR}, #{isenable,jdbcType=TINYINT}, 
+      #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, 
+      #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER}, #{usrbRecentUse,jdbcType=LONGVARBINARY}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    insert into tdf_user_behavior
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="usrbId != null" >
+        usrb_id,
+      </if>
+      <if test="usrbUserId != null" >
+        usrb_user_id,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+      <if test="usrbRecentUse != null" >
+        usrb_recent_use,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="usrbId != null" >
+        #{usrbId,jdbcType=VARCHAR},
+      </if>
+      <if test="usrbUserId != null" >
+        #{usrbUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="usrbRecentUse != null" >
+        #{usrbRecentUse,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehaviorExample" resultType="java.lang.Integer" >
+    select count(*) from tdf_user_behavior
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tdf_user_behavior
+    <set >
+      <if test="record.usrbId != null" >
+        usrb_id = #{record.usrbId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usrbUserId != null" >
+        usrb_user_id = #{record.usrbUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+      <if test="record.usrbRecentUse != null" >
+        usrb_recent_use = #{record.usrbRecentUse,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tdf_user_behavior
+    set usrb_id = #{record.usrbId,jdbcType=VARCHAR},
+      usrb_user_id = #{record.usrbUserId,jdbcType=VARCHAR},
+      isenable = #{record.isenable,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=INTEGER},
+      usrb_recent_use = #{record.usrbRecentUse,jdbcType=LONGVARBINARY}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tdf_user_behavior
+    set usrb_id = #{record.usrbId,jdbcType=VARCHAR},
+      usrb_user_id = #{record.usrbUserId,jdbcType=VARCHAR},
+      isenable = #{record.isenable,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    update tdf_user_behavior
+    <set >
+      <if test="usrbUserId != null" >
+        usrb_user_id = #{usrbUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="usrbRecentUse != null" >
+        usrb_recent_use = #{usrbRecentUse,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where usrb_id = #{usrbId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    update tdf_user_behavior
+    set usrb_user_id = #{usrbUserId,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER},
+      usrb_recent_use = #{usrbRecentUse,jdbcType=LONGVARBINARY}
+    where usrb_id = #{usrbId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TdfUserBehavior" >
+    update tdf_user_behavior
+    set usrb_user_id = #{usrbUserId,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where usrb_id = #{usrbId,jdbcType=VARCHAR}
+  </update>
+</mapper>

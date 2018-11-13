@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmClassMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmClass">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edmc_edmd_id" jdbcType="VARCHAR" property="edmcEdmdId" />
+    <result column="edmc_code" jdbcType="VARCHAR" property="edmcCode" />
+    <result column="edmc_name" jdbcType="VARCHAR" property="edmcName" />
+    <result column="edmc_name_en" jdbcType="VARCHAR" property="edmcNameEn" />
+    <result column="edmc_short_name" jdbcType="VARCHAR" property="edmcShortName" />
+    <result column="edmc_parent_id" jdbcType="VARCHAR" property="edmcParentId" />
+    <result column="edmc_ver" jdbcType="VARCHAR" property="edmcVer" />
+    <result column="edmc_principal" jdbcType="VARCHAR" property="edmcPrincipal" />
+    <result column="edmc_use_desc" jdbcType="VARCHAR" property="edmcUseDesc" />
+    <result column="edmc_level" jdbcType="VARCHAR" property="edmcLevel" />
+    <result column="edmc_industry_code" jdbcType="VARCHAR" property="edmcIndustryCode" />
+    <result column="edmc_show_id" jdbcType="VARCHAR" property="edmcShowId" />
+    <result column="normal_present" jdbcType="VARCHAR" property="normalPresent" />
+    <result column="object_on_cloud" jdbcType="VARCHAR" property="objectOnCloud" />
+    <result column="edmc_seq" jdbcType="INTEGER" property="edmcSeq" />
+    <result column="database_type" jdbcType="VARCHAR" property="databaseType" />
+    <result column="is_defined" jdbcType="TINYINT" property="isDefined" />
+    <result column="is_entity" jdbcType="TINYINT" property="isEntity" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+    <result column="tablename" jdbcType="VARCHAR" property="tablename" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edmc_edmd_id, edmc_code, edmc_name, edmc_name_en, edmc_short_name, edmc_parent_id, 
+    edmc_ver, edmc_principal, edmc_use_desc, edmc_level, edmc_industry_code, edmc_show_id, 
+    normal_present, object_on_cloud, edmc_seq, database_type, is_defined, is_entity, 
+    is_del, addtime, adduser, modtime, moduser, acctid, tablename
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmClassExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_class
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_class
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_class
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmClassExample">
+    delete from edm_class
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmClass">
+    insert into edm_class (id, edmc_edmd_id, edmc_code, 
+      edmc_name, edmc_name_en, edmc_short_name, 
+      edmc_parent_id, edmc_ver, edmc_principal, 
+      edmc_use_desc, edmc_level, edmc_industry_code, 
+      edmc_show_id, normal_present, object_on_cloud, 
+      edmc_seq, database_type, is_defined, 
+      is_entity, is_del, addtime, 
+      adduser, modtime, moduser, 
+      acctid, tablename)
+    values (#{id,jdbcType=VARCHAR}, #{edmcEdmdId,jdbcType=VARCHAR}, #{edmcCode,jdbcType=VARCHAR}, 
+      #{edmcName,jdbcType=VARCHAR}, #{edmcNameEn,jdbcType=VARCHAR}, #{edmcShortName,jdbcType=VARCHAR}, 
+      #{edmcParentId,jdbcType=VARCHAR}, #{edmcVer,jdbcType=VARCHAR}, #{edmcPrincipal,jdbcType=VARCHAR}, 
+      #{edmcUseDesc,jdbcType=VARCHAR}, #{edmcLevel,jdbcType=VARCHAR}, #{edmcIndustryCode,jdbcType=VARCHAR}, 
+      #{edmcShowId,jdbcType=VARCHAR}, #{normalPresent,jdbcType=VARCHAR}, #{objectOnCloud,jdbcType=VARCHAR}, 
+      #{edmcSeq,jdbcType=INTEGER}, #{databaseType,jdbcType=VARCHAR}, #{isDefined,jdbcType=TINYINT}, 
+      #{isEntity,jdbcType=TINYINT}, #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, 
+      #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, 
+      #{acctid,jdbcType=TINYINT}, #{tablename,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmClass">
+    insert into edm_class
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edmcEdmdId != null">
+        edmc_edmd_id,
+      </if>
+      <if test="edmcCode != null">
+        edmc_code,
+      </if>
+      <if test="edmcName != null">
+        edmc_name,
+      </if>
+      <if test="edmcNameEn != null">
+        edmc_name_en,
+      </if>
+      <if test="edmcShortName != null">
+        edmc_short_name,
+      </if>
+      <if test="edmcParentId != null">
+        edmc_parent_id,
+      </if>
+      <if test="edmcVer != null">
+        edmc_ver,
+      </if>
+      <if test="edmcPrincipal != null">
+        edmc_principal,
+      </if>
+      <if test="edmcUseDesc != null">
+        edmc_use_desc,
+      </if>
+      <if test="edmcLevel != null">
+        edmc_level,
+      </if>
+      <if test="edmcIndustryCode != null">
+        edmc_industry_code,
+      </if>
+      <if test="edmcShowId != null">
+        edmc_show_id,
+      </if>
+      <if test="normalPresent != null">
+        normal_present,
+      </if>
+      <if test="objectOnCloud != null">
+        object_on_cloud,
+      </if>
+      <if test="edmcSeq != null">
+        edmc_seq,
+      </if>
+      <if test="databaseType != null">
+        database_type,
+      </if>
+      <if test="isDefined != null">
+        is_defined,
+      </if>
+      <if test="isEntity != null">
+        is_entity,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+      <if test="tablename != null">
+        tablename,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcEdmdId != null">
+        #{edmcEdmdId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcCode != null">
+        #{edmcCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcName != null">
+        #{edmcName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcNameEn != null">
+        #{edmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcShortName != null">
+        #{edmcShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcParentId != null">
+        #{edmcParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcVer != null">
+        #{edmcVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcPrincipal != null">
+        #{edmcPrincipal,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcUseDesc != null">
+        #{edmcUseDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcLevel != null">
+        #{edmcLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcIndustryCode != null">
+        #{edmcIndustryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcShowId != null">
+        #{edmcShowId,jdbcType=VARCHAR},
+      </if>
+      <if test="normalPresent != null">
+        #{normalPresent,jdbcType=VARCHAR},
+      </if>
+      <if test="objectOnCloud != null">
+        #{objectOnCloud,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcSeq != null">
+        #{edmcSeq,jdbcType=INTEGER},
+      </if>
+      <if test="databaseType != null">
+        #{databaseType,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefined != null">
+        #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isEntity != null">
+        #{isEntity,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="tablename != null">
+        #{tablename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmClassExample" resultType="java.lang.Long">
+    select count(*) from edm_class
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_class
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcEdmdId != null">
+        edmc_edmd_id = #{record.edmcEdmdId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcCode != null">
+        edmc_code = #{record.edmcCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcName != null">
+        edmc_name = #{record.edmcName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcNameEn != null">
+        edmc_name_en = #{record.edmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcShortName != null">
+        edmc_short_name = #{record.edmcShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcParentId != null">
+        edmc_parent_id = #{record.edmcParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcVer != null">
+        edmc_ver = #{record.edmcVer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcPrincipal != null">
+        edmc_principal = #{record.edmcPrincipal,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcUseDesc != null">
+        edmc_use_desc = #{record.edmcUseDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcLevel != null">
+        edmc_level = #{record.edmcLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcIndustryCode != null">
+        edmc_industry_code = #{record.edmcIndustryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcShowId != null">
+        edmc_show_id = #{record.edmcShowId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.normalPresent != null">
+        normal_present = #{record.normalPresent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.objectOnCloud != null">
+        object_on_cloud = #{record.objectOnCloud,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmcSeq != null">
+        edmc_seq = #{record.edmcSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.databaseType != null">
+        database_type = #{record.databaseType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDefined != null">
+        is_defined = #{record.isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="record.isEntity != null">
+        is_entity = #{record.isEntity,jdbcType=TINYINT},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+      <if test="record.tablename != null">
+        tablename = #{record.tablename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_class
+    set id = #{record.id,jdbcType=VARCHAR},
+      edmc_edmd_id = #{record.edmcEdmdId,jdbcType=VARCHAR},
+      edmc_code = #{record.edmcCode,jdbcType=VARCHAR},
+      edmc_name = #{record.edmcName,jdbcType=VARCHAR},
+      edmc_name_en = #{record.edmcNameEn,jdbcType=VARCHAR},
+      edmc_short_name = #{record.edmcShortName,jdbcType=VARCHAR},
+      edmc_parent_id = #{record.edmcParentId,jdbcType=VARCHAR},
+      edmc_ver = #{record.edmcVer,jdbcType=VARCHAR},
+      edmc_principal = #{record.edmcPrincipal,jdbcType=VARCHAR},
+      edmc_use_desc = #{record.edmcUseDesc,jdbcType=VARCHAR},
+      edmc_level = #{record.edmcLevel,jdbcType=VARCHAR},
+      edmc_industry_code = #{record.edmcIndustryCode,jdbcType=VARCHAR},
+      edmc_show_id = #{record.edmcShowId,jdbcType=VARCHAR},
+      normal_present = #{record.normalPresent,jdbcType=VARCHAR},
+      object_on_cloud = #{record.objectOnCloud,jdbcType=VARCHAR},
+      edmc_seq = #{record.edmcSeq,jdbcType=INTEGER},
+      database_type = #{record.databaseType,jdbcType=VARCHAR},
+      is_defined = #{record.isDefined,jdbcType=TINYINT},
+      is_entity = #{record.isEntity,jdbcType=TINYINT},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT},
+      tablename = #{record.tablename,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmClass">
+    update edm_class
+    <set>
+      <if test="edmcEdmdId != null">
+        edmc_edmd_id = #{edmcEdmdId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcCode != null">
+        edmc_code = #{edmcCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcName != null">
+        edmc_name = #{edmcName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcNameEn != null">
+        edmc_name_en = #{edmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcShortName != null">
+        edmc_short_name = #{edmcShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcParentId != null">
+        edmc_parent_id = #{edmcParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcVer != null">
+        edmc_ver = #{edmcVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcPrincipal != null">
+        edmc_principal = #{edmcPrincipal,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcUseDesc != null">
+        edmc_use_desc = #{edmcUseDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcLevel != null">
+        edmc_level = #{edmcLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcIndustryCode != null">
+        edmc_industry_code = #{edmcIndustryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcShowId != null">
+        edmc_show_id = #{edmcShowId,jdbcType=VARCHAR},
+      </if>
+      <if test="normalPresent != null">
+        normal_present = #{normalPresent,jdbcType=VARCHAR},
+      </if>
+      <if test="objectOnCloud != null">
+        object_on_cloud = #{objectOnCloud,jdbcType=VARCHAR},
+      </if>
+      <if test="edmcSeq != null">
+        edmc_seq = #{edmcSeq,jdbcType=INTEGER},
+      </if>
+      <if test="databaseType != null">
+        database_type = #{databaseType,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefined != null">
+        is_defined = #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isEntity != null">
+        is_entity = #{isEntity,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="tablename != null">
+        tablename = #{tablename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmClass">
+    update edm_class
+    set edmc_edmd_id = #{edmcEdmdId,jdbcType=VARCHAR},
+      edmc_code = #{edmcCode,jdbcType=VARCHAR},
+      edmc_name = #{edmcName,jdbcType=VARCHAR},
+      edmc_name_en = #{edmcNameEn,jdbcType=VARCHAR},
+      edmc_short_name = #{edmcShortName,jdbcType=VARCHAR},
+      edmc_parent_id = #{edmcParentId,jdbcType=VARCHAR},
+      edmc_ver = #{edmcVer,jdbcType=VARCHAR},
+      edmc_principal = #{edmcPrincipal,jdbcType=VARCHAR},
+      edmc_use_desc = #{edmcUseDesc,jdbcType=VARCHAR},
+      edmc_level = #{edmcLevel,jdbcType=VARCHAR},
+      edmc_industry_code = #{edmcIndustryCode,jdbcType=VARCHAR},
+      edmc_show_id = #{edmcShowId,jdbcType=VARCHAR},
+      normal_present = #{normalPresent,jdbcType=VARCHAR},
+      object_on_cloud = #{objectOnCloud,jdbcType=VARCHAR},
+      edmc_seq = #{edmcSeq,jdbcType=INTEGER},
+      database_type = #{databaseType,jdbcType=VARCHAR},
+      is_defined = #{isDefined,jdbcType=TINYINT},
+      is_entity = #{isEntity,jdbcType=TINYINT},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT},
+      tablename = #{tablename,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectParentNameByEdmcParentId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name FROM edm_class WHERE id = #{edmcParentId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 获取类的list -->
+  <select id="selectEdmClassesByMid" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_class WHERE 1=1 AND is_del !=1 AND edmc_edmd_id = #{mid,jdbcType=VARCHAR} ORDER BY edmc_seq ASC
+    <!--&lt;if test="edmClassName != null and edmClassName !=''"&gt;
+      &lt;bind name="pattern" value="'%' + edmClassName + '%'" /&gt;
+      AND edmc_name LIKE  #{pattern}
+    &lt;/if&gt;
+    &lt;if test="codes != null and codes.length &gt;0"&gt;
+      AND edmc_industry_code IN &lt;foreach collection="array" item="code" index="index"
+                                         open="(" separator="," close=")"&gt;#{code}&lt;/foreach&gt;
+    &lt;/if&gt;-->
+
+  </select>
+
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_class SET
+    is_del = 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 通过id查找类英文名 -->
+  <select id="getEdmNameEnById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name_en FROM edm_class WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!--修改排序字段-->
+  <update id="updateSeqById">
+    UPDATE edm_class SET
+    edmc_seq = #{seq,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 根据类的parentid获取该父类下最大的排序 -->
+  <select id="getMaxSeqByPid" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT
+    MAX(edmc_seq)
+    FROM edm_class WHERE 1=1  AND edmc_parent_id = #{parentid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 通过父id查出所有子类 -->
+  <select id="getEdmClassNameByPid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT  <include refid="Base_Column_List" /> FROM edm_class WHERE 1=1 AND is_del != 1
+    <if test="mid != null">
+      and edmc_edmd_id = #{mid,jdbcType=VARCHAR}
+    </if>
+    <if test="pid != null">
+      and edmc_parent_id = #{pid,jdbcType=VARCHAR}
+    </if>
+    ORDER BY edmc_seq ASC
+  </select>
+
+  <!-- 通过ID查找类编码 -->
+  <select id="getEdmcCodeById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_code FROM edm_class WHERE id =#{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 通过ID查找类名称 -->
+  <select id="getEdmcNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name FROM edm_class WHERE id =#{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <!-- 通过ID查找类英文名称 -->
+  <select id="getEdmcEnNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name_en FROM edm_class WHERE id =#{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="selectSpecialClass" resultMap="BaseResultMap">
+    SELECT id,edmc_name,edmc_name_en
+    FROM edm_class WHERE 1=1 AND is_del !=1 AND edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND edmc_short_name = #{shortName,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectEdmcIdByEdmdIdAndName" resultType="java.lang.String">
+    SELECT id FROM edm_class where edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND edmc_name_en = #{edmcNameEn,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="getDataBaseTypeByEdmdId" resultType="java.lang.String">
+    SELECT database_type FROM edm_class where edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND edmc_name_en = #{edmcNameEn,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="getAllEdmcClassByEdmdId" resultMap="BaseResultMap">
+    SELECT DISTINCT <include refid="Base_Column_List" /> FROM edm_class WHERE edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="getEdmClassByEdmcCode" resultMap="BaseResultMap">
+    SELECT DISTINCT <include refid="Base_Column_List" /> FROM edm_class WHERE edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND edmc_code = #{edmcCode,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="getIdByEdmcCode" resultType="java.util.Map">
+    select id,ifnull(edmc_name,"") as edmcName from edm_class where edmc_code = #{edmcCode,jdbcType = VARCHAR} and is_del != 1 limit 1
+  </select>
+
+  <select id="selectEdmcIdByEdmdIdAndEdmcName" resultType="java.lang.String">
+    SELECT id FROM edm_class where edmc_edmd_id = #{edmdId,jdbcType=VARCHAR} AND edmc_name = #{edmcName,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+</mapper>

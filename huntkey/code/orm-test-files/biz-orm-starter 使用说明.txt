@@ -1,0 +1,201 @@
+biz-orm-starter 是 mysql 的数据库操作字段
+一.配置
+1.maven 项目配置pom.xml,添加starter 依赖
+<!-- ################### biz-orm-starter ##########################################-->
+<dependency>
+    <groupId>com.huntkey.rx</groupId>
+    <artifactId>biz-orm-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+2.OrmService 接口使用建议
+1)OrmService 操作的单位是对应单个实体表进行操作,如主类带属性集同时插入或更新操作，请在具体的业务逻辑层进行分解操作;
+2)OrmParam 条件组装建议使用 OrmParma 已封装好的条件生成函数简化操作来进行;
+3)PersistentUtil 工具类，针对edm 的特点进行了一些函数的简单封装
+
+3.使用样例
+主类与属性集的样例: EmployeeController
+Link表操作样例：LinkedetailController
+
+
+
+4.需要注意的问题
+一.待方案确定再解决的问题
+1)关联表使用biz-class 自定义的LinkdetailEntity (对应modler关联表的类型),需使用import com.huntkey.rx.base.LinkdetailEntity;导入包
+
+2)如果查询所有字段的时候，需要指定 '*' 代表 查询所有字段，以免产生冲突
+此坑的原因：由于modeler 中定义的统计类在数据库表中是不建字段的，如不设置查询的返回字段，orm会将统计类的属性字段也组装来进行查询返回，报错
+
+
+5.ormService 接口说明
+
+/**
+ * Created by licj on 2017/11/17.
+ */
+public interface OrmService {
+
+	//##########################################主表与属性集表curd 接口########################################################################
+    /**
+     * 对象加载
+     *
+     * @param entityClazz
+     * @param entityID:   对象主键ID
+     * @return 对象数据
+     * @throws Exception
+     */
+    <T extends BaseEntity> T load(Class<T> entityClazz, Serializable entityID) throws Exception;
+
+
+    /**
+     * 插入数据（包括null字段）
+     *
+     * @param t
+     * @return 主键 ID
+     * @throws Exception
+     */
+    <T extends BaseEntity> Serializable insert(T t) throws Exception;
+
+    /**
+     * 插入数据（不包括null字段）
+     *
+     * @param <T>
+     * @return 主键 ID
+     * @throws Exception
+     */
+    <T extends BaseEntity> Serializable insertSelective(T t) throws Exception;
+
+    /**
+     * 批量插入
+     *
+     * @param list
+     * @param <T>
+     * @return 新增的数据总行数
+     * @throws Exception
+     */
+    <T extends BaseEntity> int insert(List<T> list) throws Exception;
+
+
+    /**
+     * 根据ID 逻辑删除单条数据
+     *
+     * @param entityClazz
+     * @param entityID:   主键 ID
+     * @return 主键 ID
+     * @throws Exception
+     */
+    <T extends BaseEntity> int delete(Class<T> entityClazz, Serializable entityID) throws Exception;
+
+    /**
+     * 根据条件删除
+     *
+     * @param ormParam: 条件对象
+     * @param <T>
+     * @throws Exception
+     * @return：删除的数据行数
+     */
+    <T extends BaseEntity> int delete(Class<T> entityClazz, OrmParam ormParam) throws Exception;
+
+    /**
+     * 对象更新（包括null字段）
+     *
+     * @param t
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T extends BaseEntity> int update(T t) throws Exception;
+
+    /**
+     * 根据主键更新（不包括null字段）
+     *
+     * @param t
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T extends BaseEntity> int updateSelective(T t) throws Exception;
+
+    /**
+     * 根据条件更新（跟新指定的字段集）
+     *
+     * @param ormParam
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T extends BaseEntity> int updateSelective(T t, OrmParam ormParam) throws Exception;
+
+    /**
+     * 高级查询
+     *
+     * @param ormParam
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T extends BaseEntity> List<T> selectBeanList(Class<T> entityClazz, OrmParam ormParam) throws Exception;
+
+    /**
+     * 高级查询,指定返回列
+     *
+     * @param ormParam
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T extends BaseEntity> List<Map<String, Object>> selectMapList(Class<T> entityClazz, OrmParam ormParam) throws Exception;
+
+    //############################# 属性集表操作#############################################
+
+    /**
+     * 根据外键 pid 到属性集表中查找指定类型的属性集数据；
+     *
+     * @param pid:              主类管理属性集表的外键
+     * @param entityClazz：属性集类型
+     * @param mainClazz：主类
+     * @return 属性集的对象列表
+     * @throws Exception
+     */
+    <T extends BaseEntity> List<T> getAttrubuteSetByPID(Serializable pid, Class<T> entityClazz, Class<? extends BaseEntity> mainClazz) throws Exception;
+
+    //############################# link表操作#############################################
+
+    /**
+     * 加载 linkRecords 数据
+     *
+     * @param edmClazz
+     * @param entityID
+     * @return
+     * @throws Exception
+     */
+    LinkEntity loadLink(Class<? extends BaseEntity> edmClazz, Serializable entityID) throws Exception;
+
+    /**
+     * 新增记录集数据
+     *
+     * @param edmClazz
+     * @param entity
+     * @return
+     * @throws Exception
+     */
+    Serializable insertLink(Class<? extends BaseEntity> edmClazz, LinkEntity entity) throws Exception;
+
+    /**
+     * 高级查询
+     *
+     * @param edmClazz
+     * @param ormParam
+     * @return
+     * @throws Exception
+     */
+    List<LinkEntity> selectBeanListLink(Class<? extends BaseEntity> edmClazz, OrmParam ormParam) throws Exception;
+
+}
+
+

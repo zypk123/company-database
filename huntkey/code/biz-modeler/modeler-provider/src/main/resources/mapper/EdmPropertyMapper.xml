@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmPropertyMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmProperty">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edmp_edmc_id" jdbcType="VARCHAR" property="edmpEdmcId" />
+    <result column="edmp_parent_id" jdbcType="VARCHAR" property="edmpParentId" />
+    <result column="edmp_code" jdbcType="VARCHAR" property="edmpCode" />
+    <result column="edmp_name" jdbcType="VARCHAR" property="edmpName" />
+    <result column="edmp_desc" jdbcType="VARCHAR" property="edmpDesc" />
+    <result column="edmp_data_type" jdbcType="VARCHAR" property="edmpDataType" />
+    <result column="edmp_value_type" jdbcType="VARCHAR" property="edmpValueType" />
+    <result column="edmp_value_size" jdbcType="VARCHAR" property="edmpValueSize" />
+    <result column="trigger_cond" jdbcType="VARCHAR" property="triggerCond" />
+    <result column="edmp_value_limit" jdbcType="VARCHAR" property="edmpValueLimit" />
+    <result column="edmp_formula" jdbcType="VARCHAR" property="edmpFormula" />
+    <result column="edmp_value" jdbcType="VARCHAR" property="edmpValue" />
+    <result column="edmp_edmm_id" jdbcType="VARCHAR" property="edmpEdmmId" />
+    <result column="edmp_obj_edmc_id" jdbcType="VARCHAR" property="edmpObjEdmcId" />
+    <result column="edmp_seq" jdbcType="INTEGER" property="edmpSeq" />
+    <result column="is_character" jdbcType="TINYINT" property="isCharacter" />
+    <result column="is_defined" jdbcType="TINYINT" property="isDefined" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="is_visible" jdbcType="TINYINT" property="isVisible" />
+    <result column="is_index" jdbcType="TINYINT" property="isIndex" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+    <result column="tablename" jdbcType="VARCHAR" property="tablename" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edmp_edmc_id, edmp_parent_id, edmp_code, edmp_name, edmp_desc, edmp_data_type, 
+    edmp_value_type, edmp_value_size, trigger_cond, edmp_value_limit, edmp_formula, edmp_value, 
+    edmp_edmm_id, edmp_obj_edmc_id, edmp_seq, is_character, is_defined, is_del, is_visible, 
+    is_index, addtime, adduser, modtime, moduser, acctid, tablename
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyExample" resultMap="BaseResultMap">
+    SELECT
+    <if test="distinct">
+      DISTINCT
+    </if>
+    <include refid="Base_Column_List" />
+    FROM edm_property
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      ORDER BY ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_property
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM edm_property
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyExample">
+    DELETE FROM edm_property
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmProperty">
+    INSERT INTO edm_property (id, edmp_edmc_id, edmp_parent_id,
+      edmp_code, edmp_name, edmp_desc, 
+      edmp_data_type, edmp_value_type, edmp_value_size, 
+      trigger_cond, edmp_value_limit, edmp_formula, 
+      edmp_value, edmp_edmm_id, edmp_obj_edmc_id, 
+      edmp_seq, is_character, is_defined, 
+      is_del, is_visible, is_index, 
+      addtime, adduser, modtime, 
+      moduser, acctid, tablename)
+    VALUES (#{id,jdbcType=VARCHAR}, #{edmpEdmcId,jdbcType=VARCHAR}, #{edmpParentId,jdbcType=VARCHAR},
+      #{edmpCode,jdbcType=VARCHAR}, #{edmpName,jdbcType=VARCHAR}, #{edmpDesc,jdbcType=VARCHAR}, 
+      #{edmpDataType,jdbcType=VARCHAR}, #{edmpValueType,jdbcType=VARCHAR}, #{edmpValueSize,jdbcType=VARCHAR}, 
+      #{triggerCond,jdbcType=VARCHAR}, #{edmpValueLimit,jdbcType=VARCHAR}, #{edmpFormula,jdbcType=VARCHAR}, 
+      #{edmpValue,jdbcType=VARCHAR}, #{edmpEdmmId,jdbcType=VARCHAR}, #{edmpObjEdmcId,jdbcType=VARCHAR}, 
+      #{edmpSeq,jdbcType=INTEGER}, #{isCharacter,jdbcType=TINYINT}, #{isDefined,jdbcType=TINYINT}, 
+      #{isDel,jdbcType=TINYINT}, #{isVisible,jdbcType=TINYINT}, #{isIndex,jdbcType=TINYINT}, 
+      #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, 
+      #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT}, #{tablename,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmProperty">
+    INSERT INTO edm_property
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edmpEdmcId != null">
+        edmp_edmc_id,
+      </if>
+      <if test="edmpParentId != null">
+        edmp_parent_id,
+      </if>
+      <if test="edmpCode != null">
+        edmp_code,
+      </if>
+      <if test="edmpName != null">
+        edmp_name,
+      </if>
+      <if test="edmpDesc != null">
+        edmp_desc,
+      </if>
+      <if test="edmpDataType != null">
+        edmp_data_type,
+      </if>
+      <if test="edmpValueType != null">
+        edmp_value_type,
+      </if>
+      <if test="edmpValueSize != null">
+        edmp_value_size,
+      </if>
+      <if test="triggerCond != null">
+        trigger_cond,
+      </if>
+      <if test="edmpValueLimit != null">
+        edmp_value_limit,
+      </if>
+      <if test="edmpFormula != null">
+        edmp_formula,
+      </if>
+      <if test="edmpValue != null">
+        edmp_value,
+      </if>
+      <if test="edmpEdmmId != null">
+        edmp_edmm_id,
+      </if>
+      <if test="edmpObjEdmcId != null">
+        edmp_obj_edmc_id,
+      </if>
+      <if test="edmpSeq != null">
+        edmp_seq,
+      </if>
+      <if test="isCharacter != null">
+        is_character,
+      </if>
+      <if test="isDefined != null">
+        is_defined,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="isVisible != null">
+        is_visible,
+      </if>
+      <if test="isIndex != null">
+        is_index,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+      <if test="tablename != null">
+        tablename,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpEdmcId != null">
+        #{edmpEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpParentId != null">
+        #{edmpParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpCode != null">
+        #{edmpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpName != null">
+        #{edmpName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpDesc != null">
+        #{edmpDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpDataType != null">
+        #{edmpDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueType != null">
+        #{edmpValueType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueSize != null">
+        #{edmpValueSize,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerCond != null">
+        #{triggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueLimit != null">
+        #{edmpValueLimit,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpFormula != null">
+        #{edmpFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValue != null">
+        #{edmpValue,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpEdmmId != null">
+        #{edmpEdmmId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpObjEdmcId != null">
+        #{edmpObjEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpSeq != null">
+        #{edmpSeq,jdbcType=INTEGER},
+      </if>
+      <if test="isCharacter != null">
+        #{isCharacter,jdbcType=TINYINT},
+      </if>
+      <if test="isDefined != null">
+        #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="isVisible != null">
+        #{isVisible,jdbcType=TINYINT},
+      </if>
+      <if test="isIndex != null">
+        #{isIndex,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="tablename != null">
+        #{tablename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyExample" resultType="java.lang.Long">
+    SELECT count(*) FROM edm_property
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    UPDATE edm_property
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpEdmcId != null">
+        edmp_edmc_id = #{record.edmpEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpParentId != null">
+        edmp_parent_id = #{record.edmpParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpCode != null">
+        edmp_code = #{record.edmpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpName != null">
+        edmp_name = #{record.edmpName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpDesc != null">
+        edmp_desc = #{record.edmpDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpDataType != null">
+        edmp_data_type = #{record.edmpDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpValueType != null">
+        edmp_value_type = #{record.edmpValueType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpValueSize != null">
+        edmp_value_size = #{record.edmpValueSize,jdbcType=VARCHAR},
+      </if>
+      <if test="record.triggerCond != null">
+        trigger_cond = #{record.triggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpValueLimit != null">
+        edmp_value_limit = #{record.edmpValueLimit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpFormula != null">
+        edmp_formula = #{record.edmpFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpValue != null">
+        edmp_value = #{record.edmpValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpEdmmId != null">
+        edmp_edmm_id = #{record.edmpEdmmId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpObjEdmcId != null">
+        edmp_obj_edmc_id = #{record.edmpObjEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmpSeq != null">
+        edmp_seq = #{record.edmpSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.isCharacter != null">
+        is_character = #{record.isCharacter,jdbcType=TINYINT},
+      </if>
+      <if test="record.isDefined != null">
+        is_defined = #{record.isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.isVisible != null">
+        is_visible = #{record.isVisible,jdbcType=TINYINT},
+      </if>
+      <if test="record.isIndex != null">
+        is_index = #{record.isIndex,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+      <if test="record.tablename != null">
+        tablename = #{record.tablename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    UPDATE edm_property
+    SET id = #{record.id,jdbcType=VARCHAR},
+      edmp_edmc_id = #{record.edmpEdmcId,jdbcType=VARCHAR},
+      edmp_parent_id = #{record.edmpParentId,jdbcType=VARCHAR},
+      edmp_code = #{record.edmpCode,jdbcType=VARCHAR},
+      edmp_name = #{record.edmpName,jdbcType=VARCHAR},
+      edmp_desc = #{record.edmpDesc,jdbcType=VARCHAR},
+      edmp_data_type = #{record.edmpDataType,jdbcType=VARCHAR},
+      edmp_value_type = #{record.edmpValueType,jdbcType=VARCHAR},
+      edmp_value_size = #{record.edmpValueSize,jdbcType=VARCHAR},
+      trigger_cond = #{record.triggerCond,jdbcType=VARCHAR},
+      edmp_value_limit = #{record.edmpValueLimit,jdbcType=VARCHAR},
+      edmp_formula = #{record.edmpFormula,jdbcType=VARCHAR},
+      edmp_value = #{record.edmpValue,jdbcType=VARCHAR},
+      edmp_edmm_id = #{record.edmpEdmmId,jdbcType=VARCHAR},
+      edmp_obj_edmc_id = #{record.edmpObjEdmcId,jdbcType=VARCHAR},
+      edmp_seq = #{record.edmpSeq,jdbcType=INTEGER},
+      is_character = #{record.isCharacter,jdbcType=TINYINT},
+      is_defined = #{record.isDefined,jdbcType=TINYINT},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      is_visible = #{record.isVisible,jdbcType=TINYINT},
+      is_index = #{record.isIndex,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+      tablename = #{record.tablename,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmProperty">
+    UPDATE edm_property
+    <set>
+      <if test="edmpEdmcId != null">
+        edmp_edmc_id = #{edmpEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpParentId != null">
+        edmp_parent_id = #{edmpParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpCode != null">
+        edmp_code = #{edmpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpName != null">
+        edmp_name = #{edmpName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpDesc != null">
+        edmp_desc = #{edmpDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpDataType != null">
+        edmp_data_type = #{edmpDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueType != null">
+        edmp_value_type = #{edmpValueType,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueSize != null">
+        edmp_value_size = #{edmpValueSize,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerCond != null">
+        trigger_cond = #{triggerCond,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValueLimit != null">
+        edmp_value_limit = #{edmpValueLimit,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpFormula != null">
+        edmp_formula = #{edmpFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpValue != null">
+        edmp_value = #{edmpValue,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpEdmmId != null">
+        edmp_edmm_id = #{edmpEdmmId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpObjEdmcId != null">
+        edmp_obj_edmc_id = #{edmpObjEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmpSeq != null">
+        edmp_seq = #{edmpSeq,jdbcType=INTEGER},
+      </if>
+      <if test="isCharacter != null">
+        is_character = #{isCharacter,jdbcType=TINYINT},
+      </if>
+      <if test="isDefined != null">
+        is_defined = #{isDefined,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="isVisible != null">
+        is_visible = #{isVisible,jdbcType=TINYINT},
+      </if>
+      <if test="isIndex != null">
+        is_index = #{isIndex,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+      <if test="tablename != null">
+        tablename = #{tablename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmProperty">
+    UPDATE edm_property
+    SET edmp_edmc_id = #{edmpEdmcId,jdbcType=VARCHAR},
+      edmp_parent_id = #{edmpParentId,jdbcType=VARCHAR},
+      edmp_code = #{edmpCode,jdbcType=VARCHAR},
+      edmp_name = #{edmpName,jdbcType=VARCHAR},
+      edmp_desc = #{edmpDesc,jdbcType=VARCHAR},
+      edmp_data_type = #{edmpDataType,jdbcType=VARCHAR},
+      edmp_value_type = #{edmpValueType,jdbcType=VARCHAR},
+      edmp_value_size = #{edmpValueSize,jdbcType=VARCHAR},
+      trigger_cond = #{triggerCond,jdbcType=VARCHAR},
+      edmp_value_limit = #{edmpValueLimit,jdbcType=VARCHAR},
+      edmp_formula = #{edmpFormula,jdbcType=VARCHAR},
+      edmp_value = #{edmpValue,jdbcType=VARCHAR},
+      edmp_edmm_id = #{edmpEdmmId,jdbcType=VARCHAR},
+      edmp_obj_edmc_id = #{edmpObjEdmcId,jdbcType=VARCHAR},
+      edmp_seq = #{edmpSeq,jdbcType=INTEGER},
+      is_character = #{isCharacter,jdbcType=TINYINT},
+      is_defined = #{isDefined,jdbcType=TINYINT},
+      is_del = #{isDel,jdbcType=TINYINT},
+      is_visible = #{isVisible,jdbcType=TINYINT},
+      is_index = #{isIndex,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT},
+      tablename = #{tablename,jdbcType=VARCHAR}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_property SET
+    is_del = 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <!-- 根据类的id获取该类属性的最大值 -->
+  <select id="getMaxSeqByCid" resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT
+    MAX(edmp_seq)
+    FROM edm_property WHERE 1=1  AND edmp_edmc_id = #{cid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <update id="updateSeqById">
+    UPDATE edm_property SET
+    edmp_seq = #{seq,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateMethodById">
+    UPDATE edm_property SET
+    edmp_edmm_id = #{mid,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectConvoluteByPropertyId"  resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM edm_convolute WHERE 1=1  AND edco_edmp_id = #{pid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <select id="selectLinkByPropertyId"  resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM edm_link WHERE 1=1  AND edml_edmp_id = #{pid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <select id="selectConnectByPropertyId"  resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM edm_connect WHERE 1=1  AND edcn_edmp_id = #{pid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="selectUnitByPropertyId"  resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM edm_unit WHERE 1=1  AND edun_edmp_id = #{pid,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <select id="selectEdmPropertiesByPid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_property
+    WHERE edmp_parent_id = #{id,jdbcType=VARCHAR} AND is_del = 0 ORDER  BY edmp_seq ASC
+  </select>
+
+  <select id="selectEdmPropertiesByCid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_property
+    WHERE edmp_edmc_id = #{id,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+
+  <select id="selectEdmPropertiesByCidAndEdmpCode" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT id
+    FROM edm_property
+    WHERE edmp_edmc_id = #{id,jdbcType=VARCHAR} AND is_del = 0 AND edmp_code = #{edmpCode, jdbcType=VARCHAR}
+  </select>
+
+
+  <select id="selectEdmPropertiesByParentId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_property
+    WHERE edmp_parent_id = #{id,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+
+  <!--批量插入-->
+  <insert id="insertBatch" parameterType="java.util.List">
+
+    INSERT INTO edm_property (id, edmp_edmc_id, edmp_parent_id,
+    edmp_code, edmp_name, edmp_desc,
+    edmp_value_type, edmp_data_type, edmp_value_size, trigger_cond, edmp_value_limit,
+    edmp_formula, edmp_value, edmp_edmm_id,
+    edmp_obj_edmc_id, edmp_seq, is_defined,is_character,is_visible,
+    is_del, is_index, addtime, adduser,
+    modtime, moduser, acctid, tablename
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.id,jdbcType=VARCHAR}, #{item.edmpEdmcId,jdbcType=VARCHAR}, #{item.edmpParentId,jdbcType=VARCHAR},
+      #{item.edmpCode,jdbcType=VARCHAR}, #{item.edmpName,jdbcType=VARCHAR}, #{item.edmpDesc,jdbcType=VARCHAR},
+      #{item.edmpValueType,jdbcType=VARCHAR}, #{item.edmpDataType,jdbcType=VARCHAR}, #{item.edmpValueSize,jdbcType=VARCHAR}, #{item.triggerCond,jdbcType=VARCHAR}, #{item.edmpValueLimit,jdbcType=VARCHAR},
+      #{item.edmpFormula,jdbcType=VARCHAR}, #{item.edmpValue,jdbcType=VARCHAR}, #{item.edmpEdmmId,jdbcType=VARCHAR},
+      #{item.edmpObjEdmcId,jdbcType=VARCHAR}, #{item.edmpSeq,jdbcType=INTEGER}, #{item.isDefined,jdbcType=TINYINT},#{item.isCharacter,jdbcType=TINYINT},#{item.isVisible,jdbcType=TINYINT},
+      #{item.isDel,jdbcType=TINYINT}, #{item.isIndex,jdbcType=TINYINT}, #{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR},
+      #{item.modtime,jdbcType=TIMESTAMP}, #{item.moduser,jdbcType=VARCHAR}, #{item.acctid,jdbcType=TINYINT}, #{item.tablename, jdbcType=VARCHAR}
+      )
+    </foreach>
+
+  </insert>
+
+  <!-- 根据类id查类名称 -->
+  <select id="selectEdmpEdmcNameByEdmpEdmcId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name FROM edm_class WHERE id = #{edmpEdmcId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 根据属性类型值查属性名称 -->
+  <select id="selectEdmpValueNameByEdmpValueType" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value = #{edmpValueType,jdbcType=VARCHAR} AND code_type = 'edm_field_type'
+  </select>
+
+  <!-- 根据属性类型值查属性名称 -->
+  <select id="selectEdmpValueName" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT code_name FROM edm_code WHERE code_value = #{edmpValueType,jdbcType=VARCHAR} AND code_type = 'edm_data_type'
+  </select>
+
+  <!-- 根据方法id查方法名称 -->
+  <select id="selectEdmpEdmmNameByEdmpEdmmId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmm_name FROM edm_method WHERE id = #{edmpEdmmId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 根据属性值id属性名称 -->
+  <select id="selectEdmpParentNameByEdmpParentId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmp_name FROM edm_property WHERE id = #{edmpParentId,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 根据类id 与属性名称 模糊查询属性-->
+  <select id="selectEdmNameByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyExample" resultMap="BaseResultMap">
+    SELECT id,edmp_name
+    FROM edm_property
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+
+  <!-- 通过属性ID查找属性编码 -->
+  <select id="getEdmpCodeById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmp_code FROM edm_property WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!-- 通过属性ID查找属性名称 -->
+  <select id="getEdmpNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmp_name FROM edm_property WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <!--根据类id查询数值型属性-->
+  <select id="selectDataPropertiesByCid" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT id,edmp_name
+    FROM edm_property
+    WHERE is_del !=1 AND (edmp_data_type='int' or edmp_data_type='decimal' or edmp_value_type = 'convolution') AND  edmp_edmc_id = #{edmcId,jdbcType=VARCHAR}
+      <choose>
+        <when test="parentId != '' and parentId !=null">
+          AND edmp_parent_id = #{parentId,jdbcType=VARCHAR}
+        </when>
+        <otherwise>
+          AND edmp_parent_id IS NULL
+        </otherwise>
+      </choose>
+     ORDER BY edmp_seq ASC
+  </select>
+  <!-- 根据类id查询特征值的属性列表 -->
+  <select id="selectIsCharacterByCid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT id,edmp_name
+    FROM edm_property
+    WHERE is_del !=1 AND is_character = 1 AND edmp_edmc_id = #{id}
+  </select>
+
+  <!-- 根据类id查询特征值的属性列表 -->
+  <select id="getPropertyTypeAndValue" resultMap="BaseResultMap">
+    SELECT id,edmp_data_type,edmp_value
+    FROM edm_property
+    WHERE is_del !=1  AND edmp_edmc_id = #{classId} AND edmp_code = #{edmpCode}
+  </select>
+
+  <update id="updateBatchByid">
+    UPDATE edm_property SET
+    is_visible = #{isVisible,jdbcType=TINYINT}
+    WHERE id IN
+    <foreach collection="idList" item="item" index="index" open="(" close=")" separator="," >
+      #{item,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+
+  <update id="clearEdmpValueLimitAndFormula" parameterType="java.util.Map" >
+    update edm_property
+    <set>
+      <if test="edmpValueLimit != null and edmpValueLimit != ''">
+        edmp_value_limit = null,
+      </if>
+      <if test="edmpFormula != null and edmpFormula != ''">
+        edmp_formula = null,
+      </if>
+    </set>
+    WHERE
+    <choose>
+      <when test="edmpValueLimit != null and edmpValueLimit != '' and edmpFormula != null and edmpFormula != ''">
+        edmp_value_limit = #{edmpValueLimit, jdbcType=VARCHAR} AND edmp_formula = #{edmpFormula, jdbcType=VARCHAR}
+      </when>
+      <otherwise>
+        edmp_value_limit = #{edmpValueLimit, jdbcType=VARCHAR} OR edmp_formula = #{edmpFormula, jdbcType=VARCHAR}
+      </otherwise>
+    </choose>
+  </update>
+
+  <select id="getEdmpEdmcIdByIds" resultType="java.lang.String">
+    select DISTINCT edmp_edmc_id
+    from edm_property
+    WHERE edmp_value IN
+    <foreach collection="idList" item="item" index="index" open="(" close=")" separator="," >
+      #{item,jdbcType=VARCHAR}
+    </foreach>
+    AND is_del != 1 AND edmp_value_type = "const"
+  </select>
+
+  <select id="getEdmpvalueByIds" resultType="java.lang.String">
+    select DISTINCT edmp_value
+    from edm_property
+    WHERE edmp_edmc_id IN
+    <foreach collection="idList" item="item" index="index" open="(" close=")" separator="," >
+      #{item,jdbcType=VARCHAR}
+    </foreach>
+    AND is_del != 1 AND edmp_value_type = "const"
+  </select>
+
+
+  <select id="selectPropertyIdByClassId" parameterType="java.lang.String" resultType="java.lang.String">
+    select DISTINCT id
+    from edm_property
+    where edmp_edmc_id = #{classId, jdbcType=VARCHAR} AND is_del != 1 AND edmp_value_type != "const" AND edmp_value_type != "assemble"
+  </select>
+
+  <select id="getEdmcIdsByDataType" parameterType="java.lang.String" resultType="java.lang.String">
+    select DISTINCT edmp_edmc_id
+    from edm_property
+    where edmp_value_type = "enum" and edmp_data_type = #{dataType, jdbcType=VARCHAR} and is_del != 1
+  </select>
+
+  <select id="getEdmpDataType" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT DISTINCT edmp_data_type
+    FROM edm_property
+    WHERE edmp_edmc_id = #{edmpEdmcId, jdbcType=VARCHAR} AND edmp_code = #{edmpCode, jdbcType=VARCHAR} AND is_del != 1 AND edmp_value_type = "enum"
+  </select>
+
+  <select id="getDataTypesByClassId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT DISTINCT edmp_data_type
+    FROM edm_property
+    WHERE edmp_edmc_id = #{edmpEdmcId, jdbcType=VARCHAR} AND is_del != 1 AND edmp_value_type = "enum"
+  </select>
+</mapper>

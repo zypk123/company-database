@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.function.functionclassify.dao.FtmFunctionClassifyMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    <id column="fncc_id" property="fnccId" jdbcType="VARCHAR" />
+    <result column="fncc_classify_name" property="fnccClassifyName" jdbcType="VARCHAR" />
+    <result column="fncc_classify_code" property="fnccClassifyCode" jdbcType="VARCHAR" />
+    <result column="fncc_classify_desc" property="fnccClassifyDesc" jdbcType="VARCHAR" />
+    <result column="fncc_state" property="fnccState" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" extends="BaseResultMap" >
+    <result column="fucc_classify_binary" property="fuccClassifyBinary" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fncc_id, fncc_classify_name, fncc_classify_code, fncc_classify_desc, fncc_state,
+    isenable, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <sql id="Blob_Column_List" >
+    fucc_classify_binary
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassifyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ftm_function_classify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="ResultMapWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassifyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ftm_function_classify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ftm_function_classify
+    where fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ftm_function_classify
+    where fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassifyExample" >
+    delete from ftm_function_classify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    insert into ftm_function_classify (fncc_id, fncc_classify_name, fncc_classify_code,
+    fncc_classify_desc, fncc_state, isenable,
+    addtime, adduser, modtime,
+    moduser, acctid, fucc_classify_binary
+    )
+    values (#{fnccId,jdbcType=VARCHAR}, #{fnccClassifyName,jdbcType=VARCHAR}, #{fnccClassifyCode,jdbcType=VARCHAR},
+    #{fnccClassifyDesc,jdbcType=VARCHAR}, #{fnccState,jdbcType=VARCHAR}, #{isenable,jdbcType=TINYINT},
+    #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP},
+    #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER}, #{fuccClassifyBinary,jdbcType=LONGVARBINARY}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    insert into ftm_function_classify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fnccId != null" >
+        fncc_id,
+      </if>
+      <if test="fnccClassifyName != null" >
+        fncc_classify_name,
+      </if>
+      <if test="fnccClassifyCode != null" >
+        fncc_classify_code,
+      </if>
+      <if test="fnccClassifyDesc != null" >
+        fncc_classify_desc,
+      </if>
+      <if test="fnccState != null" >
+        fncc_state,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+      <if test="fuccClassifyBinary != null" >
+        fucc_classify_binary,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fnccId != null" >
+        #{fnccId,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccClassifyName != null" >
+        #{fnccClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccClassifyCode != null" >
+        #{fnccClassifyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccClassifyDesc != null" >
+        #{fnccClassifyDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccState != null" >
+        #{fnccState,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="fuccClassifyBinary != null" >
+        #{fuccClassifyBinary,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassifyExample" resultType="java.lang.Integer" >
+    select count(*) from ftm_function_classify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update ftm_function_classify
+    <set >
+      <if test="record.fnccId != null" >
+        fncc_id = #{record.fnccId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fnccClassifyName != null" >
+        fncc_classify_name = #{record.fnccClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fnccClassifyCode != null" >
+        fncc_classify_code = #{record.fnccClassifyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fnccClassifyDesc != null" >
+        fncc_classify_desc = #{record.fnccClassifyDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fnccState != null" >
+        fncc_state = #{record.fnccState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+      <if test="record.fuccClassifyBinary != null" >
+        fucc_classify_binary = #{record.fuccClassifyBinary,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update ftm_function_classify
+    set fncc_id = #{record.fnccId,jdbcType=VARCHAR},
+    fncc_classify_name = #{record.fnccClassifyName,jdbcType=VARCHAR},
+    fncc_classify_code = #{record.fnccClassifyCode,jdbcType=VARCHAR},
+    fncc_classify_desc = #{record.fnccClassifyDesc,jdbcType=VARCHAR},
+    fncc_state = #{record.fnccState,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER},
+    fucc_classify_binary = #{record.fuccClassifyBinary,jdbcType=LONGVARBINARY}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update ftm_function_classify
+    set fncc_id = #{record.fnccId,jdbcType=VARCHAR},
+    fncc_classify_name = #{record.fnccClassifyName,jdbcType=VARCHAR},
+    fncc_classify_code = #{record.fnccClassifyCode,jdbcType=VARCHAR},
+    fncc_classify_desc = #{record.fnccClassifyDesc,jdbcType=VARCHAR},
+    fncc_state = #{record.fnccState,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    update ftm_function_classify
+    <set >
+      <if test="fnccClassifyName != null" >
+        fncc_classify_name = #{fnccClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccClassifyCode != null" >
+        fncc_classify_code = #{fnccClassifyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccClassifyDesc != null" >
+        fncc_classify_desc = #{fnccClassifyDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="fnccState != null" >
+        fncc_state = #{fnccState,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="fuccClassifyBinary != null" >
+        fucc_classify_binary = #{fuccClassifyBinary,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    update ftm_function_classify
+    set fncc_classify_name = #{fnccClassifyName,jdbcType=VARCHAR},
+    fncc_classify_code = #{fnccClassifyCode,jdbcType=VARCHAR},
+    fncc_classify_desc = #{fnccClassifyDesc,jdbcType=VARCHAR},
+    fncc_state = #{fnccState,jdbcType=VARCHAR},
+    isenable = #{isenable,jdbcType=TINYINT},
+    addtime = #{addtime,jdbcType=TIMESTAMP},
+    adduser = #{adduser,jdbcType=VARCHAR},
+    modtime = #{modtime,jdbcType=TIMESTAMP},
+    moduser = #{moduser,jdbcType=VARCHAR},
+    acctid = #{acctid,jdbcType=INTEGER},
+    fucc_classify_binary = #{fuccClassifyBinary,jdbcType=LONGVARBINARY}
+    where fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.FtmFunctionClassify" >
+    update ftm_function_classify
+    set fncc_classify_name = #{fnccClassifyName,jdbcType=VARCHAR},
+      fncc_classify_code = #{fnccClassifyCode,jdbcType=VARCHAR},
+      fncc_classify_desc = #{fnccClassifyDesc,jdbcType=VARCHAR},
+      fncc_state = #{fnccState,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateIsenableByPrimaryKey" parameterType="java.lang.String">
+    UPDATE ftm_function_classify SET isenable = 0 WHERE fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateBinary">
+    UPDATE ftm_function_classify
+    SET fucc_classify_binary = #{classCode,jdbcType=LONGVARBINARY}
+    WHERE fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateClassifyNameAndDesc">
+    UPDATE ftm_function_classify
+    SET fncc_classify_name = #{fnccClassifyName,jdbcType=VARCHAR},
+        fncc_classify_desc = #{fnccClassifyDesc,jdbcType=VARCHAR}
+    WHERE fncc_id = #{fnccId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="checkNameUnique" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM ftm_function_classify WHERE fncc_classify_name = #{fnccClassifyName,jdbcType=VARCHAR} AND isenable = 1
+  </select>
+
+  <select id="checkCodeUnique" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM ftm_function_classify WHERE fncc_classify_code = #{fnccClassifyCode,jdbcType=VARCHAR} AND isenable = 1
+  </select>
+
+  <select id="getClassifyNameList" resultType="java.lang.String">
+    SELECT fncc_classify_name ftm_function_classify ftm_function_classify WHERE fncc_state = '0'
+  </select>
+
+</mapper>

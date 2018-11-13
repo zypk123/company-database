@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: modeler-provider-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: modeler-provider
+    spec:
+      containers:
+        - name: modeler-provider
+          image: 10.3.98.241/biz-modeler/modeler-provider
+          ports:
+            - containerPort: 2002
+#           resources: 
+#             limits: 
+#             cpu: 0.5
+#             memory: 512Mi
+#          volumeMounts:
+#            - mountPath: /sceo-log/log
+#              name: go-logs
+#      volumes:
+#      - name: go-logs
+#        hostPath:
+#          path: /sceo-log/log

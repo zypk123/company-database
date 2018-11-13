@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.sceo.orm.dao.OrmMapper">
+
+    <!--根据id获取对象数据-->
+    <select id="selectByPrimaryKey" parameterType="java.util.Map" resultType="java.util.HashMap">
+          SELECT *  FROM ${tableName} WHERE id = #{primaryValue} AND is_del = 0
+    </select>
+
+    <!--单挑插入-->
+    <insert id="insert" parameterType="java.util.Map">
+        INSERT INTO ${tableName}
+        <foreach item="item" index="index" collection="ormColumns"
+                 open="(" separator="," close=")">
+            ${item.columnName}
+        </foreach>
+        VALUES
+        <foreach item="item" index="index" collection="ormColumns"
+                 open="(" separator="," close=")">
+            <if test="item.jdbcType == null">
+                #{item.columnValue}
+            </if>
+            <if test="item.jdbcType != null">
+                #{item.columnValue,jdbcType=${item.jdbcType} }
+            </if>
+        </foreach>
+    </insert>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.Map">
+        INSERT INTO ${tableName}
+        <foreach item="columnName" index="index" collection="columnNames"
+                 open="(" separator="," close=")">
+            ${columnName}
+        </foreach>
+        VALUES
+        <foreach item="ormColumns" index="rowIndex" collection="dataList"
+                 separator=",">
+            <foreach item="ormColumn" index="columnIndex" collection="ormColumns"
+                     open="(" separator="," close=")">
+                <if test="ormColumn.jdbcType == null">
+                    #{ormColumn.columnValue}
+                </if>
+                <if test="ormColumn.jdbcType != null">
+                    #{ormColumn.columnValue,jdbcType=${ormColumn.jdbcType} }
+                </if>
+            </foreach>
+        </foreach>
+    </insert>
+
+    <!--&lt;!&ndash;根据id逻辑删除&ndash;&gt;-->
+    <!--<update id="deleteByPrimaryKey" parameterType="java.util.Map">-->
+    <!--UPDATE ${tableName}-->
+    <!--<set>-->
+    <!--is_del=1-->
+    <!--</set>-->
+    <!--WHERE id = #{primaryValue,jdbcType=VARCHAR}-->
+    <!--</update>-->
+
+    <!--根据条件逻辑删除-->
+    <update id="deleteByCondition" parameterType="java.util.Map">
+        UPDATE ${tableName}
+        <set>
+            is_del=1,modtime=#{delTime}
+        </set>
+        WHERE ${whereExp}
+    </update>
+
+    <!--<delete id="deleteByPrimaryKey" parameterType="java.util.Map">
+      <![CDATA[
+      DELETE FROM ${tableName}
+      WHERE id = #{primaryValue}
+      ]]>
+    </delete>-->
+
+    <!--<delete id="deleteByCondition" parameterType="java.util.Map">
+      <![CDATA[
+      DELETE FROM ${tableName}
+      WHERE ${whereExp}
+      ]]>
+    </delete>-->
+
+    <!--根据id更新数据-->
+    <update id="updateByPrimaryKey" parameterType="java.util.Map">
+        UPDATE ${tableName}
+        <set>
+            <foreach item="item" index="index" collection="ormColumns"
+                     separator=",">
+                <if test="item.jdbcType == null">
+                    ${item.columnName} =
+                    #{item.columnValue }
+                </if>
+                <if test="item.jdbcType != null">
+                    ${item.columnName} =
+                    #{item.columnValue,jdbcType=${item.jdbcType} }
+                </if>
+            </foreach>
+        </set>
+        WHERE id = #{primaryValue}
+    </update>
+
+    <!--根据条件更新数据-->
+    <update id="updateByConditionSelective" parameterType="java.util.Map">
+        UPDATE ${tableName}
+        <set>
+            <foreach item="columnValue" index="columnName" collection="columnValueMapping"
+                     separator=",">
+                ${columnName} = #{columnValue}
+            </foreach>
+        </set>
+        <where>
+            <if test="whereExp != null">
+                ${whereExp}
+            </if>
+        </where>
+    </update>
+
+    <!--根据条件查询数据-->
+    <select id="selectByCondition" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT
+        <if test="distinct">
+            DISTINCT
+        </if>
+        <foreach item="columnName" index="index" collection="columnNames"
+                 separator=",">
+            ${columnName}
+        </foreach>
+        FROM ${tableName}
+        <where>
+            <if test="whereExp != null">
+                ${whereExp}
+            </if>
+        </where>
+        <if test="groupColumnNames != null and groupColumnNames.size() > 0">
+            GROUP BY
+            <foreach item="groupColumnName" index="index" collection = "groupColumnNames" separator=",">
+                ${groupColumnName}
+            </foreach>
+
+            <if test="havingExp != null">
+                HAVING ${havingExp}
+            </if>
+        </if>
+
+        <if test="orderExp != null">
+            ORDER BY ${orderExp}
+        </if>
+
+    </select>
+
+    <!--countByCondtion-->
+    <select id="countByCondtion" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM ${tableName}
+        <where>
+            <if test="whereExp != null">
+                ${whereExp}
+            </if>
+        </where>
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectBySql" parameterType="java.lang.String" resultType="java.util.HashMap">
+       ${value}
+    </select>
+</mapper>

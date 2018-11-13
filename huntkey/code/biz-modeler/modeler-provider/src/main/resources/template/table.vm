@@ -1,0 +1,95 @@
+#foreach($edmTable in $createList)
+#if($edmTable.flag == "0")
+DROP TABLE IF EXISTS `$edmTable.tableName`;
+CREATE TABLE `$edmTable.tableName` (
+`id` char(32) NOT NULL COMMENT '主键',
+#foreach($edmColumn in $edmTable.columnList)
+`$edmColumn.columnName` #if(${edmColumn.typeName} == "TEXT" || ${edmColumn.typeName} == "DATETIME")${edmColumn.typeName}#else${edmColumn.typeName}(${edmColumn.columnSize})#end#if($edmColumn.isNullable == "NO") NOT NULL#end#if($edmColumn.columnDefault == "NULL") DEFAULT NULL#elseif($edmColumn.columnDefault == "TEXT")#else DEFAULT '$edmColumn.columnDefault'#end#if($edmColumn.remarks != "") COMMENT '$edmColumn.remarks'#else#end,
+#end
+`is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '逻辑删除',
+`cretime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`creuser` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+`modtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+`moduser` varchar(50) NOT NULL DEFAULT '' COMMENT '修改人',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='$edmTable.remarks';
+
+DROP TABLE IF EXISTS `${edmTable.tableName}_linkdetail`;
+CREATE TABLE `${edmTable.tableName}_linkdetail` (
+`id` char(32) NOT NULL COMMENT '主键',
+`lind_time` datetime DEFAULT NULL,
+`lind_respondtype` int(11) DEFAULT NULL,
+`lind_class` char(32) DEFAULT NULL,
+`lind_objt_orde` char(32) DEFAULT NULL,
+`lind_attr` varchar(100) DEFAULT '' COMMENT '',
+`lind_attr_value` VARCHAR(50) DEFAULT '',
+`lind_rele_attr` varchar(50) DEFAULT '' COMMENT '',
+`lind_releobj` VARCHAR(50) DEFAULT '',
+`lind_modtime` datetime DEFAULT NULL,
+`lind_status` int(11) DEFAULT NULL,
+`is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '逻辑删除',
+`cretime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`creuser` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+`modtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+`moduser` varchar(50) NOT NULL DEFAULT '' COMMENT '修改人',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='${edmTable.remarks}_linkdetail';
+
+#elseif($edmTable.flag == "1")
+DROP TABLE IF EXISTS `$edmTable.tableName`;
+CREATE TABLE `$edmTable.tableName` (
+`id` char(32) NOT NULL COMMENT '主键',
+`pid` char(32) NOT NULL COMMENT '外键',
+`classname` varchar(32) NOT NULL COMMENT '所属类',
+#foreach($edmColumn in $edmTable.columnList)
+`$edmColumn.columnName` #if(${edmColumn.typeName} == "TEXT" || ${edmColumn.typeName} == "DATETIME")${edmColumn.typeName}#else${edmColumn.typeName}(${edmColumn.columnSize})#end#if($edmColumn.isNullable == "NO") NOT NULL#end#if($edmColumn.columnDefault == "NULL") DEFAULT NULL#elseif($edmColumn.columnDefault == "TEXT")#else DEFAULT '$edmColumn.columnDefault'#end#if($edmColumn.remarks != "") COMMENT '$edmColumn.remarks'#else#end,
+#end
+`is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '逻辑删除',
+`cretime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`creuser` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+`modtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+`moduser` varchar(50) NOT NULL DEFAULT '' COMMENT '修改人',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='$edmTable.remarks';
+
+#end
+#end
+#foreach($edmTable in $addList)
+ALTER TABLE ${edmTable.tableName}
+ADD (
+#foreach($edmColumn in $edmTable.columnList)
+#if($foreach.last)
+${edmColumn.columnName} ${edmColumn.typeName}($edmColumn.columnSize)#if($edmColumn.isNullable == "NO") NOT NULL#end#if($edmColumn.columnDefault == "NULL") DEFAULT NULL#elseif($edmColumn.columnDefault == "TEXT")#else DEFAULT '$edmColumn.columnDefault'#end#if($edmColumn.remarks != "") COMMENT '$edmColumn.remarks'#else#end
+#break
+#end
+${edmColumn.columnName} ${edmColumn.typeName}($edmColumn.columnSize)#if($edmColumn.isNullable == "NO") NOT NULL#end#if($edmColumn.columnDefault == "NULL") DEFAULT NULL#elseif($edmColumn.columnDefault == "TEXT")#else DEFAULT '$edmColumn.columnDefault'#end#if($edmColumn.remarks != "") COMMENT '$edmColumn.remarks'#else#end,
+#end
+);
+
+#end
+#foreach($edmTable in $dropList)
+#foreach($edmColumn in $edmTable.columnList)
+ALTER TABLE ${edmTable.tableName} CHANGE `${edmColumn.columnName}` `${edmColumn.delName}` ${edmColumn.typeName}(${edmColumn.columnSize});
+#end
+
+#end
+#foreach($edmTable in $updateList)
+#foreach($edmColumn in $edmTable.columnList)
+ALTER TABLE ${edmTable.tableName} CHANGE `${edmColumn.columnName}` `${edmColumn.columnName}` ${edmColumn.typeName}(${edmColumn.columnSize})#if($edmColumn.isNullable == "NO") NOT NULL#end#if($edmColumn.columnDefault == "NULL") DEFAULT NULL#elseif($edmColumn.columnDefault == "TEXT")#else DEFAULT '$edmColumn.columnDefault'#end#if($edmColumn.remarks != "") COMMENT '$edmColumn.remarks'#else#end;
+#end
+
+#end
+#foreach($index in $indexList)
+CALL DelIndex('${index.tableName}','${index.indexName}');
+#if($index.columnList)
+ALTER TABLE `${index.tableName}` ADD ${index.indexType} ${index.indexName}(
+#foreach($columnName in $index.columnList)
+#if ($foreach.last)
+`$columnName`
+#break;
+#end
+`$columnName`,
+#end
+);
+#end
+#end

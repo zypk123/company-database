@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmPropertyGroupMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmPropertyGroup">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edpg_property_group" jdbcType="VARCHAR" property="edpgPropertyGroup" />
+    <result column="edpg_edmc_id" jdbcType="VARCHAR" property="edpgEdmcId" />
+    <result column="edpg_link_id" jdbcType="VARCHAR" property="edpgLinkId" />
+    <result column="edpg_edmp_id" jdbcType="VARCHAR" property="edpgEdmpId" />
+    <result column="is_source" jdbcType="TINYINT" property="isSource" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edpg_property_group, edpg_edmc_id, edpg_link_id, edpg_edmp_id, is_source, is_del, 
+    addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroupExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_property_group
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_property_group
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_property_group
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroupExample">
+    delete from edm_property_group
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroup">
+    insert into edm_property_group (id, edpg_property_group, edpg_edmc_id, 
+      edpg_link_id, edpg_edmp_id, is_source, 
+      is_del, addtime, adduser, 
+      modtime, moduser, acctid
+      )
+    values (#{id,jdbcType=VARCHAR}, #{edpgPropertyGroup,jdbcType=VARCHAR}, #{edpgEdmcId,jdbcType=VARCHAR}, 
+      #{edpgLinkId,jdbcType=VARCHAR}, #{edpgEdmpId,jdbcType=VARCHAR}, #{isSource,jdbcType=TINYINT}, 
+      #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, 
+      #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroup">
+    insert into edm_property_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edpgPropertyGroup != null">
+        edpg_property_group,
+      </if>
+      <if test="edpgEdmcId != null">
+        edpg_edmc_id,
+      </if>
+      <if test="edpgLinkId != null">
+        edpg_link_id,
+      </if>
+      <if test="edpgEdmpId != null">
+        edpg_edmp_id,
+      </if>
+      <if test="isSource != null">
+        is_source,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgPropertyGroup != null">
+        #{edpgPropertyGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgEdmcId != null">
+        #{edpgEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgLinkId != null">
+        #{edpgLinkId,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgEdmpId != null">
+        #{edpgEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="isSource != null">
+        #{isSource,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroupExample" resultType="java.lang.Long">
+    select count(*) from edm_property_group
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_property_group
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edpgPropertyGroup != null">
+        edpg_property_group = #{record.edpgPropertyGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edpgEdmcId != null">
+        edpg_edmc_id = #{record.edpgEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edpgLinkId != null">
+        edpg_link_id = #{record.edpgLinkId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edpgEdmpId != null">
+        edpg_edmp_id = #{record.edpgEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isSource != null">
+        is_source = #{record.isSource,jdbcType=TINYINT},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_property_group
+    set id = #{record.id,jdbcType=VARCHAR},
+      edpg_property_group = #{record.edpgPropertyGroup,jdbcType=VARCHAR},
+      edpg_edmc_id = #{record.edpgEdmcId,jdbcType=VARCHAR},
+      edpg_link_id = #{record.edpgLinkId,jdbcType=VARCHAR},
+      edpg_edmp_id = #{record.edpgEdmpId,jdbcType=VARCHAR},
+      is_source = #{record.isSource,jdbcType=TINYINT},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroup">
+    update edm_property_group
+    <set>
+      <if test="edpgPropertyGroup != null">
+        edpg_property_group = #{edpgPropertyGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgEdmcId != null">
+        edpg_edmc_id = #{edpgEdmcId,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgLinkId != null">
+        edpg_link_id = #{edpgLinkId,jdbcType=VARCHAR},
+      </if>
+      <if test="edpgEdmpId != null">
+        edpg_edmp_id = #{edpgEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="isSource != null">
+        is_source = #{isSource,jdbcType=TINYINT},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmPropertyGroup">
+    update edm_property_group
+    set edpg_property_group = #{edpgPropertyGroup,jdbcType=VARCHAR},
+      edpg_edmc_id = #{edpgEdmcId,jdbcType=VARCHAR},
+      edpg_link_id = #{edpgLinkId,jdbcType=VARCHAR},
+      edpg_edmp_id = #{edpgEdmpId,jdbcType=VARCHAR},
+      is_source = #{isSource,jdbcType=TINYINT},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO edm_property_group (id, edpg_property_group, edpg_edmc_id,edpg_link_id,
+    edpg_edmp_id, is_source, is_del,
+    addtime, adduser, modtime,
+    moduser, acctid)
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.edpgPropertyGroup,jdbcType=VARCHAR}, #{item.edpgEdmcId,jdbcType=VARCHAR},#{item.edpgLinkId,jdbcType=VARCHAR},
+      #{item.edpgEdmpId,jdbcType=VARCHAR}, #{item.isSource,jdbcType=TINYINT},
+      0, #{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR},
+      #{item.modtime,jdbcType=TIMESTAMP}, #{item.moduser,jdbcType=VARCHAR}, #{item.acctid,jdbcType=TINYINT}
+      )
+    </foreach>
+  </insert>
+
+  <update id="updateIsDelByGroupId" parameterType="java.lang.String">
+    update edm_property_group
+    set is_del=1
+    where edpg_property_group = #{groupId,jdbcType=VARCHAR} and is_del !=1
+  </update>
+
+  <update id="updateBatch"  parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+      update edm_property_group
+        set is_del=1
+      where edpg_property_group = #{item.edpgPropertyGroup,jdbcType=VARCHAR} AND  edpg_link_id = #{item.edpgLinkId,jdbcType=VARCHAR} AND  edpg_edmp_id = #{item.edpgEdmpId,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+
+</mapper>

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmMethodTypeMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmMethodType">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edmt_parent_id" jdbcType="VARCHAR" property="edmtParentId" />
+    <result column="edmt_code" jdbcType="VARCHAR" property="edmtCode" />
+    <result column="edmt_name" jdbcType="VARCHAR" property="edmtName" />
+    <result column="edmt_desc" jdbcType="VARCHAR" property="edmtDesc" />
+    <result column="edmt_seq" jdbcType="INTEGER" property="edmtSeq" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edmt_parent_id, edmt_code, edmt_name, edmt_desc, edmt_seq, is_del, addtime, adduser,
+    modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodTypeExample" resultMap="BaseResultMap">
+    SELECT
+    <if test="distinct">
+      DISTINCT
+    </if>
+    <include refid="Base_Column_List" />
+    FROM edm_method_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      ORDER BY ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_method_type
+    WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM edm_method_type
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodTypeExample">
+    DELETE FROM edm_method_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodType">
+    INSERT INTO edm_method_type (id, edmt_parent_id, edmt_code,
+      edmt_name, edmt_desc, edmt_seq, 
+      is_del, addtime, adduser, 
+      modtime, moduser, acctid
+      )
+    VALUES (#{id,jdbcType=VARCHAR}, #{edmtParentId,jdbcType=VARCHAR}, #{edmtCode,jdbcType=VARCHAR},
+      #{edmtName,jdbcType=VARCHAR}, #{edmtDesc,jdbcType=VARCHAR}, #{edmtSeq,jdbcType=INTEGER}, 
+      #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, 
+      #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodType">
+    INSERT INTO edm_method_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edmtParentId != null">
+        edmt_parent_id,
+      </if>
+      <if test="edmtCode != null">
+        edmt_code,
+      </if>
+      <if test="edmtName != null">
+        edmt_name,
+      </if>
+      <if test="edmtDesc != null">
+        edmt_desc,
+      </if>
+      <if test="edmtSeq != null">
+        edmt_seq,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtParentId != null">
+        #{edmtParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtCode != null">
+        #{edmtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtName != null">
+        #{edmtName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtDesc != null">
+        #{edmtDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtSeq != null">
+        #{edmtSeq,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodTypeExample" resultType="java.lang.Long">
+    SELECT count(*) FROM edm_method_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    UPDATE edm_method_type
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmtParentId != null">
+        edmt_parent_id = #{record.edmtParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmtCode != null">
+        edmt_code = #{record.edmtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmtName != null">
+        edmt_name = #{record.edmtName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmtDesc != null">
+        edmt_desc = #{record.edmtDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmtSeq != null">
+        edmt_seq = #{record.edmtSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    UPDATE edm_method_type
+    SET id = #{record.id,jdbcType=VARCHAR},
+      edmt_parent_id = #{record.edmtParentId,jdbcType=VARCHAR},
+      edmt_code = #{record.edmtCode,jdbcType=VARCHAR},
+      edmt_name = #{record.edmtName,jdbcType=VARCHAR},
+      edmt_desc = #{record.edmtDesc,jdbcType=VARCHAR},
+      edmt_seq = #{record.edmtSeq,jdbcType=INTEGER},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodType">
+    UPDATE edm_method_type
+    <set>
+      <if test="edmtParentId != null">
+        edmt_parent_id = #{edmtParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtCode != null">
+        edmt_code = #{edmtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtName != null">
+        edmt_name = #{edmtName,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtDesc != null">
+        edmt_desc = #{edmtDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmtSeq != null">
+        edmt_seq = #{edmtSeq,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmMethodType">
+    UPDATE edm_method_type
+    SET edmt_parent_id = #{edmtParentId,jdbcType=VARCHAR},
+      edmt_code = #{edmtCode,jdbcType=VARCHAR},
+      edmt_name = #{edmtName,jdbcType=VARCHAR},
+      edmt_desc = #{edmtDesc,jdbcType=VARCHAR},
+      edmt_seq = #{edmtSeq,jdbcType=INTEGER},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_method_type SET is_del=1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectTypeNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT
+    edmt_name
+    FROM edm_method_type
+    WHERE id = #{id,jdbcType=VARCHAR} AND is_del=0
+  </select>
+
+  <!-- 根据父id查id-->
+  <select id="selectEdmMethodTypeIdByParentId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT id FROM edm_method_type
+    WHERE edmt_parent_id = #{parentId,jdbcType=VARCHAR} AND is_del!=1
+  </select>
+
+  <!-- 通过方法分类id查找方法分类名称 -->
+  <select id="selectEdmtNameById" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT edmt_name FROM edm_method_type WHERE id =#{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+
+  <!--根据方法类型名查询方法类型id-->
+  <select id="selectEdmtIdByEdmtName" parameterType="java.lang.String" resultType="java.lang.String" >
+    SELECT id FROM edm_method_type WHERE edmt_name = #{edmtName, jdbcType=VARCHAR} AND is_del != 1
+  </select>
+</mapper>

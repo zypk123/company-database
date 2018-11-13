@@ -1,0 +1,466 @@
+* {
+  margin:0;
+  padding:0;
+}
+#app, .router-view {
+  height: 100%;
+}
+body {
+  min-width: 1024px;
+  /* 1280px */
+  /* FIXME 1960px */
+  max-width: 1600px;
+  margin:auto;
+  background-color: #F1F3FA;
+}
+
+a:-webkit-any-link {
+  text-decoration: none;
+}
+
+/* 通用工具类 */
+.common-vgap {
+  margin-top:12px;
+}
+.common-vgap-x2 {
+  margin-top:24px;
+}
+.float-right {
+  position: relative;
+  float:right;
+}
+.inline-block {
+  display:inline-block;
+}
+.block {
+  display:block;
+}
+.cursor-pointer {
+  cursor:pointer;
+}
+.no-select {
+  -moz-user-select: none; /*火狐*/
+  -webkit-user-select: none; /*webkit浏览器*/
+  -ms-user-select: none; /*IE10*/
+  -khtml-user-select: none; /*早期浏览器*/
+  user-select: none;
+}
+.no-resize,
+.no-resize>textarea {
+  resize:none;
+}
+
+.formula-suggestion {
+  z-index: 10001;
+}
+.edm-classes-tree {
+  z-index: 10002;
+}
+.edm-classes-tree-scroll .el-scrollbar__bar {
+  /*z-index: 10003;*/
+}
+
+
+/* 在组件顶部显示错误信息 */
+.error-on-top .el-form-item__error {
+  top:0;
+  bottom: 100%;
+  margin-top: -12px;
+}
+
+.w50 {
+  width: 50px;
+}
+.w100 {
+  width: 100px;
+}
+.h100 {
+  height: 100%;
+}
+
+/* 等宽字体, 某些特殊场景需要等宽字体 */
+.monospace {
+  font-family: Consolas, Monaco, monospace;
+}
+
+/* 背景-begin */
+.primary-bg{
+  background: -webkit-linear-gradient(left, #8054F7, #6F5AFF);
+  background: -o-linear-gradient(left, #8054F7, #6F5AFF);
+  background: linear-gradient(to right, #8054F7, #6F5AFF);
+  background: #8054F7;
+}
+
+.bg-transparent {
+  background: transparent;
+}
+.bg-color-s{
+  background-color: #13ce66;
+}
+.bg-color-e{
+  background-color: #ff4949;
+}
+.bg-color-w{
+  background-color: #f7ba2a;
+}
+.bg-color-i{
+  background-color: #50bfff;
+}
+
+.bg-color-1{
+  background-color: #F1F3FA;
+}
+
+.loading-item {
+  height: 60px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.loading-item-content {
+  padding-top: 20px;
+  line-height: 20px;
+  font-size: 20px;
+  color: white;
+}
+
+.white {
+  color: white;
+}
+
+/* 背景-end */
+/* 通用垂直间隙 */
+/* page-header begin */
+
+.page-header {
+  position: relative;
+  width: 100%;
+  height: 40px;
+}
+
+.page-header .page-header__page-title {
+  position: absolute;
+  color:#fff;
+  font-size:14px;
+  font-weight: bold;
+  line-height: 14px;
+  margin-top: 14px;
+  margin-bottom: 0px;
+  padding-left: 20px; /* 与顶部导航的padding-left一致 */
+}
+
+.page-header .page-header__page-oper {
+  padding-right: 20px; /* 与顶部导航的padding-left一致 */
+}
+.page-header .page-header__page-oper  .el-button {
+  margin-top: 7px;
+  padding:6px 12px;
+}
+
+/* page-header end */
+
+/* subpage-dlg begin */
+.subpage-dlg .el-dialog__header {
+/*  padding-top: 10px;
+  padding-bottom: 10px;*/
+  background: -webkit-linear-gradient(left, #8054F7, #6F5AFF);
+  background: -o-linear-gradient(left, #8054F7, #6F5AFF);
+  background: linear-gradient(to right, #8054F7, #6F5AFF);
+  background: #8054F7;
+}
+.subpage-dlg .el-dialog__title {
+  color:#fff;
+  font-weight: bold;
+  font-size:14px;
+}
+
+.subpage-dlg .el-dialog__body {
+  padding-top:6px;
+}
+
+.subpage-dlg .el-dialog__headerbtn {
+  /*margin-top:0;*/
+}
+/* subpage-dlg end */
+
+/* el-button end */
+.el-button.bg-transparent {
+  color:#fff;
+  border-color: #fff;
+}
+/* el-button end */
+
+/* 本app中通用的业务组件 */
+/* list-item */
+.edm-classes-tree-scroll,
+.list-items-scroll {
+  height: 100%;
+}
+.scroll-wrapper,
+.list-items-scroll-wrapper,
+.edm-classes-tree-scroll-wrapper {
+  height: 100%;
+  overflow-x:auto;
+  overflow-y:auto;
+}
+.scroll-div {
+  height: 100%
+}
+
+.list-item {
+  padding-top:6px;
+  padding-bottom:6px;
+}
+.list-item.is-current,
+.list-item.is-current .list-item-label-area,
+.list-item.is-current .list-item-oper-area,
+.list-item.is-current .list-item-label-area .sub-label {
+  color: #7459FC;
+  background-color: #fff;
+}
+
+.list-item:hover,
+.list-item:hover .list-item-label-area,
+.list-item:hover .list-item-oper-area,
+.list-item:hover .item-return-type  {
+  color: #7459FC;
+  font-weight: bold;
+  background-color: #fff;
+}
+
+.list-item,
+.list-item .list-item-label-area
+{
+  width: calc(100% - 30px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.list-item-label-area .sub-label {
+  font-size: 9px;
+  margin-left: 5px;
+  color: gray;
+}
+
+
+.list-item .list-item-label-area {
+  display: inline-block;
+}
+.list-item:hover .list-item-label-area {
+  width: calc(100% - 50px);
+}
+
+.list-item .list-item-oper-area{
+  display: none;
+}
+.list-item:hover .list-item-oper-area {
+  width: 40px;
+  display: inline-block;
+}
+
+/* el-card box-card  begin*/
+.el-card.box-card{
+  height: 100%;
+  min-height: 200px;
+  /*border: 1px solid blue;*/
+}
+.el-card.box-card .el-card__header {
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #F4F4F4;
+}
+
+.el-card.box-card .el-card__header .clearfix {
+  text-align: center;
+  line-height: 32px;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+.el-card.box-card .el-card__header .clearfix>i {
+  margin-top: 10px;
+}
+
+.el-card.box-card .el-card__body{
+  /*height: 100%;*/
+  /*border:1px solid red;*/
+  box-sizing: border-box;
+  /*head 32px,padding-top 12px;*/
+  height: 100%;
+  padding: 12px;
+   /*默认20px*/
+  overflow: auto;
+}
+.el-card.box-card.border-box .el-card__body {
+  padding: 0;
+}
+.el-card.box-card.has-header-a .el-card__body{
+  height: calc(100% - 32px);
+}
+
+
+/* el-card box-card  end*/
+
+/* el-tabs begin*/
+.el-tabs.fixh>.el-tabs__header,
+.el-tabs.h100>.el-tabs__header {
+  margin-bottom: 0;
+}
+.el-tabs__item {
+  height: 40px;
+  line-height: 40px;
+}
+
+.el-tabs.fixh>.el-tabs__content,
+.el-tabs.h100>.el-tabs__content{
+  height: calc(100% - 41px);
+}
+
+.el-tabs.fixh>.el-tabs__content>.el-tab-pane,
+.el-tabs.h100>.el-tabs__content>.el-tab-pane {
+  box-sizing: border-box;
+  height: 100%;
+  /*border:1px solid red;*/
+}
+.el-tabs.fixh>.el-tabs__content>.el-tab-pane {
+  overflow: auto;
+}
+
+.func-tabs .el-tabs__nav-scroll {
+  background-color:#DFE1EA;
+}
+
+.func-tabs .el-tabs__header .el-tabs__item {
+  border: 1px solid #d1dbe5;
+  height: 26px;
+  line-height: 26px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.func-tabs .el-tabs__header .el-tabs__item.is-active {
+  background-color: #fff;
+}
+
+/* el-tabs end*/
+/* 公式展示Div 用于公式编辑, 公式展示等 */
+
+.formula-display-div {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom:10px;
+  padding-top:10px;
+  padding-right: 10px;
+  padding-left:10px;
+  padding-bottom:10px;
+  border: 1px solid #D7DAE1;
+  min-height: 75px; /* textarea 3行高度一致 */
+  border-radius: 4px;
+  line-height:25px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background-color: #fff;
+}
+
+.formula-display-div.is-success {
+  border-color: #008000;
+  box-shadow: 0px 0px 3px #008000;
+}
+
+.formula-display-div.is-error {
+  border-color: #ff4949;
+  box-shadow: 0px 0px 3px #ff4949;
+}
+
+.formula-item {
+  display: inline;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.formula-item-func {
+  color:#a862cc;
+}
+/* 标记editor中 选中项的高亮 */
+.formula-item-func.focus,
+.formula-item-func.focus .item-return-type,
+.formula-item-var.focus,
+.formula-item-var.focus .item-return-type {
+  color: #7459FC;
+  background-color: #fff;
+  font-weight: bold;
+}
+
+.formula-item-prop,
+.formula-item-seq  {
+  color:#4572e9;
+}
+
+.formula-item-var,
+.formula-item-logic-oper  {
+  color:#59be92;
+}
+
+.formula-item-var.local-var {
+  color:#ee9e49;
+}
+
+.formula-return-type {
+  background-color: #E6F9EF;
+  color: #12D1BE;
+}
+
+.item-return-type {
+  font-size: 9px;
+  margin-left: 5px;
+  color: gray;
+}
+
+.lable-row {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* 在表格行中的form */
+
+.el-form-item.is-required .el-form-item__label::before {
+    content: "*";
+    color: #ff4949;
+    margin-right: 4px;
+}
+
+.table-cell-content {
+  position: relative;
+  width:100%;
+}
+
+.table-cell-content.is-success .el-input__inner,
+.table-cell-content.is-success .el-input__inner:focus,
+.table-cell-content.is-success .el-textarea__inner,
+.table-cell-content.is-success .el-textarea__inner:focus {
+  border-color:  #008000;
+  box-shadow: 0px 0px 3px  #008000;
+}
+
+.table-cell-content.is-error {
+  margin-bottom: 16px;
+}
+.table-cell-content.is-error .el-input__inner,
+.table-cell-content.is-error .el-input__inner:focus,
+.table-cell-content.is-error .el-textarea__inner,
+.table-cell-content.is-error .el-textarea__inner:focus {
+  border-color: #ff4949;
+  box-shadow: 0px 0px 3px #ff4949;
+}
+
+.table-cell-content__error {
+    color: #ff4949;
+    font-size: 12px;
+    line-height: 1;
+    padding-top: 4px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+}
+

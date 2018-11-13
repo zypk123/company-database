@@ -1,0 +1,1 @@
+alter table tvm_variant MODIFY column vrnt_var_type VARCHAR(50);

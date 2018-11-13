@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.function.definefunc.dao.TfmFunctionCompiledMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    <id column="func_id" property="funcId" jdbcType="VARCHAR" />
+    <result column="func_fun_id" property="funcFunId" jdbcType="VARCHAR" />
+    <result column="func_class_full_name" property="funcClassFullName" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="hasjar" property="hasjar" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" extends="BaseResultMap" >
+    <result column="func_class_binary" property="funcClassBinary" jdbcType="LONGVARBINARY" />
+    <result column="func_fun_source" property="funcFunSource" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    func_id, func_fun_id, func_class_full_name, isenable, hasjar, addtime, adduser, modtime,
+    moduser, acctid
+  </sql>
+  <sql id="Blob_Column_List" >
+    func_class_binary, func_fun_source
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiledExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tfm_function_compiled
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="ResultMapWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiledExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tfm_function_compiled
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tfm_function_compiled
+    where func_id = #{funcId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tfm_function_compiled
+    where func_id = #{funcId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiledExample" >
+    delete from tfm_function_compiled
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    insert into tfm_function_compiled (func_id, func_fun_id, func_class_full_name,
+      isenable, hasjar, addtime, adduser,
+      modtime, moduser, acctid,
+      func_class_binary, func_fun_source
+      )
+    values (#{funcId,jdbcType=VARCHAR}, #{funcFunId,jdbcType=VARCHAR}, #{funcClassFullName,jdbcType=VARCHAR},
+      #{isenable,jdbcType=TINYINT}, #{hasjar,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+      #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER},
+      #{funcClassBinary,jdbcType=LONGVARBINARY}, #{funcFunSource,jdbcType=LONGVARBINARY}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    insert into tfm_function_compiled
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="funcId != null" >
+        func_id,
+      </if>
+      <if test="funcFunId != null" >
+        func_fun_id,
+      </if>
+      <if test="funcClassFullName != null" >
+        func_class_full_name,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="hasjar != null" >
+        hasjar,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+      <if test="funcClassBinary != null" >
+        func_class_binary,
+      </if>
+      <if test="funcFunSource != null" >
+        func_fun_source,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="funcId != null" >
+        #{funcId,jdbcType=VARCHAR},
+      </if>
+      <if test="funcFunId != null" >
+        #{funcFunId,jdbcType=VARCHAR},
+      </if>
+      <if test="funcClassFullName != null" >
+        #{funcClassFullName,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="hasjar != null" >
+        #{hasjar,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="funcClassBinary != null" >
+        #{funcClassBinary,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="funcFunSource != null" >
+        #{funcFunSource,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiledExample" resultType="java.lang.Integer" >
+    select count(*) from tfm_function_compiled
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tfm_function_compiled
+    <set >
+      <if test="record.funcId != null" >
+        func_id = #{record.funcId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcFunId != null" >
+        func_fun_id = #{record.funcFunId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcClassFullName != null" >
+        func_class_full_name = #{record.funcClassFullName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.hasjar != null" >
+        hasjar = #{record.hasjar,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+      <if test="record.funcClassBinary != null" >
+        func_class_binary = #{record.funcClassBinary,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="record.funcFunSource != null" >
+        func_fun_source = #{record.funcFunSource,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update tfm_function_compiled
+    set func_id = #{record.funcId,jdbcType=VARCHAR},
+    func_fun_id = #{record.funcFunId,jdbcType=VARCHAR},
+    func_class_full_name = #{record.funcClassFullName,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    hasjar = #{record.hasjar,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER},
+    func_class_binary = #{record.funcClassBinary,jdbcType=LONGVARBINARY},
+    func_fun_source = #{record.funcFunSource,jdbcType=LONGVARBINARY}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tfm_function_compiled
+    set func_id = #{record.funcId,jdbcType=VARCHAR},
+    func_fun_id = #{record.funcFunId,jdbcType=VARCHAR},
+    func_class_full_name = #{record.funcClassFullName,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    hasjar = #{record.hasjar,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    update tfm_function_compiled
+    <set >
+      <if test="funcFunId != null" >
+        func_fun_id = #{funcFunId,jdbcType=VARCHAR},
+      </if>
+      <if test="funcClassFullName != null" >
+        func_class_full_name = #{funcClassFullName,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="hasjar != null" >
+        hasjar = #{hasjar,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="funcClassBinary != null" >
+        func_class_binary = #{funcClassBinary,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="funcFunSource != null" >
+        func_fun_source = #{funcFunSource,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where func_id = #{funcId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    update tfm_function_compiled
+    set func_fun_id = #{funcFunId,jdbcType=VARCHAR},
+      func_class_full_name = #{funcClassFullName,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      hasjar = #{hasjar,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER},
+      func_class_binary = #{funcClassBinary,jdbcType=LONGVARBINARY},
+      func_fun_source = #{funcFunSource,jdbcType=LONGVARBINARY}
+    where func_id = #{funcId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionCompiled" >
+    update tfm_function_compiled
+    set func_fun_id = #{funcFunId,jdbcType=VARCHAR},
+      func_class_full_name = #{funcClassFullName,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      hasjar = #{hasjar,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where func_id = #{funcId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="checkFuncName" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM tfm_function_definition
+    WHERE fund_fun_name =#{fundFunName,jdbcType=VARCHAR} AND fund_id !=#{fundId,jdbcType=VARCHAR} AND isenable=1;
+  </select>
+</mapper>

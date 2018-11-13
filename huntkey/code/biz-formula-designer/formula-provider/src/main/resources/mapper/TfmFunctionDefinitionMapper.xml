@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.engine.dao.TfmFunctionDefinitionMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    <id column="fund_id" property="fundId" jdbcType="VARCHAR" />
+    <result column="fund_fun_name" property="fundFunName" jdbcType="VARCHAR" />
+    <result column="fund_fun_catagory_id" property="fundFunCatagoryId" jdbcType="VARCHAR" />
+    <result column="fund_state" property="fundState" jdbcType="CHAR" />
+    <result column="fund_fun_desc" property="fundFunDesc" jdbcType="VARCHAR" />
+    <result column="fund_modify_remarks" property="fundModifyRemarks" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="BaseResultMap2" type="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    <id column="fund_id" property="fundId" jdbcType="VARCHAR" />
+    <result column="fund_fun_name" property="fundFunName" jdbcType="VARCHAR" />
+    <result column="fund_fun_catagory_id" property="fundFunCatagoryId" jdbcType="VARCHAR" />
+    <result column="fund_state" property="fundState" jdbcType="CHAR" />
+    <result column="fund_fun_desc" property="fundFunDesc" jdbcType="VARCHAR" />
+    <result column="fund_modify_remarks" property="fundModifyRemarks" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+    <result column="fncc_classify_name" property="fnccClassifyName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fund_id, fund_fun_name, fund_fun_catagory_id, fund_state, fund_fun_desc, fund_modify_remarks,
+    isenable, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <sql id="Base_Column_List2" >
+    a.fund_id, a.fund_fun_name, a.fund_fun_catagory_id, a.fund_state, a.fund_fun_desc, a.fund_modify_remarks,
+    a.isenable, a.addtime, a.adduser, a.modtime, a.moduser, a.acctid, b.fncc_classify_name
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap2" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinitionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List2" />
+    from tfm_function_definition a left join ftm_function_classify b
+      on a.fund_fun_catagory_id = b.fncc_id
+      and b.isenable = 1
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tfm_function_definition
+    where fund_id = #{fundId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tfm_function_definition
+    where fund_id = #{fundId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinitionExample" >
+    delete from tfm_function_definition
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    insert into tfm_function_definition (fund_id, fund_fun_name, fund_fun_catagory_id,
+    fund_state, fund_fun_desc, fund_modify_remarks,
+    isenable, addtime, adduser,
+    modtime, moduser, acctid
+    )
+    values (#{fundId,jdbcType=VARCHAR}, #{fundFunName,jdbcType=VARCHAR}, #{fundFunCatagoryId,jdbcType=VARCHAR},
+    #{fundState,jdbcType=CHAR}, #{fundFunDesc,jdbcType=VARCHAR}, #{fundModifyRemarks,jdbcType=VARCHAR},
+    #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+    #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    insert into tfm_function_definition
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fundId != null" >
+        fund_id,
+      </if>
+      <if test="fundFunName != null" >
+        fund_fun_name,
+      </if>
+      <if test="fundFunCatagoryId != null" >
+        fund_fun_catagory_id,
+      </if>
+      <if test="fundState != null" >
+        fund_state,
+      </if>
+      <if test="fundFunDesc != null" >
+        fund_fun_desc,
+      </if>
+      <if test="fundModifyRemarks != null" >
+        fund_modify_remarks,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fundId != null" >
+        #{fundId,jdbcType=VARCHAR},
+      </if>
+      <if test="fundFunName != null" >
+        #{fundFunName,jdbcType=VARCHAR},
+      </if>
+      <if test="fundFunCatagoryId != null" >
+        #{fundFunCatagoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="fundState != null" >
+        #{fundState,jdbcType=CHAR},
+      </if>
+      <if test="fundFunDesc != null" >
+        #{fundFunDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="fundModifyRemarks != null" >
+        #{fundModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinitionExample" resultType="java.lang.Integer" >
+    select count(*) from tfm_function_definition
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tfm_function_definition
+    <set >
+      <if test="record.fundId != null" >
+        fund_id = #{record.fundId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fundFunName != null" >
+        fund_fun_name = #{record.fundFunName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fundFunCatagoryId != null" >
+        fund_fun_catagory_id = #{record.fundFunCatagoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fundState != null" >
+        fund_state = #{record.fundState,jdbcType=CHAR},
+      </if>
+      <if test="record.fundFunDesc != null" >
+        fund_fun_desc = #{record.fundFunDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fundModifyRemarks != null" >
+        fund_modify_remarks = #{record.fundModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tfm_function_definition
+    set fund_id = #{record.fundId,jdbcType=VARCHAR},
+    fund_fun_name = #{record.fundFunName,jdbcType=VARCHAR},
+    fund_fun_catagory_id = #{record.fundFunCatagoryId,jdbcType=VARCHAR},
+    fund_state = #{record.fundState,jdbcType=CHAR},
+    fund_fun_desc = #{record.fundFunDesc,jdbcType=VARCHAR},
+    fund_modify_remarks = #{record.fundModifyRemarks,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    update tfm_function_definition
+    <set >
+      <if test="fundFunName != null" >
+        fund_fun_name = #{fundFunName,jdbcType=VARCHAR},
+      </if>
+      <if test="fundFunCatagoryId != null" >
+        fund_fun_catagory_id = #{fundFunCatagoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="fundState != null" >
+        fund_state = #{fundState,jdbcType=CHAR},
+      </if>
+      <if test="fundFunDesc != null" >
+        fund_fun_desc = #{fundFunDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="fundModifyRemarks != null" >
+        fund_modify_remarks = #{fundModifyRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where fund_id = #{fundId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TfmFunctionDefinition" >
+    update tfm_function_definition
+    set fund_fun_name = #{fundFunName,jdbcType=VARCHAR},
+    fund_fun_catagory_id = #{fundFunCatagoryId,jdbcType=VARCHAR},
+    fund_state = #{fundState,jdbcType=CHAR},
+    fund_fun_desc = #{fundFunDesc,jdbcType=VARCHAR},
+    fund_modify_remarks = #{fundModifyRemarks,jdbcType=VARCHAR},
+    isenable = #{isenable,jdbcType=TINYINT},
+    addtime = #{addtime,jdbcType=TIMESTAMP},
+    adduser = #{adduser,jdbcType=VARCHAR},
+    modtime = #{modtime,jdbcType=TIMESTAMP},
+    moduser = #{moduser,jdbcType=VARCHAR},
+    acctid = #{acctid,jdbcType=INTEGER}
+    where fund_id = #{fundId,jdbcType=VARCHAR}
+  </update>
+  <!--根据函数id删除函数-->
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE tfm_function_definition
+    SET isenable = 0
+    WHERE fund_id = #{fundId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByFundFunCatagoryId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+      <include refid="Base_Column_List" />
+    from tfm_function_definition
+    where fund_fun_catagory_id = #{fundFunCatagoryId,jdbcType=VARCHAR}
+    AND isenable = 1
+  </select>
+</mapper>

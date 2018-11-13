@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.sceo.serviceCenter.provider.orm.dao.FormDataMapper">
+
+  <insert id="insert" keyProperty="id" parameterType="java.util.Map" useGeneratedKeys="true">
+    INSERT INTO ${tableName} (${columns}) VALUES ${data}
+
+  </insert>
+
+  <insert id="insert1" keyProperty="id" parameterType="java.util.Map" useGeneratedKeys="true">
+    INSERT INTO ${tableName} (${columns}) VALUES ${data}
+
+  </insert>
+
+  <select id="select" parameterType="java.util.Map" resultType="java.util.HashMap">
+    SELECT ${columns} FROM  ${tableName}
+    WHERE is_del = 0
+    <if test="condition != null">
+      AND ${condition}
+    </if>
+    ${orderByCondition}
+  </select>
+
+  <select id="query" parameterType="java.util.Map" resultType="java.util.HashMap">
+   ${value}
+  </select>
+
+  <update id="delete" parameterType="java.util.Map">
+    UPDATE ${tableName} SET ${setCondition} WHERE ${condition} AND is_del = 0
+  </update>
+
+  <!--<delete id="delete" parameterType="java.util.Map">
+    DELETE FROM ${tableName}  WHERE ${condition}
+  </delete>-->
+
+  <update id="update" parameterType="java.util.Map">
+    UPDATE ${tableName} SET ${setCondition} WHERE ${condition} AND is_del = 0
+  </update>
+
+  <select id="richfind"  parameterType="java.util.Map" resultType="java.util.HashMap">
+    SELECT ${columns} FROM  ${tableName}
+    WHERE ${condition}  AND is_del = 0
+    <if test="orderByCondition != null">
+      ${orderByCondition}
+    </if>
+    <if test="limit != null">
+      LIMIT ${limit}
+    </if>
+  </select>
+
+  <select id="count"  parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM  ${tableName}
+          WHERE is_del = 0
+       <if test="condition != null">
+          AND ${condition}
+       </if>
+
+  </select>
+</mapper>

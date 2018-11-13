@@ -1,0 +1,1 @@
+ALTER TABLE tfm_function_compiled ADD `hasjar` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '是否有依赖jar: 1 有， 0 无';

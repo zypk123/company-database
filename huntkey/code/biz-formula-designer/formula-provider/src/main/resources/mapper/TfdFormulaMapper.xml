@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.engine.dao.TfdFormulaMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TfdFormula" >
+    <id column="frmu_id" property="frmuId" jdbcType="VARCHAR" />
+    <result column="frmu_formula_content" property="frmuFormulaContent" jdbcType="VARCHAR" />
+    <result column="frmu_formula_style" property="frmuFormulaStyle" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+    <result column="frmu_formula_text" property="frmuFormulaText" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    frmu_id, frmu_formula_content, frmu_formula_style, isenable, addtime, adduser, modtime,
+    moduser, acctid, frmu_formula_text
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormulaExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tfd_formula
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tfd_formula
+    where frmu_id = #{frmuId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tfd_formula
+    where frmu_id = #{frmuId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormulaExample" >
+    delete from tfd_formula
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormula" >
+    insert into tfd_formula (frmu_id, frmu_formula_content, frmu_formula_style,
+    isenable, addtime, adduser,
+    modtime, moduser, acctid,
+    frmu_formula_text)
+    values (#{frmuId,jdbcType=VARCHAR}, #{frmuFormulaContent,jdbcType=VARCHAR}, #{frmuFormulaStyle,jdbcType=VARCHAR},
+    #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+    #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER},
+    #{frmuFormulaText,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormula" >
+    insert into tfd_formula
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="frmuId != null" >
+        frmu_id,
+      </if>
+      <if test="frmuFormulaContent != null" >
+        frmu_formula_content,
+      </if>
+      <if test="frmuFormulaStyle != null" >
+        frmu_formula_style,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+      <if test="frmuFormulaText != null" >
+        frmu_formula_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="frmuId != null" >
+        #{frmuId,jdbcType=VARCHAR},
+      </if>
+      <if test="frmuFormulaContent != null" >
+        #{frmuFormulaContent,jdbcType=VARCHAR},
+      </if>
+      <if test="frmuFormulaStyle != null" >
+        #{frmuFormulaStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="frmuFormulaText != null" >
+        #{frmuFormulaText,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormulaExample" resultType="java.lang.Integer" >
+    select count(*) from tfd_formula
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tfd_formula
+    <set >
+      <if test="record.frmuId != null" >
+        frmu_id = #{record.frmuId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.frmuFormulaContent != null" >
+        frmu_formula_content = #{record.frmuFormulaContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.frmuFormulaStyle != null" >
+        frmu_formula_style = #{record.frmuFormulaStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+      <if test="record.frmuFormulaText != null" >
+        frmu_formula_text = #{record.frmuFormulaText,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tfd_formula
+    set frmu_id = #{record.frmuId,jdbcType=VARCHAR},
+    frmu_formula_content = #{record.frmuFormulaContent,jdbcType=VARCHAR},
+    frmu_formula_style = #{record.frmuFormulaStyle,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER},
+    frmu_formula_text = #{record.frmuFormulaText,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormula" >
+    update tfd_formula
+    <set >
+      <if test="frmuFormulaContent != null" >
+        frmu_formula_content = #{frmuFormulaContent,jdbcType=VARCHAR},
+      </if>
+      <if test="frmuFormulaStyle != null" >
+        frmu_formula_style = #{frmuFormulaStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="frmuFormulaText != null" >
+        frmu_formula_text = #{frmuFormulaText,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where frmu_id = #{frmuId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdFormula" >
+    update tfd_formula
+    set frmu_formula_content = #{frmuFormulaContent,jdbcType=VARCHAR},
+      frmu_formula_style = #{frmuFormulaStyle,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER},
+      frmu_formula_text = #{frmuFormulaText,jdbcType=VARCHAR}
+    where frmu_id = #{frmuId,jdbcType=VARCHAR}
+  </update>
+  <select id="getFormulaContentByFormulaId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT frmu_formula_content FROM tfd_formula WHERE frmu_id = #{frmuId,jdbcType=VARCHAR}
+  </select>
+</mapper>

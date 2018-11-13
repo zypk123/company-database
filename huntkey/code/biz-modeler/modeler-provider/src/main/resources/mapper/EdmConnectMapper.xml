@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmConnectMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmConnect">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edcn_edmp_id" jdbcType="VARCHAR" property="edcnEdmpId" />
+    <result column="edcn_link_preservable" jdbcType="TINYINT" property="edcnLinkPreservable" />
+    <result column="edcn_update_type" jdbcType="VARCHAR" property="edcnUpdateType" />
+    <result column="edcn_update_time" jdbcType="VARCHAR" property="edcnUpdateTime" />
+    <result column="edcn_type" jdbcType="VARCHAR" property="edcnType" />
+    <result column="async_type_priority" jdbcType="VARCHAR" property="asyncTypePriority" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edcn_edmp_id, edcn_link_preservable, edcn_update_type, edcn_update_time, edcn_type, 
+    async_type_priority, is_del, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConnectExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_connect
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_connect
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_connect
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConnectExample">
+    delete from edm_connect
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmConnect">
+    insert into edm_connect (id, edcn_edmp_id, edcn_link_preservable, 
+      edcn_update_type, edcn_update_time, edcn_type, 
+      async_type_priority, is_del, addtime, 
+      adduser, modtime, moduser, 
+      acctid)
+    values (#{id,jdbcType=VARCHAR}, #{edcnEdmpId,jdbcType=VARCHAR}, #{edcnLinkPreservable,jdbcType=TINYINT}, 
+      #{edcnUpdateType,jdbcType=VARCHAR}, #{edcnUpdateTime,jdbcType=VARCHAR}, #{edcnType,jdbcType=VARCHAR}, 
+      #{asyncTypePriority,jdbcType=VARCHAR}, #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, 
+      #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, 
+      #{acctid,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmConnect">
+    insert into edm_connect
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edcnEdmpId != null">
+        edcn_edmp_id,
+      </if>
+      <if test="edcnLinkPreservable != null">
+        edcn_link_preservable,
+      </if>
+      <if test="edcnUpdateType != null">
+        edcn_update_type,
+      </if>
+      <if test="edcnUpdateTime != null">
+        edcn_update_time,
+      </if>
+      <if test="edcnType != null">
+        edcn_type,
+      </if>
+      <if test="asyncTypePriority != null">
+        async_type_priority,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnEdmpId != null">
+        #{edcnEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnLinkPreservable != null">
+        #{edcnLinkPreservable,jdbcType=TINYINT},
+      </if>
+      <if test="edcnUpdateType != null">
+        #{edcnUpdateType,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnUpdateTime != null">
+        #{edcnUpdateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnType != null">
+        #{edcnType,jdbcType=VARCHAR},
+      </if>
+      <if test="asyncTypePriority != null">
+        #{asyncTypePriority,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConnectExample" resultType="java.lang.Long">
+    select count(*) from edm_connect
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_connect
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcnEdmpId != null">
+        edcn_edmp_id = #{record.edcnEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcnLinkPreservable != null">
+        edcn_link_preservable = #{record.edcnLinkPreservable,jdbcType=TINYINT},
+      </if>
+      <if test="record.edcnUpdateType != null">
+        edcn_update_type = #{record.edcnUpdateType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcnUpdateTime != null">
+        edcn_update_time = #{record.edcnUpdateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcnType != null">
+        edcn_type = #{record.edcnType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.asyncTypePriority != null">
+        async_type_priority = #{record.asyncTypePriority,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_connect
+    set id = #{record.id,jdbcType=VARCHAR},
+      edcn_edmp_id = #{record.edcnEdmpId,jdbcType=VARCHAR},
+      edcn_link_preservable = #{record.edcnLinkPreservable,jdbcType=TINYINT},
+      edcn_update_type = #{record.edcnUpdateType,jdbcType=VARCHAR},
+      edcn_update_time = #{record.edcnUpdateTime,jdbcType=VARCHAR},
+      edcn_type = #{record.edcnType,jdbcType=VARCHAR},
+      async_type_priority = #{record.asyncTypePriority,jdbcType=VARCHAR},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmConnect">
+    update edm_connect
+    <set>
+      <if test="edcnEdmpId != null">
+        edcn_edmp_id = #{edcnEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnLinkPreservable != null">
+        edcn_link_preservable = #{edcnLinkPreservable,jdbcType=TINYINT},
+      </if>
+      <if test="edcnUpdateType != null">
+        edcn_update_type = #{edcnUpdateType,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnUpdateTime != null">
+        edcn_update_time = #{edcnUpdateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="edcnType != null">
+        edcn_type = #{edcnType,jdbcType=VARCHAR},
+      </if>
+      <if test="asyncTypePriority != null">
+        async_type_priority = #{asyncTypePriority,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmConnect">
+    update edm_connect
+    set edcn_edmp_id = #{edcnEdmpId,jdbcType=VARCHAR},
+      edcn_link_preservable = #{edcnLinkPreservable,jdbcType=TINYINT},
+      edcn_update_type = #{edcnUpdateType,jdbcType=VARCHAR},
+      edcn_update_time = #{edcnUpdateTime,jdbcType=VARCHAR},
+      edcn_type = #{edcnType,jdbcType=VARCHAR},
+      async_type_priority = #{asyncTypePriority,jdbcType=VARCHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--批量插入-->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO edm_connect (id, edcn_edmp_id, edcn_link_preservable,
+    edcn_update_type, edcn_update_time,async_type_priority,edcn_type,
+    is_del, addtime, adduser,
+    modtime, moduser, acctid
+    )
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.edcnEdmpId,jdbcType=VARCHAR}, #{item.edcnLinkPreservable,jdbcType=TINYINT},
+      #{item.edcnUpdateType,jdbcType=VARCHAR}, #{item.edcnUpdateTime,jdbcType=VARCHAR},#{item.asyncTypePriority,jdbcType=VARCHAR},
+      #{item.edcnType,jdbcType=VARCHAR},0,#{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR},
+      #{item.modtime,jdbcType=TIMESTAMP}, #{item.moduser,jdbcType=VARCHAR}, #{item.acctid,jdbcType=TINYINT}
+      )
+    </foreach>
+  </insert>
+
+  <!--linziy Add : 根据属性id 查找联动属性-->
+  <select id="selectEdmConnectListByPropertyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />  FROM edm_connect where is_del !=1 AND edcn_edmp_id = #{propertyId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getEdmConnectPropertieByEdmpId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_connect WHERE is_del !=1 AND edcn_edmp_id = #{edcnEdmpId,jdbcType=VARCHAR} ORDER BY modtime DESC LIMIT 1
+  </select>
+
+  <update id="LogicDeleteByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_connect SET is_del = 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="LogicDeleteByEdmpId" parameterType="java.lang.String">
+    UPDATE edm_connect SET is_del = 1
+    WHERE  edcn_edmp_id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

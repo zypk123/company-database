@@ -1,0 +1,36 @@
+server:
+  port: 7001 #配置服务端口号
+
+test:
+  name: zhang # 自定义属性
+
+spring:
+  datasource: # 数据库相关配置
+    url: jdbc:mysql://192.168.13.52:3306/training
+    username: root
+    password: hk123
+    driver-class-name: com.mysql.jdbc.Driver
+
+  jpa: # JPA的配置
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+
+  redis: # redis相关配置
+    database: 0 # Redis数据库索引（默认为0）
+    host: 192.168.13.33
+    port: 6379
+    password: #默认没有密码
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 0
+
+
+
+

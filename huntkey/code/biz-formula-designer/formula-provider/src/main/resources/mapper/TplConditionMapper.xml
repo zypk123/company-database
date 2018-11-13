@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.related.classes.dao.TplConditionMapper">
+    <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TplCondition">
+        <id column="cndt_id" property="cndtId" jdbcType="VARCHAR"/>
+        <result column="cndt_prop_clss_id" property="cndtPropClssId" jdbcType="VARCHAR"/>
+        <result column="cndt_seq" property="cndtSeq" jdbcType="INTEGER"/>
+        <result column="cndt_prop" property="cndtProp" jdbcType="VARCHAR"/>
+        <result column="cndt_operate" property="cndtOperate" jdbcType="VARCHAR"/>
+        <result column="cndt_value" property="cndtValue" jdbcType="VARCHAR"/>
+        <result column="cndt_value_type" property="cndtValueType" jdbcType="CHAR"/>
+        <result column="isenable" property="isenable" jdbcType="TINYINT"/>
+        <result column="addtime" property="addtime" jdbcType="TIMESTAMP"/>
+        <result column="adduser" property="adduser" jdbcType="VARCHAR"/>
+        <result column="modtime" property="modtime" jdbcType="TIMESTAMP"/>
+        <result column="moduser" property="moduser" jdbcType="VARCHAR"/>
+        <result column="acctid" property="acctid" jdbcType="INTEGER"/>
+        <result column="cndt_value_class_id" property="cndtValueClassId" jdbcType="VARCHAR"/>
+        <result column="cndt_prop_origin_code" property="cndtPropOriginCode" jdbcType="VARCHAR"/>
+        <result column="cndt_value_origin_code" property="cndtValueOriginCode" jdbcType="VARCHAR"/>
+        <result column="pre_varchar" jdbcType="VARCHAR" property="preVarchar" />
+        <result column="const_type" jdbcType="INTEGER" property="constType" />
+        <result column="cndt_object_number" jdbcType="VARCHAR" property="cndtObjectNumber" />
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        cndt_id, cndt_prop_clss_id, cndt_seq, cndt_prop, cndt_operate, cndt_value, cndt_value_type,
+        isenable, addtime, adduser, modtime, moduser, acctid, cndt_value_class_id,cndt_prop_origin_code, cndt_value_origin_code, pre_varchar,const_type,cndt_object_number
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap"
+            parameterType="com.huntkey.rx.sceo.formula.common.model.TplConditionExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        'true' as QUERYID,
+        <include refid="Base_Column_List"/>
+        from tpl_condition
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tpl_condition
+        where cndt_id = #{cndtId,jdbcType=VARCHAR} AND isenable = 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from tpl_condition
+        where cndt_id = #{cndtId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TplConditionExample">
+        delete from tpl_condition
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TplCondition">
+        insert into tpl_condition (cndt_id, cndt_prop_clss_id, cndt_seq,
+        cndt_prop, cndt_operate, cndt_value,
+        cndt_value_type, isenable, addtime,
+        adduser, modtime, moduser,
+        acctid,cndt_value_class_id, cndt_prop_origin_code, cndt_value_origin_code, pre_varchar,const_type,cndt_object_number
+        )
+        values (#{cndtId,jdbcType=VARCHAR}, #{cndtPropClssId,jdbcType=VARCHAR}, #{cndtSeq,jdbcType=INTEGER},
+        #{cndtProp,jdbcType=VARCHAR}, #{cndtOperate,jdbcType=VARCHAR}, #{cndtValue,jdbcType=VARCHAR},
+        #{cndtValueType,jdbcType=CHAR}, #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP},
+        #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR},
+        #{acctid,jdbcType=INTEGER},#{cndtValueClassId,jdbcType=VARCHAR}, #{cndtPropOriginCode,jdbcType=VARCHAR}, #{cndtValueOriginCode,jdbcType=VARCHAR},
+        #{preVarchar,jdbcType=VARCHAR},#{constType,jdbcType=INTEGER},#{cndtObjectNumber,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TplCondition">
+        insert into tpl_condition
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cndtId != null">
+                cndt_id,
+            </if>
+            <if test="cndtPropClssId != null">
+                cndt_prop_clss_id,
+            </if>
+            <if test="cndtSeq != null">
+                cndt_seq,
+            </if>
+            <if test="cndtProp != null">
+                cndt_prop,
+            </if>
+            <if test="cndtOperate != null">
+                cndt_operate,
+            </if>
+            <if test="cndtValue != null">
+                cndt_value,
+            </if>
+            <if test="cndtValueType != null">
+                cndt_value_type,
+            </if>
+            <if test="isenable != null">
+                isenable,
+            </if>
+            <if test="addtime != null">
+                addtime,
+            </if>
+            <if test="adduser != null">
+                adduser,
+            </if>
+            <if test="modtime != null">
+                modtime,
+            </if>
+            <if test="moduser != null">
+                moduser,
+            </if>
+            <if test="acctid != null">
+                acctid,
+            </if>
+            <if test="cndtValueClassId != null">
+                cndt_value_class_id,
+            </if>
+            <if test="cndtPropOriginCode != null">
+                cndt_prop_origin_code,
+            </if>
+            <if test="cndtValueOriginCode != null">
+                cndt_value_origin_code,
+            </if>
+            <if test="preVarchar != null">
+                pre_varchar,
+            </if>
+            <if test="constType != null">
+                const_type,
+            </if>
+            <if test="cndtObjectNumber != null">
+                cndt_object_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cndtId != null">
+                #{cndtId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtPropClssId != null">
+                #{cndtPropClssId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtSeq != null">
+                #{cndtSeq,jdbcType=INTEGER},
+            </if>
+            <if test="cndtProp != null">
+                #{cndtProp,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtOperate != null">
+                #{cndtOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValue != null">
+                #{cndtValue,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValueType != null">
+                #{cndtValueType,jdbcType=CHAR},
+            </if>
+            <if test="isenable != null">
+                #{isenable,jdbcType=TINYINT},
+            </if>
+            <if test="addtime != null">
+                #{addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="adduser != null">
+                #{adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="modtime != null">
+                #{modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="moduser != null">
+                #{moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="acctid != null">
+                #{acctid,jdbcType=INTEGER},
+            </if>
+            <if test="cndtValueClassId != null">
+                #{cndtValueClassId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtPropOriginCode != null">
+                #{cndtPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValueOriginCode != null">
+                #{cndtValueOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="preVarchar != null">
+                #{preVarchar,jdbcType=VARCHAR},
+            </if>
+            <if test="constType != null">
+                #{constType,jdbcType=INTEGER},
+            </if>
+            <if test="cndtObjectNumber != null">
+                #{cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TplConditionExample"
+            resultType="java.lang.Integer">
+        select count(*) from tpl_condition
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update tpl_condition
+        <set>
+            <if test="record.cndtId != null">
+                cndt_id = #{record.cndtId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtPropClssId != null">
+                cndt_prop_clss_id = #{record.cndtPropClssId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtSeq != null">
+                cndt_seq = #{record.cndtSeq,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndtProp != null">
+                cndt_prop = #{record.cndtProp,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtOperate != null">
+                cndt_operate = #{record.cndtOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtValue != null">
+                cndt_value = #{record.cndtValue,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtValueType != null">
+                cndt_value_type = #{record.cndtValueType,jdbcType=CHAR},
+            </if>
+            <if test="record.isenable != null">
+                isenable = #{record.isenable,jdbcType=TINYINT},
+            </if>
+            <if test="record.addtime != null">
+                addtime = #{record.addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.adduser != null">
+                adduser = #{record.adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="record.modtime != null">
+                modtime = #{record.modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.moduser != null">
+                moduser = #{record.moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="record.acctid != null">
+                acctid = #{record.acctid,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndtValueClassId != null">
+                cndt_value_class_id = #{record.cndtValueClassId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtPropOriginCode != null">
+                cndt_prop_origin_code = #{record.cndtPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.cndtValueOriginCode != null">
+                cndt_value_origin_code = #{record.cndtValueOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.preVarchar != null">
+                pre_varchar = #{record.preVarchar,jdbcType=VARCHAR},
+            </if>
+            <if test="record.constType != null">
+                const_type = #{record.constType,jdbcType=INTEGER},
+            </if>
+            <if test="record.cndtObjectNumber != null">
+                cndt_object_number = #{record.cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update tpl_condition
+        set cndt_id = #{record.cndtId,jdbcType=VARCHAR},
+        cndt_prop_clss_id = #{record.cndtPropClssId,jdbcType=VARCHAR},
+        cndt_seq = #{record.cndtSeq,jdbcType=INTEGER},
+        cndt_prop = #{record.cndtProp,jdbcType=VARCHAR},
+        cndt_operate = #{record.cndtOperate,jdbcType=VARCHAR},
+        cndt_value = #{record.cndtValue,jdbcType=VARCHAR},
+        cndt_value_type = #{record.cndtValueType,jdbcType=CHAR},
+        isenable = #{record.isenable,jdbcType=TINYINT},
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+        acctid = #{record.acctid,jdbcType=INTEGER},
+        cndt_value_class_id = #{record.cndtValueClassId,jdbcType=VARCHAR},
+        cndt_prop_origin_code = #{record.cndtPropOriginCode,jdbcType=VARCHAR},
+        cndt_value_origin_code = #{record.cndtValueOriginCode,jdbcType=VARCHAR},
+        pre_varchar = #{record.preVarchar,jdbcType=VARCHAR},
+        const_type = #{record.constType,jdbcType=INTEGER},
+        cndt_object_number = #{record.cndtObjectNumber,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TplCondition">
+        update tpl_condition
+        <set>
+            <if test="cndtPropClssId != null">
+                cndt_prop_clss_id = #{cndtPropClssId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtSeq != null">
+                cndt_seq = #{cndtSeq,jdbcType=INTEGER},
+            </if>
+            <if test="cndtProp != null">
+                cndt_prop = #{cndtProp,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtOperate != null">
+                cndt_operate = #{cndtOperate,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValue != null">
+                cndt_value = #{cndtValue,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValueType != null">
+                cndt_value_type = #{cndtValueType,jdbcType=CHAR},
+            </if>
+            <if test="isenable != null">
+                isenable = #{isenable,jdbcType=TINYINT},
+            </if>
+            <if test="addtime != null">
+                addtime = #{addtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="adduser != null">
+                adduser = #{adduser,jdbcType=VARCHAR},
+            </if>
+            <if test="modtime != null">
+                modtime = #{modtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="moduser != null">
+                moduser = #{moduser,jdbcType=VARCHAR},
+            </if>
+            <if test="acctid != null">
+                acctid = #{acctid,jdbcType=INTEGER},
+            </if>
+            <if test="cndtValueClassId != null">
+                cndt_value_class_id = #{cndtValueClassId,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtPropOriginCode != null">
+                cndt_prop_origin_code = #{cndtPropOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cndtValueOriginCode != null">
+                cndt_value_origin_code = #{cndtValueOriginCode,jdbcType=VARCHAR},
+            </if>
+            <if test="preVarchar != null">
+                pre_varchar = #{preVarchar,jdbcType=VARCHAR},
+            </if>
+            <if test="constType != null">
+                const_type = #{constType,jdbcType=INTEGER},
+            </if>
+            <if test="cndtObjectNumber != null">
+                cndt_object_number = #{cndtObjectNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where cndt_id = #{cndtId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TplCondition">
+        update tpl_condition
+        set cndt_prop_clss_id = #{cndtPropClssId,jdbcType=VARCHAR},
+        cndt_seq = #{cndtSeq,jdbcType=INTEGER},
+        cndt_prop = #{cndtProp,jdbcType=VARCHAR},
+        cndt_operate = #{cndtOperate,jdbcType=VARCHAR},
+        cndt_value = #{cndtValue,jdbcType=VARCHAR},
+        cndt_value_type = #{cndtValueType,jdbcType=CHAR},
+        isenable = #{isenable,jdbcType=TINYINT},
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+        adduser = #{adduser,jdbcType=VARCHAR},
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+        moduser = #{moduser,jdbcType=VARCHAR},
+        acctid = #{acctid,jdbcType=INTEGER},
+        cndt_value_class_id = #{cndtValueClassId,jdbcType=VARCHAR},
+        cndt_prop_origin_code = #{cndtPropOriginCode,jdbcType=VARCHAR},
+        cndt_value_origin_code = #{cndtValueOriginCode,jdbcType=VARCHAR},
+        pre_varchar = #{preVarchar,jdbcType=VARCHAR}
+        where cndt_id = #{cndtId,jdbcType=VARCHAR},
+        const_type = #{constType,jdbcType=INTEGER},
+        cndt_object_number = #{cndtObjectNumber,jdbcType=VARCHAR}
+    </update>
+    <!--通过条件id删除条件(逻辑删除)-->
+    <update id="updateIsenableByPrimaryKey" parameterType="java.lang.String">
+        UPDATE tpl_condition SET
+        isenable = 0
+        WHERE cndt_id = #{cndtId,jdbcType=VARCHAR}
+    </update>
+
+    <!--根据属性或者相关类id查找条件列表-->
+    <select id="selectByClssId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tpl_condition
+        where cndt_prop_clss_id = #{clssId,jdbcType=VARCHAR} AND isenable = 1
+    </select>
+
+    <update id="updateIsenableByPropClssId" parameterType="java.lang.String">
+        UPDATE tpl_condition SET isenable = 0 WHERE cndt_prop_clss_id = #{clssId,jdbcType=VARCHAR}
+    </update>
+</mapper>

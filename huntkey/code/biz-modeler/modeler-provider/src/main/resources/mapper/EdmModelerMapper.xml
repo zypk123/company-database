@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmModelerMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmModeler">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edmd_parent_id" jdbcType="VARCHAR" property="edmdParentId" />
+    <result column="edmd_code" jdbcType="VARCHAR" property="edmdCode" />
+    <result column="edmd_ver" jdbcType="VARCHAR" property="edmdVer" />
+    <result column="edmd_update_desc" jdbcType="VARCHAR" property="edmdUpdateDesc" />
+    <result column="edmd_status" jdbcType="TINYINT" property="edmdStatus" />
+    <result column="edmd_release_time" jdbcType="TIMESTAMP" property="edmdReleaseTime" />
+    <result column="edmd_expire_time" jdbcType="TIMESTAMP" property="edmdExpireTime" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  AND ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  AND ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  AND ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  AND ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edmd_parent_id, edmd_code, edmd_ver, edmd_update_desc, edmd_status, edmd_release_time, 
+    edmd_expire_time, is_del, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmModelerExample" resultMap="BaseResultMap">
+    SELECT
+    <if test="distinct">
+      DISTINCT
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_modeler
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      ORDER BY ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_modeler
+    WHERE id = #{id,jdbcType=VARCHAR} AND is_del != 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM edm_modeler
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmModelerExample">
+    DELETE FROM edm_modeler
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmModeler">
+    INSERT INTO edm_modeler (id, edmd_parent_id, edmd_code,
+      edmd_ver, edmd_update_desc, edmd_status, 
+      edmd_release_time, edmd_expire_time, is_del, 
+      addtime, adduser, modtime, 
+      moduser, acctid)
+    VALUES (#{id,jdbcType=VARCHAR}, #{edmdParentId,jdbcType=VARCHAR}, #{edmdCode,jdbcType=VARCHAR},
+      #{edmdVer,jdbcType=VARCHAR}, #{edmdUpdateDesc,jdbcType=VARCHAR}, #{edmdStatus,jdbcType=TINYINT}, 
+      #{edmdReleaseTime,jdbcType=TIMESTAMP}, #{edmdExpireTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=TINYINT}, 
+      #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, 
+      #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmModeler">
+    INSERT INTO edm_modeler
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edmdParentId != null">
+        edmd_parent_id,
+      </if>
+      <if test="edmdCode != null">
+        edmd_code,
+      </if>
+      <if test="edmdVer != null">
+        edmd_ver,
+      </if>
+      <if test="edmdUpdateDesc != null">
+        edmd_update_desc,
+      </if>
+      <if test="edmdStatus != null">
+        edmd_status,
+      </if>
+      <if test="edmdReleaseTime != null">
+        edmd_release_time,
+      </if>
+      <if test="edmdExpireTime != null">
+        edmd_expire_time,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdParentId != null">
+        #{edmdParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdCode != null">
+        #{edmdCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdVer != null">
+        #{edmdVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdUpdateDesc != null">
+        #{edmdUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdStatus != null">
+        #{edmdStatus,jdbcType=TINYINT},
+      </if>
+      <if test="edmdReleaseTime != null">
+        #{edmdReleaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edmdExpireTime != null">
+        #{edmdExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmModelerExample" resultType="java.lang.Long">
+    SELECT COUNT(*) FROM edm_modeler
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    UPDATE edm_modeler
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmdParentId != null">
+        edmd_parent_id = #{record.edmdParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmdCode != null">
+        edmd_code = #{record.edmdCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmdVer != null">
+        edmd_ver = #{record.edmdVer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmdUpdateDesc != null">
+        edmd_update_desc = #{record.edmdUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edmdStatus != null">
+        edmd_status = #{record.edmdStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.edmdReleaseTime != null">
+        edmd_release_time = #{record.edmdReleaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.edmdExpireTime != null">
+        edmd_expire_time = #{record.edmdExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    UPDATE edm_modeler
+    SET id = #{record.id,jdbcType=VARCHAR},
+      edmd_parent_id = #{record.edmdParentId,jdbcType=VARCHAR},
+      edmd_code = #{record.edmdCode,jdbcType=VARCHAR},
+      edmd_ver = #{record.edmdVer,jdbcType=VARCHAR},
+      edmd_update_desc = #{record.edmdUpdateDesc,jdbcType=VARCHAR},
+      edmd_status = #{record.edmdStatus,jdbcType=TINYINT},
+      edmd_release_time = #{record.edmdReleaseTime,jdbcType=TIMESTAMP},
+      edmd_expire_time = #{record.edmdExpireTime,jdbcType=TIMESTAMP},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmModeler">
+    UPDATE edm_modeler
+    <set>
+      <if test="edmdParentId != null">
+        edmd_parent_id = #{edmdParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdCode != null">
+        edmd_code = #{edmdCode,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdVer != null">
+        edmd_ver = #{edmdVer,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdUpdateDesc != null">
+        edmd_update_desc = #{edmdUpdateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="edmdStatus != null">
+        edmd_status = #{edmdStatus,jdbcType=TINYINT},
+      </if>
+      <if test="edmdReleaseTime != null">
+        edmd_release_time = #{edmdReleaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edmdExpireTime != null">
+        edmd_expire_time = #{edmdExpireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmModeler">
+    UPDATE edm_modeler
+    SET edmd_parent_id = #{edmdParentId,jdbcType=VARCHAR},
+      edmd_code = #{edmdCode,jdbcType=VARCHAR},
+      edmd_ver = #{edmdVer,jdbcType=VARCHAR},
+      edmd_update_desc = #{edmdUpdateDesc,jdbcType=VARCHAR},
+      edmd_status = #{edmdStatus,jdbcType=TINYINT},
+      edmd_release_time = #{edmdReleaseTime,jdbcType=TIMESTAMP},
+      edmd_expire_time = #{edmdExpireTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateIsDelByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_modeler SET is_del=1 WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateStatusWithPublishedModeler">
+    UPDATE edm_modeler SET edmd_status = 7 WHERE edmd_status = 6
+  </update>
+
+  <select id="selectAllVers"  resultType="java.lang.String">
+    SELECT
+    edmd_ver
+    FROM edm_modeler WHERE is_del !=1 ORDER BY edmd_ver DESC
+  </select>
+
+  <select id="selectEdmdIdByVer"  resultType="java.lang.String">
+    SELECT id FROM edm_modeler WHERE is_del !=1 AND edmd_ver = #{edmdVer,jdbcType=VARCHAR}
+  </select>
+</mapper>

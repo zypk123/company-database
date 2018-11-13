@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.record.dao.SourceSystemRecordMappingMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMapping" >
+    <id column="recd_id" property="recdId" jdbcType="VARCHAR" />
+    <result column="source_name" property="sourceName" jdbcType="VARCHAR" />
+    <result column="source_mapping_id" property="sourceMappingId" jdbcType="VARCHAR" />
+    <result column="source_mapping_type" property="sourceMappingType" jdbcType="VARCHAR" />
+    <result column="inside_id" property="insideId" jdbcType="VARCHAR" />
+    <result column="inside_type" property="insideType" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    recd_id, source_name, source_mapping_id, source_mapping_type, inside_id, inside_type,
+    isenable, addtime, adduser, modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMappingExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from source_system_record_mapping
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from source_system_record_mapping
+    where recd_id = #{recdId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from source_system_record_mapping
+    where recd_id = #{recdId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMappingExample" >
+    delete from source_system_record_mapping
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMapping" >
+    insert into source_system_record_mapping (recd_id, source_name, source_mapping_id,
+    source_mapping_type, inside_id, inside_type,
+    isenable, addtime, adduser,
+    modtime, moduser, acctid
+    )
+    values (#{recdId,jdbcType=VARCHAR}, #{sourceName,jdbcType=VARCHAR}, #{sourceMappingId,jdbcType=VARCHAR},
+    #{sourceMappingType,jdbcType=VARCHAR}, #{insideId,jdbcType=VARCHAR}, #{insideType,jdbcType=VARCHAR},
+    #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, #{adduser,jdbcType=VARCHAR},
+    #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, #{acctid,jdbcType=INTEGER}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMapping" >
+    insert into source_system_record_mapping
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recdId != null" >
+        recd_id,
+      </if>
+      <if test="sourceName != null" >
+        source_name,
+      </if>
+      <if test="sourceMappingId != null" >
+        source_mapping_id,
+      </if>
+      <if test="sourceMappingType != null" >
+        source_mapping_type,
+      </if>
+      <if test="insideId != null" >
+        inside_id,
+      </if>
+      <if test="insideType != null" >
+        inside_type,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recdId != null" >
+        #{recdId,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceName != null" >
+        #{sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceMappingId != null" >
+        #{sourceMappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceMappingType != null" >
+        #{sourceMappingType,jdbcType=VARCHAR},
+      </if>
+      <if test="insideId != null" >
+        #{insideId,jdbcType=VARCHAR},
+      </if>
+      <if test="insideType != null" >
+        #{insideType,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMappingExample" resultType="java.lang.Integer" >
+    select count(*) from source_system_record_mapping
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update source_system_record_mapping
+    <set >
+      <if test="record.recdId != null" >
+        recd_id = #{record.recdId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sourceName != null" >
+        source_name = #{record.sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sourceMappingId != null" >
+        source_mapping_id = #{record.sourceMappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sourceMappingType != null" >
+        source_mapping_type = #{record.sourceMappingType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.insideId != null" >
+        inside_id = #{record.insideId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.insideType != null" >
+        inside_type = #{record.insideType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update source_system_record_mapping
+    set recd_id = #{record.recdId,jdbcType=VARCHAR},
+    source_name = #{record.sourceName,jdbcType=VARCHAR},
+    source_mapping_id = #{record.sourceMappingId,jdbcType=VARCHAR},
+    source_mapping_type = #{record.sourceMappingType,jdbcType=VARCHAR},
+    inside_id = #{record.insideId,jdbcType=VARCHAR},
+    inside_type = #{record.insideType,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMapping" >
+    update source_system_record_mapping
+    <set >
+      <if test="sourceName != null" >
+        source_name = #{sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceMappingId != null" >
+        source_mapping_id = #{sourceMappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceMappingType != null" >
+        source_mapping_type = #{sourceMappingType,jdbcType=VARCHAR},
+      </if>
+      <if test="insideId != null" >
+        inside_id = #{insideId,jdbcType=VARCHAR},
+      </if>
+      <if test="insideType != null" >
+        inside_type = #{insideType,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where recd_id = #{recdId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.SourceSystemRecordMapping" >
+    update source_system_record_mapping
+    set source_name = #{sourceName,jdbcType=VARCHAR},
+      source_mapping_id = #{sourceMappingId,jdbcType=VARCHAR},
+      source_mapping_type = #{sourceMappingType,jdbcType=VARCHAR},
+      inside_id = #{insideId,jdbcType=VARCHAR},
+      inside_type = #{insideType,jdbcType=VARCHAR},
+      isenable = #{isenable,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=INTEGER}
+    where recd_id = #{recdId,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="delRecordMapping" parameterType="java.lang.String">
+    delete from source_system_record_mapping WHERE inside_id = #{insideId,jdbcType=VARCHAR}
+  </delete>
+</mapper>

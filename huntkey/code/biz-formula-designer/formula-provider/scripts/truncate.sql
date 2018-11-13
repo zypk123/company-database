@@ -1,0 +1,13 @@
+truncate TABLE `tac_condition_related`;
+truncate TABLE `tac_property_related`;
+truncate TABLE `tdf_user_behavior`;
+truncate TABLE `tfd_class_related`;
+truncate TABLE `tfd_formula`;
+truncate TABLE `tfm_function_compiled`;
+truncate TABLE `tfm_function_definition`;
+truncate TABLE `tpl_condition`;
+truncate TABLE `tpl_property_limit`;
+truncate TABLE `tvm_locale_variant_mapping`;
+truncate TABLE `tvm_system_variant_mapping`;
+truncate TABLE `tvm_variant`;
+truncate TABLE `ftm_function_classify`;

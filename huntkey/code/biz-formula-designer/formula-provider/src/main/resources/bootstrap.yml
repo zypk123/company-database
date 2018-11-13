@@ -1,0 +1,68 @@
+server:
+  port: 4772
+spring:
+  application:
+    name: formula-provider
+#  cloud:
+#    config:
+#      profile: dev
+#      uri: http://10.3.98.153:9999
+#tmpPath: /usr/local/bizformula/back-end/ # 模拟编译环境
+
+#spring:
+#  boot:
+#    admin:
+#      url: http://10.3.98.153:7002/
+#  zipkin:
+#    base-url: http://10.3.98.153:9411/
+  sleuth:
+    sampler:
+      percentage: 1
+  redis:
+    port: 7000
+    host: 10.3.98.153
+  jmx:
+      enabled: false
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://10.3.98.153:3306/biz_formula?useUnicode=true&amp;characterEncoding=UTF-8&useSSL=true
+      jdbcUsername: ruixin
+      jdbcPassword: Huntkey11!
+      filters: stat
+      maxActive: 20
+      initialSize: 20
+      maxWait: 2000
+      minIdle: 20
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 1 from dual
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+  http:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+logging:
+  config: classpath:log4j2.xml
+  level:
+    root: info
+eureka:
+  instance:
+    preferIpAddress: true
+    instanceId: ${spring.cloud.client.ipAddress}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1111/eureka/  #注册中心地址
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+zkClient:
+  servers: 10.3.98.153:2181
+srcFilePath: temp
+jarUploadPath: jar/upload/
+jarHdfsDownloadPath: jar/hdfs/
+hdfsJarPath: /formula/
+nameNode: hdfs://10.3.98.161:8020
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 20000
+
+tmpPath: E:\formula-project-jar\

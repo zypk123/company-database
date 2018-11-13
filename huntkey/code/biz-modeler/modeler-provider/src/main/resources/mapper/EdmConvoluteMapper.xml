@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huntkey.rx.modeler.provider.dao.EdmConvoluteMapper">
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.modeler.common.model.EdmConvolute">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="edco_edmp_id" jdbcType="VARCHAR" property="edcoEdmpId" />
+    <result column="edco_convolute_formula" jdbcType="VARCHAR" property="edcoConvoluteFormula" />
+    <result column="edco_formula_desc" jdbcType="VARCHAR" property="edcoFormulaDesc" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+    <result column="adduser" jdbcType="VARCHAR" property="adduser" />
+    <result column="modtime" jdbcType="TIMESTAMP" property="modtime" />
+    <result column="moduser" jdbcType="VARCHAR" property="moduser" />
+    <result column="acctid" jdbcType="TINYINT" property="acctid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, edco_edmp_id, edco_convolute_formula, edco_formula_desc, is_del, addtime, adduser, 
+    modtime, moduser, acctid
+  </sql>
+  <select id="selectByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConvoluteExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edm_convolute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from edm_convolute
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from edm_convolute
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConvoluteExample">
+    delete from edm_convolute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.modeler.common.model.EdmConvolute">
+    insert into edm_convolute (id, edco_edmp_id, edco_convolute_formula, 
+      edco_formula_desc, is_del, addtime, 
+      adduser, modtime, moduser, 
+      acctid)
+    values (#{id,jdbcType=VARCHAR}, #{edcoEdmpId,jdbcType=VARCHAR}, #{edcoConvoluteFormula,jdbcType=VARCHAR}, 
+      #{edcoFormulaDesc,jdbcType=VARCHAR}, #{isDel,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP}, 
+      #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR}, 
+      #{acctid,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.modeler.common.model.EdmConvolute">
+    insert into edm_convolute
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="edcoEdmpId != null">
+        edco_edmp_id,
+      </if>
+      <if test="edcoConvoluteFormula != null">
+        edco_convolute_formula,
+      </if>
+      <if test="edcoFormulaDesc != null">
+        edco_formula_desc,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="adduser != null">
+        adduser,
+      </if>
+      <if test="modtime != null">
+        modtime,
+      </if>
+      <if test="moduser != null">
+        moduser,
+      </if>
+      <if test="acctid != null">
+        acctid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="edcoEdmpId != null">
+        #{edcoEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edcoConvoluteFormula != null">
+        #{edcoConvoluteFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="edcoFormulaDesc != null">
+        #{edcoFormulaDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        #{acctid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.modeler.common.model.EdmConvoluteExample" resultType="java.lang.Long">
+    select count(*) from edm_convolute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edm_convolute
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcoEdmpId != null">
+        edco_edmp_id = #{record.edcoEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcoConvoluteFormula != null">
+        edco_convolute_formula = #{record.edcoConvoluteFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="record.edcoFormulaDesc != null">
+        edco_formula_desc = #{record.edcoFormulaDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDel != null">
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null">
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null">
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null">
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null">
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null">
+        acctid = #{record.acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edm_convolute
+    set id = #{record.id,jdbcType=VARCHAR},
+      edco_edmp_id = #{record.edcoEdmpId,jdbcType=VARCHAR},
+      edco_convolute_formula = #{record.edcoConvoluteFormula,jdbcType=VARCHAR},
+      edco_formula_desc = #{record.edcoFormulaDesc,jdbcType=VARCHAR},
+      is_del = #{record.isDel,jdbcType=TINYINT},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      adduser = #{record.adduser,jdbcType=VARCHAR},
+      modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      moduser = #{record.moduser,jdbcType=VARCHAR},
+      acctid = #{record.acctid,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.modeler.common.model.EdmConvolute">
+    update edm_convolute
+    <set>
+      <if test="edcoEdmpId != null">
+        edco_edmp_id = #{edcoEdmpId,jdbcType=VARCHAR},
+      </if>
+      <if test="edcoConvoluteFormula != null">
+        edco_convolute_formula = #{edcoConvoluteFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="edcoFormulaDesc != null">
+        edco_formula_desc = #{edcoFormulaDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null">
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null">
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null">
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null">
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null">
+        acctid = #{acctid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.modeler.common.model.EdmConvolute">
+    update edm_convolute
+    set edco_edmp_id = #{edcoEdmpId,jdbcType=VARCHAR},
+      edco_convolute_formula = #{edcoConvoluteFormula,jdbcType=VARCHAR},
+      edco_formula_desc = #{edcoFormulaDesc,jdbcType=VARCHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      addtime = #{addtime,jdbcType=TIMESTAMP},
+      adduser = #{adduser,jdbcType=VARCHAR},
+      modtime = #{modtime,jdbcType=TIMESTAMP},
+      moduser = #{moduser,jdbcType=VARCHAR},
+      acctid = #{acctid,jdbcType=TINYINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--逻辑删除-->
+  <update id="LogicDeleteByPrimaryKey" parameterType="java.lang.String">
+    UPDATE edm_convolute SET is_del = 1
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--批量插入 -->
+  <insert id="insertBatch" parameterType="java.util.List">
+    INSERT INTO edm_convolute (id, edco_edmp_id, edco_convolute_formula,edco_formula_desc,
+    is_del, addtime, adduser,
+    modtime, moduser, acctid
+    )
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+    (#{item.id,jdbcType=VARCHAR}, #{item.edcoEdmpId,jdbcType=VARCHAR}, #{item.edcoConvoluteFormula,jdbcType=VARCHAR},
+    #{item.edcoFormulaDesc,jdbcType=VARCHAR}, 0, #{item.addtime,jdbcType=TIMESTAMP}, #{item.adduser,jdbcType=VARCHAR},
+    #{item.modtime,jdbcType=TIMESTAMP}, #{item.moduser,jdbcType=VARCHAR}, #{item.acctid,jdbcType=TINYINT}
+    )
+    </foreach>
+  </insert>
+  <!--linziy Add : 根据属性id 查找卷积属性-->
+  <select id="selectEdmConvoluteByPropertyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM edm_convolute WHERE edco_edmp_id =  #{id,jdbcType=VARCHAR} AND is_del = 0 ORDER BY modtime DESC LIMIT 1
+  </select>
+
+  <select id="selectPropertyIdListByClassId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT id FROM edm_property WHERE edmp_edmc_id = #{classId,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+
+  <select id="selectEdmcNameByEdmpEdmcId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmc_name FROM edm_class WHERE id = #{edmpEdmcId,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+
+  <select id="selectEdmpEdmcIdByEdcoEdmpId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmp_edmc_id FROM edm_property WHERE id = #{edcoEdmpId,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+
+  <select id="selectEdmpNameByEdcoEdmpId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edmp_name FROM edm_property WHERE id = #{edcoEdmpId,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+  <!--根据属性id取卷积公式-->
+  <select id="selectConFormulaByEdcoEdmpId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT edco_convolute_formula FROM edm_convolute WHERE edco_edmp_id = #{edcoEdmpId,jdbcType=VARCHAR} AND is_del = 0
+  </select>
+</mapper>

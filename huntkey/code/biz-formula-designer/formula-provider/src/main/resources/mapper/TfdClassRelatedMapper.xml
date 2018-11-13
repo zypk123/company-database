@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huntkey.rx.sceo.formula.provider.related.classes.dao.TfdClassRelatedMapper" >
+  <resultMap id="BaseResultMap" type="com.huntkey.rx.sceo.formula.common.model.TfdClassRelated" >
+    <id column="clss_id" property="clssId" jdbcType="VARCHAR" />
+    <result column="clss_class_id" property="clssClassId" jdbcType="VARCHAR" />
+    <result column="clss_formula_id" property="clssFormulaId" jdbcType="VARCHAR" />
+    <result column="clss_seq" property="clssSeq" jdbcType="INTEGER" />
+    <result column="clss_class_related_name" property="clssClassRelatedName" jdbcType="VARCHAR" />
+    <result column="clss_alias_name" property="clssAliasName" jdbcType="VARCHAR" />
+    <result column="clss_edmc_name_en" property="clssEdmcNameEn" jdbcType="VARCHAR" />
+    <result column="clss_condition_name" property="clssConditionName" jdbcType="VARCHAR" />
+    <result column="clss_condition_formula" property="clssConditionFormula" jdbcType="VARCHAR" />
+    <result column="clss_condition_desc" property="clssConditionDesc" jdbcType="VARCHAR" />
+    <result column="isenable" property="isenable" jdbcType="TINYINT" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="adduser" property="adduser" jdbcType="VARCHAR" />
+    <result column="modtime" property="modtime" jdbcType="TIMESTAMP" />
+    <result column="moduser" property="moduser" jdbcType="VARCHAR" />
+    <result column="acctid" property="acctid" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="clss_link_class_id" property="clssLinkClassId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    clss_id, clss_class_id, clss_formula_id, clss_seq, clss_class_related_name, clss_alias_name,
+    clss_edmc_name_en, clss_condition_name, clss_condition_formula, clss_condition_desc,
+    isenable, addtime, adduser, modtime, moduser, acctid, type, clss_link_class_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelatedExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tfd_class_related
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tfd_class_related
+    where clss_id = #{clssId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tfd_class_related
+    where clss_id = #{clssId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelatedExample" >
+    delete from tfd_class_related
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelated" >
+    insert into tfd_class_related (clss_id, clss_class_id, clss_formula_id,
+    clss_seq, clss_class_related_name, clss_alias_name,
+    clss_edmc_name_en, clss_condition_name, clss_condition_formula,
+    clss_condition_desc, isenable, addtime,
+    adduser, modtime, moduser,
+    acctid, type, clss_link_class_id)
+    values (#{clssId,jdbcType=VARCHAR}, #{clssClassId,jdbcType=VARCHAR}, #{clssFormulaId,jdbcType=VARCHAR},
+    #{clssSeq,jdbcType=INTEGER}, #{clssClassRelatedName,jdbcType=VARCHAR}, #{clssAliasName,jdbcType=VARCHAR},
+    #{clssEdmcNameEn,jdbcType=VARCHAR}, #{clssConditionName,jdbcType=VARCHAR}, #{clssConditionFormula,jdbcType=VARCHAR},
+    #{clssConditionDesc,jdbcType=VARCHAR}, #{isenable,jdbcType=TINYINT}, #{addtime,jdbcType=TIMESTAMP},
+    #{adduser,jdbcType=VARCHAR}, #{modtime,jdbcType=TIMESTAMP}, #{moduser,jdbcType=VARCHAR},
+    #{acctid,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{clssLinkClassId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelated" >
+    insert into tfd_class_related
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="clssId != null" >
+        clss_id,
+      </if>
+      <if test="clssClassId != null" >
+        clss_class_id,
+      </if>
+      <if test="clssFormulaId != null" >
+        clss_formula_id,
+      </if>
+      <if test="clssSeq != null" >
+        clss_seq,
+      </if>
+      <if test="clssClassRelatedName != null" >
+        clss_class_related_name,
+      </if>
+      <if test="clssAliasName != null" >
+        clss_alias_name,
+      </if>
+      <if test="clssEdmcNameEn != null" >
+        clss_edmc_name_en,
+      </if>
+      <if test="clssConditionName != null" >
+        clss_condition_name,
+      </if>
+      <if test="clssConditionFormula != null" >
+        clss_condition_formula,
+      </if>
+      <if test="clssConditionDesc != null" >
+        clss_condition_desc,
+      </if>
+      <if test="isenable != null" >
+        isenable,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="adduser != null" >
+        adduser,
+      </if>
+      <if test="modtime != null" >
+        modtime,
+      </if>
+      <if test="moduser != null" >
+        moduser,
+      </if>
+      <if test="acctid != null" >
+        acctid,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="clssLinkClassId != null" >
+        clss_link_class_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="clssId != null" >
+        #{clssId,jdbcType=VARCHAR},
+      </if>
+      <if test="clssClassId != null" >
+        #{clssClassId,jdbcType=VARCHAR},
+      </if>
+      <if test="clssFormulaId != null" >
+        #{clssFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="clssSeq != null" >
+        #{clssSeq,jdbcType=INTEGER},
+      </if>
+      <if test="clssClassRelatedName != null" >
+        #{clssClassRelatedName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssAliasName != null" >
+        #{clssAliasName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssEdmcNameEn != null" >
+        #{clssEdmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionName != null" >
+        #{clssConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionFormula != null" >
+        #{clssConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionDesc != null" >
+        #{clssConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="clssLinkClassId != null" >
+        #{clssLinkClassId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelatedExample" resultType="java.lang.Integer" >
+    select count(*) from tfd_class_related
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tfd_class_related
+    <set >
+      <if test="record.clssId != null" >
+        clss_id = #{record.clssId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssClassId != null" >
+        clss_class_id = #{record.clssClassId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssFormulaId != null" >
+        clss_formula_id = #{record.clssFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssSeq != null" >
+        clss_seq = #{record.clssSeq,jdbcType=INTEGER},
+      </if>
+      <if test="record.clssClassRelatedName != null" >
+        clss_class_related_name = #{record.clssClassRelatedName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssAliasName != null" >
+        clss_alias_name = #{record.clssAliasName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssEdmcNameEn != null" >
+        clss_edmc_name_en = #{record.clssEdmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssConditionName != null" >
+        clss_condition_name = #{record.clssConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssConditionFormula != null" >
+        clss_condition_formula = #{record.clssConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clssConditionDesc != null" >
+        clss_condition_desc = #{record.clssConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isenable != null" >
+        isenable = #{record.isenable,jdbcType=TINYINT},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.adduser != null" >
+        adduser = #{record.adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modtime != null" >
+        modtime = #{record.modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.moduser != null" >
+        moduser = #{record.moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acctid != null" >
+        acctid = #{record.acctid,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.clssLinkClassId != null" >
+        clss_link_class_id = #{record.clssLinkClassId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tfd_class_related
+    set clss_id = #{record.clssId,jdbcType=VARCHAR},
+    clss_class_id = #{record.clssClassId,jdbcType=VARCHAR},
+    clss_formula_id = #{record.clssFormulaId,jdbcType=VARCHAR},
+    clss_seq = #{record.clssSeq,jdbcType=INTEGER},
+    clss_class_related_name = #{record.clssClassRelatedName,jdbcType=VARCHAR},
+    clss_alias_name = #{record.clssAliasName,jdbcType=VARCHAR},
+    clss_edmc_name_en = #{record.clssEdmcNameEn,jdbcType=VARCHAR},
+    clss_condition_name = #{record.clssConditionName,jdbcType=VARCHAR},
+    clss_condition_formula = #{record.clssConditionFormula,jdbcType=VARCHAR},
+    clss_condition_desc = #{record.clssConditionDesc,jdbcType=VARCHAR},
+    isenable = #{record.isenable,jdbcType=TINYINT},
+    addtime = #{record.addtime,jdbcType=TIMESTAMP},
+    adduser = #{record.adduser,jdbcType=VARCHAR},
+    modtime = #{record.modtime,jdbcType=TIMESTAMP},
+    moduser = #{record.moduser,jdbcType=VARCHAR},
+    acctid = #{record.acctid,jdbcType=INTEGER},
+    type = #{record.type,jdbcType=INTEGER},
+    clss_link_class_id = #{record.clssLinkClassId,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelated" >
+    update tfd_class_related
+    <set >
+      <if test="clssClassId != null" >
+        clss_class_id = #{clssClassId,jdbcType=VARCHAR},
+      </if>
+      <if test="clssFormulaId != null" >
+        clss_formula_id = #{clssFormulaId,jdbcType=VARCHAR},
+      </if>
+      <if test="clssSeq != null" >
+        clss_seq = #{clssSeq,jdbcType=INTEGER},
+      </if>
+      <if test="clssClassRelatedName != null" >
+        clss_class_related_name = #{clssClassRelatedName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssAliasName != null" >
+        clss_alias_name = #{clssAliasName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssEdmcNameEn != null" >
+        clss_edmc_name_en = #{clssEdmcNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionName != null" >
+        clss_condition_name = #{clssConditionName,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionFormula != null" >
+        clss_condition_formula = #{clssConditionFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="clssConditionDesc != null" >
+        clss_condition_desc = #{clssConditionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isenable != null" >
+        isenable = #{isenable,jdbcType=TINYINT},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adduser != null" >
+        adduser = #{adduser,jdbcType=VARCHAR},
+      </if>
+      <if test="modtime != null" >
+        modtime = #{modtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="moduser != null" >
+        moduser = #{moduser,jdbcType=VARCHAR},
+      </if>
+      <if test="acctid != null" >
+        acctid = #{acctid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="clssLinkClassId != null" >
+        clss_link_class_id = #{clssLinkClassId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where clss_id = #{clssId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.huntkey.rx.sceo.formula.common.model.TfdClassRelated" >
+    update tfd_class_related
+    set clss_class_id = #{clssClassId,jdbcType=VARCHAR},
+    clss_formula_id = #{clssFormulaId,jdbcType=VARCHAR},
+    clss_seq = #{clssSeq,jdbcType=INTEGER},
+    clss_class_related_name = #{clssClassRelatedName,jdbcType=VARCHAR},
+    clss_alias_name = #{clssAliasName,jdbcType=VARCHAR},
+    clss_edmc_name_en = #{clssEdmcNameEn,jdbcType=VARCHAR},
+    clss_condition_name = #{clssConditionName,jdbcType=VARCHAR},
+    clss_condition_formula = #{clssConditionFormula,jdbcType=VARCHAR},
+    clss_condition_desc = #{clssConditionDesc,jdbcType=VARCHAR},
+    isenable = #{isenable,jdbcType=TINYINT},
+    addtime = #{addtime,jdbcType=TIMESTAMP},
+    adduser = #{adduser,jdbcType=VARCHAR},
+    modtime = #{modtime,jdbcType=TIMESTAMP},
+    moduser = #{moduser,jdbcType=VARCHAR},
+    acctid = #{acctid,jdbcType=INTEGER},
+    type = #{type,jdbcType=INTEGER},
+    clss_link_class_id = #{clssLinkClassId,jdbcType=VARCHAR}
+    where clss_id = #{clssId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="existLocalVar" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT a.* FROM tfd_class_related a , tfd_formula b , tvm_locale_variant_mapping c
+    WHERE a.clss_formula_id = b.frmu_id
+    AND c.lclv_formula_id = b.frmu_id
+    AND a.clss_id = #{clssId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="showLocalVarName" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT
+      d.vrnt_var_name
+    FROM tfd_class_related a,
+      tfd_formula b,
+      tvm_locale_variant_mapping c,
+      tvm_variant d
+    WHERE a.clss_formula_id = b.frmu_id
+        AND c.lclv_formula_id = b.frmu_id
+        AND c.lclv_var_id = d.vrnt_id
+        AND a.clss_id = #{clssId,jdbcType=VARCHAR}
+        AND d.isenable = 1
+  </select>
+
+  <select id="getFormulaId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT clss_formula_id FROM tfd_class_related WHERE clss_id = #{clssId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByFormulaIdExceptSelf" resultMap="BaseResultMap">
+    SELECT * FROM tfd_class_related WHERE clss_formula_id = #{formulaId,jdbcType=VARCHAR} AND clss_id != #{clssId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getClassRelatedName" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT clss_class_related_name FROM tfd_class_related WHERE clss_id = #{clssId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getClassRelatedIdByFormulaId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT clss_id FROM tfd_class_related WHERE clss_formula_id = #{formulaId,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateIsenableByClssId" parameterType="java.lang.String">
+    UPDATE tfd_class_related SET isenable = 0 WHERE clss_id = #{clssId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="getAliasNameById" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT clss_alias_name FROM tfd_class_related WHERE clss_id = #{clssId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="checkNameUnique" resultType="java.lang.String">
+    SELECT clss_alias_name FROM tfd_class_related
+    WHERE clss_alias_name =#{clssAliasName,jdbcType=VARCHAR}
+    AND clss_formula_id =#{formulaId,jdbcType=VARCHAR}  AND clss_id !=#{clssId,jdbcType=VARCHAR}
+    AND isenable != 0
+  </select>
+
+  <select id="checkNameUniqueForClssLinkClassId" resultType="java.lang.String">
+    SELECT clss_alias_name FROM tfd_class_related
+    WHERE clss_alias_name =#{clssAliasName,jdbcType=VARCHAR}
+    AND clss_link_class_id =#{clssLinkClassId,jdbcType=VARCHAR}  AND clss_id !=#{clssId,jdbcType=VARCHAR}
+    AND isenable != 0
+  </select>
+
+  <select id="getFormulaIdByClssId" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT clss_formula_id FROM tfd_class_related WHERE clss_id =#{clssId,jdbcType=VARCHAR}
+  </select>
+</mapper>
