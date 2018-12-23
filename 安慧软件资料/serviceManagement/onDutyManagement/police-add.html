@@ -1,0 +1,65 @@
+<div class="easyui-layout" id="leader-add">
+	<div data-options="region:'north',border:false" style="height: 30px;">
+			&nbsp;&nbsp;&nbsp;<input type="checkbox" />只显示本部门的人员
+	</div>
+	<div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+		<table  cy-datagrid="options" cy-querydata="queryData"
+		cy-url=""></table>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar" style="height:40px;text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+			cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.options = {
+			columns : [[{
+				field : 'id',
+				checkbox : true,
+				align : 'center',
+				width : 10
+			},{
+				field : 'ssbm',
+				title : '所属部门',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'jybh',
+				title : '警员编号',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'xm',
+				title : '姓名',
+				align : 'center',
+				width : 40,
+			}, {
+				field : 'xb',
+				title : '性别',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'sfzhm',
+				title : '身份证号码',
+				align : 'center',
+				width : 45
+			}, {
+				field : 'sjhm',
+				title : '手机号码',
+				align : 'center',
+				width : 20
+			}]],
+			pagination:false
+		};
+	})
+
+	
+	
+</script>
+<style>
+</style>

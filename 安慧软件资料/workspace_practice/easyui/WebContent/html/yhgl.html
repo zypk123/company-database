@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户管理</title>
+<!-- 引入样式文件 -->
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+<!-- 引入js库文件 -->
+<script type="text/javascript" src="../js/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true">
+	  	<!--查询条件区-->
+	  	<div data-options="region:'north',height:100" >
+	  		<div>
+	  			<form id="form">
+	  				<br/>
+	  				&nbsp;&nbsp;姓名：<input class="easyui-textbox" style="width:130px" data-options="required:true"/>
+	  				&nbsp;&nbsp;警号：<input class="easyui-textbox" style="width:130px" data-options="required:true"/>
+	  				&nbsp;&nbsp;在线状态:<input type="radio" name="state" value="" checked="checked"/>全部
+								<input type="radio" name="state" value="1"/>在线
+								<input type="radio" name="state" value="2"/>离线
+	  				&nbsp;&nbsp;<a herf="#" id="search" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a></br></br>
+			    </form>
+			</div>
+			
+			<!--工具栏-->
+			<div>
+				<a id="add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a> 
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a> 
+			</div>
+		</div>
+		
+		<!--数据展示区-->	
+		<div data-options="region:'center'">
+			<table id="grid"></table>
+		</div>
+		
+		<!-- 添加用户弹出框dialog -->
+		<div id="dialog">
+			<div class="easyui-layout" data-options="fit:true">
+				 <div data-options="region:'center',border:false">
+					<form>
+						<table cellspacing="8px">
+							<tr>
+								<td>姓名:<input class="easyui-textbox" required="true"/>&nbsp;<font color="red">*</font></td>
+								<td>警&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:<input class="easyui-textbox" required="true"/>&nbsp;<font color="red">*</font></td>
+								<td>所属机构:<input class="easyui-textbox" id="orzTree"></td>
+							</tr>
+							<tr>
+								<td>性别:<input type="radio" name="sex" value="0"/>男&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									    <input type="radio" name="sex" value="1"/>女
+								</td>
+								<td>出生日期:<input id="date" type="text" class="easyui-datebox"></td>
+								<td>身份证号:<input class="easyui-textbox"></td>
+							</tr>
+							<tr>
+								<td>警衔:<select id="policeRankInput" class="easyui-combobox" style="width:150px;" editable="false" panelHeight="auto"></select></td>
+								<td>编制类型:<select id="typeInput" class="easyui-combobox" style="width:150px;" editable="false" panelHeight="auto"></select></td>
+								<td>业务岗位:<select id="businessInput" class="easyui-combobox" style="width:150px;" editable="false" panelHeight="auto"></select></td>
+							</tr>
+							<tr>
+								<td>警员类型:<input type="radio" name="policeType" value="0"/>交管&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									      <input type="radio" name="policeType" value="1"/>其他
+								</td>
+								<td>事物处理级别:<select id="dealThingsInput" class="easyui-combobox" style="width:130px;" editable="false" panelHeight="auto"></select></td>
+								<td>领导级别:<select id="leaderInput" class="easyui-combobox" style="width:150px;" editable="false" panelHeight="auto"></select></td>
+							</tr>
+							<tr>
+								<td>职级:<input class="easyui-textbox"></td>
+								<td>联系电话:<input class="easyui-textbox"></td>
+								<td>办公电话:<input class="easyui-textbox"></td>
+							</tr>
+							<tr>
+								<td>职位:<input class="easyui-textbox"></td>
+								<td>家庭住址:<input class="easyui-textbox" ></td>
+								<td>电子邮箱:<input class="easyui-textbox"></td>
+							</tr>
+							<tr>
+								<td>过期时间：<input id="date" type="text" class="easyui-datetimebox"></td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<!--按钮 -->
+				<div data-options="region:'south',height:40,border:false" style="text-align:center">
+					<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a> 
+					<a id="cancelButton" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a> 
+				</div>
+			</div>
+		</div>
+		
+		<!-- 机构树 -->
+		<div id="treeDialog" class="easyui-dialog" title="机构树" buttons="#dlg-buttons">
+			<div id="tree"></div>
+		</div>
+		
+		<div id="dlg-buttons" style="text-align:center">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-ok">确认</a>
+			<a id="_cancelButton" href="#" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+ 		</div>
+  </div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		
+		var data=[];
+		$("#grid").datagrid({
+			fit:true,//自适应
+			pagination : true,//分页控件
+			fitColumns : true,//自适应列
+			columns:[[  //列 ，注意是二维数组
+			   /*  {field:"cb",checkbox="true"},  */
+			    {field:"id",title:"编号",width:80,align:"center"},
+				{field:"name",title:"姓名",width:100,align:"center"},
+				{field:"userName",title:"用户名",width:100,align:"center"},
+				{field:"org",title:"所属机构",width:150,align:"center"},
+				{field:"tel",title:"联系电话",width:150,align:"center"},
+				{field:"idCard",title:"身份证号码",width:200,align:"center"},
+				{field:"policeNum",title:"警号",width:150,align:"center"},
+				{field:"state",title:"在线状态",width:150,align:"center",formatter:formatState},
+				{field:"times",title:"本月登录次数",width:150,align:"center"},
+				{field:"lastLoginTime",title:"最近登录时间",width:200,align:"center"},
+				{field:"operate",title:"操作",width:100,align:"center",formatter:formatOperate}
+			]]
+		});
+		
+		//设置分页控件
+		var pager = $("#grid").datagrid("getPager");
+		pager.pagination({
+		    total:data.length,
+			onSelectPage:function (pageNo, pageSize) { 
+		          var start = (pageNo - 1) * pageSize; 
+		          var end = start + pageSize; 
+		          $("#grid").datagrid("loadData", data.slice(start, end)); 
+		          pager.pagination('refresh', { 
+		            total:data.length, 
+		            pageNumber:pageNo 
+		          }); 
+			}
+		});
+		
+		$("#search").click(function(){
+			//验证
+			if($("#form").form("validate")){
+				//查询数据
+				    data = [{
+					id : 1,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 2,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 3,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 4,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 5,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 6,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 7,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:2,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 8,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:1,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 9,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:1,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 10,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:1,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				},{
+					id : 11,
+					name : "张三",
+					userName:"001",
+					org:"安徽省公安厅",
+					tel:"18326893198",
+					idCard:"11111111111111111",
+					policeNum:"12345",
+					state:1,
+					times:20,
+					lastLoginTime : "2016-06-12"
+				}];
+				$("#grid").datagrid("loadData",data); //加载数据到表格中
+			}
+		});
+		
+		
+		//格式化操作
+		function formatOperate(value,row,index){
+			var edit = $("<a title='编辑' onclick='editUser(this)'></a>");
+			edit.linkbutton({
+				iconCls :　"icon-edit"
+			}).attr({
+				userId : row.id,
+			});
+			var remove = $("<a title='删除' onclick='removeUser(this)'></a>");
+			remove.linkbutton({
+				iconCls :　"icon-remove"
+			}).attr({
+				userId : row.id
+			});
+			return $("<span></span>").append(edit).append(" ").append(remove).html();
+		};
+		
+		//格式化状态
+		function formatState(value,row,index){
+			if(value === 2){
+				return "<span style='color:red'>离线<span>";
+			}else if(value === 1){
+				return "在线";
+			}
+		};
+		
+		//初始化弹框
+		$("#dialog").dialog({
+			title:'添加用户',
+			iconCls:'icon-save',
+			resizable:true,
+			closed:true,//默认是关闭状态
+			modal:true,//激活当前对话框，后面的页面不可点击
+			width:700,
+			height:350,
+			// buttons :[{  //添加按钮（右下角）
+			// 	text:'保存',
+			// 	iconCls : "icon-save",
+			// 	handler:function(){
+			// 		console.log("save");
+			// 	}
+			// },{
+			// 	text:'取消',
+			// 	iconCls : "icon-cancel",
+			// 	handler:function(){
+			// 		console.log("cancel");
+			// 	}
+			// }]
+		});
+		
+		//点击添加按钮，弹出添加对话框
+		$("#add").click(function(){
+			$("#dialog").dialog("open").dialog("center");
+		});
+		
+		//为取消按钮添加事件
+		$("#cancelButton").click(function(){
+			$("#dialog").dialog("close");
+		});
+		
+		$("#_cancelButton").click(function(){
+			$("#treeDialog").dialog("close");
+		});
+		
+		//添加所属机构树
+		$("#orzTree").textbox({
+			buttonIcon : "icon-edit",
+			onClickButton : function(){
+				$("#treeDialog").dialog("open").dialog("center");
+			}
+		});
+		
+		//为下拉框填充数据
+		$("#policeRankInput").combobox("loadData",[{
+			text : "一级警司",
+			value : 1
+		},{
+			text : "二级警司",
+			value : 2
+		},{
+			text : "三级警司",
+			value : 3
+		}]);
+		
+		$("#typeInput").combobox("loadData",[{
+			text : "公安编",
+			value : 1
+		},{
+			text : "地方编",
+			value : 2
+		},{
+			text : "事业编",
+			value : 3
+		}]);
+		
+		$("#businessInput").combobox("loadData",[{
+			text : "城区管理执勤",
+			value : 1
+		},{
+			text : "高速执勤",
+			value : 2
+		},{
+			text : "事故处理",
+			value : 3
+		},{
+			text : "道路宣传",
+			value : 4
+		}]);
+		
+		$("#dealThingsInput").combobox("loadData",[{
+			text : "初级",
+			value : 1
+		},{
+			text : "中级",
+			value : 2
+		},{
+			text : "高级",
+			value : 3
+		}]);
+		
+		$("#leaderInput").combobox("loadData",[{
+			text : "总队领导",
+			value : 1
+		},{
+			text : "支队领导",
+			value : 2
+		},{
+			text : "大队领导",
+			value : 3
+		}]);
+		
+		//日期限制
+		$("#date").datebox("calendar").calendar({
+			validator : function(date){
+				var currentDate = new Date();
+				if(date < currentDate){
+					return true;
+				}
+				return false;
+			}
+		});
+		
+		//初始化机构树
+		$("#treeDialog").dialog({
+			iconCls:'icon-more',
+			resizable:true,
+			closed:true,
+			modal:true,
+			width:400,
+			height:300
+		});
+		
+		//机构树数据
+		var treeData = [{
+			id : 1,
+			text : "云南省公安交通警察总队",
+			children : [{
+				id : 11,
+				text : "昆明市交通警察支队"
+			},{
+				id : 12,
+				text : "大理市交通警察支队"
+			}]
+		},{
+			id : 2,
+			text : "安徽省公安交通警察总队",
+			children : [{
+				id : 21,
+				text : "合肥市交通警察支队"
+			},{
+				id : 22,
+				text : "六安市交通警察支队"
+			}]
+		}];
+		
+		//为树加载数据
+		$("#tree").tree({
+			data : treeData
+		});
+	});
+	
+	function editUser(el){
+		var id = $(el).attr("userid");
+		console.log("edit",id);
+	}
+
+	function removeUser(el){
+		var id = $(el).attr("userid");
+		console.log("remove",id);
+	}
+</script>
+</html>

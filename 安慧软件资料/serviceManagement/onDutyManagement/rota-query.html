@@ -1,0 +1,123 @@
+<div class="easyui-layout" id="rota-query">
+	<div data-options="region:'north',border:false" style="height: 120px;">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="formData" id="form" >
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							值班部门：
+						</div>
+						<div class="td">
+							<input  class="cy-org-radio">
+						</div>
+						<div class="th">
+							值班日期:
+						</div>
+						<div class="td">
+                            <input id="startTime" class="easyui-datebox" name="ZBTimeFrom" style="width:150px" data-options="validType:['maxDate[\'endTime\']','date']"/>
+                                                                                              到
+                            <input id="endTime" class="easyui-datebox" name="ZBTimeTo" style="width:150px" data-options="validType:['minDate[\'startTime\']','date']"/>
+                        </div>
+                        <div class="th">
+                        	<div class="td">
+	                        	<input type="checkbox" />今日排班
+	                        	<input type="checkbox" />明日排班
+	                        	<input type="checkbox" />本周排班
+                        	</div>
+                        </div>
+                   </div>
+                   <div class="tr">
+                   		<div class="th">
+                   			值班人员：
+                   		</div>
+                   		<div class="td">
+                   			<input class="cy-org-radio" />
+           			    </div>
+           			    <div class="th"></div>
+           			    <div class="td">
+           			    	<input type="checkbox" />我的值班表
+           			    </div>
+           			    <div class="th">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+						<div class="th">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-print'"
+							cy-click="print" style="width: 60px;float: right;">打印</a>
+						</div>
+						<div class="th">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="search" style="width: 60px;float: right;">查看</a>
+						</div>
+                   	
+                   </div>  
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+		<table  cy-datagrid="options" cy-querydata="queryData"
+		cy-url=""></table>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.options = {
+			columns : [[{
+				field : 'zbrq',
+				title : '值班日期',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'zbbm',
+				title : '值班部门',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'dbnd',
+				title : '带班领导',
+				align : 'center',
+				width : 40,
+			}, {
+				field : 'zbmj',
+				title : '值班民警',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'cjr',
+				title : '采集人',
+				align : 'center',
+				width : 45
+			}, {
+				field : 'cjsj',
+				title : '采集时间',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'zbrz',
+				title : '值班日志',
+				align : 'center',
+				width : 20,
+			}]]
+		};
+		
+		$scope.search = function() {
+			$scope.$openDialog("addDialog", {
+				title : "值班日志查询",
+				height : 400,
+				width : 800,
+				href : "tpls/serviceManagement/onDutyManagement/onduty-log-query.html"
+			}, true);
+		};
+		
+		
+	})
+</script>
+<style>
+	#rota-query .th {
+		margin-left: 20px;
+	}
+</style>

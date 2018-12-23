@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhang.dao.DataDicDao">
+
+	<resultMap type="DataDic" id="DataDicResult">
+		<result property="id" column="id"/>
+		<result property="dataDicName" column="dataDicName"/>
+		<result property="dataDicValue" column="dataDicValue"/>
+	</resultMap>
+	
+	<!--数据字典列表查询（分页）  -->
+	<select id="find" parameterType="Map" resultMap="DataDicResult">
+		select * from t_dataDic
+			<where>
+				<if test="dataDicName!=null and dataDicName!='' ">
+					and dataDicName = #{dataDicName} <!--数据字典名称详细查询  -->
+				</if>
+				<if test="dataDicValue!=null and dataDicValue!='' ">
+					and dataDicValue like #{dataDicValue}  <!--数据字典值模糊查询  -->
+				</if>
+			</where>
+			<if test="start!=null and size!=null">
+				limit #{start},#{size}
+			</if>
+	</select>
+	
+	<!-- 查询所有的数据字典名称，为了初始化下拉框 -->
+	<select id="findAll" resultMap="DataDicResult">
+		select distinct dataDicName from t_dataDic
+	</select>
+	
+	<!-- 获取总记录数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select count(1) from t_dataDic
+		<where>
+			<if test="dataDicName!=null and dataDicName!='' ">
+					and dataDicName = #{dataDicName} <!--数据字典名称详细查询  -->
+			</if>
+			<if test="dataDicValue!=null and dataDicValue!='' ">
+				and dataDicValue like #{dataDicValue}  <!--数据字典值模糊查询  -->
+			</if>
+		</where>
+	</select>
+	
+	<!-- 添加数据字典 -->
+	<insert id="add" parameterType="DataDic">
+		insert into t_dataDic values(null,#{dataDicName},#{dataDicValue})
+	</insert>
+	
+	<!-- 删除数据字典 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_dataDic where id = #{id}
+	</delete>
+	
+	<!--修改数据字典 -->
+	<update id="update" parameterType="DataDic">
+		update t_dataDic
+		<set>
+			<if test="dataDicName!=null and dataDicName!='' ">
+				dataDicName=#{dataDicName},
+			</if>
+			<if test="dataDicValue!=null and dataDicValue!='' ">
+				dataDicValue=#{dataDicValue},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper> 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<!-- 引入样式文件 -->
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">
+<!-- 引入js库文件 -->
+<script type="text/javascript" src="js/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north',height:100" >
+		</div>
+		<div data-options="region:'south',height:20" >
+		</div>
+		<div data-options="region:'west',title:'菜单',width:150" >
+		</div>
+		<div data-options="region:'center'">
+		  <div class="easyui-layout" data-options="fit:true">
+		  	<div data-options="region:'north',height:100" ></div>
+			<!--数据展示区-->	
+			<div data-options="region:'center'">
+				<table id="grid"></table>
+			</div>
+		  </div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$("#grid").datagrid({
+			fit:true,//自适应
+			pagination : true,//分页控件
+			fitColumns : true,//自适应列
+			rownumbers:true,
+			columns:[[  //列 ，注意是二维数组
+			    {field:'ck',checkbox:true},        
+				{field:"id",title:"id",width:100},
+				{field:"name",title:"姓名",width:150},
+				{field:"birthday",title:"生日",width:200},
+				{field:"sex",title:"性别",width:100,formatter:formatSex},
+				{field:"operate",title:"操作",width:150,formatter:formatOperate}
+			]],
+			url:"datagrid_data.json"
+		});
+		
+		//设置分页控件
+		var pager = $('#grid').datagrid().datagrid('getPager');//得到页面对象
+		pager.pagination({ //得到分页对象
+			onSelectPage:function(pageNumber, pageSize){ //用户翻页是触发该事件,pageNumber:当前第几页，pageSize:每页的记录数
+				/* console.log("当前页数:",pageNumber);
+				console.log("当前页面大小:",pageSize); */
+			}
+		});
+		
+		//格式化性别
+		function formatSex(value,row,index){
+			if(value === 1){
+				return "男";
+			}else if(value === 0){
+				return "女";
+			}
+		}
+		
+		//格式化操作
+		function formatOperate(value,row,index){
+			var edit = $("<a title='编辑' onclick='editUser(this)'></a>");
+			edit.linkbutton({
+				iconCls :　"icon-edit"
+			}).attr({
+				userId : row.id,
+			});
+			var remove = $("<a title='删除' onclick='removeUser(this)'></a>");
+			remove.linkbutton({
+				iconCls :　"icon-remove"
+			}).attr({
+				userId : row.id
+			});
+			return $("<span></span>").append(edit).append(" ").append(remove).html();
+		}
+	});
+	
+	function editUser(el){
+		var id = $(el).attr("userId");
+		console.log("edit",id);
+	}
+	
+	function removeUser(el){
+		var id = $(el).attr("userId");
+		console.log("remove",id);
+	}
+</script>
+</html>

@@ -1,0 +1,112 @@
+<div class="easyui-layout" id="people-scheduling">
+	<div data-options="region:'north',border:false" style="height: 80px;">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="formData" id="form" >
+				<div class="table">
+					<div class="tr">
+						<div class="th">排班日期：</div>
+                        <div class="td">
+                            <input id="startTime" class="easyui-datebox" name="PBTimeFrom" style="width:150px" data-options="validType:['maxDate[\'endTime\']','date']"/>
+                                                                                              到
+                            <input id="endTime" class="easyui-datebox" name="PBTimeTo" style="width:150px" data-options="validType:['minDate[\'startTime\']','date']"/>
+                        </div>
+						<div class="th">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="table">
+			<div class="tr" >
+				<div class="th">
+					值班模板：
+				</div>
+				<div class="td">
+					<input class="easyui-combobox" />
+					<a class="easyui-linkbutton " cy-click="PDMB">+</a>
+				</div>
+				<div class="td">
+					&nbsp;&nbsp;<input type="checkbox" /> 沿用上周排班
+				</div>
+				<div class="th">
+					<a class="easyui-linkbutton" cy-click="PB" style="width: 60px;float: right;">排班</a>
+				</div>
+			</div>
+		</div>
+		<table cy-datagrid="options" cy-querydata="queryData" cy-url=""></table>
+	</div>
+	
+	<div data-options="region:'east',border:false" style="width:150px;">
+		<a class="easyui-linkbutton" cy-click="DBLD">带班领导</a>
+		<a class="easyui-linkbutton" cy-click="ZBMJ">值班民警</a>
+	</div>
+	
+	
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar" style="height:40px;text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+			cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.options = {
+			columns : [[{
+				field : 'id',
+				checkbox:true,
+				align : 'center',
+				width : 10
+			},{
+				field : 'zbrq',
+				title : '值班日期',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'xq',
+				title : '星期',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'dbnd',
+				title : '带班领导',
+				align : 'center',
+				width : 40,
+			}, {
+				field : 'zbmj',
+				title : '值班民警',
+				align : 'center',
+				width : 30
+			}]]
+		};
+		
+		$scope.PDMB = function() {
+			$scope.$openDialog("addDialog", {
+				title : "值班模板",
+				height : 330,
+				width : 800,
+				href : "tpls/serviceManagement/onDutyManagement/onduty-template.html"
+			}, true);
+		};
+		
+	})
+</script>
+<style>
+	#people-scheduling .th{
+        width: 80px;
+        text-align: right;
+    }
+    #people-scheduling .button-search{
+       margin-left: 10px;
+    }
+</style>
+

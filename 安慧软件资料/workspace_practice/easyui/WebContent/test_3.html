@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<!-- 引入样式文件 -->
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">
+<!-- 引入js库文件 -->
+<script type="text/javascript" src="js/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north',height:100">
+			<center><h1>欢迎来到德莱联盟......</h1></center>
+		</div>   
+	    <!-- <div data-options="region:'south',height:100"></div> -->   
+	    <!-- <div data-options="region:'east',width:100"></div>   --> 
+	    <div data-options="region:'west',width:180,title:'菜单'"></div>   
+	    <div data-options="region:'center'">
+	    	<!-- panel面板 -->
+	    	<div id="p" class="easyui-panel" title="My Panel"     
+		        style="width:500px;height:150px;padding:10px;background:#fafafa;"   
+		        data-options="closable:true,minimizable:true,maximizable:true">   
+			    <p>panel content.</p>   
+			    <p>panel content.</p>   
+			</div> 
+			
+			<!-- tabs选项卡 -->
+			<div id="tt" class="easyui-tabs" style="width:500px;height:250px;">   
+			    <div title="Tab1" style="padding:20px;display:none;">   
+			        tab1    
+			    </div>   
+			    <div title="Tab2" data-options="closable:true" style="overflow:auto;padding:20px;display:none;">   
+			        tab2    
+			    </div>   
+			    <div title="Tab3" data-options="closable:true" style="padding:20px;display:none;">   
+			        tab3    
+			    </div>   
+			</div>
+			
+			<!-- accordion折叠菜单 -->
+			<div id="aa" class="easyui-accordion" style="width:200px;height:200px;">   
+			    <div title="Title1" overflow:auto;padding:10px;>   
+			        <h3 style="color:#0099FF;">Accordion for jQuery</h3>   
+			        <p>Accordion is a part of easyui framework for jQuery.     
+			        It lets you define your accordion component on web page more easily.</p>   
+			    </div>   
+			    <div title="Title2" data-options="selected:true" style="padding:10px;">   
+			        content2    
+			    </div>   
+			    <div title="Title3">   
+			        content3    
+			    </div>   
+			</div> 
+			
+			 
+			
+	    </div> 
+	</div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$('#tt').tabs({    
+		    //border:false,    
+		    onSelect:function(title){    
+		        alert(title+' is selected');    
+		    }    
+		});  
+		
+		//添加一个新的选项卡
+		$('#tt').tabs('add',{    
+		    title:'New Tab',    
+		    content:'Tab Body',    
+		    closable:true,    
+		    tools:[{    
+		        iconCls:'icon-mini-refresh',    
+		        handler:function(){    
+		            alert('refresh');    
+		        }    
+		    }]    
+		});
+	})
+</script>
+
+
+
+
+
+</html>

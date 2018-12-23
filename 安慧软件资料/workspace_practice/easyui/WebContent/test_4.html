@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<!-- 引入样式文件 -->
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">
+<!-- 引入js库文件 -->
+<script type="text/javascript" src="js/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north',height:100" >
+		</div>
+		<div data-options="region:'south',height:20" >
+		</div>
+		<div data-options="region:'west',title:'菜单',width:150" >
+		</div>
+		<div data-options="region:'center'">
+		  <div class="easyui-layout" data-options="fit:true">
+		  	<!--查询条件区-->
+		  	<div data-options="region:'north',height:100" >
+		  		<div>
+		  			<form id="form">
+		  				姓名：<input class="easyui-textbox" style="width:200px" data-options="required:true"/>
+		  				<a herf="#" id="search" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a></br></br>
+				    </form>
+				</div>
+				
+				<!--工具栏-->
+				<div>
+					<a id="treeButton" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">树</a>
+					<a id="add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a> 
+					<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a> 
+				</div>
+			</div>
+			
+			<!--数据展示区-->	
+			<div data-options="region:'center'">
+				<table id="grid"></table>
+			</div>
+			
+			<!-- 添加用户对话框dialog -->
+			<div id="dialog" class="easyui-dialog" title="添加用户" data-options="">
+				<div class="easyui-layout" data-options="fit:true">
+					 <div data-options="region:'center',border:false">
+						<form>
+							姓名:<input class="easyui-textbox">
+							性别:<select id="sexInput" class="easyui-combobox" style="width:80px";></select>
+							<br/>年龄：
+							<input type="text" class="easyui-numberbox" data-options="min:0,max:150,suffix:'岁'"></input> 
+							生日：
+							<input id="date" type="text" class="easyui-datebox"></input>
+							<br>创建时间：
+							<input id="dateTime" type="text" class="easyui-datetimebox"></input> 
+						</form>
+					</div>
+					<div data-options="region:'south',height:40,border:false" style="text-align:center">
+						<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a> 
+						<a id="cancelButton" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a> 
+					</div>
+				</div>
+			</div>
+			
+			<!-- 树对话框 -->
+			<div id="treeDialog" class="easyui-dialog" title="树" data-options="">
+				<div id="tree"></div>
+			</div>
+		  </div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$("#grid").datagrid({
+			fit:true,//自适应
+			pagination : true,//分页
+			fitColumns : true,//自适应列
+			columns:[[  //列 ，注意是二维数组
+				{field:"id",title:"id",width:100},
+				{field:"name",title:"姓名",width:150},
+				{field:"birthday",title:"生日",width:200},
+				{field:"sex",title:"性别",width:100,formatter:formatSex},
+				{field:"operate",title:"操作",width:150,formatter:formatOperate}
+			]]
+		});
+		
+		$("#search").click(function(){
+			//验证
+			if($("#form").form("validate")){
+				//查询数据
+				var data = [{
+					id : 1,
+					name : "张三",
+					birthday : "1980-01-01",
+					sex : 0
+				},{
+					id : 2,
+					name : "李四",
+					birthday : "1980-01-01",
+					sex : 1
+				},{
+					id : 3,
+					name : "张三",
+					birthday : "1980-01-01",
+					sex : 0
+				},{
+					id : 4,
+					name : "张三",
+					birthday : "1980-01-01",
+					sex : 0
+				},{
+					id : 5,
+					name : "张三",
+					birthday : "1980-01-01",
+					sex : 0
+				}];
+				$("#grid").datagrid("loadData",data); //加载数据到表格中
+			}
+		});
+		
+		//格式化性别
+		function formatSex(value,row,index){
+			if(value === 1){
+				return "男";
+			}else if(value === 0){
+				return "女";
+			}
+		}
+		
+		//格式化操作
+		function formatOperate(value,row,index){
+			var edit = $("<a title='编辑' onclick='editUser(this)'></a>");
+			edit.linkbutton({
+				iconCls :　"icon-edit"
+			}).attr({
+				userId : row.id,
+			});
+			var remove = $("<a title='删除' onclick='removeUser(this)'></a>");
+			remove.linkbutton({
+				iconCls :　"icon-remove"
+			}).attr({
+				userId : row.id
+			});
+			return $("<span></span>").append(edit).append(" ").append(remove).html();
+		}
+		
+		//初始化弹框
+		$("#dialog").dialog({
+			iconCls:'icon-save',
+			resizable:true,
+			closed:true,//默认是关闭状态
+			modal:true,//激活当前对话框，后面的页面不可点击
+			width:500,
+			height:'300px',
+			// buttons :[{  //添加按钮（右下角）
+			// 	text:'保存',
+			// 	iconCls : "icon-save",
+			// 	handler:function(){
+			// 		console.log("save");
+			// 	}
+			// },{
+			// 	text:'取消',
+			// 	iconCls : "icon-cancel",
+			// 	handler:function(){
+			// 		console.log("cancel");
+			// 	}
+			// }]
+		});
+		
+		//初始化树对话框
+		$("#treeDialog").dialog({
+			iconCls:'icon-save',
+			resizable:true,
+			closed:true,
+			modal:true,
+			width:700,
+			height:500
+		});
+		
+		//树初始化数据
+		var treeData = [{
+			id : 1,
+			text : "1班",
+			children : [{
+				id : 11,
+				text : "张三"
+			},{
+				id : 12,
+				text : "李四"
+			}]
+		},{
+			id : 2,
+			text : "2班",
+			children : [{
+				id : 21,
+				text : "王五"
+			},{
+				id : 22,
+				text : "赵六"
+			}]
+		}];
+		
+		//为树加载数据
+		$("#tree").tree({
+			data : treeData
+		});
+		
+		//点击按钮，弹出添加对话框
+		$("#add").click(function(){
+			$("#dialog").dialog("open").dialog("center");
+		})
+		
+		$("#treeButton").click(function(){
+			$("#treeDialog").dialog("open").dialog("center");
+		})
+		
+		//日期限制
+		$("#date").datebox("calendar").calendar({
+			validator : function(date){
+				var currentDate = new Date();
+				if(date < currentDate){
+					return true;
+				}
+				return false;
+			}
+		})
+		
+		//为姓名下拉框填充数据
+		$("#sexInput").combobox("loadData",[{
+			text : "男",
+			value : 0
+		},{
+			text : "女",
+			value : 1
+		}])
+		
+		//关闭页面
+		$("#cancelButton").click(function(){
+			$("#dialog").dialog("close");
+		})
+		
+	});
+	
+	function editUser(el){
+		var id = $(el).attr("userId");
+		console.log("edit",id);
+	}
+	
+	function removeUser(el){
+		var id = $(el).attr("userId");
+		console.log("remove",id);
+	}
+</script>
+</html>

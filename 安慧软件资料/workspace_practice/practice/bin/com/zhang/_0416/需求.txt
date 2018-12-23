@@ -1,0 +1,12 @@
+已知要实现U盘、MP3播放器、移动硬盘三种移动存储设备，
+要求计算机能同这三种设备进行数据交换，并且以后可能会有新的第三方的移动存储设备，所以计算机必须有扩展性，
+能与目前未知而以后可能会出现的存储设备进行数据交换。
+各个存储设备间读、写的实现方法不同，U盘和移动硬盘只有这两个方法，MP3Player还有一个PlayMusic方法
+
+数据交互：读----写
+
+添加新的存储设备的时候，只需要实现IMobileStorage接口，而Computer根本不用动，这就是所谓的---对拓展开放，对修改关闭
+
+来了一个新的存储设备SuperStorage，但是它没有实现IMobileStorage接口，所以里面的读写方法也不叫Read和Write，而叫ra和wt，
+显然，上述的方法就行不通了，这时我们可以引入一个适配器（转换器），可以把ra和wt方法转换成Read和Write。
+这个适配器SuperStorageAdapter实现了IMobileStorage接口，并且聚合了SuperStorage，将ra和wt方法转换成Read和Write
