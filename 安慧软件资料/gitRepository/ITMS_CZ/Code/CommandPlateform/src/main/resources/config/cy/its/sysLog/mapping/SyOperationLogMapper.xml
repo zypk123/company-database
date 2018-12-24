@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.sysLog.client.SyOperationLogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.sysLog.domain.SyOperationLog" >
+    <id column="OPE_LOG_ID" property="opeLogId" jdbcType="VARCHAR" />
+    <result column="SYS_FUNCTION_CODE" property="sysFunctionCode" jdbcType="VARCHAR" />
+    <result column="OPE_USER_ID" property="opeUserId" jdbcType="VARCHAR" />
+    <result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATE_RECORD_COUNTS" property="operateRecordCounts" jdbcType="VARCHAR" />
+    <result column="OPERATE_RESULT" property="operateResult" jdbcType="CHAR" />
+    <result column="CONSUME_SECONDS" property="consumeSeconds" jdbcType="FLOAT" />
+    <result column="ERROR_DESC" property="errorDesc" jdbcType="VARCHAR" />
+    <result column="COMPUTER_IP" property="computerIp" jdbcType="VARCHAR" />
+    <result column="REBACKABLE" property="rebackable" jdbcType="CHAR" />
+    <result column="RETURN_RESULT_TIME" property="returnResultTime" jdbcType="TIMESTAMP" />
+    <result column="SERVICE_URL" property="serviceUrl" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OPE_LOG_ID, SYS_FUNCTION_CODE, OPE_USER_ID, OPERATE_TIME, OPERATE_RECORD_COUNTS, 
+    OPERATE_RESULT, CONSUME_SECONDS, ERROR_DESC, COMPUTER_IP, REBACKABLE, RETURN_RESULT_TIME, 
+    SERVICE_URL,ORG_PRIVILEGE_CODE
+  </sql>
+  <insert id="insert" parameterType="cy.its.sysLog.domain.SyOperationLog" >
+    insert into T_SYS_OPERATION_LOG (OPE_LOG_ID, SYS_FUNCTION_CODE, OPE_USER_ID, 
+      OPERATE_TIME, OPERATE_RECORD_COUNTS, OPERATE_RESULT, 
+      CONSUME_SECONDS, ERROR_DESC, COMPUTER_IP, 
+      REBACKABLE, RETURN_RESULT_TIME, SERVICE_URL,ORG_PRIVILEGE_CODE
+      )
+    values (#{opeLogId,jdbcType=VARCHAR}, #{sysFunctionCode,jdbcType=VARCHAR}, #{opeUserId,jdbcType=VARCHAR}, 
+      #{operateTime,jdbcType=TIMESTAMP}, #{operateRecordCounts,jdbcType=VARCHAR}, #{operateResult,jdbcType=CHAR}, 
+      #{consumeSeconds,jdbcType=FLOAT}, #{errorDesc,jdbcType=VARCHAR}, #{computerIp,jdbcType=VARCHAR}, 
+      #{rebackable,jdbcType=CHAR}, #{returnResultTime,jdbcType=TIMESTAMP}, #{serviceUrl,jdbcType=VARCHAR}, #{orgPrivilegeCode,jdbcType=VARCHAR}
+      )
+  </insert>
+</mapper>

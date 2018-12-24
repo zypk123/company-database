@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficManualReportMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficManualReport" >
+    <id column="MANUAL_REPORT_TRA_ID" property="manualReportTraId" jdbcType="VARCHAR" />
+    <result column="REPORT_TYPE" property="reportType" jdbcType="CHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_ID" property="roadSectionId" jdbcType="VARCHAR" />
+    <result column="START_MILEAGE" property="startMileage" jdbcType="VARCHAR" />
+    <result column="END_MILEAGE" property="endMileage" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="TRAFFIC_STATE" property="trafficState" jdbcType="CHAR" />
+    <result column="METEOROLOGY_TYPE" property="meteorologyType" jdbcType="CHAR" />
+    <result column="EVENT_TYPE" property="eventType" jdbcType="CHAR" />
+    <result column="REPORT_BY" property="reportBy" jdbcType="VARCHAR" />
+    <result column="REPORT_TIME" property="reportTime" jdbcType="TIMESTAMP" />
+    <result column="EVENT_RELEASE_TYPE" property="eventReleaseType" jdbcType="CHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MANUAL_REPORT_TRA_ID, REPORT_TYPE, ROAD_ID, ROAD_SECTION_ID, START_MILEAGE, END_MILEAGE, 
+    DIRECTION_TYPE, DIRECTION_NAME, TRAFFIC_STATE, METEOROLOGY_TYPE, EVENT_TYPE, REPORT_BY, 
+    REPORT_TIME, EVENT_RELEASE_TYPE, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_MANUAL_REPORT
+    where MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_MANUAL_REPORT
+    where MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficManualReport" >
+    insert into T_TRAFFIC_MANUAL_REPORT (MANUAL_REPORT_TRA_ID, REPORT_TYPE, ROAD_ID, 
+      ROAD_SECTION_ID, START_MILEAGE, END_MILEAGE, 
+      DIRECTION_TYPE, DIRECTION_NAME, TRAFFIC_STATE, 
+      METEOROLOGY_TYPE, EVENT_TYPE, REPORT_BY, 
+      REPORT_TIME, EVENT_RELEASE_TYPE, REMARK
+      )
+    values (#{manualReportTraId,jdbcType=VARCHAR}, #{reportType,jdbcType=CHAR}, #{roadId,jdbcType=VARCHAR}, 
+      #{roadSectionId,jdbcType=VARCHAR}, #{startMileage,jdbcType=VARCHAR}, #{endMileage,jdbcType=VARCHAR}, 
+      #{directionType,jdbcType=CHAR}, #{directionName,jdbcType=VARCHAR}, #{trafficState,jdbcType=CHAR}, 
+      #{meteorologyType,jdbcType=CHAR}, #{eventType,jdbcType=CHAR}, #{reportBy,jdbcType=VARCHAR}, 
+      #{reportTime,jdbcType=TIMESTAMP}, #{eventReleaseType,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualReport" >
+    insert into T_TRAFFIC_MANUAL_REPORT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="manualReportTraId != null" >
+        MANUAL_REPORT_TRA_ID,
+      </if>
+      <if test="reportType != null" >
+        REPORT_TYPE,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID,
+      </if>
+      <if test="startMileage != null" >
+        START_MILEAGE,
+      </if>
+      <if test="endMileage != null" >
+        END_MILEAGE,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+      <if test="trafficState != null" >
+        TRAFFIC_STATE,
+      </if>
+      <if test="meteorologyType != null" >
+        METEOROLOGY_TYPE,
+      </if>
+      <if test="eventType != null" >
+        EVENT_TYPE,
+      </if>
+      <if test="reportBy != null" >
+        REPORT_BY,
+      </if>
+      <if test="reportTime != null" >
+        REPORT_TIME,
+      </if>
+      <if test="eventReleaseType != null" >
+        EVENT_RELEASE_TYPE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="manualReportTraId != null" >
+        #{manualReportTraId,jdbcType=VARCHAR},
+      </if>
+      <if test="reportType != null" >
+        #{reportType,jdbcType=CHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionId != null" >
+        #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="startMileage != null" >
+        #{startMileage,jdbcType=VARCHAR},
+      </if>
+      <if test="endMileage != null" >
+        #{endMileage,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="trafficState != null" >
+        #{trafficState,jdbcType=CHAR},
+      </if>
+      <if test="meteorologyType != null" >
+        #{meteorologyType,jdbcType=CHAR},
+      </if>
+      <if test="eventType != null" >
+        #{eventType,jdbcType=CHAR},
+      </if>
+      <if test="reportBy != null" >
+        #{reportBy,jdbcType=VARCHAR},
+      </if>
+      <if test="reportTime != null" >
+        #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="eventReleaseType != null" >
+        #{eventReleaseType,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualReport" >
+    update T_TRAFFIC_MANUAL_REPORT
+    <set >
+      <if test="reportType != null" >
+        REPORT_TYPE = #{reportType,jdbcType=CHAR},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="startMileage != null" >
+        START_MILEAGE = #{startMileage,jdbcType=VARCHAR},
+      </if>
+      <if test="endMileage != null" >
+        END_MILEAGE = #{endMileage,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="trafficState != null" >
+        TRAFFIC_STATE = #{trafficState,jdbcType=CHAR},
+      </if>
+      <if test="meteorologyType != null" >
+        METEOROLOGY_TYPE = #{meteorologyType,jdbcType=CHAR},
+      </if>
+      <if test="eventType != null" >
+        EVENT_TYPE = #{eventType,jdbcType=CHAR},
+      </if>
+      <if test="reportBy != null" >
+        REPORT_BY = #{reportBy,jdbcType=VARCHAR},
+      </if>
+      <if test="reportTime != null" >
+        REPORT_TIME = #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="eventReleaseType != null" >
+        EVENT_RELEASE_TYPE = #{eventReleaseType,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficManualReport" >
+    update T_TRAFFIC_MANUAL_REPORT
+    set REPORT_TYPE = #{reportType,jdbcType=CHAR},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      START_MILEAGE = #{startMileage,jdbcType=VARCHAR},
+      END_MILEAGE = #{endMileage,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      TRAFFIC_STATE = #{trafficState,jdbcType=CHAR},
+      METEOROLOGY_TYPE = #{meteorologyType,jdbcType=CHAR},
+      EVENT_TYPE = #{eventType,jdbcType=CHAR},
+      REPORT_BY = #{reportBy,jdbcType=VARCHAR},
+      REPORT_TIME = #{reportTime,jdbcType=TIMESTAMP},
+      EVENT_RELEASE_TYPE = #{eventReleaseType,jdbcType=CHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR}
+  </update>
+</mapper>

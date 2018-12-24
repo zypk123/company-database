@@ -1,0 +1,163 @@
+<!--路段信息添加页面-->
+<div id="point" class="easyui-layout">
+    <div data-options="region:'center',border: false">
+        <form cy-form="roadSectionData" id="form">
+            <div id="sectionAdd" class="table">
+                <div class="tr">
+                    <div class="th">
+                        路段编号：
+                    </div>
+                    <div class="td">
+                        <input  name="roadSectionCode" class="easyui-textbox"  data-options="required:true,validType:['notBlank','length[0,4]']" />
+                    </div>
+                    <div class="th">
+                        路段名称：
+                    </div> 
+                    <div class="td">
+                        <input  name="roadSectionName" data-options="validType:['notBlank','length[0,64]'],required: true"class="easyui-textbox" />
+                    </div>
+                    <div class="th">
+                        路段类型：
+                    </div>
+                    <div class="td">
+                        <input  name="roadSectionType" class="easyui-combobox"  data-options="required: true" cy-code="148"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        行政区划：
+                    </div>
+                    <div class="td">
+                        <input name="districtCode" class="cy-district-radio"  data-options="required: true"/>
+                    </div>
+                    <div class="th">
+                        管理机构：
+                    </div>
+                    <div class="td">
+                        <input id='orgId' name="orgId" class="cy-org-radio"  data-options="required: true"/>
+                    </div>
+                    <div class="th">
+                        所属道路：
+                    </div>
+                    <div class="td">
+                        <input name="roadId" class="cy-road-radio" filter="getRoadByOrg" data-options="required: true"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 103px">
+                        双向或单向：
+                    </div>
+                    <div  class="td" style="width: 138px">
+                        <input type="radio" name="isOneDirection" value="0" checked="checked"/>
+                        双向
+                        <input type="radio" name="isOneDirection" value="1"/>
+                        单向
+
+                    </div>
+                    <div class="th">
+                        起点名称：
+                    </div>
+                    <div class="td">
+                        <input name="roadBeginName" class="easyui-textbox" data-options="validType:['length[0,64]']"/>
+                    </div>
+                    <div class="th">
+                        终点名称：
+                    </div>
+                    <div class="td">
+                        <input name="roadEndName" class="easyui-textbox" data-options="validType:['length[0,64]']"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        起始里程：
+                    </div>
+                    <div class="td" style="width: 200px;">
+                        <input  name="beginMeterG"  class="easyui-textbox" style="width: 50px" data-options="validType:'length[0,7]'"/>    
+                         &nbsp; 公里
+                         &nbsp; + <input name="beginMeterM" class="easyui-textbox" style="width: 50px" data-options="validType:'length[0,3]'"/>
+                         &nbsp; 米 
+                    </div>
+                    <div class="th" style="width: 100px">
+                        结束里程：
+                    </div>
+                    <div class="td">
+                        <input name="endMeterG" class="easyui-textbox" style="width: 50px" data-options="validType:'length[0,7]'"/>  
+                           &nbsp; 公里
+                           &nbsp; + <input name="endMeterM" class="easyui-textbox" style="width: 50px" data-options="validType:'length[0,3]'"/>
+                           &nbsp; 米  
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',height:40,border: false">
+            <div class="linkbutton_toolbar" style="text-align: center">
+                <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+                cy-click="save">保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                cy-click="$closeSelf">取消</a>
+            </div>
+    </div>
+
+</div>
+<script>
+    InitPage(["saveData", "roadSectionData", "editData"], function($scope) {
+        $scope.$getDefaultCode(['148']);
+        /**
+		 *联动
+		 */
+		//机构和道路的联动
+		$scope.getRoadByOrg = function(id,text,attribute){
+			
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if(!orgId || orgId == ''){
+				return true;
+			}
+			if(attribute.nodeType == "road"){
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for(var i in orgPrivCodes){
+					if(orgPrivCodes[i].startWith(privCode)){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return true;
+			}
+		};
+        if ($scope.$params.get("type") == "add") {
+            $scope.save = function() {
+            if ($scope.$("#form").form("validate")) {
+                //更新form数据
+                $scope.$updateData("roadSectionData");
+                //调用父页面saveRoad方法
+                $scope.saveData($scope.roadSectionData);
+               }
+            };  
+        } else {
+            $scope.save = function() {
+            	if($scope.$("#form").form("validate")){
+            		//更新form数据
+               	 	$scope.$updateData("roadSectionData");
+                	//调用父页面editRoad方法
+                	$scope.editData($scope.roadSectionData);
+               }
+            };
+        }
+    }); 
+</script>
+<style type="text/css">
+    #sectionAdd .th {
+        text-align: right;
+        width: 90px;
+    }
+    #sectionAdd .td {
+        text-align: left;
+        width: 150px;
+    }
+    #road-structure .th {
+        text-align: right;
+        width: 110px;
+    }
+</style>

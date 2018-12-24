@@ -1,0 +1,620 @@
+<!--
+ ********************************************************************************
+ * 用户           云南交警总队
+ *
+ * 当前页面名   高危地域车辆分析页面(dangerarea-vehicle-analyse.html) 
+ *                    车辆频度分析
+ *                    高危时段分析
+ *
+ * 版本号        Version 1.0
+ * 作者           wangyunqi
+ *
+ * 更新履历     2016-03-21：创建
+ ********************************************************************************
+-->
+<div id="dangerarea-vehicle-analyse" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:120">
+		<form cy-form="formData" id='searchForm'>
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th" style="height:25px;line-height:25px;">
+							开始时间：
+						</div>
+						<div class="td" style="width:145px;">
+                          <input name="startDateTime" id="startDateTime" data-options="editable:false,required:true,prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date']" class="easyui-datebox  dispatchTime" style="width:145px;" autocomplete="on" />
+						</div>
+						<div class="th">
+							结束时间：	
+						</div>
+						<div class="td" style="width:145px;">
+                          <input name="endDateTime" id="endDateTime" data-options="editable:false,required:true,prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date']" class="easyui-datebox  dispatchTime" style="width:145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="margin-left: 25px;">
+							时段(起)：
+						</div>
+						<div class="td" style="width:80px;">
+                          <input name="startTime" id="startTime" class="easyui-timespinner"  style="width:80px;" required="required" data-options="showSeconds:true,increment:30,highlight:1" autocomplete="on" />
+						</div>
+						<div class="th" style="margin-left: 25px;">
+							时段(止)：
+						</div>
+						<div class="td" style="width:80px;">
+                          <input name="endTime" id="endTime" class="easyui-timespinner"  style="width:80px;" required="required" data-options="showSeconds:true,increment:30,highlight:1" autocomplete="on" />
+						</div>
+						
+						
+					</div>
+					
+					<div class="tr">
+						<!-- <div class="th" >
+							号牌类型：
+						</div>
+						<div class="td" style="width:112px">
+							<input class="easyui-combobox" id="plateType" name="plateType" style="width:112px" cy-code="002" />
+						</div>
+						
+						<div class="th" style="margin-left: 30px;">
+							车身颜色：
+						</div>
+						<div class="td" style="width:80px;">
+							<input class="easyui-combobox" id="vehicleColor" name="vehicleColor" cy-code="006" style="width:80px"
+							          />
+						</div> -->
+						<div class="th">
+							高危地域：
+						</div>
+						<div class="td" style="width:180px">
+						<input class="cy-area-choose" id="siteCodes" name="siteCodes" style="width:152px"/>
+						 <!--  <input class="cy-site-checkbox" name="siteCodes" id="siteCodes" iscode="true" style="width:100px;"> -->
+						 <!--  <a class="easyui-linkbutton button-add" cy-click="addArea"   id="addArea" data-options="iconCls:'icon-add'">添加地域</a> -->
+						</div>
+						
+						<div class="th" style="margin-left: 50px;">
+							号牌类型：
+						</div>
+						<div class="td" style="width:145px;">
+							<input class="easyui-combobox" id="plateType" name="plateType" style="width:145px"
+							           cy-code="002" />
+						</div>
+						
+						<div class="th" >
+							归属地：
+						</div>
+						<div class="td" style="width:70px;">
+							<input class="easyui-combobox" id="vehLocalization" name="vehLocalization" cy-code="228" style="width:70px"/>
+						</div>
+						
+						<div class="th" style="margin-left: 30px;">
+							过车次数≥：
+						</div>
+					    <div class="td" >
+					    <input class="easyui-numberspinner" value="1" data-options="increment:1" name="passMinCount" min=1 style="width:70px;"></input>
+					    </div>
+					    <div class="th" style="margin-left: 8px;">
+							<a class="easyui-linkbutton button-search" cy-click="searchForm"   id="searchButton" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						
+					</div>
+
+					<!-- <div class="tr"> -->
+						
+						<!-- <div class="th" style="margin-left: 25px;">
+							车辆品牌：
+						</div>
+						<div class="td" style="width: 176px;">
+							<input  name="vehicleBrand" id="vehicleBrand" style="width:176px;" />
+						</div>
+						<div class="th" style="margin-left: 25px;">
+							子品牌：
+						</div>
+						<div class="td" style="width: 112px;">
+							<input  name="vehicleSubBrand" id="vehicleSubBrand" class="easyui-textbox" style="width:112px;" />
+						</div> -->
+						
+						
+						<!-- <div class="th" style="margin-left: 25px;">
+							排序方式：
+						</div>
+						<div class="td" style="width:135px;">
+                            <input type="radio" name="orderType" value="desc" checked="checked"  title="按过车次数从大到小排列" />倒序
+                            <input type="radio" name="orderType" value="asc" title="按过车次数从小到大排列" />顺序
+						</div> -->
+						
+					<!-- </div> -->
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!--数据展示区 -->
+	<div id="dataGridDiv" data-options="region:'center',border:false" style="display:block;z-index:1">
+		<table cy-datagrid="Options" cy-querydata="formData" cy-url="vehTrack/dangerArea/findDangerAreaCarList" id="datagrid">
+		</table>
+	</div>
+
+	<!--车辆信息提示区 -->
+	<div id="vehInfo" style="height:200px;overflow-x: hidden;overflow-y: auto;display:none;z-index:-1">
+		<div class="table veh-detial">
+			<div class="tr" style="height:58px;">
+				<div class="th">车辆特征：</div>
+				<div class="td cltzdiv" id="cltzDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">核定载客：</div>
+				<div class="td" id="carryPeopleNumDiv"></div>
+			</div>
+			<div class="tr" style="height:44px;">
+				<div class="th">车主信息：</div>
+				<div class="td czxxdiv" id="czxxDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">发证机关：</div>
+				<div class="td" id="vehicleIssueOrgDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">检验有效期：</div>
+				<div class="td" id="checkDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">初次登记日期：</div>
+				<div class="td" id="firstRegisterDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">强制报废期止：</div>
+				<div class="td" id="brokeDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">发动机号：</div>
+				<div class="td" id="engineIdDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">车辆识别带代码：</div>
+				<div class="td" id="vehicleIdentityDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+// 绑定DataGrid
+InitPage([], function($scope) {
+	$scope.$getDefaultCode(['002','006']);
+    var date = new Date();
+    var dateHourStart = new Date();
+    dateHourStart.setHours(dateHourStart.getHours()-4);
+    //提供给过车查询和轨迹查询的时间
+    var passTime1;
+    var passTime2;
+
+    var listView = $.extend({},$.fn.datagrid.defaults.view, {
+    	onAfterRender : function(target) {
+            $.fn.datagrid.defaults.view.onAfterRender.call(this,target);
+            var opts = $(target).datagrid('options');
+            var vc = $(target).datagrid('getPanel').children('div.datagrid-view');
+            vc.children('div.datagrid-empty').remove();
+            if (!$(target).datagrid('getRows').length) {
+            	$('<div></div>').appendTo(vc);
+                var d = $('<div class="datagrid-empty"></div>').html(opts.emptyMsg || '没有查询到记录2').appendTo(vc);
+                d.css({
+                    position:'absolute',
+                    left:0,
+                    top:100,
+                    width:'100%',
+                    color: '#FF0000',
+                    textAlign:'center',
+                });
+            }
+            else {
+                //重新初始化代理事件
+                $scope.$eventProxy();
+                for(var i = 0; i < $scope.$(".plate-div").length; i++) {
+                	$($scope.$(".plate-div")[i]).tooltip({
+               			position: 'top',
+               			content: '正在查询该车的车辆信息，请稍候。。。',
+               			onShow: function(){
+               				$(this).tooltip('tip').css({
+               					backgroundColor: '#A1CFE3',
+                   		        width: '300px',
+                   			    opacity: '0.9',
+                   		        filter: 'alpha(opacity=90)',
+	                   		    border: '1px #34139C solid',
+                   		        borderRadius: '5px'
+               				});
+               				var params = $(this).attr("id").split("_");
+               				$scope.getVehicleInfo(params[2], params[3], $(this).attr("id"));
+               			}
+                  	});
+                }
+            }
+    	}
+    });
+
+	$.extend($scope, {
+        /**
+         * 初始化参数
+         * @type {Object}
+         */
+        formData : {
+        	startDateTime : date.format("yyyy-MM-dd 00:00:00"),
+        	endDateTime : new Date().format("yyyy-MM-dd 00:00:00"),
+        	startTime : dateHourStart.format("00:00"),
+        	endTime : new Date().format("23:59")
+        	//endTime : new Date().format("hh:30")
+        },
+
+        
+        /**
+         * datagrid配置
+         */
+        Options : {
+ 			showHeader: true,
+        	remoteSort: false,
+    		emptyMsg: '没有查询到记录',
+    		//view:listView,
+    		onLoadSuccess:function(){
+					mergeGridColCells($scope.$('#datagrid'),'plate_nbr');
+				},
+            columns:[[
+                {
+                    title : "号牌号码",
+                    field : "plate_nbr",
+                    width : 65,
+                    align:"center",
+                    rowspan:2
+                },
+                {field:"plate_type",title:"号牌类型",width:40,rowspan:2,align:"center",formatter:function(value){
+                	return $scope.$getPlateType(value);
+                }},
+                /* {field:"vehicle_brand",title:"车辆品牌",width:50,rowspan:2,align:"center"},
+                {field:"vehicle_color",title:"车身颜色",width:40,rowspan:2,align:"center",formatter:function(value){
+                	return $scope.$getCarColor(value);
+                }}, */
+                {field:"plateCount",title:"出现次数",width:40,halign:'center',align:"center",rowspan:2},
+                 {
+                    title : "各点位出现次数明细",
+                    field : "detailList",
+                    width : 130,
+                    align:"center",
+                    colspan:2
+                    
+                },{
+    				field : 'cz',
+    				title : '操作',
+    				align : 'center',
+    				rowspan:2,
+    				formatter : 
+    					function(value,rowData,rowIndex) {
+                    	  if (value == undefined) {
+                    		  return $scope.operateUserCz(value,rowData,rowIndex);
+                    	  }
+    				},
+    				width : 80
+    			}
+            ],[    
+                {field:'site_name',title:'点位',width:100,align:'center',sortable:true},    
+                {field:'siteCount',title:'次数',width:50,align:'center',sortable:true},    
+              
+            ]],
+        },
+        
+      	//用户操作栏
+		  operateUserCz : function(value, row, index) {
+		  	//车辆轨迹
+			var button1 = $('<a  title="车辆轨迹" style="color:blue;font-size=14px;" cy-click="viewTrack(\'' + row.plate_nbr + '\',\'' + row.plate_type + '\')">车辆轨迹</a>');
+				//图片列表
+			var button2 = $('<a  title="图片列表" style="color:blue;font-size=14px;" cy-click="vehPass(\'' + row.plate_nbr + '\')">图片列表</a>');
+			button1.linkbutton({
+				//iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				//iconCls : "icon-reload-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		},
+
+        searchForm : function() {
+        	//验证通过进行查询
+        	if(!$scope.$("#searchForm").form("validate")){
+				return;
+			}
+           	$scope.$updateData("formData");
+			passTime1 = $scope.formData.startDateTime;
+			passTime1 = passTime1+ " "+ + $scope.formData.startTime;
+			passTime2 = $scope.formData.endDateTime;
+			passTime2 = passTime2+ " "+ $scope.formData.endTime;
+			$scope.formData.startDateTime = $scope.formData.startDateTime +" 00:00:00"
+			$scope.formData.endDateTime = $scope.formData.endDateTime +" 23:59:59"
+        	//if (validator()) {
+                var pager = $scope.$("#datagrid").datagrid("getPager");
+                if (pager.length > 0) {
+                    var paginationOptions = pager.pagination("options");
+                    $scope.formData.pageSize = paginationOptions.pageSize;
+                    $scope.formData.pageNumber = 1;
+                    $scope.formData.totalCount = 0;
+                    pager.pagination({
+        				pageNumber : 1,
+        				pageSize : paginationOptions.pageSize,
+        				total : 0
+        			});
+                }
+                //排序方式
+                $scope.formData.orderType = 'desc';
+        		//$scope.$search("formData");
+        		$scope.$search("formData", "", function(data) {
+	    			
+	    			if (data && data != null && data.rows.length > 0) {
+	    				
+	    			}else{
+	    				//$.messager.alert('提示','查无数据!',"info");
+						$scope.$updateDom('formData');
+	    			}
+	    			
+	    		})
+        	/* } else {
+        		return;
+        	} */
+		},
+		
+		$getPlateType : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("002",value);
+		},
+		
+		$getCarColor : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("006",value);
+		},
+		
+	});
+
+    $scope.load = function() {
+    	
+    	//查询时间不能大于当前时间
+		$scope.$('.dispatchTime').each(function(){
+			$(this).datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+		});
+    	
+    	//$scope.getAreaList();
+        $scope.$("#datagrid").datagrid("getPager").pagination({
+        	pageList: [15,20,25,30,40,50,100,200,500],
+        	total:0,
+        	pageSize:25
+        });
+        
+        $scope.$("#startTime").textbox("textbox").attr("title", "如只关注每天深夜车辆出行情况，设置这个，便不统计其它时段的过车，但却统计每天深夜时段的过车。");
+        $scope.$("#endTime").textbox("textbox").attr("title", "如只关注每天深夜车辆出行情况，设置这个，便不统计其它时段的过车，但却统计每天深夜时段的过车。");
+    };
+    
+   /**
+    *查看车辆轨迹 
+    */
+    $scope.viewTrack = function(plateNbr,plateType){
+    	$scope.$goto("010301",
+                {
+		    		plateNbr: plateNbr,
+		    		plateType:plateType,
+		    		passTimeStart:passTime1,
+		    		passTimeEnd:passTime2,
+		    		initSearch:true
+                });
+	},
+	
+	/*
+	 * 查看车辆过车图片
+	 */
+	$scope.vehPass = function(plateNbr){
+		
+		//过车查询
+		$scope.$goto("030201",
+                {
+		    		plateNbr: plateNbr,
+		    		passTimeStart:passTime1,
+		    		passTimeEnd:passTime2,
+		    		siteCode:$scope.formData.siteCodes,
+		    		siteName:$scope.$("#siteCodes").combobox("getText"),
+		    		model:'image'
+                });
+		
+		
+	}
+
+    // 级联设置车辆子品牌
+    $scope.$('#vehicleBrand').combobox({
+    	 valueField:'code_no',
+    	 textField:'code_name',
+    	 panelHeight:'auto',
+    	 panelMaxWidth:'200px',
+    	 data:$scope.$vehicleBrand,
+    	 onSelect: function(param){
+    		$scope.setSubbrandList(param['code_no'
+			]);
+			}
+			});
+
+		//单元格的合并
+	function mergeGridColCells(grid, rowFildName) {
+		var rows = grid.datagrid('getRows');
+		var startIndex = 0;
+		var endIndex = 0;
+		if (rows.length < 1) {
+			return;
+		}
+		$.each(rows, function(i, row) {
+			if (row[rowFildName] == rows[startIndex][rowFildName]) {
+				endIndex = i;
+			} else {
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : rowFildName,
+					rowspan : endIndex - startIndex + 1
+				});
+				
+			  	grid.datagrid('mergeCells', {
+				index : startIndex,
+				field : 'plate_type',
+				rowspan : endIndex - startIndex + 1
+				});
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : rowFildName,
+					rowspan : endIndex - startIndex + 1
+				});
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : 'vehicle_brand',
+					rowspan : endIndex - startIndex + 1
+				});
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : 'vehicle_color',
+					rowspan : endIndex - startIndex + 1
+				});
+				
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : 'plateCount',
+					rowspan : endIndex - startIndex + 1
+				});
+				grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : 'cz',
+					rowspan : endIndex - startIndex + 1
+				});
+				startIndex = i;
+				endIndex = i;
+			}
+
+		});
+		
+		grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : rowFildName,
+					rowspan : endIndex - startIndex + 1
+				});
+		grid.datagrid('mergeCells', {
+		index : startIndex,
+		field : 'plate_type',
+		rowspan : endIndex - startIndex + 1
+		});
+		grid.datagrid('mergeCells', {
+			index : startIndex,
+			field : rowFildName,
+			rowspan : endIndex - startIndex + 1
+		});
+		grid.datagrid('mergeCells', {
+			index : startIndex,
+			field : 'vehicle_brand',
+			rowspan : endIndex - startIndex + 1
+		});
+		grid.datagrid('mergeCells', {
+			index : startIndex,
+			field : 'vehicle_color',
+			rowspan : endIndex - startIndex + 1
+		});
+		
+		grid.datagrid('mergeCells', {
+			index : startIndex,
+			field : 'plateCount',
+			rowspan : endIndex - startIndex + 1
+		});
+		grid.datagrid('mergeCells', {
+					index : startIndex,
+					field : 'cz',
+					rowspan : endIndex - startIndex + 1
+				});
+			}
+
+   /*  
+    $scope.$('#vehicleSubBrand').combobox({
+       	 valueField:'code_no',
+       	 textField:'code_name',
+       	 panelHeight:'auto',
+       	 panelMaxWidth:'200px',
+   });
+    
+    $scope.setSubbrandList = function(brandCode) {
+    	var array = new Array();
+        for (var i = 0; i < $rootScope.$vehicleSubBrand.length; i++) {
+      	  if ($rootScope.$vehicleSubBrand[i]['code_no'].substring(0, 3) == brandCode) {
+      		 if ($rootScope.$vehicleSubBrand[i]['code_name'] == "null") {
+   			  continue;
+   		  }
+      		array.push($rootScope.$vehicleSubBrand[i]);
+      	  }
+        }
+        $scope.$("#vehicleSubBrand").textbox("setValue","");
+        $scope.$("#vehicleSubBrand").combobox("loadData",array);
+    }; */
+}); 
+</script>
+<style>
+    #dangerarea-vehicle-analyse .th {
+        width: 80px;
+        text-align: right;
+    }
+    #dangerarea-vehicle-analyse .td {
+        width: 120px;
+    }
+    #dangerarea-vehicle-analyse p {
+        margin: 0;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        width: 120px;
+        text-align: left;
+    }
+
+    .cltzdiv {
+		height:58px;
+		line-height:18px;
+    }
+    .czxxdiv {
+        height:44px;
+		line-height:18px;
+    }
+    .cltztext {
+    	width:233px;
+    	height:58px;
+    	border:0px;
+    	color:#07011E;
+    	background-color: #C9ECF6;
+    }
+    .czxxtext {
+    	width:233px;
+    	height:44px;
+    	border:0px;
+    	color:#07011E;
+    	background-color: #C9ECF6;
+    }
+    
+    .plate-div {
+        background-color: #7BBFEA;
+        color: black;
+        text-align: center;
+        width: 80px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 16px;
+        border-radius: 5px;
+        border:1px #206482 solid;
+    }
+
+    .detailListBgColor {
+    	background-color: #8FCAE3;
+    }
+    .detailTable{
+    width: 300px;
+    }
+</style>

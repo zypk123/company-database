@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficVideoGroupMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficVideoGroup" >
+    <id column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="GROUP_CONTENT" property="groupContent" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GROUP_ID, GROUP_NAME, CREATE_USER, CREATE_TIME, UPDATE_TIME, ORG_AUTHORITY_CODE, 
+    REMARK, GROUP_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_VIDEO_GROUP
+    where GROUP_ID = #{groupId,jdbcType=VARCHAR}
+  </select>
+  <select id="getVideoGroupByCondition" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_VIDEO_GROUP 
+    <where>
+    	1=1
+    	
+		<if test="createUser != null and createUser != '' ">
+		   AND CREATE_USER=#{createUser,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="groupName != null and groupName != '' ">
+		   AND GROUP_NAME=#{groupName,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="orgAuthorityCode != null and orgAuthorityCode != '' ">
+		   AND ORG_AUTHORITY_CODE like #{orgAuthorityCode,jdbcType=VARCHAR}
+		</if>
+	</where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_VIDEO_GROUP
+    where GROUP_ID = #{groupId,jdbcType=VARCHAR}
+  </delete>  
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficVideoGroup" >
+    insert into T_TRAFFIC_VIDEO_GROUP (GROUP_ID, GROUP_NAME, CREATE_USER, 
+      CREATE_TIME, UPDATE_TIME, ORG_AUTHORITY_CODE, 
+      REMARK, GROUP_CONTENT)
+    values (#{groupId,jdbcType=VARCHAR}, #{groupName,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{orgAuthorityCode,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{groupContent,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficVideoGroup" >
+    insert into T_TRAFFIC_VIDEO_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        GROUP_ID,
+      </if>
+      <if test="groupName != null" >
+        GROUP_NAME,
+      </if>
+      <if test="createUser != null" >
+        CREATE_USER,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="orgAuthorityCode != null" >
+        ORG_AUTHORITY_CODE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="groupContent != null" >
+        GROUP_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgAuthorityCode != null" >
+        #{orgAuthorityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupContent != null" >
+        #{groupContent,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficVideoGroup" >
+    update T_TRAFFIC_VIDEO_GROUP
+    <set >
+      <if test="groupName != null" >
+        GROUP_NAME = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgAuthorityCode != null" >
+        ORG_AUTHORITY_CODE = #{orgAuthorityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupContent != null" >
+        GROUP_CONTENT = #{groupContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where GROUP_ID = #{groupId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficVideoGroup" >
+    update T_TRAFFIC_VIDEO_GROUP
+    set GROUP_NAME = #{groupName,jdbcType=VARCHAR},
+      CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      ORG_AUTHORITY_CODE = #{orgAuthorityCode,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      GROUP_CONTENT = #{groupContent,jdbcType=VARCHAR}
+    where GROUP_ID = #{groupId,jdbcType=VARCHAR}
+  </update>
+</mapper>

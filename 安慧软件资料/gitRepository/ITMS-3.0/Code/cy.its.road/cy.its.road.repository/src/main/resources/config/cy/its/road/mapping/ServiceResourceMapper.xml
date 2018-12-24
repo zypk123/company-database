@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.ServiceResourceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.highway.ServiceResource" >
+    <id column="SERVICE_RESOURCE_ID" property="serviceResourceId" jdbcType="VARCHAR" />
+    <result column="SERVICE_RESOURCE_NAME" property="serviceResourceName" jdbcType="VARCHAR" />
+    <result column="SERVICE_RESOURCE_TYPE" property="serviceResourceType" jdbcType="CHAR" />
+    <result column="CONTACT_TEL" property="contactTel" jdbcType="VARCHAR" />
+    <result column="CONTACT_PERSON" property="contactPerson" jdbcType="VARCHAR" />
+    <result column="RESOURCE_ADDRESS" property="resourceAddress" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="NEAREST_GATEWAY" property="nearestGateway" jdbcType="VARCHAR" />
+    <result column="DISTANCE_FROM_GATEWAY" property="distanceFromGateway" jdbcType="FLOAT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVICE_RESOURCE_ID, SERVICE_RESOURCE_NAME, SERVICE_RESOURCE_TYPE, CONTACT_TEL, CONTACT_PERSON, 
+    RESOURCE_ADDRESS, LONGITUDE, LATITUDE, NEAREST_GATEWAY, DISTANCE_FROM_GATEWAY
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SERVICE_RESOURCE
+    where SERVICE_RESOURCE_ID = #{serviceResourceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SERVICE_RESOURCE
+    where SERVICE_RESOURCE_ID = #{serviceResourceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.highway.ServiceResource" >
+    insert into T_SYS_SERVICE_RESOURCE (SERVICE_RESOURCE_ID, SERVICE_RESOURCE_NAME, 
+      SERVICE_RESOURCE_TYPE, CONTACT_TEL, CONTACT_PERSON, 
+      RESOURCE_ADDRESS, LONGITUDE, LATITUDE, 
+      NEAREST_GATEWAY, DISTANCE_FROM_GATEWAY)
+    values (#{serviceResourceId,jdbcType=VARCHAR}, #{serviceResourceName,jdbcType=VARCHAR}, 
+      #{serviceResourceType,jdbcType=CHAR}, #{contactTel,jdbcType=VARCHAR}, #{contactPerson,jdbcType=VARCHAR}, 
+      #{resourceAddress,jdbcType=VARCHAR}, #{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, 
+      #{nearestGateway,jdbcType=VARCHAR}, #{distanceFromGateway,jdbcType=FLOAT})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.highway.ServiceResource" >
+    insert into T_SYS_SERVICE_RESOURCE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceResourceId != null" >
+        SERVICE_RESOURCE_ID,
+      </if>
+      <if test="serviceResourceName != null" >
+        SERVICE_RESOURCE_NAME,
+      </if>
+      <if test="serviceResourceType != null" >
+        SERVICE_RESOURCE_TYPE,
+      </if>
+      <if test="contactTel != null" >
+        CONTACT_TEL,
+      </if>
+      <if test="contactPerson != null" >
+        CONTACT_PERSON,
+      </if>
+      <if test="resourceAddress != null" >
+        RESOURCE_ADDRESS,
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE,
+      </if>
+      <if test="latitude != null" >
+        LATITUDE,
+      </if>
+      <if test="nearestGateway != null" >
+        NEAREST_GATEWAY,
+      </if>
+      <if test="distanceFromGateway != null" >
+        DISTANCE_FROM_GATEWAY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceResourceId != null" >
+        #{serviceResourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceResourceName != null" >
+        #{serviceResourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceResourceType != null" >
+        #{serviceResourceType,jdbcType=CHAR},
+      </if>
+      <if test="contactTel != null" >
+        #{contactTel,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPerson != null" >
+        #{contactPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceAddress != null" >
+        #{resourceAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="nearestGateway != null" >
+        #{nearestGateway,jdbcType=VARCHAR},
+      </if>
+      <if test="distanceFromGateway != null" >
+        #{distanceFromGateway,jdbcType=FLOAT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.highway.ServiceResource" >
+    update T_SYS_SERVICE_RESOURCE
+    <set >
+      <if test="serviceResourceName != null" >
+        SERVICE_RESOURCE_NAME = #{serviceResourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceResourceType != null" >
+        SERVICE_RESOURCE_TYPE = #{serviceResourceType,jdbcType=CHAR},
+      </if>
+      <if test="contactTel != null" >
+        CONTACT_TEL = #{contactTel,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPerson != null" >
+        CONTACT_PERSON = #{contactPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceAddress != null" >
+        RESOURCE_ADDRESS = #{resourceAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="nearestGateway != null" >
+        NEAREST_GATEWAY = #{nearestGateway,jdbcType=VARCHAR},
+      </if>
+      <if test="distanceFromGateway != null" >
+        DISTANCE_FROM_GATEWAY = #{distanceFromGateway,jdbcType=FLOAT},
+      </if>
+    </set>
+    where SERVICE_RESOURCE_ID = #{serviceResourceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.highway.ServiceResource" >
+    update T_SYS_SERVICE_RESOURCE
+    set SERVICE_RESOURCE_NAME = #{serviceResourceName,jdbcType=VARCHAR},
+      SERVICE_RESOURCE_TYPE = #{serviceResourceType,jdbcType=CHAR},
+      CONTACT_TEL = #{contactTel,jdbcType=VARCHAR},
+      CONTACT_PERSON = #{contactPerson,jdbcType=VARCHAR},
+      RESOURCE_ADDRESS = #{resourceAddress,jdbcType=VARCHAR},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      NEAREST_GATEWAY = #{nearestGateway,jdbcType=VARCHAR},
+      DISTANCE_FROM_GATEWAY = #{distanceFromGateway,jdbcType=FLOAT}
+    where SERVICE_RESOURCE_ID = #{serviceResourceId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectServiceResources" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_SYS_SERVICE_RESOURCE V
+		<where>
+			
+			<if test="serviceResourceName != null and serviceResourceName != '' ">
+				AND SERVICE_RESOURCE_NAME like '%' || #{serviceResourceName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="serviceResourceType != null and serviceResourceType != '' ">
+				AND SERVICE_RESOURCE_TYPE = #{serviceResourceType,jdbcType=CHAR}
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+  <select id="countServiceResources" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_SERVICE_RESOURCE
+		<where>
+			<if test="serviceResourceName != null and serviceResourceName != '' ">
+				AND SERVICE_RESOURCE_NAME like '%' || #{serviceResourceName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="serviceResourceType != null and serviceResourceType != '' ">
+				AND SERVICE_RESOURCE_TYPE = #{serviceResourceType,jdbcType=CHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

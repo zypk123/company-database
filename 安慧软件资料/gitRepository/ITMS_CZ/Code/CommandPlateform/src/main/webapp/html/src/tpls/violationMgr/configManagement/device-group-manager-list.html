@@ -1,0 +1,187 @@
+<!--设备分组信息主页面 -->
+<div class="easyui-layout">
+    <div data-options="region:'center'">
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'"
+            cy-click="addUserDevice">添加</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'"
+            cy-click="deleteUserDevice">删除</a>
+        </div>
+        <table id="deviceGroup" cy-datagrid="optionsDeviceGroup" cy-querydata="deviceGData"
+        cy-url="deviceGroupAction/findDGroupAction"></table>
+    </div>
+
+</div>
+<script>
+    InitPage([""], function($scope) {
+        //初始化加载
+        $scope.load = function() {
+            $scope.$updateData("deviceGData");
+            $scope.$search("deviceGData");
+
+        };
+
+        //列表头部信息
+        $scope.optionsDeviceGroup = {
+            columns : [[{
+                field : 'assoUserDeviceId',
+                checkbox : true,
+                align : 'center'
+            }, {
+                field : 'userName',
+                title : '用户名',
+                align : 'center',
+                width : 25
+            }, {
+                field : 'deviceNames',
+                title : '设备名',
+                align : 'left',
+                width : 100,
+                formatter : optionDeviceNames
+
+            }, {
+                field : 'cz',
+                title : '操作',
+                align : 'center',
+                formatter : optionCz,
+                width : 30
+            }]]
+
+        };
+        //显示隐藏部分
+        function optionDeviceNames(value, row, index) {
+            var str;
+            if (value && value.length > 70) {
+                str = '' + value.substring(0, 70) + '...';
+            } else {
+                str = '' + value + '';
+            };
+            return "<span title='" + value + "'>" + str + "</span>";
+        }
+
+        //操作栏按钮
+        function optionCz(value, row, index) {
+
+            var button1 = $("<a class='button-remove' cy-click='removeUserId(" + index + ")'></a>");
+
+            button1.linkbutton({
+                iconCls : "icon-remove"
+            });
+            return $("<span/>").append(button1).html();
+        };
+
+        //分配设备信息窗口
+        $scope.addUserDevice = function() {
+            $scope.$setParam("saveUserId", function(userId, deviceSysNbrStr) {
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "deviceGroupAction/createDGroupAction",
+                    method : "post",
+                    params : {
+                        userId : userId,
+                        deviceSysNbrStr : deviceSysNbrStr
+                    },
+                    success : function(data) {
+                        $scope.$search("deviceGData");
+                        $scope.$getDialog("addDialog").dialog("close");
+                        //$("#deviceGroup").datagrid("getPager").pagination("select", 1);
+                        $.messager.alert("提示", "保存成功！");
+                    },
+                    fail : function(errMsg) {
+                        $.messager.alert("提示", "保存失败！");
+                    }
+                });
+
+            });
+
+            $scope.$openDialog("addDialog", {
+                title : "给用户分配设备信息",
+                width : 350,
+                height : 500,
+                href : "tpls/violationMgr/configManagement/device-group-manager-add.html?type=add"
+            }, true);
+        };
+        $scope.deleteUserDevice = function() {
+            //获得所有的行数
+            var rows = $scope.$("#deviceGroup").datagrid("getChecked");
+            // var dataNum = $scope.$("#deviceGroup").datagrid("getRows").length;
+            // var options = $scope.$("#roadData").datagrid("getPager").data("pagination").options;
+            // var pageNumber = options.pageNumber;
+            if (rows.length == 0) {
+                $.messager.alert("提示", "至少选中一条信息！");
+                return false;
+            } else {
+                var userIdStr = "";
+                for (var i = 0; i < rows.length; i++) {
+                    if (i > 0) {
+                        userIdStr = userIdStr + "," + rows[i].userId;
+
+                    } else {
+                        userIdStr = userIdStr + rows[i].userId;
+                    }
+                }
+                $.messager.confirm("提示", "你是否删除信息？", function(flag) {
+                    if (flag) {
+                        $scope.$ajaxRequest({
+                            url : $scope.$restRoot + "deviceGroupAction/deleteDGoupAction",
+                            params : {
+                                userIdStr : userIdStr
+                            },
+                            memoth : "post",
+                            success : function(data) {
+                               if (data == "success") {
+                                    $scope.$search("deviceGData");
+                                    $.messager.alert("提示", "删除成功！");
+                                } else {
+                                    $.messager.alert("提示", "删除失败！");
+                                }
+
+                            },
+                            fail : function(errMsg) {
+                                $.messager.alert("提示", "删除失败！");
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        //删除当前行信息
+        $scope.removeUserId = function(index) {
+            //获得当前行的信息
+            var rowDatas = $scope.$("#deviceGroup").datagrid("getData").rows[index];
+            //获得当前行的Id
+            var userId = rowDatas.userId;
+            console.log(userId);
+            $.messager.confirm("提示", "你确定要删除吗?", function(r) {
+                if (r) {
+                    $scope.$ajaxRequest({
+                        url : $scope.$restRoot + "deviceGroupAction/removeDGroupAction",
+                        params : {
+                            userId : userId
+                        },
+                        memoth : "post",
+                        success : function(data) {
+                            console.log(data);
+                            if (data == 1) {
+                                $scope.$search("deviceGData");
+                                $.messager.alert("提示", "删除成功！");
+                            } else {
+                                $.messager.alert("提示", "删除失败！");
+                            }
+
+                        },
+                        fail : function(errMsg) {
+                            $.messager.alert("提示", "请求失败！");
+                        }
+                    });
+                }
+            });
+        };
+
+    }); 
+</script>
+<style type="text/css">
+    #roadMessage .th {
+        text-align: right;
+        width: 100px;
+    }
+</style>

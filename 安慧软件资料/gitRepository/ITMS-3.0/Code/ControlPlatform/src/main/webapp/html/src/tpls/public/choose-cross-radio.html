@@ -1,0 +1,173 @@
+<div class="easyui-layout" id="choose-cross-radio">
+	<div data-options="region:'north',height:40,border:false" style="line-height: 30px;">
+		<div class="linkbutton_toolbar" >
+			<input id="search" data-options="prompt:'请输入关键字'" style="width:250px;height:26px"/>
+			<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back" style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div id="tree"></div>
+	</div>
+	<div data-options="region:'east',border:false,width:'100%',closed:true" style="border-top: solid 1px #ddd">
+		<table id="searchGrid" cy-datagrid="options" cy-querydata="searchData" cy-url="/road/cross/findCrossInfo">
+		</table>
+		&nbsp;
+	</div>
+	<div data-options="region:'south',height: 40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-ok'" cy-click="chooseCross">确定</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+		</div>
+	</div> 
+</div>
+<script>
+    InitPage(["choose","filter"], function($scope) {
+    	
+    	var chooseNode;
+    	
+        //初始化方法
+        $scope.load = function() {
+            //初始化树
+            initTree();
+            //设置查找方法
+            initSearch();
+        };
+
+        /**
+         * 初始化树
+         */
+        var initTree = function() {
+        	//把缓存中的org数据复制一个，并设置特有的属性
+            $scope.$("#tree").tree({
+                url : $scope.$restRoot + "/road/cross/findCrossByOrgId",
+                queryParams : {
+                	rootId :$scope.$org[0].id 
+                },
+                onLoadSuccess : function(){
+                	var root = $(this).tree("getRoots")[0];
+                	//执行过滤器操作
+                	var needToRemove = [];
+                	doFilter(root,needToRemove);
+                	for(var index in needToRemove){
+                		//删除过滤掉的节点
+                		$scope.$("#tree").tree("remove",$scope.$("#"+needToRemove[index].domId)[0]);
+                	}
+                },
+                onSelect : function(node){
+                	chooseNode = node;
+                },
+                onDblClick : function(node) {
+                	if(node.attribute.nodeType == "cross"){
+                		$scope.$excute($scope.choose, node.id, node.attribute.code, node.text);
+                    	$scope.$closeSelf();
+                	}
+                }
+            });
+        };
+		/**
+		 * 执行过滤器操作 
+		 */
+		function doFilter(node,needToDelete){
+			if(!$scope.filter || typeof $scope.filter != "function"){
+				return;
+			}
+			var result = $scope.filter(node.id,node.text,node.attribute);
+			if(!result && typeof result == "boolean"){
+				//标记需要删除的节点
+				needToDelete.push(node);
+			}else{
+				//下级节点做过滤
+				if(node.children && node.children.length > 0){
+					for(var index in node.children){
+						doFilter(node.children[index],needToDelete);
+					}
+				}
+			}
+		}
+        /**
+         * 初始化查找
+         */
+        var initSearch = function() {
+            $scope.$("#search").searchbox({
+                searcher : function() {
+                    var searchIndex = $(this).searchbox("getValue").trim();
+                    if (searchIndex == "") {
+                        return;
+                    }
+                    //显示查询结果
+                    showGrid();
+                    $scope.searchData.searchIndex = searchIndex;
+                    $scope.$search("searchData");
+                }
+            });
+        };
+
+        /**
+         * 显示查询结果
+         */
+        var showGrid = function() {
+            $scope.$("#choose-cross-radio").layout("panel", "east").panel("open");
+            $scope.$("#choose-cross-radio").layout("resize");
+            $scope.$("#back").show();
+        };
+
+        /**
+         * 点击确定按钮
+         */
+        $scope.chooseCross = function() {
+            var current = chooseNode;
+            if (current && current.attribute.nodeType == "cross") {
+                $scope.$excute($scope.choose, current.id, current.attribute.code, current.text);
+                $scope.$closeSelf();
+            }else{
+            	$.messager.alert("提示","请选择一个点位");
+            }
+        };
+
+        /**
+         * 格式化内容，增加title
+         */
+        var initTitle = function(value) {
+            return value && value != '' ? '<span title="' + value + '">' + value + "</span>" : "";
+        };
+
+        /**
+         * 查找结果列表参数
+         */
+        $scope.options = {
+            columns : [[{
+                field : 'crossName',
+                title : '路口名称',
+                width : 60,
+                formatter : initTitle
+            }, {
+                field : 'orgId',
+                title : '所属机构',
+                width : 40,
+                formatter : $scope.$getOrgName
+            }]],
+            pagination : false,
+            rownumbers : true,
+            onSelect : function(rowIndex, rowData) {
+				chooseNode = {
+					id : rowData.crossId,
+					text : rowData.crossName,
+					attribute : {
+						nodeType : "cross",
+						code : rowData.crossCode
+					}
+				};
+            }
+        };
+
+        /**
+         * 返回树
+         */
+        $scope.back = function() {
+            $scope.$("#choose-cross-radio").layout("panel", "east").panel("close");
+            $scope.$("#choose-cross-radio").layout("resize");
+            $scope.$("#back").hide();
+        };
+
+    }); 
+</script>

@@ -1,0 +1,50 @@
+<div id="menu" class="easyui-accordion" data-options="fit:true,animate:false,border:false">
+	
+</div>   
+<script>
+	InitPage(["menus","addTable"],function($scope){
+		$scope.load = function(){
+			for(var index in $scope.menus){
+				var subMenu = $scope.menus[index];
+				var data = {};
+				data.title = subMenu.text;
+				data.content = getContent(subMenu.children);
+				$scope.$("#menu").accordion("add",data);
+			}
+			$scope.$("#menu").accordion("select",0);
+			
+			//系统管理首页
+			var menu = $scope.$("[code=080000]");
+			if(menu.length > 0){
+				menu.click();
+			}
+		};
+		
+		var getContent = function(subResource){
+			var ulParent = $("<ul></ul>").css({
+				listStyle : "none",
+				margin : 0,
+				padding : 0
+			});
+			for(var index in subResource){
+				var item = $("<li class='cs-navi-tab'></li>");
+				item.attr({
+					code : subResource[index].id,
+					src : subResource[index].attribute.url,
+					title : subResource[index].text
+				}).text(subResource[index].text);
+				ulParent.append(item);
+				item.click(function(){
+					//记录点击菜单到后台
+					$scope.addTable($(this).attr("code"),$(this).attr("title"),$(this).attr("src"));
+				});
+			}
+			return ulParent;
+		};
+	});
+</script>
+<style>
+	#menu .panel-title{
+		padding-left : 15px;
+	}
+</style>

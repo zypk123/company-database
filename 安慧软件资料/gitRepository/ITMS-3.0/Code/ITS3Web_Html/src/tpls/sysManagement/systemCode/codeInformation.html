@@ -1,0 +1,64 @@
+<div  class="easyui-layout">
+    <form cy-form="codeData">
+        <div  id="code" data-options="region:'north'" style="height: 200px;">
+            <div class="table"><br/>
+                <div class="tr">
+                    <div class="th">代码类型：</div>
+                    <div class="td">
+                        <input id="dmlx" style="width: 120px;"/>
+                    </div>
+                    <div class="th">代码编号：</div>
+                    <div class="td">
+                        <input type="text" name="dmbh" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">代码名称：</div>
+                    <div class="td">
+                        <input type="text" name="dmmc" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+                    <div class="th">备注：</div>
+                    <div class="td">
+                        <input type="text" name="bz" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">启用状态：</div>
+                    <div class="td" style="width: 120px;">&nbsp;
+                        是<input type="radio" name="qyzt" value="是">
+                        否<input type="radio" name="qyzt" value="否">
+                    </div>
+                    <div class="th">编辑状态：</div>
+                    <div class="td">&nbsp;
+                        是<input type="radio" name="bjzt" value="是">
+                        否<input type="radio" name="bjzt" value="否">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center'" >
+            <div class="tr"><br/>
+                <div class="td" align="center">
+                    <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="add">保存</a>
+                    <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="close">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["codeData","close"],function($scope){
+        $scope.$('#dmlx').combotree({
+            required: true,
+            url: "data/sysManagement/system-tree.json"
+        });
+    })
+</script>
+<style type="text/css">
+
+    #code .th {
+        width: 135px;
+        text-align: right;
+    }
+
+</style>

@@ -1,0 +1,283 @@
+<div class="easyui-layout" id="faultAlarm">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData">
+            <div class="table">
+                <div class="tr">
+                    <div class="td" style="padding-left: 5px">
+                        所属机构：
+                    </div>
+                    <div class="td">
+                        <select class="easyui-combotree" id="orgCode" name="orgCode" style="width:150px">
+                        </select>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        设备类型：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-combobox" id="devType" name="devType"
+                               data-options="valueField:'id',textField:'text'"
+                               style="width:150px"/>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        所属道路：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-combobox" id="roadCode" name="roadCode" style="width:150px"
+                               data-options="valueField:'id',textField:'text'"/>
+                    </div>
+                    <div class="td">
+                        <input type="checkbox" name="checkbox" checked="true" value="checkbox1">
+                        有效
+                        <input type="checkbox" name="checkbox" value="checkbox2">
+                        无效
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="padding-left: 5px">
+                        故障类型：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-combobox" id="faultType" name="faultType" style="width:150px"
+                               data-options="valueField:'id',textField:'text'"
+                               style="width:150px"/>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        设备厂商：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-combobox" id="devComp" name="devComp" style="width:150px"
+                               data-options="valueField:'id',textField:'text'"
+                               style="width:150px"/>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        发生时间：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-datetimebox" style="width:150px">
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        至：
+                    </div>
+                    <div class="td">
+                        <input class="easyui-datetimebox" style="width:150px">
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-search" style="width:60px" iconCls="icon-search"
+                           cy-click="searchData">查询</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add',plain:true"
+                           cy-click="addData">新增</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-edit"
+                           data-options="iconCls:'icon-edit',plain:true"
+                           cy-click="addData">修改</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton button-drop"
+                           data-options="iconCls:'icon-clear',plain:true"
+                           cy-click="deleteFault">删除</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton button-save"
+                           data-options="iconCls:'icon-reload',plain:true"
+                           cy-click="">导出</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-remove" style="width:90px" cy-click="maintenance">生成维护单</a>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div id="button" class="td" style="display:none">
+                        <a href="javascript:void(0)" class="easyui-linkbutton button-enable" cy-click="comfirmSure">有效</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton button-disable" cy-click="comfirmSure">无效</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table cy-datagrid="options" id="dgv" cy-querydata="formData" cy-url="data/deviceManage/dataFault.json">
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        //给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+        var sysCodeDic = [];
+        //查询数据
+        $scope.$ajaxRequest({
+            url: "data/deviceManage/chooseInit.json",
+            params: { OrgCode: $scope.UserInfo.OrgCode },
+            success: function (retData) {
+                sysCodeDic = retData.dicts;
+                initCombobox();
+                $scope.$("#orgCode").combotree("loadData", retData.district_tree);
+            },
+            fail: function (errTxt) {
+                alert(errTxt);
+            }
+        });
+        //初始化选择框
+        function initCombobox() {
+            $scope.$('#roadCode').combobox('loadData', sysCodeDic["T_DIC_ROAD"]);
+            $scope.$('#faultType').combobox('loadData', sysCodeDic["T_DIC_FAULT"]);
+            $scope.$('#devType').combobox('loadData', sysCodeDic["T_DIC_DEV"]);
+            $scope.$('#devComp').combobox('loadData', sysCodeDic["T_DIC_COMP"]);
+            $scope.$('.easyui-datetimebox').datetimebox('setValue', new Date().format("yyyy-MM-dd hh:mm:ss"));
+        }
+
+        $.extend($scope, {
+            formData: {
+                /*                username: "admin1231312",
+                 password: "123456",
+                 combo: 4,
+                 code: 1234*/
+            },
+            changeData: function (value) {
+                return value = value + 1;
+            },
+            searchData: function () {
+                $scope.$search("formData", {
+
+                }, function (data) {
+
+                   });
+            },
+            options: {
+                columns: [
+                    [//注意，此处是二维数组
+                        {field: 'id', checkbox: true},
+                        {title: "发生时间", field: "START_TIME", width: 10},
+                        {title: "结束时间", field: "END_TIME", width: 10},
+                        {title: "设备编号", field: "DEVICE_ID", width: 10},
+                        {title: "设备名称", field: "DEVICE_NAME", width: 10},
+                        {title: "所属机构", field: "ORG_CODE", width: 10},
+                        {title: "安装点位", field: "SITE_CODE", width: 10},
+                        {title: "在线/离线", field: "REPAIR_TIME", width: 10},
+                        {title: "故障/报警", field: "FAULT_ALARM", width: 10},
+                        {title: "故障/报警类型", field: "FAULT_TYPE", width: 10},
+                        {title: "采集方式", field: "COLLECT_METHOD", width: 10},
+                        {title: "描述", field: "REMARK", width: 10},
+                        {title: "处理状态", field: "PROCESS_STATE", width: 10},
+                        {title: "有效/无效",
+                            field: "IS_VALIDITY",
+                            width: 10,
+                            formatter: function (IS_VALIDITY, rowIndex) {
+                                if(IS_VALIDITY == "有效"){
+                                    $scope.$("#button").find("a").eq(0).show();
+                                    $scope.$("#button").find("a").eq(1).hide();
+                                    return $scope.$("#button").html();
+                                }else{
+                                    $scope.$("#button").find("a").eq(0).hide();
+                                    $scope.$("#button").find("a").eq(1).show();
+                                    return $scope.$("#button").html();
+                                }
+
+                            }
+                        }
+                    ]
+                ],
+                rowStyler: function (index, row) {
+                    if (row.IS_VALIDITY == "无效") {
+                        return 'background-color:#E5E5E5;color:#black;font-weight:normal;';
+                    }
+                }
+            },
+            addData: function (event) {
+                console.log(event.target);
+                var paramData = {
+                    orgCode: $("#orgCode").val(),
+                    roadCode: "123456",
+                    faultType: 1
+                        }
+
+                $scope.$setParam("paramData", paramData);
+                $scope.$setParam("close_fault",close_fault);
+                $scope.$openDialog("fault_Info", {
+                    width: 720,
+                    height: 240,
+                    title: "故障信息",
+                    href: "tpls/deviceManage/deviceMaintenance/faultInfo[手工添加故障].html"
+                });
+            },
+            deleteFault: function (event) {
+                var checkedRows = $scope.$('#dgv').datagrid('getChecked');
+                if($.isEmptyObject(checkedRows))
+                {
+                    console.log("您未选中任何记录");
+                }
+                else {
+                    //后台删除
+                    for (var i = 0; i < checkedRows.length; i++) {
+                        console.log(checkedRows[i].DEVICE_ID);
+                    }
+                    //刷新列表
+                    $scope.searchData();
+                }
+            },
+            maintenance: function (event) {
+                console.log(event.target);
+                var paramData = {
+                    orgCode: "d",
+                    roadCode: "123456",
+                    faultType: 1
+                }
+                $scope.$setParam("paramData", paramData);
+                $scope.$setParam("close_maintenance",close_maintenance);
+                $scope.$openDialog("maintenance_info", {
+                    width: 750,
+                    height: 320,
+                    title: "报警信息",
+                    href: "tpls/deviceManage/deviceMaintenance/faultComboInfo[生成维护单].html"
+                });
+            },
+            comfirmSure: function (event){
+                var checkedRows = $scope.$('#dgv').datagrid('getSelected');
+                if($.isEmptyObject(checkedRows))
+                {
+                    console.log("您未选中任何记录");
+                }
+                console.log("aaaaaa");
+        }
+        });
+
+        function fmt(value) {
+            return 123;
+        };
+        function close_fault(){
+            $scope.$getDialog("fault_Info").dialog("close");
+        }
+        function close_maintenance(){
+            $scope.$getDialog("maintenance_info").dialog("close");
+        }
+
+    }, function ($scope) {
+
+    });
+</script>
+<style type="text/css">
+    body {
+        font: 12px/20px "微软雅黑", "宋体", Arial, sans-serif, Verdana, Tahoma;
+        padding: 0;
+        margin: 0;
+    }
+
+    fieldset {
+        border: #ddd solid 1px;
+        padding: 0px 10px 0px 10px;
+        margin-bottom: 10px;
+    }
+
+    fieldset legend {
+        color: #2A6496;
+        font-size: 12px;
+        background: #fff;
+        border-bottom: 0px;
+        width: auto;
+        margin-bottom: 0px;
+    }
+</style>

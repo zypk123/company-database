@@ -1,0 +1,416 @@
+<div id="dangerousVehicle" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:80"
+		style="border-bottom: solid 1px #ddd">
+		<form cy-form="dangerCarWhole" id="form1">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+					<div class="th" style="margin-left: 25px;">
+							<span class="red">*</span>行政区划：
+						</div>
+						<div class="td">
+							<!--行政区划单选 -->
+							<input class="cy-district-radio" iscode="true" width="120px;"
+								name="districtCode" id="district" data-options="required:true">
+						</div>
+								<div class="th">分析时间：</div>
+							<div class="td" style="width: 300px;">
+							<input name="startTime" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']" 
+                                   class="easyui-datetimebox" style="width: 150px;" id="start"/> 至 
+                            <input name="endTime" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"
+                                class="easyui-datetimebox" style="width: 150px;" id="end"/>
+							<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search" style="width:70px;margin-left: 50px">分析</a>
+					</div>
+				</div>
+				</div>
+				</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+	<div  class="easyui-layout">
+	<div data-options="region:'west'" title="数据" style="width:40%;padding:10px">
+		<table id="datagrid" cy-datagrid="options" cy-querydata="dangerCarWhole"
+			cy-url="../dangerousVeh.rest?searchType=PageSearch">
+
+		</table>
+		</div>
+<div data-options="region:'center'" title="图像">
+<div id="container" style="height:380px;padding:20px,width:650px">
+</div>
+<div style="text-align: center">
+<a class="easyui-linkbutton" data-options="iconCls:'icon-left'"
+	cy-click="selectPre">上一条</a> 
+	<a class="easyui-linkbutton"
+		data-options="iconCls:'icon-right'" cy-click="selectNext">下一条</a></div> 
+</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+    //启用严格模式
+    'use strict';
+    InitPage([],function($scope){
+		var allData;
+		var districtsText;
+        //页面初始化动作
+        $scope.load = function(){
+        	initData();
+        	
+        	/* //获取数据字典并填入选项
+            $scope.$("#datagrid").datagrid({
+				pageSize:50,
+				pageList:[50,100,200,300,500]	
+			}); */
+            $scope.$updateDom("dangerCarWhole");
+        	$scope.$updateData("dangerCarWhole");
+        }
+
+        $.extend($scope, {
+            /**
+             * datagrid配置
+             * @type easyui的datagrid中的参数对象
+             */
+            options : {
+                columns:[[
+                    {field:"id",checkbox:false},
+                    {field:"roadSectionName",title:"路段名称",width:100,sortable:true},
+                    {field:"total",title:"危险总数",width:100},
+                    {field:"xAxis",hidden:true},
+                    {field:"yAxis",hidden:true}
+                ]],
+                pageSize:50,
+                pageList:[50,100,200,300,500],
+                 //双击查看详情
+                onClickRow : function(rowIndex, rowData){
+                	//柱状图
+                	showChart(rowData,districtsText);
+                	//饼状图
+                	//showPieChart(rowData);
+                },
+                //是否远程排序
+                remoteSort:false
+            },
+            /**
+             * 查询操作
+             * @return {[type]} [description]
+             */
+            search : function(){
+            	districtsText = $scope.$("#district").textbox("getText");
+            	//显示加载中。。
+				 $scope.$('#datagrid').datagrid("loading");
+            	 $scope.$updateData("dangerCarWhole");
+            	//查询初始数据
+                $scope.$ajaxRequest({
+               	     url: $scope.$restRoot+'vehTrack/danger/dangerCarWholeAnylsis',
+                    //url: "../../html/src/tpls/passVehicle/dangerCarManager/hightchart.json",
+                    params:$scope.dangerCarWhole,
+                    type : "post",
+                    dataType : "json",
+                    timeout:10000000,
+                    success : function(retData){
+                    $scope.$("#datagrid").datagrid("loaded");
+                   	 allData = retData.result.rows;
+                   	 if (allData.length>0){
+                   	//查询成功 加载数据
+                   	//前台分页
+                       $scope.$('#datagrid').datagrid({loadFilter:pagerFilter}).datagrid('loadData', allData);
+                     //显示柱状图   
+                   	  $scope.$('#datagrid').datagrid('selectRow', 0);
+                        showChart($scope.$('#datagrid').datagrid(
+						'getSelected'),districtsText);
+                   	 }else {
+                   		$.messager.alert("提示","没有分析结果！");
+                   	 }
+                    },
+                    fail : function(errTxt){
+                     $scope.$("#datagrid").datagrid("loaded");
+                   	 $.messager.alert("提示","服务器正忙！");
+                    }
+                });
+        		
+            },
+            /**
+             * 设置默认时间，今天00:00到当前时间
+             * @type {Object}
+             */
+             dangerCarWhole : {
+            	startTime : new Date().format("yyyy-MM-dd 00:00"),
+            	endTime : new Date().format("yyyy-MM-dd HH:mm")
+            }
+         });
+        
+        /**
+         * 前台分页
+         * 
+         */
+        function pagerFilter(data){
+			if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
+				data = {
+					total: data.length,
+					rows: data
+				}
+			}
+			var dg = $(this);
+			var opts = dg.datagrid('options');
+			var pager = dg.datagrid('getPager');
+			pager.pagination({
+				onSelectPage:function(pageNum, pageSize){
+					opts.pageNumber = pageNum;
+					opts.pageSize = pageSize;
+					pager.pagination('refresh',{
+						pageNumber:pageNum,
+						pageSize:pageSize
+					});
+					dg.datagrid('loadData',data);
+					  //显示柱状图   
+                   	$scope.$('#datagrid').datagrid('selectRow', 0);
+                        showChart($scope.$('#datagrid').datagrid(
+						'getSelected'),districtsText);
+				}
+			});
+			if (!data.originalRows){
+				data.originalRows = (data.rows);
+			}
+			var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
+			var end = start + parseInt(opts.pageSize);
+			data.rows = (data.originalRows.slice(start, end));
+			return data;
+		} ;
+		
+		/**
+		    *柱状图
+		    * param rowData 每一行的数据,
+		    * param districtsText，行政区划
+		    */
+		    /* function showChart(rowData,districtsText) {
+		    	$scope.$('#container').highcharts({
+		            chart: {
+		                type: 'column'
+		            },
+		            title: {
+		                text: districtsText+'内危险车辆整体分析柱状图'
+		            },
+		            subtitle: {
+		                text: ''
+		            },
+		            xAxis: {categories:rowData.xAxis
+		            },
+		            yAxis: {
+		                min: 0,
+		                title: {
+		                    text: '发生次数'
+		                }
+		            },
+		            tooltip: {
+		                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+		                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+		                    '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+		                footerFormat: '</table>',
+		                shared: true,
+		                useHTML: true
+		            },
+		            plotOptions: {
+		                column: {
+		                    pointPadding: 0.2,
+		                    borderWidth: 0
+		                }
+		            },
+		            series: [{
+		                name: '违法次数',
+		                data: rowData.yAxis
+
+		            }]
+		        });
+		    }; */
+		    
+	    //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar'
+                    ]
+                    /* function (ec) {
+                    	showChart(ec,$scope.$("#container").get(0));
+                    }  */
+            );
+        }
+		    
+		    function showChart(rowData,districtsText) {
+		    	// 基于准备好的dom，初始化echarts实例
+		        var myChart = require('echarts').init($scope.$("#container").get(0));
+
+		        // 指定图表的配置项和数据
+		        var option = {
+		            title: {
+		            	x:'center',
+		                text: districtsText+'内危险车辆整体分析柱状图'
+		            },
+		            tooltip: {},
+		            toolbox: {
+		                show : true,
+		                feature : {
+		                    dataView : {show: true, readOnly: false},
+		                    magicType : {show: true, type: ['line', 'bar']},
+		                    restore : {show: true},
+		                    saveAsImage : {show: true}
+		                }
+		            },
+		            legend: {
+		            	y:'bottom',
+		                data:['违法次数']
+		            },
+		            xAxis: {
+		                data: rowData.xAxis
+		            },
+		            yAxis: {},
+		            series: [{
+		                name: '违法次数',
+		                type: 'bar',
+		                data: rowData.yAxis
+		            }]
+		        };
+
+		        // 使用刚指定的配置项和数据显示图表。
+		        myChart.setOption(option);
+		    	
+		    }
+		    
+		  //选择下一条
+			$scope.selectNext = function() {
+				var row = $scope.$('#datagrid').datagrid('getSelected');
+				var currentPage = $scope.$("#datagrid").datagrid(
+						"getPager").pagination("options").pageNumber;
+				var pageSize = $scope.$("#datagrid").datagrid(
+				"getPager").pagination("options").pageSize;
+				if (row) {
+					var index = $scope.$('#datagrid').datagrid(
+							'getRowIndex', row);
+					$scope.$('#datagrid')
+							.datagrid('selectRow', index + 1);
+					row = $scope.$('#datagrid').datagrid('getSelected');
+					if (row) {
+						showChart(row,districtsText);
+						//$scope.displayListImage(row);
+					} else {
+						if (index + 1 == $scope.$('#datagrid').datagrid(
+								"getRows").length && index + 1 == pageSize) {
+							//跳到下一页
+							$scope.$("#datagrid").datagrid("getPager")
+									.pagination("options").pageNumber = currentPage + 1;
+							$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage + 1);
+							//$scope.SearchAsync("next");
+						}else {
+							
+						$scope.$('#datagrid').datagrid('selectRow', index);
+						 alert('已到最后一条');
+						}
+					}
+				} else {
+					alert('已到最后一条');
+				}
+			};
+			
+			//选择上一条
+			$scope.selectPre = function() {
+				var row = $scope.$('#datagrid').datagrid('getSelected');
+				var currentPage = $scope.$("#datagrid").datagrid(
+						"getPager").pagination("options").pageNumber;
+				if (row) {
+					var index = $scope.$('#datagrid').datagrid(
+							'getRowIndex', row);
+					var obj = $scope.$('#datagrid').datagrid('selectRow',
+							index - 1);
+					row = $scope.$('#datagrid').datagrid('getSelected');
+					if (row) {
+						showChart(row,districtsText);
+					} else {
+						if (index == 0 && currentPage>1) {
+							//跳到上一页
+							$scope.$("#datagrid").datagrid("getPager")
+									.pagination("options").pageNumber = currentPage - 1;
+							$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage - 1);
+							 //显示柱状图   
+		                   	$scope.$('#datagrid').datagrid('selectRow', $scope.$("#datagrid").datagrid(
+							"getPager").pagination("options").pageSize-1);
+		                    showChart($scope.$('#datagrid').datagrid(
+								'getSelected'),districtsText);
+						}else {
+							$scope.$('#datagrid').datagrid('selectRow', index);
+							alert('已到第一条'); 
+						}
+					}
+				} else {
+					alert('已到第一条');
+				}
+			};
+    });
+    
+    
+    
+    /**
+     *饼状图
+     * param rowData 每一行的数据,
+     * param districtsText，行政区划
+     */
+    function showPieChart(rowData) {
+    	var data = [];
+    	for (var key in rowData.map){
+    		var childrenData =  [];
+    		childrenData.push(key);
+    		childrenData.push(rowData.map[key])
+    		data.push(childrenData);
+    	}
+        $('#container').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Browser market shares at a specific website, 2010'
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Browser share',
+                data: data
+            }]
+        });
+    };
+   
+	
+</script>
+<style type="text/css">
+#dangerousVehicle .th {
+	margin-left: 30px;
+	width: 70px;
+	text-align: right;
+}
+
+#dangerousVehicle .td {
+	width: 120px;
+}
+</style>

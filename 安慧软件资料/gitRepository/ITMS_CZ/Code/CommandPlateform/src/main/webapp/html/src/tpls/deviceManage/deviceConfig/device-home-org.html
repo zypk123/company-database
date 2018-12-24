@@ -1,0 +1,468 @@
+<div id="deviceHomeOrg" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<div style="margin-bottom: 5px">
+			<a style="font-size: 15px;text-decoration: underline;letter-spacing: 5px;">设备概况</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-panel" data-options="cls:'gridPanel',height:'100%',width:'99%',border:false">
+			<table id="deviceMainGrd" style="height:auto"></table>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div id="deviceUnnormalPie" class="pie">
+
+		</div>
+		<div id="deviceCertiPie" class="pie">
+
+		</div>
+		<div id="deviceBugPie" class="pie">
+
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//定时刷新时间间隔，单位分钟
+		var intervalTime = 2;
+
+		$scope.load = function() {
+			//引入echarts需要的js
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			getDevGenalSituation();
+		};
+		var devSubObj = null;
+
+		var columns = null;
+		//no
+		var grdData = null;
+		//no
+
+		var columnArry = [];
+		var orgPrivCodeArry = [];
+
+		var hasCerti = false;
+		var curSelectedRowIndex = 0;
+		var setTimeoutId = null;
+		function getDevGenalSituation() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituation",
+				params : {
+				},
+				success : function(result) {
+					getParms(result.forGrdColumn, result.forGrdData);
+					initGrid(result);
+					hasCerti = result.hasCerti;
+					if (!hasCerti)//如果不含有检定率，则不显示检定率图
+					{
+						$scope.$('#deviceCertiPie').addClass('pieHide');
+					}
+					//显示总队、支队非正常设备统计图
+					curSelectedRowIndex = result.forGrdData.length - 1;
+					selectCurGrdRow();
+					//subscribeDevGenral();//不采用订阅方案
+					setTimeoutId = window.setTimeout(getDevGenalSituationIntervalTime, intervalTime * 60 * 1000);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+
+		$scope.close = function() {
+			console.log("close");
+			console.log(setTimeoutId);
+			window.clearTimeout(setTimeoutId);
+			//devSubObj.remove();
+		};
+		$scope.leave = function() {
+			console.log("leave");
+			console.log(setTimeoutId);
+			window.clearTimeout(setTimeoutId);
+			// devSubObj.remove();
+		};
+		$scope.enter = function() {
+			//subscribeDevGenral();//不采用订阅方案
+			getDevGenalSituationIntervalTime();
+		};
+		function selectCurGrdRow() {
+			$scope.$('#deviceMainGrd').datagrid("selectRow", curSelectedRowIndex);
+		}
+
+		function getDevGenalSituationIntervalTime() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituationIntervalTime",
+				params : {
+					"columns" : columnArry.join(","),
+					"orgPrivCodes" : orgPrivCodeArry.join(","),
+					"isNeetCerti" : hasCerti
+				},
+				success : function(result) {
+					$scope.$('#deviceMainGrd').datagrid("loadData", result);
+					selectCurGrdRow();
+					setTimeoutId = window.setTimeout(getDevGenalSituationIntervalTime, intervalTime * 60 * 1000);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function getParms(columns, grdData) {
+			for (var c in columns) {
+				columnArry.push(c);
+			}
+			var currentUserOrgPrivCode = $scope.UserInfo.orgPrivCode;
+			for (var o in grdData) {
+				if (grdData[o].orgPriviCode != currentUserOrgPrivCode) {
+					orgPrivCodeArry.push(grdData[o].orgPriviCode);
+				}
+			}
+		}
+
+		function subscribeDevGenral() {
+			var columnArry = [];
+			for (var c in columns) {
+				columnArry.push(c);
+			}
+			var orgPrivCodeArry = [];
+			var currentUserOrgPrivCode = $scope.UserInfo.orgPrivCode;
+			for (var o in grdData) {
+				if (grdData[o].orgPriviCode != currentUserOrgPrivCode) {
+					orgPrivCodeArry.push(grdData[o].orgPriviCode);
+				}
+			}
+			//订阅设备状态
+			devSubObj = new Subsribe({
+				type : SubsribeType.deviceHomeMonitor,
+				onMessage : onReceiveDevGenral,
+				param : {
+					"column" : columnArry,
+					"orgPriCode" : orgPrivCodeArry,
+					"curOrgPriCode" : currentUserOrgPrivCode
+				}
+			});
+		}
+
+		function onReceiveDevGenral(data)//接收到状态消息
+		{
+			for (var o in grdData) {
+				$.extend(grdData[o], data[grdData[o].orgPriviCode]);
+			}
+			$scope.$('#deviceMainGrd').datagrid("loadData", grdData);
+			selectCurGrdRow();
+		}
+
+		function initGrid(result) {
+			var firstRowHeader = [];
+			var colums = [];
+
+			firstRowHeader.push({
+				rowspan : 2,
+				field : 'orgName',
+				title : '机构',
+				halign : 'center'
+			});
+
+			var cls = result.forGrdColumn;
+			for (var c in cls) {
+				var field = c;
+				var title = cls[c];
+				colums.push({
+					field : field,
+					title : title,
+					halign : 'center',
+					width : 100,
+					align : 'center',
+					formatter : function(value, row, index) {
+						if (value != null && value != undefined) {
+							return value.normal + "/" + value.total;
+						}
+						return "--";
+					}
+				});
+			}
+			colums.push({
+				field : 'devTotal',
+				title : '总计',
+				halign : 'center',
+				width : 100,
+				align : 'center',
+				formatter : function(value, row, index) {
+					if (value != null && value != undefined) {
+						return value.normal + "/" + value.total;
+					}
+					return "--";
+				}
+			});
+			colums.push({
+				field : 'devTotalPercent',
+				title : '在线率',
+				halign : 'center',
+				width : 130,
+				align : 'center',
+				formatter : getPercentFormat,
+				styler : function(value, row, index) {
+					return 'background-color:#C5D9F1;';
+				}
+			});
+			var devColumSpan = columnArry.length + 2;
+			firstRowHeader.push({
+				colspan : devColumSpan,
+				title : '在线情况（当前在线数/应在线数）',
+				halign : 'center'
+			});
+			if (result.hasCerti) {
+				colums.push({
+					field : 'certification',
+					title : '检定',
+					halign : 'center',
+					width : 100,
+					align : 'center',
+					formatter : function(value, row, index) {
+						if (value != null && value != undefined) {
+							return value.normal + "/" + value.total;
+						}
+						return "--";
+					}
+				});
+				colums.push({
+					field : 'certificationPercent',
+					title : '检定率',
+					halign : 'center',
+					width : 130,
+					align : 'center',
+					formatter : getPercentFormat,
+					styler : function(value, row, index) {
+						return 'background-color:#EAF1DD;';
+					}
+				});
+				firstRowHeader.push({
+					colspan : 2,
+					title : '检定情况',
+					halign : 'center'
+				});
+			}
+			firstRowHeader.push({
+				rowspan : 2,
+				field : 'devBugPercent',
+				title : '故障率',
+				halign : 'center',
+				formatter : function(value, row, index) {//故障率越低越好
+					if (value != null && value != undefined) {
+						var vl = value.replace("%", "");
+						if (parseFloat(vl) > 60) {
+							return "<span style='color:red'>" + value + "</span>";
+						} else {
+							return value;
+						}
+					}
+					return "--";
+				},
+				styler : function(value, row, index) {
+					return 'background-color:#FDE9D9;';
+				}
+			});
+			$scope.$('#deviceMainGrd').datagrid({
+				data : result.forGrdData,
+				columns : [firstRowHeader, colums],
+				striped : true,
+				border : true,
+				pagination : false,
+				onSelect : function(index, row) {
+					curSelectedRowIndex = index;
+					showUnnormalDevice(row);
+					showCertiDevice(row);
+					showBugDevice(row);
+				}
+			});
+		}
+
+		function getPercentFormat(value, row, index) {
+			if (value != null && value != undefined) {
+				var vl = value.replace("%", "");
+				if (parseFloat(vl) < 60) {
+					return "<span style='color:red'>" + value + "</span>";
+				} else {
+					return value;
+				}
+			}
+			return "--";
+		}
+
+		function showUnnormalDevice(rowData) {
+			var testData = [];
+			var total = rowData.devTotal;
+			if (total) {
+				var online = total.normal;
+				var offline = total.total - online;
+				if (online == 0 && offline == 0) {
+					showNoPieData("#deviceUnnormalPie", "在线设备：0个   离线设备：0个");
+					return;
+				}
+				testData.push({
+					value : online,
+					name : "在线"
+				});
+				testData.push({
+					value : offline,
+					name : "离线"
+				});
+			}
+			//createPie($scope.$('#deviceUnnormalPie')[0], rowData.orgName + "-在线情况", testData);
+			showPieData("#deviceUnnormalPie",rowData.orgName + "-在线情况", testData);
+		}
+
+		function showBugDevice(rowData) {
+			var testData = [];
+			var total = rowData.devTotal;
+			if (total) {
+				var online = total.normal;
+				var bug = total.bug;
+				var nomarl = online - bug;
+				if (bug == 0 && nomarl == 0) {
+					showNoPieData("#deviceBugPie", "正常设备：0个   故障设备：0个");
+					return;
+				}
+				testData.push({
+					value : nomarl,
+					name : "正常"
+				});
+				testData.push({
+					value : bug,
+					name : "故障"
+				});
+			}
+			//createPie($scope.$('#deviceBugPie')[0], rowData.orgName + "-故障情况", testData);
+			showPieData("#deviceBugPie",rowData.orgName + "-故障情况", testData);
+		}
+
+		function showCertiDevice(rowData) {
+			if (!hasCerti)//如果不含有检定率，则不显示检定率图
+			{
+				return;
+			}
+			var certi = rowData.certification;
+			var testData = [];
+			if (certi) {
+				var haveCerti = certi.normal;
+				var noCerti = certi.total - haveCerti;
+				testData.push({
+					value : haveCerti,
+					name : "已检定"
+				});
+				testData.push({
+					value : noCerti,
+					name : "未检定"
+				});
+			}
+			// if (testData.length != 0) {
+				// createPie($scope.$('#deviceCertiPie')[0], rowData.orgName + "-检定情况", testData);
+			// } else {
+				// showNoPieData("#deviceCertiPie", "无数据");
+			// }
+			showPieData("#deviceCertiPie",rowData.orgName + "-检定情况", testData);
+		}
+		
+		function showPieData(domId,title,data)
+		{
+			if (data.length != 0) {
+				createPie($scope.$(domId)[0], title, data);
+			} else {
+				showNoPieData(domId, "无数据");
+			}
+		}
+
+		/**
+		 *饼状图无数据时候显示内容
+		 */
+		function showNoPieData(domId, content) {
+			$scope.$(domId).addClass('pieText');
+			$scope.$(domId).text(content);
+		}
+
+		/**
+		 *创建pie
+		 */
+		function createPie(dom, name, data) {
+			require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+				var pieObj = ec.init(dom, 'macarons');
+				//macarons
+				var optionPie = {
+					title : {
+						text : name,
+						padding : [15, 0, 0, 15]
+					},
+					tooltip : {
+						show : true
+					},
+					series : [{
+						name : name,
+						type : 'pie',
+						radius : ['0', '60%'],
+						itemStyle : {
+							normal : {
+								label : {
+									show : true,
+									formatter : '{b}：\n{c}个'
+								},
+								labelLine : {
+									show : true,
+									length : 5
+								}
+							},
+							emphasis : {
+								label : {
+									//show : true,
+									position : 'center',
+									textStyle : {
+										fontSize : '20',
+										fontWeight : 'bold'
+									}
+								}
+							}
+						},
+						data : data
+					}]
+				};
+				pieObj.setOption(optionPie);
+			});
+		}
+
+	});
+
+</script>
+<style>
+	#deviceHomeOrg {
+		height: 100%;
+		width: 100%;
+	}
+	#deviceHomeOrg .pie {
+		width: 350px;
+		height: 260px;
+		float: left;
+		/*border: solid 1px silver;*/
+	}
+	#deviceHomeOrg .pieHide {
+		display: none
+	}
+	#deviceHomeOrg .pieText {
+		text-align: center;
+		color: red;
+		font-size: 15px;
+		vertical-align: middle;
+	}
+	#deviceHomeOrg .gridPanel {
+		height: 100%;
+		width: 99%;
+		margin-left: 1%;
+	}
+
+</style>

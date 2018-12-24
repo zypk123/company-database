@@ -1,0 +1,56 @@
+ <div id="deviceSysConfigTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div title="装备信息" data-options="href:'tpls/deviceManage/deviceRecord/wine-checked-info-input.html'">
+
+    </div>
+    
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     * whichType ：设备类型
+     */
+    InitPage(["mode","whichType","whichName","deviceInfoDto","equipmentNbr","saveData","deviceId","siteId","closeSelf"],function($scope) {
+        //传递设备类型
+        var deviceSnb = $scope.deviceSysNbr;
+        $scope.$setParam("deviceType",$scope.whichType);
+        //传递设备名称
+        $scope.$setParam("whichName",$scope.whichName);
+        //传递设备Id到图片页面
+        $scope.$setParam("deviceId3",$scope.deviceId);
+        //传递设备Id到年检页面
+        $scope.$setParam("deviceId2",$scope.deviceId);
+        $scope.$setParam("deviceSysNbr",$scope.deviceInfoDto.equipmentNbr);//传设备编号到年检信息页面
+        
+        //传递设备信息值
+        $scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+        
+        //传递保存方法
+        $scope.$setParam("saveData",$scope.saveData);
+        //获取mode参数
+        var currentMode= $scope.mode;
+        $scope.$setParam("remark",currentMode);
+        //设置访问tab页
+        if(currentMode=="ADD"){
+            var deviceSysConfigTabs=$scope.$("#deviceSysConfigTabs");
+            $scope.$setParam("deviceSysConfigTabs",deviceSysConfigTabs);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 1);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 2);
+		    if($scope.equipmentNbr){
+		    	$scope.$setParam("equipmentNbr", $scope.equipmentNbr);
+		    }
+        }else{
+        	var deviceSysConfigTabs=$scope.$("#deviceSysConfigTabs");
+            $scope.$setParam("deviceSysConfigTabs",deviceSysConfigTabs);
+        }
+        //传递关闭弹出框的方法
+        $scope.$setParam("destroyTab1",$scope.closeSelf);
+        $scope.$setParam("destroyTab3",$scope.closeSelf);
+        $scope.$setParam("destroyTab4",$scope.closeSelf);
+    });
+</script>

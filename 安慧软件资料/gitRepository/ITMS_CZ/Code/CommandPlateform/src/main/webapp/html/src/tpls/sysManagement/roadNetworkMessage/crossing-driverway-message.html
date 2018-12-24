@@ -1,0 +1,111 @@
+<!--车道信息-->
+<div class="easyui-layout">
+	<div data-options="region:'center',fit:true">
+		<div id="upinfo" class="searchPanel">
+			<div class="panel_title">
+				上行车道信息
+			</div>
+		</div>
+		<div id="downinfo" class="searchPanel">
+			<div class="panel_title">
+				下行车道信息
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south'" style="height:50px;">
+		<div class="tr">
+			<div class="td" style="text-align: center">
+				<a class="easyui-linkbutton " data-options="iconCls:'icon-save'"
+				cy-click="save">保存</a>
+				<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+				cy-click="$destroySelf">取消</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roadForm" class="table" style="display: none">
+	<div  class="tr" >
+		<div class="th"style="width: 80px; text-align: right;">
+			车道编号：
+		</div>
+		<div class="td">
+			<input id="lineNumber" type="text"  name="lineNumber" />
+		</div>
+		<div class="th" style="width: 100px; text-align: right;">
+			车道类型：
+		</div>
+		<div class="td">
+			<input id="lineType"  name="lineType" />
+		</div>
+		<div class="th" style="width: 100px; text-align: right;">
+			是否限行：
+		</div>
+		<div class="td">
+			是
+			<input type="radio" name="lkqh" value=""/>
+			否
+			<input type="radio" name="lkqh" value=""/>
+		</div>
+	</div>
+	<div class="tr">
+		<div class="th" style="width:228px; text-align: right;">
+			限高速：
+		</div>
+
+		<div class="th" >
+			大车：
+		</div>
+		<div class="td">
+			<input type="text" name="cds" class="easyui-textbox" style="width: 40px;"/>
+			公里/时
+		</div>
+		<div class="th" style="width:60px; text-align: right;">
+			小车：
+		</div>
+		<div class="td">
+			<input type="text" name="cds" class="easyui-textbox" style="width: 40px;"/>
+			公里/时
+		</div>
+		<div class="th" style="width:70px; text-align: right;">
+			其他：
+		</div>
+		<div class="td">
+			<input type="text" name="fzmc" class="easyui-textbox" style="width: 40px;"/>
+			公里/时
+		</div>
+
+	</div>
+	<script>
+		InitPage(["driverwayData", "wayData"], function($scope) {
+			if ($scope.driverwayData == 1) {
+				$scope.$("#upinfo").show();
+				$scope.$("#downinfo").show();
+			} else if ($scope.driverwayData == 2) {
+				$scope.$("#upinfo").show();
+				$scope.$("#downinfo").hide();
+			} else {
+				$scope.$("#upinfo").hide();
+				$scope.$("#downinfo").show();
+			}
+			for (var i = 0; i < $scope.wayData; i++) {
+				if ($scope.driverwayData == 1) {
+					var road1 = $scope.$("#roadForm").clone().removeAttr("id");
+					var road2 = road1.clone();
+					$scope.$("#upinfo").append(road1.show());
+					$scope.$("#downinfo").append(road2.show());
+				} else if ($scope.driverwayData == 2) {
+					var road1 = $scope.$("#roadForm").clone().removeAttr("id");
+					$scope.$("#upinfo").append(road1.show());
+				} else {
+					var road1 = $scope.$("#roadForm").clone().removeAttr("id");
+					$scope.$("#downinfo").append(road1.show());
+				}
+			}
+			$scope.$("[name='lineNumber']").textbox({
+				width : 50
+			});
+			$scope.$("[name='lineType']").combobox({
+				width : 100
+			});
+		});
+	</script>

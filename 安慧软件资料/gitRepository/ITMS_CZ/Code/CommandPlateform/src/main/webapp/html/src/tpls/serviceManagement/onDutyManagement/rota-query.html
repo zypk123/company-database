@@ -1,0 +1,137 @@
+<div class="easyui-layout" id="rota-query">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="ondutyForm">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="ondutyMessage" class="table">
+					<div class="tr">
+						<div class="th">
+							值班部门：
+						</div>
+						<div class="td">
+							<input name="......." class="easyui-textbox"/>
+						</div>
+						<div class="th" style="width: 70px;">
+							值班日期:
+						</div>
+						<div class="td">
+							<input id="startTime" class="easyui-datebox " name="ZBTimeFrom" style="width:150px" data-options="validType:['maxDate[\'endTime\']','date']"/>
+                                                                                              到
+                            <input id="endTime" class="easyui-datebox " name="ZBTimeTo" style="width:150px" data-options="validType:['minDate[\'startTime\']','date']"/>
+						</div>
+						<div class="td">
+							&nbsp;&nbsp;&nbsp;<input type="checkbox" />今日排班
+						</div>
+						<div class="td">
+							<input type="checkbox" />明日排班
+						</div>
+						<div class="td">
+							<input type="checkbox" />本周排班
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							值班人员：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" />
+						</div>
+						<div class="td">
+							<input type="checkbox" />我的值班表
+						</div>
+						<div class="td">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="easyui-linkbutton" cy-click="searchData" data-options="iconCls:'icon-search'">查询</a>
+							<a class="easyui-linkbutton button" style="margin-left:10px" data-options="iconCls:'icon-print'" cy-click="exportExcel">打印</a>
+							<a class="easyui-linkbutton" cy-click="CK" data-options="iconCls:'icon-search'">查看</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="..." cy-datagrid="options" cy-querydata="queryData"
+			cy-url="......."></table>
+	</div>
+</div>
+<script>
+	//初始化数据
+	InitPage([], function($scope) {
+		$scope.options = {
+			columns : [[{
+				field : 'zbrq',
+				title : '值班日期',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'zbld',
+				title : '值班领导',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'dbld',
+				title : '带班领导',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'zbmj',
+				title : '值班民警',
+				align : 'center',
+				width : 60
+			}, {
+				field : 'cjr',
+				title : '采集人',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'cjsj',
+				title : '采集时间',
+				align : 'center',
+				width : 40
+			}, {
+				field : 'zbrz',
+				title : '值班日志',
+				align : 'center',
+				width : 40
+			}]],
+		};
+		
+		
+		$scope.CK = function(){
+			$scope.$openDialog("addDialog", {
+				title : "值班日志查询",
+				width : 800,
+				height : 400,
+				href : "tpls/serviceManagement/onDutyManagement/onduty-log-query.html"
+			});
+			
+			
+		}
+		
+		
+		
+	})
+	
+	
+	
+</script>
+<style>
+	#rota-query .th{
+        width: 80px;
+        text-align: right;
+    }
+    #rota-query .easyui-combobox{
+        width: 120px;
+    }
+    #rota-query .button-search{
+       margin-left: 10px;
+    }
+	
+	
+	
+	
+	
+</style>

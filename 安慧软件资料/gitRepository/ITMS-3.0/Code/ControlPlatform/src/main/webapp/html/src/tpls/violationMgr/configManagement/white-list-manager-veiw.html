@@ -1,0 +1,129 @@
+<!--白名单信息面板添加页面-->
+<div class="easyui-layout">
+    <div data-options="region:'center'" >
+        <form cy-form="checkedData">
+            <div id="whiteListChecked" class="table">
+                <div class="tr">
+                    <div class="th">
+                        号牌号码：
+                    </div>
+                    <div class="td" cy-name="checkedData.plateNbr"></div>
+                    <div class="th" style="width: 130px;">
+                        号牌类型：
+                    </div>
+                    <div class="td" cy-name="checkedData.plateType" cy-filter="plateType"></div>
+                    <div class="th" style="width:120px;">
+                        号牌颜色：
+                    </div>
+                    <div class="td" cy-name="checkedData.plateColor" cy-filter="plateColor"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        车辆品牌：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleBrand"></div>
+                    <div class="th" style="width: 130px;">
+                        车辆型号：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleModel"></div>
+                    <div class="th" style="width:120px;">
+                        车身颜色：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleColor" cy-filter="vehicleColor"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        管理部门：
+                    </div>
+                    <div class="td" cy-name="checkedData.orgId" ></div>
+                    <div class="th" style="width: 130px;">
+                        机动车所有人：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleOwner"></div>
+                    <div class="th" style="width:120px;">
+                        车主联系人：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleContactor"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        车主联系人手机：
+                    </div>
+                    <div class="td" cy-name="checkedData.vehicleContactorTel"></div>
+
+                    <div class="th" style="width: 130px">
+                        数据来源：
+                    </div>
+                    <div class="td" cy-name="checkedData.dataSource" style="width: 120px"></div>
+                        <div class="th">
+                        有效期至：
+                    </div>
+                    <div class="td" cy-name="checkedData.validEndDate"></div>
+                <div class="tr">
+                       <div class="th">
+                        备注：
+                    </div>
+                    <div class="td" cy-name="checkedData.remark"></div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height:30px;">
+        &nbsp,&nbsp,&nbsp
+        <div class="td" style="text-align: center">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+            cy-click="$closeSelf">取消</a>
+        </div>
+    </div>
+</div>
+<script>
+    //接受数据
+    InitPage(["checkedData"], function($scope) {
+        //初始化加载页面数据词典
+        $scope.$getDefaultCode(['002','003','006']);
+        /**
+         *根据代码编号获得plateType名称
+         */
+        $scope.plateType = function(value) {
+            return $scope.$getCodeName("002", value);
+        };
+        /**
+         *根据代码编号获得plateColor名称 
+         */
+        $scope.plateColor = function(value){
+            return $scope.$getCodeName("003", value);
+        };
+        /**
+         *根据代码编号获得vehicleColor名称 
+         */
+        $scope.vehicleColor = function(value){
+          return $scope.$getCodeName("006",value);  
+        };
+        $scope.noPunishFlag=function(value){
+          if(value==0){
+              return "是";
+          }else{
+              return "否";
+          }
+          };
+          $scope.queryProtectFlag=function(value){
+          if(value==0){
+              return "是";
+          }else{
+              return "否";
+          } 
+        };
+    }); 
+</script>
+<style type="text/css">
+    /*用户信息表头样式*/
+    #whiteListChecked .th {
+        width: 110px;
+        text-align: right;
+        margin-left: 1px;
+    }
+    #whiteListChecked .td {
+        width: 110px;
+    }
+</style>

@@ -1,0 +1,48 @@
+<div class="easyui-layout" cy-click="show">
+      <div data-options="region:'center',border:false" style="border-bottom:solid 1px #ddd">
+            <form cy-form="newData">
+                  <div class="table">
+                        <div class="tr">
+                              <div class="th">
+                                    名称：
+                              </div>
+                              <div class="td">
+                                    <input type="text" name="name" class="easyui-textbox">
+                              </div>
+                              <div class="th">
+                                    类型：
+                              </div>
+                              <div class="td">
+                                    <select id="type" name="type" class="easyui-combobox" style="width:100px;">
+                                    </select>
+                              </div>
+                              <div class="th">
+                                    机构：
+                              </div>
+                              <div class="td">
+                                    <select name="dept" class="easyui-combotree" style="width:100px;"></select>
+                              </div>
+                        </div>
+                  </div>
+            <form>
+      </div>
+      <div data-options="region:'south',height:40,border:false">
+            <div class="linkbutton_toolbar" style="text-align:center">
+                  <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                  <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">取消</a>
+            </div>
+      </div>
+</div>
+<script type="text/javascript">
+	InitPage(["newData","closeSelf","saveData"],function($scope){
+		$scope.save = function(){
+			//从form取数据
+			$scope.$update("newData");
+			//调用父页面方法
+			$scope.saveData($scope.newData);
+		}
+	});
+</script>
+<style type="text/css">
+	
+</style>

@@ -1,0 +1,53 @@
+<div class="easyui-layout">
+    <div data-options="region:'center'">
+        <div id="map"style="height:100%;width:100%" >
+
+        </div>
+
+    </div>
+</div>
+  <script >
+      InitPage(['choose'],function($scope){
+
+
+          var cyMap = new CYMap($scope.$("#map")[0]);
+          //中心点坐标
+          var centerPoint=new OpenLayers.LonLat(105.70045,28.58540);
+          var markers;
+
+          $scope.load=function(){
+              initMap();
+          }
+          /**
+           * 地图平移至中心点
+           */
+          function moveToCenterPoint() {
+              centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+              cyMap.map.panTo(centerPoint);
+          }
+          function initMap(){
+              cyMap.map.events.register("click", map, onMapClick);
+              pointLayer=new OpenLayers.Layer.Vector("point");
+              markers=new OpenLayers.Layer.Markers("Markers");
+
+              cyMap.map.addLayer(markers);
+          }
+
+          function onMapClick(e){
+              // 显示地图屏幕坐标
+              //var str = "[Screen]:" + e.xy.x + "," + e.xy.y;
+              // 屏幕坐标向地图坐标的转换
+              markers.clearMarkers();
+              var lonlat = cyMap.map.getLonLatFromViewPortPx(e.xy);
+              var pIcon= new OpenLayers.Icon("frameworks/Openlayers/img/marker.png", new OpenLayers.Size(16, 16), new OpenLayers.Pixel(-8, -8));
+              var markerLoc = new OpenLayers.Marker(lonlat, pIcon.clone());
+
+              markers.addMarker(markerLoc);
+              lonlat.transform(cyMap.map.getProjectionObject(),cyMap.map.displayProjection);
+              console.log(lonlat);
+              $scope.choose(lonlat.lon,lonlat.lat);
+              $scope.$destroySelf();
+          }
+
+      });
+  </script>

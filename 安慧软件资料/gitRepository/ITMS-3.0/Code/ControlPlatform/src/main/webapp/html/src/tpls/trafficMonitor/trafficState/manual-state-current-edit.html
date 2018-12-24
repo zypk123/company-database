@@ -1,0 +1,189 @@
+<div id="manualRoad" class="easyui-layout"  >
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<div class="table" >
+				<div  class="searchPanel" >
+					<div class="panel_title" >
+						路段信息
+					</div>
+					<div class="tr">
+						<div class="th">
+							道路名称：
+						</div>
+						<div class="td">
+							<span cy-name=newData.name></span>
+						</div>
+						<div class="th">
+							道路别名：
+						</div>
+						<div class="td">
+							<span cy-name=newData.popname></span>
+						</div>
+					</div>
+					<div class="tr">
+
+						<!-- <div class="th">
+							车道数：
+						</div>
+						<div class="td"style="width: 150px;">
+							<span cy-name=newData.lanes></span>
+						</div> -->
+						<div class="th">
+							道路类型：
+						</div>
+						<div class="td">
+							<span cy-name=newData.type cy-filter="options_roadType" ></span>
+						</div>
+
+					</div>
+					<div class="tr">
+						<div class="th">
+							起点：
+						</div>
+						<div class="td" >
+							<span cy-name=newData.fRoadName></span>
+						</div>
+						<div class="th">
+							终点：
+						</div>
+						<div class="td" >
+							<span cy-name=newData.bRoadName></span>
+						</div>
+					</div>
+				</div>
+
+				<div  class="searchPanel" id="up">
+					<div class="panel_title" >
+						人工干预
+					</div>
+					<form cy-form="manualData" id="form">
+
+						<div class="tr">
+							<div class="th">
+								干预开始时间：
+							</div>
+							<div class="td">
+								<input class="easyui-datetimebox" name="startTime" id="start" style="width:148px"
+								data-options="prompt:'开始时间',validType:'maxDate[\'end\']',required:true" />
+							</div>
+
+							<div class="th">
+								干预结束时间：
+							</div>
+							<div class="td">
+								<input class="easyui-datetimebox" name="endTime" id="end" style="width:148px"
+								data-options="required:true,prompt:'结束时间',validType:'minDate[\'start\']'" />
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								干预状态：
+							</div>
+							<div class="td">
+								<input  name="controlledState" class="easyui-combobox" style="width:130px" cy-code="501"
+								data-options="required:true"/>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								干预原因：
+							</div>
+							<div class="td">
+								<textarea  name="reason" style="height: 65px;width: 380px;" > </textarea>								
+							</div>
+
+						</div>
+						<div class="tr"> 
+							<div class="td">
+								
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 38px">
+		<div class="table">
+			<div class="tr" style="text-align: center">
+				<a class="easyui-linkbutton button-main" iconCls="icon-save" cy-click="save">提交</a>
+				<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf" >取消</a>
+
+			</div>
+
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["newData","saveData"], function($scope) {
+		$scope.$getDefaultCode(["016"]);
+		//页面登录时调用
+		$scope.load = function() {
+			$scope.findManualData();
+		};
+		$scope.findManualData=function(){
+			$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/manualState/selectByRoadId",
+					params : {roadId:$scope.newData.cyid},
+					success : function(data) {
+						$scope.manualData=data;
+						$scope.$updateDom("manualData");
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "查询失败！");
+					}
+				});
+		};
+		
+		$scope.save=function(){
+			if($scope.$("#form").form("validate")){
+				//$scope.manualData.roadId=$scope.newData.cyid;
+				$scope.manualData.regionalId=$scope.newData.regionalId;
+				$scope.$updateData("manualData");			
+				$scope.saveData($scope.manualData); 
+			}
+		};
+
+		$scope.options_roadType = function(value) {
+			return $scope.$getCodeName("016",value);
+		};
+	}); 
+</script>
+
+<style type="text/css">
+	#manualRoad .th {
+		width: 100px;
+		text-align: right;
+	}
+	#manualRoad .td {
+		width: 150px;
+	}
+	#manualRoad .red {
+		padding: 0 5px;
+		background-color: red;
+		border: solid 1px darkred;
+		border-radius: 5px;
+		color: #fff;
+	}
+	#manualRoad .green {
+		padding: 0 5px;
+		background-color: green;
+		border: solid 1px darkgreen;
+		border-radius: 5px;
+		color: #fff;
+	}
+	#manualRoad .orange {
+		padding: 0 5px;
+		background-color: orange;
+		border: solid 1px darkgoldenrod;
+		border-radius: 5px;
+		color: #fff;
+	}
+	#manualRoad span[cy-name] {
+		color: #0000ff;
+	}
+
+</style>

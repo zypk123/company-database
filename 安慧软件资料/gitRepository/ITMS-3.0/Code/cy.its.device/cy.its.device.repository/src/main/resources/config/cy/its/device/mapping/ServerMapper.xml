@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ServerMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.Server">
+		<id column="SERVER_ID" property="serverId" jdbcType="VARCHAR" />
+		<result column="SURVEY_SYSTEM_ID" property="surveySystemId"
+			jdbcType="VARCHAR" />
+		<result column="SERVER_IP" property="serverIp" jdbcType="VARCHAR" />
+		<result column="CONN_USER_NAME" property="connUserName"
+			jdbcType="VARCHAR" />
+		<result column="CONN_PASSWORD" property="connPassword"
+			jdbcType="VARCHAR" />
+		<result column="OTAL_DISK_RESOURCE" property="otalDiskResource"
+			jdbcType="VARCHAR" />
+		<result column="USED_DISK_RESOURCE" property="usedDiskResource"
+			jdbcType="VARCHAR" />
+		<result column="TOTAL_BACKUP_SERVICE" property="totalBackupService"
+			jdbcType="VARCHAR" />
+		<result column="RUNNING_BACKUP_SERVICE" property="runningBackupService"
+			jdbcType="VARCHAR" />
+		<result column="TOTAL_DATA_SHEET" property="totalDataSheet"
+			jdbcType="VARCHAR" />
+		<result column="SHORTAGE_DATA_SHEET" property="shortageDataSheet"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SERVER_ID, SURVEY_SYSTEM_ID, SERVER_IP, CONN_USER_NAME,
+		CONN_PASSWORD,
+		OTAL_DISK_RESOURCE,
+		USED_DISK_RESOURCE,
+		TOTAL_BACKUP_SERVICE, RUNNING_BACKUP_SERVICE, TOTAL_DATA_SHEET,
+		SHORTAGE_DATA_SHEET
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_SERVER
+		where SERVER_ID = #{serverId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByServerIp" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_SERVER
+		where SERVER_IP = #{serverIp,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_DEVICE_SERVER
+		where SERVER_ID = #{serverId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.Server">
+		insert into T_DEVICE_SERVER
+		(SERVER_ID, SURVEY_SYSTEM_ID, SERVER_IP,
+		CONN_USER_NAME, CONN_PASSWORD,
+		OTAL_DISK_RESOURCE,
+		USED_DISK_RESOURCE, TOTAL_BACKUP_SERVICE,
+		RUNNING_BACKUP_SERVICE,
+		TOTAL_DATA_SHEET, SHORTAGE_DATA_SHEET)
+		values
+		(#{serverId,jdbcType=VARCHAR}, #{surveySystemId,jdbcType=VARCHAR},
+		#{serverIp,jdbcType=VARCHAR},
+		#{connUserName,jdbcType=VARCHAR},
+		#{connPassword,jdbcType=VARCHAR},
+		#{otalDiskResource,jdbcType=VARCHAR},
+		#{usedDiskResource,jdbcType=VARCHAR},
+		#{totalBackupService,jdbcType=VARCHAR},
+		#{runningBackupService,jdbcType=VARCHAR},
+		#{totalDataSheet,jdbcType=VARCHAR},
+		#{shortageDataSheet,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.Server">
+		insert into T_DEVICE_SERVER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="serverId != null">
+				SERVER_ID,
+			</if>
+			<if test="surveySystemId != null">
+				SURVEY_SYSTEM_ID,
+			</if>
+			<if test="serverIp != null">
+				SERVER_IP,
+			</if>
+			<if test="connUserName != null">
+				CONN_USER_NAME,
+			</if>
+			<if test="connPassword != null">
+				CONN_PASSWORD,
+			</if>
+			<if test="otalDiskResource != null">
+				OTAL_DISK_RESOURCE,
+			</if>
+			<if test="usedDiskResource != null">
+				USED_DISK_RESOURCE,
+			</if>
+			<if test="totalBackupService != null">
+				TOTAL_BACKUP_SERVICE,
+			</if>
+			<if test="runningBackupService != null">
+				RUNNING_BACKUP_SERVICE,
+			</if>
+			<if test="totalDataSheet != null">
+				TOTAL_DATA_SHEET,
+			</if>
+			<if test="shortageDataSheet != null">
+				SHORTAGE_DATA_SHEET,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="serverId != null">
+				#{serverId,jdbcType=VARCHAR},
+			</if>
+			<if test="surveySystemId != null">
+				#{surveySystemId,jdbcType=VARCHAR},
+			</if>
+			<if test="serverIp != null">
+				#{serverIp,jdbcType=VARCHAR},
+			</if>
+			<if test="connUserName != null">
+				#{connUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="connPassword != null">
+				#{connPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="otalDiskResource != null">
+				#{otalDiskResource,jdbcType=VARCHAR},
+			</if>
+			<if test="usedDiskResource != null">
+				#{usedDiskResource,jdbcType=VARCHAR},
+			</if>
+			<if test="totalBackupService != null">
+				#{totalBackupService,jdbcType=VARCHAR},
+			</if>
+			<if test="runningBackupService != null">
+				#{runningBackupService,jdbcType=VARCHAR},
+			</if>
+			<if test="totalDataSheet != null">
+				#{totalDataSheet,jdbcType=VARCHAR},
+			</if>
+			<if test="shortageDataSheet != null">
+				#{shortageDataSheet,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Server">
+		update T_DEVICE_SERVER
+		<set>
+			<if test="surveySystemId != null">
+				SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR},
+			</if>
+			<if test="serverIp != null">
+				SERVER_IP = #{serverIp,jdbcType=VARCHAR},
+			</if>
+			<if test="connUserName != null">
+				CONN_USER_NAME = #{connUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="connPassword != null">
+				CONN_PASSWORD = #{connPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="otalDiskResource != null">
+				OTAL_DISK_RESOURCE =
+				#{otalDiskResource,jdbcType=VARCHAR},
+			</if>
+			<if test="usedDiskResource != null">
+				USED_DISK_RESOURCE =
+				#{usedDiskResource,jdbcType=VARCHAR},
+			</if>
+			<if test="totalBackupService != null">
+				TOTAL_BACKUP_SERVICE =
+				#{totalBackupService,jdbcType=VARCHAR},
+			</if>
+			<if test="runningBackupService != null">
+				RUNNING_BACKUP_SERVICE =
+				#{runningBackupService,jdbcType=VARCHAR},
+			</if>
+			<if test="totalDataSheet != null">
+				TOTAL_DATA_SHEET = #{totalDataSheet,jdbcType=VARCHAR},
+			</if>
+			<if test="shortageDataSheet != null">
+				SHORTAGE_DATA_SHEET =
+				#{shortageDataSheet,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where SERVER_ID = #{serverId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Server">
+		update
+		T_DEVICE_SERVER
+		set SURVEY_SYSTEM_ID =
+		#{surveySystemId,jdbcType=VARCHAR},
+		SERVER_IP =
+		#{serverIp,jdbcType=VARCHAR},
+		CONN_USER_NAME =
+		#{connUserName,jdbcType=VARCHAR},
+		CONN_PASSWORD =
+		#{connPassword,jdbcType=VARCHAR},
+		OTAL_DISK_RESOURCE =
+		#{otalDiskResource,jdbcType=VARCHAR},
+		USED_DISK_RESOURCE =
+		#{usedDiskResource,jdbcType=VARCHAR},
+		TOTAL_BACKUP_SERVICE =
+		#{totalBackupService,jdbcType=VARCHAR},
+		RUNNING_BACKUP_SERVICE =
+		#{runningBackupService,jdbcType=VARCHAR},
+		TOTAL_DATA_SHEET =
+		#{totalDataSheet,jdbcType=VARCHAR},
+		SHORTAGE_DATA_SHEET =
+		#{shortageDataSheet,jdbcType=VARCHAR}
+		where SERVER_ID =
+		#{serverId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectServers" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_DEVICE_SERVER
+		<where>
+			<if test="surveySystemId != null and surveySystemId != '' ">
+				SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

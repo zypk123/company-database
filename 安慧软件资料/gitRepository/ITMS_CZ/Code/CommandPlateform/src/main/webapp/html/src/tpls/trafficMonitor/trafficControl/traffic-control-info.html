@@ -1,0 +1,129 @@
+<div id="trafficControlInfo" class="easyui-layout" >
+	<div data-options="region:'center',border:false">
+		<div class="table">
+			<div class="tr">
+				<div class="th" >
+					管制名称：
+				</div>
+				<div class="td" cy-name="newData.trafficControlName" ></div>
+				<div class="th" >
+					管制原因：
+				</div>
+				<div class="td" cy-name="newData.controlReason" cy-filter="convertSysCode1"></div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					管制道路：
+				</div>
+				<div class="td" cy-name="newData.roadId" cy-filter="$getRoadName"></div>
+				<div class="th">
+					管制方向：
+				</div>
+				<div class="td" cy-name="newData.directionType" cy-filter="convertSysCode"></div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					开始地点：
+				</div>
+				<div class="td" cy-name="newData.startSite"></div>
+				<div class="th">
+					结束地点：
+				</div>
+				<div class="td" cy-name="newData.endSite"></div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					影响范围：
+				</div>
+				<div class="td" cy-name="newData.influenceRange" style="width: 383px;height: auto;" >
+
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					开始时间：
+				</div>
+				<div class="td" cy-name="newData.startTime"  >
+
+				</div>
+				<div class="th">
+					结束时间：
+				</div>
+				<div class="td" cy-name="newData.endTime" ></div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					停用时间：
+				</div>
+				<div class="td" cy-name="newData.realEndTime" >
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					管制措施：
+				</div>
+				<div class="td" cy-name="newData.controlMeasures" style="width: 383px;height: auto;"></div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					绕行路线：
+				</div>
+				<div class="td" cy-name="newData.bypassLine" style="width: 383px;height: auto;"></div>
+
+			</div>
+			<div class="tr">
+				<div class="th">
+					管制单位：
+				</div>
+				<div class="td" cy-name="newData.orgId" cy-filter="$getOrgName"style="height: auto;"></div>
+				<div class="th">
+					联系电话：
+				</div>
+				<div class="td" cy-name="newData.phone"></div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					录入人：
+				</div>
+				<div class="td" cy-name="newData.createBy"></div>
+				<div class="th">
+					录入时间：
+				</div>
+				<div class="td" cy-name="newData.createTime"></div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false,height:'38px'">
+		<div class="tr" style="text-align: center; margin-right: 50px">
+			<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf">关闭</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["newData"], function($scope) {
+		$scope.$getDefaultCode(["515", "510"]);
+		//转换值守模式
+		$scope.convertSysCode = function(value) {
+			return $scope.$getCodeName("515", value);
+		};
+		//转换管制原因
+		$scope.convertSysCode1 = function(value) {
+			return $scope.$getCodeName("510", value);
+		};
+
+	}); 
+</script>
+
+<style>
+	#trafficControlInfo .th {
+		width: 100px;
+		text-align: right;
+	}
+	#trafficControlInfo .td {
+		width: 160px;
+		text-align: left;
+		white-space: normal;
+		word-break: break-all;
+		color: #0000ff;
+	}
+</style>

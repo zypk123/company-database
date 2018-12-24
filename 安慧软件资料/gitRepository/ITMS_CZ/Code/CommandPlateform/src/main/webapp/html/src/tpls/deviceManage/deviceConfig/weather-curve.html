@@ -1,0 +1,226 @@
+<div id="flowCurve" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<form cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							时间：
+						</div>
+						<div class="td">
+							<div class="easyui-datetimebox startTime" id="startDate" name="startDate"></div>
+							至
+							<div class="easyui-datetimebox endTime" id="endDate" name="endDate"></div>
+						</div>
+						<div class="td" style="margin-left: 15px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:true">
+		<div id="main" style="height: 400px;">
+
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["deviceSysNbr", "alarmType"], function($scope) {
+		//debugger;
+		var deviceSysNbr = $scope.deviceSysNbr;
+		var alarmType = $scope.alarmType;
+		$scope.load = function() {
+			getSysTime();
+			$scope.searchData = function() {
+				startData = $scope.$("#startDate").datetimebox("gettValue");
+				endDate = $scope.$("#endDate").datetimebox("getValue");
+				getWeatherData(deviceSysNbr, alarmType, startDate, endDate);
+			};
+			
+			 /*
+			 require.config({
+						  paths: {
+						  echarts: 'frameworks/echarts/js'
+						  }
+						  });
+						  require(
+						  [
+						  'echarts',
+						  'echarts/chart/line',   // 閹稿娓堕崝鐘烘祰閹碉拷闂囷拷閸ユ崘銆冮敍灞筋洤闂囷拷閸斻劍锟戒胶琚崹瀣瀼閹广垹濮涢懗鏂ょ礉閸掝偄绻曟禍鍡楁倱閺冭泛濮炴潪鐣屾祲鎼存柨娴樼悰锟�
+						  'echarts/chart/bar'
+						  ],
+						  function (ec) {
+						  // 閸╄桨绨崙鍡楊槵婵傜晫娈慸om閿涘苯鍨垫慨瀣echarts閸ユ崘銆�
+						  var myChart = ec.init($scope.$("#main").get(0));
+										 var option = {
+						  title : {
+						  text: '濮樻棁钖勯弫鐗堝祦閺囪尙鍤�',
+						  //subtext: '缁绢垰鐫橀搹姘��'    //閸擃垱鐖ｆ０锟�
+						  },
+						  tooltip : {
+						  trigger: 'axis'
+						  },
+						  legend: {
+						  data:['濞撯晛瀹�(閳╋拷)','闂勫秹娲﹂柌锟�(mm)','妞嬪酣锟斤拷(m/s)']
+						  },
+						  toolbox: {
+						  show : true,
+						  feature : {
+						  mark : {show: false},//鐠佸墽鐤嗘潏鍛И缁撅拷
+						  dataView : {show: true, readOnly: false},
+						  magicType : {show: false, type: ['line', 'bar']},//鐠佸墽鐤嗛崶鎯ц埌缁鐎烽敍鍫濆彠闂傤厾濮搁幀渚婄礆
+						  restore : {show: true},
+						  saveAsImage : {show: true}
+						  }
+						  },
+						  calculable : true,
+						  xAxis : [
+						  {
+						  type : 'category',
+						  boundaryGap : false,
+						  data : ['1閻愶拷','2閻愶拷','3閻愶拷','4閻愶拷','5閻愶拷','6閻愶拷','7閻愶拷','8閻愶拷',
+						  '9閻愶拷','10閻愶拷','11閻愶拷','12閻愶拷','13閻愶拷','14閻愶拷','15閻愶拷','16閻愶拷',
+						  '17閻愶拷','18閻愶拷','19閻愶拷','20閻愶拷','21閻愶拷','22閻愶拷','23閻愶拷','24閻愶拷']
+						  }
+						  ],
+						  yAxis : [
+						  {
+						  type : 'value',
+						  axisLabel : {
+						  formatter: '{value}'
+						  }
+						  }
+						  ],
+						  series : [
+						  {
+						  name:'濞撯晛瀹�(閳╋拷)',
+						  type:'line',
+						  data:[18, 16, 20, 22, 24, 23, 25,26,
+						  29,28,30,34,36,37,34,30,28,
+						  29,27,26,23,21,20,21],
+						  markPoint : {
+						  data : [
+						  {type : 'max', name: '閺堬拷婢堆冿拷锟�'},
+						  {type : 'min', name: '閺堬拷鐏忓繐锟斤拷'}
+						  ]
+						  }
+						  },
+						  {
+						  name:'闂勫秹娲﹂柌锟�(mm)',
+						  type:'line',
+						  data:[15, 20, 10, 20, 20, 25, 28,30,
+						  35,0,0,0,0,0,0,10,20,
+						  22,28,30,35,40,42,48],
+						  markPoint : {
+						  data : [
+						  {type : 'max', name: '閺堬拷婢堆冿拷锟�'},
+						  {type : 'min', name: '閺堬拷鐏忓繐锟斤拷'}
+						  ]
+						  }
+						  },
+						  {
+						  name:'妞嬪酣锟斤拷(m/s)',
+						  type:'line',
+						  data:[2, 6, 18, 12, 10, 5, 7,6,
+						  10,2,6,11,4,2,4,14,2,
+						  4,20,5,7,9,5,10],
+						  markPoint : {
+						  data : [
+						  {type : 'max', name: '閺堬拷婢堆冿拷锟�'},
+						  {type : 'min', name: '閺堬拷鐏忓繐锟斤拷'}
+						  ]
+						  }
+						  }
+						  ]
+						  };
+						  // 娑撶charts鐎电钖勯崝鐘烘祰閺佺増宓�
+						  myChart.setOption(option);
+						  }
+						  );*/
+			 
+
+		};
+		function getWeatherData(deviceSysNbr, alarmType, startDate, endDate) {
+			//console.log("@@@@@@@@@");
+			//debugger;
+			console.log(deviceSysNbr + " " + alarmType + " " + startDate + " " + endDate);
+			//console.log("#####");
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficAllEventAction/queryAllTrafficAlarmEvent",
+				params : {
+					alarmType : alarmType,
+					deviceSysNbr : deviceSysNbr,
+					startDate : startDate,
+					endDate : endDate,
+					pageNumber : 1,
+					pageSize : 1
+				},
+				success : function(data) {
+					console.log(data);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function getSysTime() {
+			//获取当前时间
+			var myDate = new Date();
+			//获取当前时间的毫秒数
+			var newTime = myDate.getTime();
+			//获取两小时前时的毫秒数
+			var oldTime = newTime - 24 * 60 * 60 * 1000;
+			//获取两小时前时的时间
+			var time = new Date(oldTime);
+			//获取两小时前时间的年
+			var year = time.getFullYear();
+			//获取两小时前时间的月
+			var month = time.getMonth() + 1;
+			if (month < 10) {
+				month = "0" + month;
+			}
+			//获取两小时前时间的日
+			var day = time.getDate();
+			if (day < 10) {
+				day = "0" + day;
+			}
+			//获取两小时前时间的时
+			var hour = time.getHours();
+			//获取两小时前时间的分
+			var minute = time.getMinutes();
+			//获取两小时前时间的秒
+			var second = time.getSeconds();
+
+			var startDate = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+			//设置默认开始时间为当前时间两小时前的时间
+			$scope.$("#startDate").datetimebox("setValue", startDate);
+			//获取当前日期的时间
+			//var endDate = myDate.toLocaleTimeString();
+			var endDate = myDate.format("yyyy-MM-dd HH:mm:ss");
+
+			//设置默认结束时间为当前时间
+			$scope.$("#endDate").datetimebox("setValue", endDate);
+
+			//初始化时间的时候，初始化数据
+			//debugger;
+			getWeatherData(deviceSysNbr, alarmType, startDate, endDate);
+		}
+
+
+		$scope.search = function() {
+			alert("查询成功！");
+		};
+	}); 
+</script>
+<style type="text/css">
+	#flowCurve .th {
+		width: 70px;
+		text-align: right;
+	}
+</style>

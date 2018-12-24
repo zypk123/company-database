@@ -1,0 +1,365 @@
+<div id="deviceHomePage" class="easyui-layout">
+
+	<div data-options="region:'center',border:false">
+		<div id="deviceStatusChts" class="deviceStatusChts"></div>
+		<div style="color: red">
+			注：点击图上任意一行，即可在右边显示该机构设备四项指标详细情况
+		</div>		
+		
+	</div>
+	<div data-options="region:'east',border:true" style="width:28%">
+		<div class="detailTitle">
+			<span>【</span><span id="orgTitle">云南省交警总队</span><span>】设备状况四项指标详细情况</span>
+		</div>
+		<div id="deviceStatusPie" class="pie"></div>
+		<div id="deviceBugPie" class="pie" style="height:28%"></div>
+		<div id="deviceCheckTimePie" class="pie"></div>
+		<div id="deviceUseStatusPie" class="pie"></div>
+	</div>
+	
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+    	
+        $scope.deviceStatusChart = null;        
+
+        $scope.load = function() {
+           orgLoad(); 
+        };
+        
+        /**
+         *总队、支队用户进入，显示机构设备总体情况 
+         */
+        function orgLoad()
+        {
+        	//设置echarts路径
+            require.config({
+                paths : {
+                    echarts : 'frameworks/echarts/js'
+                }
+            });
+
+            $scope.ShowDeviceStautsCharts($scope.$('#deviceStatusChts')[0]);
+
+            //首次显示总队四项指标详细情况
+            $scope.zongduiStatusData = [{
+                value : 32,
+                name : '设备问题离线'
+            }, {
+                value : 20,
+                name : '光钎问题离线'
+            }, {
+                value : 10,
+                name : '电源问题离线'
+            }, {
+                value : 38,
+                name : '在线'
+            }];
+            $scope.zongduiBugData = [{
+                value : 10,
+                name : '相机故障'
+            }, {
+                value : 15,
+                name : '雷达故障'
+            }, {
+                value : 20,
+                name : '电源故障'
+            }, {
+                value : 25,
+                name : '线圈故障'
+            }, {
+                value : 30,
+                name : '网络故障'
+            }, {
+                value : 5,
+                name : 'GPS故障'
+            }, {
+                value : 3,
+                name : '气象仪故障'
+            }, {
+                value : 2,
+                name : '其它'
+            }];
+            $scope.zongduiCheckTimeData = [{
+                value : 37,
+                name : '已检定'
+            }, {
+                value : 20,
+                name : '未检定'
+            }, {
+                value : 43,
+                name : '已过期'
+            }];
+            $scope.zongduiUseData = [{
+                value : 71,
+                name : '已启用'
+            }, {
+                value : 10,
+                name : '未启用'
+            }, {
+                value : 9,
+                name : '已停用'
+            }, {
+                value : 10,
+                name : '已报废'
+            }];
+            showPie([$scope.zongduiStatusData, $scope.zongduiBugData, $scope.zongduiCheckTimeData, $scope.zongduiUseData]);
+        }
+        /**
+         *点击设备情况任意一个 机构bar,显示该机构设备四项指标具体详细情况
+         */
+        function deviceStatusChartClick(param) {
+            //debugger;
+            var series = arguments[1]._chartList[0].series;
+            var statusPercent = series[0].data[param.dataIndex];
+            var bugPercent = series[2].data[param.dataIndex];
+            var checkTimePercent = series[4].data[param.dataIndex];
+            var usePercent = series[6].data[param.dataIndex];
+            $scope.$("#orgTitle").html(param.name.replace("\n", ""));
+
+            showPie([$scope.zongduiStatusData, $scope.zongduiBugData, $scope.zongduiCheckTimeData, $scope.zongduiUseData]);
+        }
+
+        /**
+         *显示设备总体情况
+         */
+        $scope.ShowDeviceStautsCharts = function(dom) {
+            require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+            'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+                $scope.deviceStatusChart = ec.init(dom, 'macarons');
+                var placeHoledStyle = {
+                    normal : {
+                        barBorderColor : 'rgba(0,0,0,0)',
+                        color : 'rgba(0,0,0,0)'
+                    },
+                    emphasis : {
+                        barBorderColor : 'rgba(0,0,0,0)',
+                        color : 'rgba(0,0,0,0)'
+                    }
+                };
+                var dataStyle = {
+                    normal : {
+                        label : {
+                            // textStyle : {
+                            // color : 'red',
+                            // fontSize : 15,
+                            // fontWeight : 'bold'
+                            // },
+                            show : true,
+                            position : 'insideLeft',
+                            formatter : '{c}%'
+                            // formatter : function(params, ticket, callback) {
+                            // var dataa = params.series.data;
+                            // var maxData = Math.max.apply(null, dataa);
+                            // if (params.value == maxData) {
+                            // params.series.itemStyle.normal.label.textStyle = {
+                            // color : 'red',
+                            // fontSize : 15,
+                            // fontWeight : 'bold'
+                            // };
+                            // }
+                            // //callback(ticket, "fff");
+                            // return params.value;
+                            // }
+                        }
+                    }
+                };
+                var option = {
+                    title : {
+                        text : '各管辖机构设备总体情况',
+                        padding : [20, 0, 0, 1]
+                    },
+                    tooltip : {
+                        trigger : 'axis',
+                        axisPointer : {// 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter : '{b}<br/>{a0}:{c0}%<br/>{a2}:{c2}%<br/>{a4}:{c4}%<br/>{a6}:{c6}%'
+                    },
+                    legend : {
+                        y : 55,
+                        // itemGap : (domForPie.offsetWidth-100) / 8,
+                        data : ['设备在线率', '设备故障率', '设备检定率', '设备使用率']
+                    },
+                    grid : {
+                        y : 80,
+                        y2 : 30
+                    },
+                    xAxis : [{
+                        type : 'value',
+                        position : 'top',
+                        splitLine : {
+                            show : false
+                        },
+                        axisLabel : {
+                            show : false
+                        }
+                    }],
+                    yAxis : [{
+                        type : 'category',
+                        splitLine : {
+                            show : false
+                        },
+                        data : ['云南省\n交警总队', '昆明交警支队', '曲靖交警支队', '玉溪交警支队', '保山交警支队', '昭通交警支队', '丽江交警支队', '思茅交警支队', '临沧交警支队', '文山交警支队', '红河交警支队', '西双版纳\n交警支队', '楚雄交警支队', '大理交警支队', '德宏交警支队', '怒江交警支队', '迪庆交警支队']
+                    }],
+                    series : [{
+                        name : '设备在线率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : dataStyle,
+                        data : [38, 50, 33, 72, 38, 50, 33, 72, 38, 50, 33, 72, 38, 50, 33, 72, 38]
+                    }, {
+                        name : '设备在线率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : placeHoledStyle,
+                        data : [62, 50, 67, 28, 62, 50, 67, 28, 62, 50, 67, 28, 62, 50, 67, 28, 62]
+                    }, {
+                        name : '设备故障率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : dataStyle,
+                        data : [61, 41, 42, 30, 61, 41, 42, 30, 61, 41, 42, 30, 61, 41, 42, 30, 50]
+                    }, {
+                        name : '设备故障率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : placeHoledStyle,
+                        data : [39, 59, 58, 70, 39, 59, 58, 70, 39, 59, 58, 70, 39, 59, 58, 70, 50]
+                    }, {
+                        name : '设备检定率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : dataStyle,
+                        data : [37, 35, 44, 60, 37, 35, 44, 60, 37, 35, 44, 60, 37, 35, 44, 60, 50]
+                    }, {
+                        name : '设备检定率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : placeHoledStyle,
+                        data : [63, 65, 56, 40, 63, 65, 56, 40, 63, 65, 56, 40, 63, 65, 56, 40, 50]
+                    }, {
+                        name : '设备使用率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : dataStyle,
+                        data : [71, 50, 31, 39, 71, 50, 31, 39, 71, 50, 31, 39, 71, 50, 31, 39, 70]
+                    }, {
+                        name : '设备使用率',
+                        type : 'bar',
+                        stack : '总量',
+                        itemStyle : placeHoledStyle,
+                        data : [29, 50, 69, 61, 29, 50, 69, 61, 29, 50, 69, 61, 29, 50, 69, 61, 30]
+                    }]
+                };
+                $scope.deviceStatusChart.setOption(option);
+                var ecConfig = require('echarts/config');
+                $scope.deviceStatusChart.on(ecConfig.EVENT.CLICK, deviceStatusChartClick);
+            });
+        };
+
+        function showPie(data) {
+            createPie($scope.$('#deviceStatusPie')[0], "设备在线情况", data[0]);
+            createPie($scope.$('#deviceBugPie')[0], "设备故障情况", data[1]);
+            createPie($scope.$('#deviceCheckTimePie')[0], "设备检定情况", data[2]);
+            createPie($scope.$('#deviceUseStatusPie')[0], "设备使用情况", data[3]);
+        }
+
+        /**
+         *创建pie
+         */
+        function createPie(dom, name, data) {
+
+            require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+            'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+                var pieObj = ec.init(dom, 'macarons');
+
+                var optionPie = {
+                    tooltip : {
+                        show : true
+                    },
+                    series : [{
+                        name : name,
+                        type : 'pie',
+                        radius : ['50%', '70%'],
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    formatter : '{b}：\n{c}%'
+                                },
+                                labelLine : {
+                                    show : true,
+                                    length : 5
+                                }
+                            },
+                            emphasis : {
+                                label : {
+                                    show : true,
+                                    position : 'center',
+                                    textStyle : {
+                                        fontSize : '20',
+                                        fontWeight : 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        data : data
+                    }]
+                };
+                pieObj.setOption(optionPie);
+            });
+        }
+
+
+        $.extend($scope, {
+            searchDeviceStatusData : function() {
+                $scope.$ajaxRequest({
+                    url : 'data/deviceManage/deviceHomePage/deviceStatus.json',
+                    // params : {},
+                    // contextId : "",
+                    success : function(result) {
+                        //查询成功 加载数据
+                        $scope.$('#deviceStatusGrd').datagrid("loadData", result);
+                    },
+                    fail : function(errMsg) {
+                        alert(errMsg);
+                    }
+                });
+            }
+        });
+
+    });
+
+</script>
+<style>
+    #deviceHomePage {
+        height: 100%;
+        width: 100%
+    }
+    #deviceHomePage .left {
+        float: left;
+        width: 65%;
+        height: 100%;
+    }
+    #deviceHomePage .right {
+        float: left;
+        width: 34%;
+        height: 99%;
+    }
+    #deviceHomePage .deviceStatusChts {
+        margin-left: 10px;
+        width: 98%;
+        height: 95%;
+    }
+    #deviceHomePage .detailTitle {
+        font-size: 13px;
+        color: #5AB1EF;
+        height: 25px;
+    }
+    #deviceHomePage .pie {
+        width: 100%;
+        height: 22%;
+        border-top: 1px dashed silver;
+    }
+</style>

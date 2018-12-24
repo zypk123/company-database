@@ -1,0 +1,69 @@
+<div id="jiaojing" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    机构名称：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.orgName"> </span>
+                </div>
+                <div class="th">
+        	机构类型：          
+                </div>
+                <div class="td">
+                	<span cy-name="newData.orgType" cy-filter="convertSysCode"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    机构驻地：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.addressDesc"> </span>
+                </div>
+                <div class="th">
+                    负责人：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.orgHeaderName"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.orgHeaderPhone"> </span>
+                </div>
+
+            </div>
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData"],function($scope){
+    	$scope.$getDefaultCode(["111"]);
+    	$scope.convertSysCode = function(value){
+    		return $scope.$getCodeName("111",value);
+    	};   	
+    });
+</script>
+<style type="text/css">
+    #jiaojing .th{
+        width : 70px;
+        text-align: right;
+    }
+    #jiaojing .td{
+        width : 140px;
+        color:blue;
+    }
+
+</style>

@@ -1,0 +1,131 @@
+<div class="easyui-layout" id="deviceAlarmList">
+	<div data-options="region:'north',border:false">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="queryData" id="form" >
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							时间范围：
+						</div>
+						<div class="td" style="width:400px;">
+							<input class="easyui-datetimebox" style="width:180px;" name="startDateTime" required="true"/>
+							至
+							<input class="easyui-datetimebox" style="width:180px;" name="endDateTime" required="true"/>
+						</div>
+						<div class="td">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="grid" cy-datagrid="options" cy-querydata="queryData" cy-url="/device/deviceAlarm/findAlarmInfo"></table>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		
+		$scope.$getDefaultCode(["478"]);
+		
+		//默认参数
+		$scope.queryData = {
+			startDateTime : new Date().format("yyyy-MM-dd 00:00:00"),
+			endDateTime : new Date().format("yyyy-MM-dd hh:mm:ss"),
+			alarmType : "2"
+		};
+
+		$scope.load = function() {
+			//默认查询
+			$scope.$search("queryData");
+		};
+
+		$scope.search = function() {
+			if ($scope.$("#form").form("validate")) {
+				$scope.$updateData("queryData");
+				//查找第一页
+				$scope.$("#grid").datagrid("getPager").pagination("select", 1);
+			}
+		};
+
+		var formatDateTime = function(value){
+			return new Date(value).format("yyyy-MM-dd HH:mm:ss");
+		};
+
+		$scope.options = {
+			columns : [[{
+				field : "alarmDeviceName",
+				title : "报警设备",
+				width : 200
+			}, {
+				field : "startTime",
+				title : "报警时间",
+				width : 150,
+				align : "center",
+				formatter : formatDateTime
+			}, {
+				field : "alarmDisc",
+				title : "报警信息描述",
+				width : 200
+			},{
+				field : "isHandle",
+				title : "是否处理",
+				align : "center",
+				width : 70,
+				formatter : function(value){
+					if(!value){
+						return "<span class='red'>未处理</span>"; 
+					}else{
+						return "<span class='green'>未处理</span>";
+					}
+				}
+			}, {
+				field : "handleTime",
+				title : "处理时间",
+				align : "center",
+				width : 150
+			}, {
+				field : "handlePerson",
+				title : "处理人",
+				align : "center",
+				width : 70
+			}, {
+				field : "alarmId",
+				title : "操作",
+				width : 100,
+				align : "center",
+				formatter : operater
+			}]]
+		};
+		
+		/**
+		 * 操作栏初始化 
+		 */
+		function operater(value){
+			//处理按钮
+			var handle = $("<a class='button-edit' title='处理' cy-click='handle(\"" + value + "\")'></a>");
+			handle.linkbutton({
+				plain : true,
+				iconCls : "icon-handle-solid"
+			});
+			return $("<span/>").append(handle).html();
+		}
+	});
+
+</script>
+<style>
+	#deviceAlarmList .th {
+		width: 80px;
+		text-align: right;
+	}
+	#deviceAlarmList .red{
+		color: red;
+	}
+	#deviceAlarmList .green{
+		color: green;
+	}
+</style>

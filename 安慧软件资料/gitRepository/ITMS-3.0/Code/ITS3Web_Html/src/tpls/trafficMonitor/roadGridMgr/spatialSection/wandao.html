@@ -1,0 +1,98 @@
+<div id="wandao" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    弯道代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="wddm">
+                </div>
+                <div class="th">
+                    弯道名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    弯道类型：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="wdlx">
+                </div>
+                <div class="th">
+                    道路地形：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="dldx" >
+                </div>
+            </div>
+
+
+            <div class="tr">
+
+                <div class="th">
+                    起点公里米数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="qdglms">
+                </div>
+                <div class="th">
+                    终点公里米数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="zdglms">
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    所属道路：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="ssdl">
+                </div>
+
+                <div class="th">
+                    备注：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="bz">
+                </div>
+            </div>
+
+
+
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #wandao .th{
+        width : 100px;
+        text-align: right;
+    }
+    #wandao .td{
+        width : 150px;
+    }
+
+</style>

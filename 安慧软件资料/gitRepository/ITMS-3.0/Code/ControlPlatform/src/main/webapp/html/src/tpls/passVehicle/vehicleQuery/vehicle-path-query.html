@@ -1,0 +1,613 @@
+<div class="easyui-layout" id="vehicle-path-query">
+	<div data-options="region:'center',border:false">
+		<div id="map" style="width: 100%;height:100%;"></div>
+	</div>
+	<div id="searchResult" data-options="region:'west',width:350,border:false,title:'查询',style:{'border-right':'solid 1px #ddd'}">
+
+	</div>
+	<div class="imageView">
+		<img height="100%" width="100%"/>
+	</div>
+</div>
+<script>
+	InitPage(['plateNbr', 'plateType', 'passTimeStart', 'passTimeEnd', 'initSearch'], function($scope) {
+		//初始化cyMap容器
+		var cyMap;
+		//绘制车辆行车轨迹线图层
+		var traceLayer;
+		//标记车辆轨迹顺序图层
+		var numMarkLayer;
+		//小车子图标图层
+		var vehMarkLayer;
+		// //轨迹线图层样式定义
+		var trackLineStyle = {
+			strokeColor : 'red',
+			strokeWidth : 3,
+			strokeDashstyle : "solid", //dashdot solid dot
+			pointRadius : 5,
+			pointerEvents : "visiblePainted",
+			startarrow : "", //Oval
+			endarrow : "Oval",
+			title : ""
+		};
+		/**
+		 * 启动运行方法
+		 */
+		$scope.load = function() {
+			//收缩左侧菜单
+			$scope.$topLayout.layout("collapse", "west");
+			//初始化地图
+			initMap();
+			$scope.$setParam("search", search);
+			if ($scope.initSearch) {
+				var obj = [];
+				obj.push($scope.plateNbr);
+				obj.push($scope.plateType);
+				obj.push($scope.passTimeStart);
+				obj.push($scope.passTimeEnd);
+				obj.push($scope.initSearch);
+				$scope.$setParam("data", obj);
+			}
+			$scope.$("#searchResult").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-path-query-search.html");
+		};
+
+		/**
+		 * 初始化地图
+		 */
+		var initMap = function() {
+			cyMap = new CYMap($scope.$("#map")[0]);
+			//地图轨迹线图层
+			traceLayer = new OpenLayers.Layer.Vector("traceLayer");
+			cyMap.map.addLayer(traceLayer);
+			//标记车辆轨迹顺序图层
+			numMarkLayer = new OpenLayers.Layer.Markers('numMark', null);
+			cyMap.map.addLayer(numMarkLayer);
+
+			//标记车子图层
+			vehMarkLayer = new OpenLayers.Layer.Markers('vehMark', null);
+			cyMap.map.addLayer(vehMarkLayer);
+
+		};
+
+		/**
+		 * 查询过车记录
+		 */
+		var search = function(searchData) {
+			ClearAndInitSth();
+			//查询之前的一些清空和初始化
+			$scope.$setParam("searchData", searchData);
+			$scope.$setParam("back", back);
+			$scope.$setParam("drawVehTrack", drawVehTrack);
+			//增加与结果页面传递对象
+			$scope.$setParam("translateObj", translateObj);
+			$scope.$setParam("imageView", $scope.$(".imageView"));
+			//展示查询结果
+			$scope.$("#searchResult").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-path-query-result.html");
+		};
+
+		//车辆轨迹数据
+		var vehTrackDataLst = null;
+		//车辆轨迹数据，过滤掉没有经纬度的数据
+		//var vehTrackPointLst = [];
+		//用来存储车辆经过的点，key为点位代码，value为经过的点次序数组
+		var vehSite = {};
+		var setTimeoutId = null;
+		var setTimeoutIdOfMiddle = null;
+		var drawVehTrack = function(vehTrackData) {
+			vehTrackDataLst = vehTrackData;
+			if (vehTrackData.length > 0) {
+				zoomToTrackExtent(vehTrackData);
+				drawVeh();
+			}
+		};
+
+		/**
+		 *将地图放大到车辆经过的轨迹范围内
+		 */
+		function zoomToTrackExtent(vehTrackData) {
+			var lonMax = vehTrackData[0].siteLon == null ? 0 : vehTrackData[0].siteLon;
+			//最大经度
+			var latMax = vehTrackData[0].siteLat == null ? 0 : vehTrackData[0].siteLat;
+			//最大维度
+			var lonMin = vehTrackData[0].siteLon == null ? 0 : vehTrackData[0].siteLon;
+			var latMin = vehTrackData[0].siteLat == null ? 0 : vehTrackData[0].siteLat;
+			//找出经纬度最大最小范围值
+			for (var i = 0; i < vehTrackData.length; i++) {
+				if (vehTrackData[i].siteLon != null && vehTrackData[i].siteLat != null) {
+					//最大经纬度
+					if (lonMax < vehTrackData[i].siteLon) {
+						lonMax = vehTrackData[i].siteLon;
+					}
+					if (latMax < vehTrackData[i].siteLat) {
+						latMax = vehTrackData[i].siteLat;
+					}
+					//最小经纬度
+					if (lonMin > vehTrackData[i].siteLon) {
+						lonMin = vehTrackData[i].siteLon;
+					}
+					if (latMin > vehTrackData[i].siteLat) {
+						latMin = vehTrackData[i].siteLat;
+					}
+				}
+			}
+			var extent = new OpenLayers.Bounds(lonMin, latMin, lonMax, latMax);
+			extent.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			cyMap.map.zoomToExtent(extent, true);
+		}
+
+		var numFlag = 0;
+		//0表示第一个点，1表示中间的点，2表示终点
+		var drawSiteType = "0";
+		var lastTimeLon = null;
+		var lastTimeLat = null;
+		var iconCar = new OpenLayers.Icon("themes/default/images/car.png", new OpenLayers.Size(40, 40), new OpenLayers.Pixel(-10, -20));
+		var markCar = null;
+
+		/**
+		 *获取标记序号ICON
+		 */
+		function getNumIcon(num) {
+			str = '<div style="background:url(\'themes/default/images/carnum.gif\') no-repeat; padding-top:4px; padding-right:5px; height:32px; width:32px; text-align:center;cursor:pointer">' + '<span style="color:blue;font-size:13px;">' + num + '</span></div>';
+			var size = new OpenLayers.Size(32, 32);
+			var offset = new OpenLayers.Pixel(-8, -32);
+			var ic = new OpenLayers.Icon(null, size, offset);
+			ic.imageDiv.innerHTML = str;
+			return ic;
+		}
+
+		/**
+		 *绘制车辆轨迹主方法
+		 */
+		function drawVeh() {
+			if (numFlag < vehTrackDataLst.length) {
+				var siteCode = vehTrackDataLst[numFlag].siteCode;
+				var lonTem = vehTrackDataLst[numFlag].siteLon;
+				var latTem = vehTrackDataLst[numFlag].siteLat;
+				//判断这条过车记录所经过的点位，经纬度值有没有，如果没有则忽略，等待下一个周期绘制下一个点
+				if (lonTem != null && latTem != null) {
+					translateObj.playPointLst.push(new OpenLayers.Geometry.Point(lonTem, latTem));
+					if (numFlag == vehTrackDataLst.length - 1) {
+						drawSiteType = "2";
+					}
+					var lonlat = new OpenLayers.LonLat(lonTem, latTem);
+					lonlat.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+					if (drawSiteType == "0")//绘制第一个点
+					{
+						//绘制起点
+						drawStartPoint(lonlat, numFlag);
+						//把这个点保存起来
+						cachePassedVehSite(siteCode, numFlag);
+					} else if (drawSiteType == "1")//绘制中间点
+					{
+						//画线
+						drawVehLine(lonTem, latTem);
+						//打序号标记
+						drawNumPoint(siteCode, numFlag, lonlat);
+
+					} else if (drawSiteType == "2")//绘制终点
+					{
+						//画线
+						drawVehLine(lonTem, latTem);
+						//绘制终点
+						drawEndPoint(siteCode, numFlag, lonlat);
+					}
+					drawSiteType = "1";
+					lastTimeLon = lonTem;
+					lastTimeLat = latTem;
+				}
+				numFlag = numFlag + 1;
+				drawVeh();
+			}
+		}
+
+		/**
+		 *用于在本页面与查询结果子页面之间传递数据与方法
+		 */
+		var isfirstPlay = true;
+		var translateObj = {
+			playPointLst : [],
+			play : function() {
+				if (isfirstPlay == true) {
+					isfirstPlay = false;
+					playDynamicFirst();
+				} else {
+					fn();
+				}
+			},
+			stop : function() {
+				if (setTimeoutIdOfMiddle != null) {
+					window.clearTimeout(setTimeoutIdOfMiddle);
+				}
+				//移除车子
+				if (markCar != null) {
+					vehMarkLayer.removeMarker(markCar);
+					markCar = null;
+				}
+				resetPlayParm();
+			},
+			pause : function() {
+				if (setTimeoutIdOfMiddle != null) {
+					window.clearTimeout(setTimeoutIdOfMiddle);
+				}
+			},
+			location : function(longitude, latitude) {
+				if (longitude == undefined || longitude == "" || latitude == undefined || latitude == "") {
+					$.messager.alert("警告", "该过车点没有配置经纬度，无法定位！");
+					return;
+				}
+				var geo = new OpenLayers.Geometry.Point(longitude, latitude);
+				cyMap.location(geo, false);
+			}
+		};
+
+		//车辆轨迹播放相关初始参数
+		var startPointIndex = 0;
+		var startPoint = null;
+		var stopPoint = null;
+		var currentPoint = null;
+		//var nextPoint= null;
+		/**
+		 *重新设置播放相关参数
+		 */
+		function resetPlayParm() {
+			isfirstPlay = true;
+			startPointIndex = 0;
+			startPoint = null;
+			stopPoint = null;
+			currentPoint = null;
+			//nextPoint = null;
+		}
+
+		function playDynamicFirst() {
+			var vehLonlat = new OpenLayers.LonLat(translateObj.playPointLst[0].clone().x, translateObj.playPointLst[0].clone().y);
+			vehLonlat.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			//绘制车子
+			markCar = new OpenLayers.Marker(vehLonlat, iconCar);
+			vehMarkLayer.addMarker(markCar);
+
+			startPoint = translateObj.playPointLst[startPointIndex];
+			stopPoint = translateObj.playPointLst[startPointIndex + 1];
+			currentPoint = translateObj.playPointLst[startPointIndex];
+			fn();
+		}
+
+		var fn = function() {
+			var nextPoint = getNextPoint(currentPoint, stopPoint);
+			var nextPointClone = nextPoint.clone();
+			markCar.moveTo(cyMap.map.getLayerPxFromLonLat(new OpenLayers.LonLat(nextPointClone.x, nextPointClone.y)));
+			currentPoint = nextPoint;
+			if (currentPoint.equals(stopPoint)) {
+				// 判断是否是最后一个点了
+				if (startPointIndex == translateObj.playPointLst.length - 2 && stopPoint.equals(translateObj.playPointLst[translateObj.playPointLst.length - 1])) {
+					//移除车子
+					if (markCar != null) {
+						vehMarkLayer.removeMarker(markCar);
+						markCar = null;
+					}
+					//恢复播放按钮状态
+					translateObj.resetPlayState();
+					translateObj.stop();
+					return;
+				}
+				startPoint = stopPoint;
+				startPointIndex++;
+				stopPoint = translateObj.playPointLst[startPointIndex + 1];
+			}
+			setTimeoutIdOfMiddle = setTimeout(fn, 150);
+		};
+
+		function drawVehDynamic() {
+			if (numFlag < vehTrackDataLst.length) {
+				var siteCode = vehTrackDataLst[numFlag].siteCode;
+				var lonTem = vehTrackDataLst[numFlag].siteLon;
+				var latTem = vehTrackDataLst[numFlag].siteLat;
+				//判断这条过车记录所经过的点位，经纬度值有没有，如果没有则忽略，等待下一个周期绘制下一个点
+				if (lonTem != null && latTem != null) {
+					if (numFlag == vehTrackDataLst.length - 1) {
+						drawSiteType = "2";
+					}
+					var lonlat = new OpenLayers.LonLat(lonTem, latTem);
+					lonlat.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+					if (drawSiteType == "0")//绘制第一个点
+					{
+						//绘制起点
+						drawStartPoint(lonlat, numFlag);
+						//绘制车子
+						markCar = new OpenLayers.Marker(lonlat, iconCar);
+						vehMarkLayer.addMarker(markCar);
+						//把这个点保存起来
+						cachePassedVehSite(siteCode, numFlag);
+						drawSiteType = "1";
+						lastTimeLon = lonTem;
+						lastTimeLat = latTem;
+					} else {
+						//画线（动态画线，等画线结束后，打上相应的状态点图标，继续下一个点的描绘）
+						drawVehLineDynamic(lonTem, latTem, function() {
+							if (drawSiteType == "1")//绘制中间点
+							{
+								//打序号标记
+								drawNumPoint(siteCode, numFlag, lonlat);
+
+							} else if (drawSiteType == "2")//绘制终点
+							{
+								//移除车子
+								if (markCar != null) {
+									vehMarkLayer.removeMarker(markCar);
+								}
+								//绘制终点
+								drawEndPoint(siteCode, numFlag, lonlat);
+							}
+							lastTimeLon = lonTem;
+							lastTimeLat = latTem;
+							numFlag = numFlag + 1;
+							drawVehDynamic();
+						});
+						return;
+					}
+				}
+				numFlag = numFlag + 1;
+				setTimeoutId = window.setTimeout(drawVehDynamic, 1500);
+			}
+		}
+
+		// function drawVeh() {
+		// if (numFlag < vehTrackDataLst.length) {
+		// var siteCode = vehTrackDataLst[numFlag].siteCode;
+		// var lonTem = vehTrackDataLst[numFlag].siteLon;
+		// var latTem = vehTrackDataLst[numFlag].siteLat;
+		// //判断这条过车记录所经过的点位，经纬度值有没有，如果没有则忽略，等待下一个周期绘制下一个点
+		// if (lonTem != null && latTem != null) {
+		// if (numFlag == vehTrackDataLst.length - 1) {
+		// drawSiteType = "2";
+		// }
+		//
+		// var lonlat = new OpenLayers.LonLat(lonTem, latTem);
+		// lonlat.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+		//
+		// if (drawSiteType == "0")//绘制第一个点
+		// {
+		// //绘制起点红旗
+		// drawStartPoint(lonlat, numFlag);
+		// //绘制车子
+		// markCar = new OpenLayers.Marker(lonlat, iconCar);
+		// vehMarkLayer.addMarker(markCar);
+		// //把这个点保存起来
+		// cachePassedVehSite(siteCode, numFlag);
+		// } else if (drawSiteType == "1")//绘制中间点
+		// {
+		// //画线
+		// drawVehLine(lonTem, latTem);
+		// //把车子移到该点
+		// markCar.moveTo(cyMap.map.getLayerPxFromLonLat(lonlat));
+		// //打序号标记
+		// drawNumPoint(siteCode, numFlag, lonlat);
+		//
+		// } else if (drawSiteType == "2")//绘制终点
+		// {
+		// //画线
+		// drawVehLine(lonTem, latTem);
+		// //移除车子
+		// if (markCar != null) {
+		// vehMarkLayer.removeMarker(markCar);
+		// }
+		// //绘制终点
+		// drawEndPoint(siteCode, numFlag, lonlat);
+		// }
+		// drawSiteType = "1";
+		// lastTimeLon = lonTem;
+		// lastTimeLat = latTem;
+		// }
+		// numFlag = numFlag + 1;
+		// setTimeoutId = window.setTimeout(drawVeh, 1500);
+		// }
+		// }
+
+		/**
+		 *绘制开始点
+		 */
+		function drawStartPoint(lonlat, numFlag) {
+			var size = new OpenLayers.Size(32, 32);
+			var offset = new OpenLayers.Pixel(-8, -32);
+			var icon = new OpenLayers.Icon("themes/default/images/start.png", size, offset);
+			icon.imageDiv.style = "cursor:pointer";
+			var makerFlag = new OpenLayers.Marker(lonlat, icon);
+			makerFlag.events.register('mousedown', null, function(evt) {
+				showDetail(numFlag);
+			});
+			numMarkLayer.addMarker(makerFlag);
+		}
+
+		/**
+		 *绘制车辆轨迹线
+		 */
+		function drawVehLine(lon, lat) {
+			var linePts = [new OpenLayers.Geometry.Point(lastTimeLon, lastTimeLat), new OpenLayers.Geometry.Point(lon, lat)];
+			var lineGeo = new OpenLayers.Geometry.LineString(linePts);
+			lineGeo.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var lineFeature = new OpenLayers.Feature.Vector(lineGeo, null, trackLineStyle);
+			traceLayer.addFeatures(lineFeature);
+		}
+
+		function drawVehLineDynamic(lon, lat, callback) {
+			var linePts = [new OpenLayers.Geometry.Point(lastTimeLon, lastTimeLat), new OpenLayers.Geometry.Point(lon, lat)];
+			var lineGeo = new OpenLayers.Geometry.LineString(new OpenLayers.Geometry.Point(lastTimeLon, lastTimeLat));
+			lineGeo.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var lineFeature = new OpenLayers.Feature.Vector(lineGeo, null, trackLineStyle);
+			traceLayer.addFeatures(lineFeature);
+			var startPointIndex = 0;
+			var startPoint = linePts[startPointIndex];
+			var stopPoint = linePts[startPointIndex + 1];
+			var currentPoint = linePts[startPointIndex];
+			var nextPoint;
+			var t = this;
+			var fn = function() {
+				nextPoint = t.getNextPoint(currentPoint, stopPoint);
+				var nextPointClone = nextPoint.clone();
+				nextPointClone.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				lineGeo.addPoint(nextPointClone);
+				traceLayer.drawFeature(lineFeature);
+				markCar.moveTo(cyMap.map.getLayerPxFromLonLat(new OpenLayers.LonLat(nextPointClone.x, nextPointClone.y)));
+				currentPoint = nextPoint;
+				if (currentPoint.equals(stopPoint)) {
+					// 判断是否是最后一个点了
+					if (stopPoint.equals(linePts[linePts.length - 1])) {
+						callback();
+						return;
+					}
+					startPoint = stopPoint;
+					startPointIndex++;
+					stopPoint = linePts[startPointIndex + 1];
+				}
+				setTimeoutIdOfMiddle = setTimeout(fn, 200);
+			};
+			fn();
+		}
+
+		/**
+		 *绘制中间序号点
+		 */
+		function drawNumPoint(siteCode, numFlag, lonlat) {
+			var numIcon = getNumIcon(numFlag + 1);
+			if (vehSite[siteCode] == undefined)//说明目前还没有重复的设备点
+			{
+				//把这个点保存起来
+				cachePassedVehSite(siteCode, numFlag);
+
+			} else {//说明已经绘制该设备点,则新的记号点要向又便宜32个像素（图标的宽度是32个px）
+				numIcon.offset = new OpenLayers.Pixel(getExsitSiteOffX(siteCode), -32);
+				//继续向该点中增加一个当前序号
+				vehSite[siteCode].push(numFlag);
+			}
+			var markNum = new OpenLayers.Marker(lonlat, numIcon);
+			markNum.events.register('mousedown', null, function(evt) {
+				showDetail(numFlag);
+			});
+			numMarkLayer.addMarker(markNum);
+		}
+
+		/**
+		 *绘制终点
+		 */
+		function drawEndPoint(siteCode, numFlag, lonlat) {
+			var offset = new OpenLayers.Pixel(-5, -40);
+			if (vehSite[siteCode] != undefined)//说明目前还没有重复的设备点
+			{
+				offset = new OpenLayers.Pixel(getExsitSiteOffX(siteCode), -32);
+			}
+			var icon = new OpenLayers.Icon("themes/default/images/trackEnd.png", new OpenLayers.Size(40, 40), offset);
+			icon.imageDiv.style = "cursor:pointer";
+			var makerEnd = new OpenLayers.Marker(lonlat, icon);
+			makerEnd.events.register('mousedown', null, function(evt) {
+				showDetail(numFlag);
+			});
+			numMarkLayer.addMarker(makerEnd);
+		}
+
+		/**
+		 *缓存车辆的过车点
+		 */
+		function cachePassedVehSite(siteCode, numFlag) {
+			var numArry = [numFlag];
+			vehSite[siteCode] = numArry;
+		}
+
+		/**
+		 *查询已经存在的缓存点偏移量
+		 */
+		function getExsitSiteOffX(siteCode) {
+			var hasNum = vehSite[siteCode];
+			return (hasNum.length - 1) * 32 + 16;
+		}
+
+		/**
+		 *每次查询之前的一些清空和初始化
+		 */
+		function ClearAndInitSth() {
+			//停止正在绘制的轨迹
+			if (setTimeoutId != null) {
+				window.clearTimeout(setTimeoutId);
+			}
+			if (setTimeoutIdOfMiddle != null) {
+				window.clearTimeout(setTimeoutIdOfMiddle);
+			}
+			numFlag = 0;
+			//先清除地图上的轨迹
+			clearMap();
+			vehTrackDataLst = null;
+
+			vehSite = {};
+			drawSiteType = "0";
+			lastTimeLonLat = null;
+
+			//todo另外一种方案加上的
+			translateObj.playPointLst = [];
+			resetPlayParm();
+		}
+
+		/**
+		 *清空地图上的轨迹
+		 */
+		var clearMap = function() {
+			traceLayer.removeAllFeatures();
+			numMarkLayer.clearMarkers();
+			vehMarkLayer.clearMarkers();
+		};
+
+		/**
+		 *弹出过车详细页面
+		 */
+		function showDetail(numFlag) {
+			//"currentData", "index", "searchData", "oncheck"四个参数
+			//当前数据
+			$scope.$setParam("currentData", {
+				result : {
+					rows : vehTrackDataLst
+				}
+			});
+			//当前下标
+			$scope.$setParam("index", numFlag);
+			//查询方法
+			$scope.$setParam("searchData", function(operate, callback) {
+				$.messager.alert("提示", "没有更多数据!");
+				$scope.$excute(callback, null);
+			});
+			//选择后执行方法
+			$scope.$setParam("oncheck", function() {
+
+			});
+			//打开详情窗口
+			$scope.$openDialog("vehDetail", {
+				width : 1100,
+				height : 610,
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html",
+				title : "过车详情",
+				onClose : function() {
+					//停止自动播放
+					$scope.$getDialog("vehDetail").data("winScope").stop();
+				}
+			});
+		}
+
+		/**
+		 * 返回查找界面
+		 */
+		function back(searchData) {
+			$scope.$setParam("searchData", searchData);
+			$scope.$setParam("search", search);
+			$scope.$("#searchResult").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-path-query-search.html");
+		};
+
+	}); 
+</script>
+<style>
+	#vehicle-path-query .imageView {
+		position: absolute;
+		display: none;
+		width: 320px;
+		height: 240px;
+		background-color: #FFFFFF;
+		z-index: 100000;
+	}
+</style>

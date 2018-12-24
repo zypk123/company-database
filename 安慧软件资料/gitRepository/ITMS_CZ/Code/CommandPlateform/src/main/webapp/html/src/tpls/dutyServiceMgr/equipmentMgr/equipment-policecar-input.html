@@ -1,0 +1,125 @@
+<div id="equipment-input" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <div class="searchPanel">
+            <div class="panel_title">
+                基础信息
+            </div>
+            <form cy-form="formData" id="form">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">
+                            使用部门：
+                        </div>
+                        <div class="td">
+                            <input class="cy-org-radio" name="orgName"/>
+                        </div>
+                        <div class="th">
+                            号牌种类：
+                        </div>
+                        <div class="td">
+                            <select id="plateType" class="easyui-combobox" name="plateType">
+                                <option>请选择</option>
+                                <option>警用汽车</option>
+                                <option>警用摩托</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tr">
+                        <div class="th">
+                            号牌号码：
+                        </div>
+                        <div class="td">
+                            <input class="cy-org-radio" name="plateNBR"/>
+                        </div>
+                        <div class="th">
+                            车辆种类：
+                        </div>
+                        <div class="td">
+                            <select id="carType" class="easyui-combobox" name="carType">
+                                <option>请选择</option>
+                                <option>执勤巡逻</option>
+                                <option>事故勘察照明</option>
+                                <option>现场指挥</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tr">
+                        <div class="th">
+                            初次登记日期：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datetimebox" name="orgName"/>
+                        </div>
+                        <div class="th">
+                            发证机关：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="orgName"/>
+                        </div>
+                    </div>
+
+                    <div class="tr">
+                        <div class="th">
+                            使用开始日期：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datetimebox" name="orgName"/>
+                        </div>
+                        <div class="th">
+                            GPS编号：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="orgName"/>
+                        </div>
+                    </div>
+
+                    <div class="tr">
+                        <div class="th">
+                            随车手机：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="orgName"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'south',border:false,height:40">
+        <div class="linkbutton_toolbar" style="text-align: center;">
+            <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+        </div>
+    </div>
+</div>
+<script>
+    InitPage(["saveData"], function($scope) {
+        /**
+         * 保存警车备案信息
+         */
+        $scope.save = function() {
+            if ($scope.$("#form").form("validate")) {
+                //更新警车表单数据
+                $scope.$updateData("formData");
+                //调用父页面函数保存数据
+                $scope.saveData($scope.formData);
+            }
+        };
+    }); 
+</script>
+<style>
+    #equipment-input .td input, select {
+        width: 120px;
+        padding: 0;
+    }
+    #equipment-input .th {
+        width: 80px;
+        text-align: right;
+        margin-left: 10%;
+    }
+    #equipment-input .td {
+        width: 110px;
+    }
+</style>

@@ -1,0 +1,954 @@
+<!--
+ ********************************************************************************
+ * 用户             云南交警总队
+ *
+ * 当前页面名   伴随车辆分析查询页面(accompany-query-all.html) 
+ *
+ *
+ * 版本号        Version 1.0
+ * 作者           wangyunqi
+ *
+ * 更新履历     2016-03-21：创建
+ ********************************************************************************
+-->
+<div id="searchAccompany" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:115">
+		<form cy-form="formData">
+			<div class="searchPanel">
+				<input type="hidden" name="useStorm" value="false" />
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+		  			<div class="tr">
+			  			<div class="th" style="height:25px;line-height:25px;">车牌号码：</div>
+			  			<div class="td" style="width:105px;">
+			  				<input class="cy-vehNumberbox" name="plateNbr" id="plateNbr" style="width:105px;" data-options="validType:'length[0,10]'" autocomplete="on" />
+			  			</div>
+			  			<div class="th" style="margin-left: 20px;">号牌类型：</div>
+			  			<div class="td" style="width:110px;">
+							<input class="easyui-combobox" id="plateType" name="plateType" style="width:110px"
+							          cy-code="002"/>
+			  			</div>
+			  			<div class="th" style="margin-left: 20px;">经过时间：</div>
+						<div class="td" style="width: 310px;">
+							<input name="startDateTime" id="startDateTime" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date'],required:true"   class="easyui-datetimebox" style="width:145px;" autocomplete="on" />
+							至
+							<input name="endDateTime" id="endDateTime" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date'],required:true" class="easyui-datetimebox" style="width:145px;" autocomplete="on" />
+						</div>
+			  			<div class="th" style="margin-left: 20px;">伴随次数：</div>
+			  			<div class="td" style="width:30px;">
+			  				<input class="easyui-numberbox"  name="accMinCount" id="accMinCount" data-options="required:true,digits:true" min="1" max="100" 
+			  				            style="width:30px;" autocomplete="on" value="6" />
+			  			</div>
+			  			<div class="th" style="margin-left: 20px;">伴随间隔：</div>
+			  			<div class="td" style="width:40px;">
+			  				<input class="easyui-numberbox" name="accInterval" id="accInterval" data-options="required:true,digits:true" min="1" max="300" 
+			  				           style="width:30px;" autocomplete="on" value="60" />秒
+			  			</div>
+						<div class="td" style="margin-left: 30px;">
+							<a class="easyui-linkbutton button-search" cy-click="searchForm"  id="searchButton" data-options="iconCls:'icon-search'">&nbsp;查询&nbsp;</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<div class="linkbutton_toolbar" style="font-size: 14px;">
+			<form>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-list'" cy-click="changeToListMode">列表模式</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-picture'" cy-click="changeToPicMode">大图模式</a>
+				<span id="picWidSpan">&nbsp;图像宽度（像素）：</span>
+				<!-- <input type="radio" name="picWidth" value=140 cy-click="changePicWidth" /><span id="picWidSpan1">140&nbsp;</span> -->
+				<input type="radio" id="defaultImgWidthRdo" checked = "checked" name="picWidth" value=280 checked="checked" cy-click="changePicWidth" /><span id="picWidSpan2">280&nbsp;</span>
+				<input type="radio" name="picWidth" value=560 cy-click="changePicWidth" /><span id="picWidSpan3">560&nbsp;</span>
+		    </form>
+		</div>
+	</div>
+
+	<!--数据展示区 -->
+	<div id="dataGridDiv" data-options="region:'center',border:false" style="display:block;z-index:1">
+		<table cy-datagrid="listOptions" cy-querydata="formData" cy-url="vehTrack/accompanyCar/findAccompanyCarList" id="datagrid">
+		</table>
+	</div>
+
+	<!--大图模式区 -->
+	<div id="vehPhotoDiv"></div>
+	
+	<div id="vehInfo" style="height:200px;overflow-x: hidden;overflow-y: auto;display:none;z-index:-1">
+		<div class="table veh-detial">
+			<div class="tr" style="height:58px;">
+				<div class="th">车辆特征：</div>
+				<div class="td cltzdiv" id="cltzDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">核定载客：</div>
+				<div class="td" id="carryPeopleNumDiv"></div>
+			</div>
+			<div class="tr" style="height:44px;">
+				<div class="th">车主信息：</div>
+				<div class="td czxxdiv" id="czxxDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">发证机关：</div>
+				<div class="td" id="vehicleIssueOrgDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">检验有效期：</div>
+				<div class="td" id="checkDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">初次登记日期：</div>
+				<div class="td" id="firstRegisterDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">强制报废期止：</div>
+				<div class="td" id="brokeDateDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">发动机号：</div>
+				<div class="td" id="engineIdDiv"></div>
+			</div>
+			<div class="tr">
+				<div class="th">车辆识别带代码：</div>
+				<div class="td" id="vehicleIdentityDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage([], function($scope) {
+    	$scope.dataAreaMode = "LIST";
+        var date = new Date();
+      	date.setHours(date.getHours()-1);
+      	
+        var listView = $.extend({},$.fn.datagrid.defaults.view, {
+        	onAfterRender : function(target) {
+                $.fn.datagrid.defaults.view.onAfterRender.call(this,target);
+                var opts = $(target).datagrid('options');
+                var vc = $(target).datagrid('getPanel').children('div.datagrid-view');
+                vc.children('div.datagrid-empty').remove();
+                if (!$(target).datagrid('getRows').length) {
+                    var d = $('<div class="datagrid-empty"></div>').html(opts.emptyMsg || '没有查询到记录').appendTo(vc);
+                    d.css({
+                        position:'absolute',
+                        left:0,
+                        top:50,
+                        width:'100%',
+                        textAlign:'center'
+                    });
+                }
+                else {
+                    //重新初始化代理事件
+                    $scope.$eventProxy();
+                    for(var i = 0; i < $scope.$(".plate-div").length; i++) {
+                    	$($scope.$(".plate-div")[i]).tooltip({
+                   			position: 'top',
+                   			content: '正在查询该车的车辆信息，请稍候。。。',
+                   			onShow: function(){
+                   				$(this).tooltip('tip').css({
+                   					backgroundColor: '#A1CFE3',
+	                   		        width: '300px',
+	                   			    opacity: '0.9',
+	                   		        filter: 'alpha(opacity=90)',
+		                   		    border: '1px #34139C solid',
+	                   		        borderRadius: '5px'
+                   				});
+
+                   				var params = $(this).attr("id").split("_");
+                   				$scope.getVehicleInfo(params[2], params[3], $(this).attr("id"));
+                   			}
+                      	});
+                    }
+                }
+        	}
+        });
+
+    	$.extend($scope, {
+            /**
+             * 初始化参数
+             * @type {Object}
+             */
+            formData : {
+            	startDateTime : date.format("yyyy-MM-dd hh:mm:ss"),
+            	endDateTime : new Date().format("yyyy-MM-dd hh:mm:ss")
+            },
+
+        	// 大图模式
+        	vehPicDivStr :       "<div class='accPicContainerMid'>" +
+		                                "  <div class='picContainerMid'>" + 
+                                        "    <table class='vehPicTbl'>" + 
+                                        "      <tr>" + 
+                                        "        <td colspan='2'>" + 
+	                                    "          <img src='$imgSource' class='picMid' cy-click='openBigVehImg(\"$imgSource\")' />" + 
+	                                    "        </td>" + 
+	                                    "      </tr>" + 
+	                                    "      <tr height='26'>" +
+	                                    "        <td class='direction' colspan='2'>$siteName</td>" + 
+	                                    //"        <td>$directionName</td>" + 
+	                                    "      </tr>" + 
+	                                    "      <tr height='26'>" +
+	                                    "        <td class='time'>$passTime</td>" + 
+	                                    "        <td class='car'>$plateNbr</td>" + 
+	                                    "      </tr>" + 
+	                                    "    </table>" + 
+	                                    "  </div>" + 
+		                                "  <div class='picContainerMid'>" + 
+                                        "    <table class='vehPicTbl'>" + 
+                                        "      <tr>" + 
+                                        "        <td colspan='2'>" + 
+	                                    "          <img src='$accImgSource' class='picMid' cy-click='openBigVehImg(\"$accImgSource\")' />" + 
+	                                    "        </td>" + 
+	                                    "      </tr>" + 
+	                                    "      <tr height='26' >" +
+	                                    "        <td class='direction' colspan='2'>$siteName</td>" + 
+	                                    //"        <td>$directionName</td>" + 
+	                                    "      </tr>" + 
+	                                    "      <tr height='26'>" +
+	                                    "        <td class='time'>$accPassTime</td>" + 
+	                                    "        <td class='car'>$accPlateNbr</td>" + 
+	                                    "      </tr>" + 
+	                                    "    </table>" + 
+	                                    "  </div>" + 
+	                                    "</div>",
+
+        	picOptions : {
+        			showHeader: false,
+        			onLoadSuccess : function (data) {
+                		$scope.$("#vehPhotoDiv").show("normal");
+                   		$scope.$("span[id^='picWidSpan']").show("normal");
+                   		$scope.$("input[name='picWidth']").show("normal");
+        			},
+                    columns:[[
+                              {
+                                  halign : 'center',
+                                  hidden:true,
+                                  title : "伴随车辆过车列表",
+                                  field : "detailList",
+                                  width : 300,
+                                  formatter : function(value,rowData,rowIndex) {
+                                	  // 搞不懂为什么有两个rowIndex == 0
+                                	  if (rowIndex == 0) {
+                                   		  // 翻页前清空大图
+                                   		  $scope.$("#vehPhotoDiv").empty();
+
+                                   		  if (rowData.plate_nbr == undefined) {
+                                   			return null;
+                                   		  }
+                                	  }
+                                	  
+                                	  var imgDivStr;
+                                	  var imageSource;
+                                	  var accImageSource;
+                                	  var bigRowDiv = $("<div class='mainRowDiv'></div>");
+                                	  
+                                	  for (var i = 0; i < value.length; i++) {
+                                		  // url不为空，肯定不为空啊
+                                   	      if (!$scope.$isEmptyOrBlank(value[i].imgSource)) {
+                                   	    	  // 可能有重复过车记录，只取一条
+                                   	    	  var imgUrls = value[i].imgSource.split("~")[0].split(",");
+                                   	    	  
+                                   	    	  if (imgUrls.length > 1) {
+                                       	    	  //本公司平台的过车图片Url
+                                       	    	  //imageSource = $rootScope.$AppInitConstants.PASS_IMG_SERVICE + "deviceNbr="+ imgUrls[0] +"&snapNbr=" +  imgUrls[1];
+                                   	    	  }
+                                   	    	  else {
+                                   	    		  //其它平台的过车图片url
+                                   	    		  imageSource = imgUrls[0];
+                                   	    		imageSource ="tpls/passVehicle/cloneCarManager/a.jpg"
+                                   	    	  }
+                                   	      }
+
+                                   	      if (!$scope.$isEmptyOrBlank(value[i].accImgSource)) {
+                                   	    	  var imgUrls = value[i].accImgSource.split("~")[0].split(",");
+                                   	    	  
+                                   	    	  if (imgUrls.length > 1) {
+                                   	    		  //accImageSource = $rootScope.$AppInitConstants.PASS_IMG_SERVICE + "deviceNbr="+ imgUrls[0] +"&snapNbr=" +  imgUrls[1];
+                                   	    	  }
+                                   	    	  else {
+                                   	    		  //accImageSource = imgUrls[0];
+                                   	    		accImageSource ="tpls/passVehicle/cloneCarManager/b.jpg"
+                                   	    	  }
+                                   	      }
+                                		  imgDivStr = $scope.$replaceAllArrays($scope.vehPicDivStr, ["$imgSource","$siteName",
+                                		                                                                                               "$directionName","$passTime",
+                                		                                                                                               "$plateNbr","$accImgSource",
+                                		                                                                                               "$accPassTime","$accPlateNbr"],
+                                      	 			          [imageSource, value[i].site_name,
+                                      	 			           value[i].direction_name, $scope.$timeToDate(value[i].pass_time),
+                                      	 			           value[i].plate_nbr, accImageSource,
+                                      	 			        $scope.$timeToDate(value[i].accpasstime), value[i].accplatenbr]);
+                                		  
+                                		  bigRowDiv.append($(imgDivStr));
+                                	  }
+
+                                      if ($scope.$("#vehPhotoDiv").length) {
+                                    	  $scope.$("#vehPhotoDiv").append(bigRowDiv);
+                                      }
+                                      return null;
+                                  }
+                              }
+                          ]]
+            },
+
+        	// 列表模式
+        	listOptions : {
+        		showHeader: true,
+        		view: listView,
+        		emptyMsg: '没有查询到记录',
+                columns:[[
+                          {field:"plate_nbr",title:"主车号牌",width:65,formatter:function(value,rowData,rowIndex) {
+                        	      //cy-mouseenter=\"getVehicleInfo('" + value + "', '" + rowData.plate_type + "', 'accPlateDiv_" + rowIndex + "')\" cy-mouseleave=\"hidePlateTip('accPlateDiv_" + rowIndex + "')\"
+                        	      var idSuffix = rowIndex + "_" + value + "_" + rowData.plate_type;
+                        	      var plateDiv = $("<div id='plateDiv_" + idSuffix + "' class='plate-div'></div>");
+//                                   if ($scope.$contains($scope.$getPlateColor(rowData.plate_color), "蓝")) {
+//                                 	  plateDiv = $("<div class='plate-blue' id='plateDiv_" + rowIndex + "'></div>");
+//                                   } else if ($scope.$contains($scope.$getPlateColor(rowData.plate_color), "黄")) {
+//                                 	  plateDiv = $("<div class='plate-yellow' id='plateDiv_" + rowIndex + "'></div>");
+//                                   } else if ($scope.$contains($scope.$getPlateColor(rowData.plate_color), "白")) {
+//                                 	  plateDiv = $("<div class='plate-white' id='plateDiv_" + rowIndex + "'></div>");
+//                                   } else if ($scope.$contains($scope.$getPlateColor(rowData.plate_color), "黑")) {
+//                                 	  plateDiv = $("<div class='plate-black' id='plateDiv_" + rowIndex + "'></div>");
+//                                   } else {
+//                                 	  plateDiv = $("<div class='plate-other' id='plateDiv_" + rowIndex + "'></div>");
+//                                   }
+                           	      $(plateDiv).html(value);
+
+                             	 // 返回html没用，要将对象弄出去
+                            	  return $("<span/>").append(plateDiv).html();
+    	                      }
+                          },
+                          {field:"plate_type",title:"主车号牌类型",width:60,formatter:function(value){
+                        	  return $scope.$getPlateType(value);
+                          }},
+                          {field:"accplatenbr",title:"伴随车号牌",width:65,formatter:function(value,rowData,rowIndex) {
+                    	          var idSuffix = rowIndex + "_" + value + "_" + rowData.plate_type;
+                    	          var plateDiv = $("<div id='accPlateDiv_" + idSuffix + "' class='plate-div'></div>");
+	                       	      $(plateDiv).html(value);
+	                         	  return $("<span/>").append(plateDiv).html();
+                              }
+                          },
+                          {field:"accPlateType",title:"伴随车号牌类型",width:70,formatter:function(value){
+                        	  return $scope.$getPlateType(value);
+                          }},
+                          {field:"acccount",title:"伴随次数",width:45},
+                          {
+                              title : "伴随明细",
+                              field : "detailList",
+                              width : 550,
+                              formatter : function(value,rowData,rowIndex) {
+                            	  if (value == undefined) {
+                            		  return value;
+                            	  }
+                            	  var div = $("<div class='tableDiv'></div>")
+                             	 var table = $("<table class='detailTable'><tr><td>点位</td><td>方向</td><td>主车时间</td><td>伴随车时间</td></tr></table>");
+                             	for (var i = 0; i < value.length; i++) {
+                             		 var tr = $("<tr><td>" + value[i].site_name + "</td><td>" + value[i].direction_name + "</td><td>"+ $scope.$timeToDate(value[i].pass_time)+ "</td><td>"+$scope.$timeToDate(value[i].accpasstime) +"</td></tr>");
+                             		 if (i % 2 == 1) {
+                             			 tr.attr("class", "detailListBgColor");
+                              		  }
+                             		 table.append(tr);
+                             	}
+                             	div.append(table)
+                 				return div.html();
+                            	 /*  var ol = $("<ol></ol>");
+                            	  for (var i = 0; i < value.length; i++) {
+                            		  var li = $("<li>" + value[i].site_name + "&nbsp;" + value[i].direction_name + 
+                            				         "&nbsp;主车时间：" + $scope.$timeToDate(value[i].pass_time) + "&nbsp;伴随车时间：" + $scope.$timeToDate(value[i].accpasstime) + "</li>");
+                            		  if (i % 2 == 1) {
+                            			  li.attr("class", "detailListBgColor");
+                            		  }
+                            		  ol.append(li);
+                            	  }
+                                  return ol.html(); */
+                              }
+                          }
+                      ]]
+        	},
+        	
+            /**
+             * 查询当前车辆的车驾管登记信息
+             */
+             getVehicleInfo : function(plateNbr, plateType, plateDivId) {
+
+                 // 已存在，则直接显示
+             	 var tips = $scope.$('#' + plateDivId).tooltip('tip');
+
+                 if ("正在查询该车的车辆信息，请稍候。。。" == tips.find("div")[0].innerText) {
+                     $scope.$("#cltzDiv").empty();
+                     $scope.$("#carryPeopleNumDiv").empty();
+                     $scope.$("#czxxDiv").empty();
+                     $scope.$("#vehicleIssueOrgDiv").empty();
+                     $scope.$("#checkDateDiv").empty();
+                     $scope.$("#firstRegisterDateDiv").empty();
+                     $scope.$("#brokeDateDiv").empty();
+                     $scope.$("#engineIdDiv").empty();
+                     $scope.$("#vehicleIdentityDiv").empty();
+
+                     $scope.$ajaxRequest({
+                         url : "../../vehicleinfo.rest?plateNbr=" + plateNbr + "&plateType=" + plateType,
+                         success : function(data) {
+                             if (data.error && data.error != null && data.error !== "") {
+                            	 $.messager.alert('提示',data.error,"error");
+                             } else {
+                            	 if (data.infoMsgs == undefined) {
+                             		$scope.$("#cltzDiv").append($("<textarea class=\"cltztext\">" + 
+                       				$scope.$getVehicleTypeName(data.vehInfo.vehicle_type) + "\n" + 
+                       				$scope.$getVehCharacterName(data.vehInfo.veh_charcter) + "\n" + 
+                       				$scope.$getBrandNameByCode(data.vehInfo.vehicle_brand) + 
+                       				$scope.$getVehicleSubBrand(data.vehInfo.vehicle_mode, data.vehInfo, 0) + "\n" + 
+                       				$scope.$getCarColor(data.vehInfo.vehicle_color) + "</textarea>"));
+                             		$scope.$("#carryPeopleNumDiv").append(data.vehInfo.carry_people_num);
+                             		$scope.$("#czxxDiv").append($("<textarea class=\"czxxtext\">" + data.vehInfo.vehicle_owner + "&nbsp;" + data.vehInfo.vehicle_contactor_tel + "\n" + data.vehInfo.vehicle_owner_address+ "</textarea>"));
+                             		$scope.$("#vehicleIssueOrgDiv").append($scope.$getOrgName(data.vehInfo.vehicle_issue_org));
+                             		$scope.$("#checkDateDiv").append($scope.$timeToDate(data.vehInfo.check_date));
+                             		$scope.$("#firstRegisterDateDiv").append($scope.$timeToDate(data.vehInfo.first_register_date));
+                             		$scope.$("#brokeDateDiv").append($scope.$timeToDate(data.vehInfo.broke_date));
+                             		$scope.$("#engineIdDiv").append(data.vehInfo.engine_id);
+                             		$scope.$("#vehicleIdentityDiv").append(data.vehInfo.vehicle_identity);
+
+                             		// 显示到tooltip上去
+    	                           	$scope.$('#' + plateDivId).tooltip('update', $scope.$replaceAll($scope.$("#vehInfo").html(), 'display:none;z-index:-1', ''));
+                             	}
+                             	else {
+                             		$scope.$('#' + plateDivId).tooltip('update', data.infoMsgs);
+                             	}
+                             }
+                         }
+                     });
+                 }
+                 else {
+                	 //alert("no request to server!");
+                	 $scope.$('#' + plateDivId).tooltip('show');
+                 }
+            },
+
+            // 切换成大图模式
+            changeToPicMode : function() {
+            	if ("LIST" == $scope.dataAreaMode) {
+            		$scope.dataAreaMode = "PICTURE";
+            		$scope.$("#datagrid").attr("cy-datagrid", "picOptions");
+    				$scope.$("#defaultImgWidthRdo")[0].checked = true;
+
+                    var pager = $scope.$('#datagrid').datagrid("getPager");
+                    if (pager.length > 0) {
+                        var paginationOptions = pager.pagination("options");
+                        var pagelist = paginationOptions.pageList;
+                        var pagesize = paginationOptions.pageSize;
+                        var pageno = paginationOptions.pageNumber;
+                        // 更换Columns
+                		$scope.$('#datagrid').datagrid($scope.picOptions);
+                		$scope.refreshDataGrid();
+                		
+                        //refreshPagination(paginationOptions);
+                        /*  // 重置分页参数
+    			        $scope.$restPagenation($scope.$("#datagrid"), $scope.formData, "formData", pagelist, pagesize);
+                		// 重新查询
+                		//$scope.$search("formData");
+                		$scope.$('#datagrid').datagrid("getPager").pagination('select', pageno); */
+                    }
+            	}
+            },
+            
+            // 切换成列表模式
+            changeToListMode : function() {
+            	if ("PICTURE" == $scope.dataAreaMode) {
+            		$scope.dataAreaMode = "LIST";
+            		$scope.$("#datagrid").attr("cy-datagrid", "listOptions");
+            		$scope.$("#dataGridDiv").show();
+            		$scope.$("#vehPhotoDiv").hide();
+            		$scope.$("span[id^='picWidSpan']").hide();
+            		$scope.$("input[name='picWidth']").hide();
+
+                    var pager = $scope.$('#datagrid').datagrid("getPager");
+                    if (pager.length > 0) {
+                        var paginationOptions = pager.pagination("options");
+                        var pagelist = paginationOptions.pageList;
+                        var pagesize = paginationOptions.pageSize;
+                        var pageno = paginationOptions.pageNumber;
+                         // 更换Columns
+                		$scope.$('#datagrid').datagrid($scope.listOptions);
+                		/* // 重置分页参数
+    			        $scope.$restPagenation($scope.$("#datagrid"), $scope.formData, "formData", pagelist, pagesize);
+                		// 重新查询
+                		$scope.$('#datagrid').datagrid("getPager").pagination('select', pageno);
+                		// 清空大图模式中的图片，翻页时也要先清空 */
+                		$scope.$("#vehPhotoDiv").empty();
+                		$scope.refreshDataGrid();
+                        //refreshPagination(paginationOptions);
+                    }
+            	}
+            },
+
+        	changePicWidth : function() {
+        		var picWidth = $scope.$("input[name='picWidth']:checked").val();
+
+        		switch (picWidth) {
+        			case "140":
+        				$scope.$("div[class^='picContainer']").animate({width:'140px',height:'166px'});
+        				$scope.$("div[class^='picContainer']").attr("class", "picContainerSmall");
+        				$scope.$("img[class^='pic']").attr("class", "picSmall");
+        				$scope.$("div[class^='accPicContainer']").attr("class", "accPicContainerSmall");
+        				break;
+        			case "280":
+        				$scope.$("div[class^='picContainer']").animate({width:'280px',height:'265px'});
+        				$scope.$("div[class^='picContainer']").attr("class", "picContainerMid");
+        				$scope.$("img[class^='pic']").attr("class", "picMid");
+        				$scope.$("div[class^='accPicContainer']").attr("class", "accPicContainerMid");
+        				break;
+        			case "560":
+        				$scope.$("div[class^='picContainer']").animate({width:'540px',height:'478px'});
+        				$scope.$("div[class^='picContainer']").attr("class", "picContainerBig");
+        				$scope.$("img[class^='pic']").attr("class", "picBig");
+        				$scope.$("div[class^='accPicContainer']").attr("class", "accPicContainerBig");
+        				break;
+        		}
+        	},
+
+            openBigVehImg : function(src) {
+                $scope.$setParam("images", [src]);
+
+                var dialog = $scope.$openDialog("过车大图", {
+                    title : "过车大图",
+                    width : 1000,
+                    height : 720,
+                    href : "tpls/public/image-view.html"
+                }, true);
+            },
+
+	    	// 点击查询按钮进行查询
+	    	searchForm : function() {
+            	//验证通过进行查询
+            	//if (validator()) {
+		       	    $scope.$updateData("formData");
+		            var pager = $scope.$("#datagrid").datagrid("getPager");
+		            if (pager.length > 0) {
+		                var paginationOptions = pager.pagination("options");
+		                $scope.formData.pageSize = paginationOptions.pageSize;
+		                $scope.formData.pageNumber = 1;
+		                $scope.formData.totalCount = 0;
+		            }
+		    		//$scope.$search("formData");
+		    		$scope.$search("formData", "", function(data) {
+		    			
+		    			if (data && data != null && data.rows.length > 0) {
+		    				
+		    			}else{
+		    				$.messager.alert('提示','查无数据!',"info");
+							$scope.$updateDom('formData');
+		    			}
+		    			
+		    		})
+            	/* } else {
+	    			return;
+	    		} */
+			},
+			
+			/*
+			*毫秒转换成时间
+			*/
+            $timeToDate:function(value){
+            	if (!value) return;
+
+        		var date = new Date(value)
+        		var year = date.getFullYear().toString();
+
+        		var month = (date.getMonth() + 1);
+
+        		var day = date.getDate().toString();
+
+        		var hour = date.getHours().toString();
+
+        		var minutes = date.getMinutes().toString();
+
+        		var seconds = date.getSeconds().toString();
+
+        		if (month < 10) {
+
+        			month = "0" + month;
+
+        		}
+
+        		if (day < 10) {
+
+        			day = "0" + day;
+
+        		}
+
+        		if (hour < 10) {
+
+        			hour = "0" + hour;
+
+        		}
+
+        		if (minutes < 10) {
+
+        			minutes = "0" + minutes;
+
+        		}
+
+        		if (seconds < 10) {
+
+        			seconds = "0" + seconds;
+
+        		}
+
+        		return year + "/" + month + "/" + day + " " + hour + ":" + minutes
+        				+ ":" + seconds;
+        	    
+            },
+            
+            /**
+        	 * 判断字符串是否为空或由空格组成的
+        	 * Added by wangyunqi
+        	 * */
+        	$isEmptyOrBlank : function (strVal) {
+        		 if (strVal == '' || strVal == null || strVal == undefined) {
+        			   return true;
+        		   } else {
+        			   return false;
+        		   }
+        	},
+        	/**
+        	    *@param strSource 待替换的源字符串
+        	    *@param strToRepalce 要替换的字符串
+        	    *@param strSubstitute 替代的字符串
+        	    *@return 替换后的字符串
+        	    *@author Xujin.Jiao
+        	    *@version 1.0.2008.0929
+        	    */
+        	    $replaceAll:function(strSource,strToRepalce,strSubstitute){
+        	        var s2 = strSource;
+        	        while(s2.indexOf(strToRepalce)>0){
+        	         s2=s2.replace(strToRepalce,strSubstitute)
+        	        }
+        	        return s2;
+        	    },
+        	    
+        	    /**
+        	     *@param strSource 待替换的源字符串
+        	     *@param strToRepalce 要替换的字符串
+        	     *@param strSubstitute 替代的字符串
+        	     *@return 替换后的字符串
+        	     *@author wangyuqni
+        	     *@version 1.0.2008.0929
+        	     */
+        	    $replaceAllArrays:function(strSource,strToRepalces,strSubstitutes){
+        	    	 var s2 = strSource;
+        	        for (var i = 0;i<strToRepalces.length;i++){
+        	        	
+        	        	s2 = $scope.$replaceAll(s2,strToRepalces[i],strSubstitutes[i])
+        	        }
+        	        return s2;
+        	    },
+        	    
+        	    /**
+        	    *将数据更新到不同的模式下面
+        	    */
+        	    refreshDataGrid :function(){
+        	    	var data = $scope.$('#datagrid').datagrid("getData");
+        			$scope.$('#datagrid').datagrid("loadData",data);
+        	    },
+        	    
+        	    $getPlateType : function(value){
+        			if(!value) return;
+                    return $scope.$getCodeName("002",value);
+        		},
+    	});
+
+    	/**
+    	 * 启动加载
+    	 * @return {[type]} [description]
+    	 */
+    	$scope.load = function() {
+        	// 创建分页控件
+            $scope.$("#datagrid").datagrid("getPager").pagination({
+            	pageList: [15,20,25,30,40,50,100,200,500],
+            	total:0,
+            	pageSize:25
+            });
+        	
+            $scope.$("#vehPhotoDiv").css({height:((document.body.clientHeight - 282)+"px")});
+    		$scope.$("span[id^='picWidSpan']").hide();
+    		$scope.$("input[name='picWidth']").hide();
+    		
+          	$scope.$("#plateNbr").textbox("textbox").attr("title", "?表示单字符, *表示多字符");
+          	$scope.$("#accMinCount").textbox("textbox").attr("title", "至少要伴随N次以上才认为是伴随车");
+          	$scope.$("#accInterval").textbox("textbox").attr("title", "相差N秒以内经过相同点位相同方向就认为本次伴随");
+          	
+    	};
+    	
+    	/*
+    	*更新分頁控件
+    	*/
+		function refreshPagination(paginationOptions) {
+			$scope.$('#datagrid').datagrid("getPager").pagination({
+				pageList : paginationOptions.pageList,
+				total : paginationOptions.total,
+				pageSize : paginationOptions.pageSize,
+				pageNumber : paginationOptions.pageNumber,
+
+				//pageList : pagelist,
+				//pageSize : pagesize,
+
+				onSelectPage : function(pageNumber, pageSize) {
+					$scope.formData.pageSize = pageSize;
+					$scope.formData.pageNumber = pageNumber;
+					$scope.$search("formData");
+				}
+			});
+			$scope.formData.pageSize = paginationOptions.pageSize;
+			$scope.formData.pageNumber = paginationOptions.pageNumber;
+			$scope.formData.totalCount = paginationOptions.total;
+			$scope.$search("formData");
+		}
+
+	});
+</script>
+<style>
+	#searchAccompany .th{
+		width : 70px;
+		text-align:right;	
+	}
+	#searchAccompany.hide{
+		display: none;
+	}
+	.vehPicTbl {
+		border:0px;
+		margin:0px;
+		border-collapse:collapse;
+	}
+	.vehPicTbl  th {
+		width : 70px;
+		text-align:right;	
+	}
+	.vehPicTbl  td {
+		padding:0px;
+		text-align:left;	
+	}
+	
+	.picSmall {
+		cursor: pointer;
+		width:140px;
+		height:107px;
+		border-radius: 9px;
+	}
+	.picMid {
+		cursor: pointer;
+		width:280px;
+		height:213px;
+		border-radius: 9px;
+	}
+	.picBig {
+		cursor: pointer;
+		width:540px;
+		height:426px;
+		border-radius: 9px;
+	}
+	.picContainerSmall {
+		over-flow:hidden;
+		float:left;
+		width:140px; 
+		height:166px;
+		border-radius: 9px;
+	}
+	.picContainerMid {
+		over-flow:hidden;
+		float:left;
+		width:280px; 
+		height:265px;
+		border-radius: 9px;
+	}
+	.picContainerBig {
+		over-flow:hidden;
+		float:left;
+		width:560px; 
+		height:478px;
+		border-radius: 9px;
+	}
+	.accPicContainerSmall {
+		float:left;
+		height:auto;
+		width:142px; 
+		border-collapse:collapse;
+		border:2px solid #3996BF;
+	    margin-left: 4px;
+	    margin-top: 15px;
+	    border-radius: 9px;
+	}
+	.accPicContainerMid {
+		float:left;
+		height:auto;
+		width:280px; 
+		border-collapse:collapse;
+		border:2px solid #3996BF;
+		margin-left: 8px;
+    	margin-top: 15px;
+    	border-radius: 9px;
+	}
+	.accPicContainerBig {
+		float:left;
+		height:auto;
+		width:542px; 
+		border-collapse:collapse;
+		border:2px solid #3996BF;
+		margin-left: 18px;
+    	margin-top: 15px;
+    	border-radius: 9px;
+	}
+	.mainRowDiv {
+	    float:left;
+	    height:auto;
+	    border-collapse:collapse;
+		border:0px solid blue;
+	}
+	#vehPhotoDiv {
+		width:100%;
+		position:absolute;
+		float:left;
+	    top:115px;
+		overflow-x:hidden;
+		overflow-y:auto;
+		height:auto;
+		border:1px solid #ccc;
+		z-index:2;
+        display:none;
+	}
+
+	 .plate-blue {
+        background-color: blue;
+        text-align: center;
+        color: #FFFFFF;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+        margin: 10px 20px;
+        border-radius: 5px;
+        border:1px #E2E7EB solid;
+    }
+    .plate-yellow {
+        background-color: yellow;
+        color: #000000;
+        text-align: center;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+        margin: 10px 20px;
+        border-radius: 5px;
+        border:1px #E2E7EB solid;
+    }
+    .plate-white {
+        background-color: #FFFFFF;
+        color: red;
+        text-align: center;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+        margin: 10px 20px;
+        border-radius: 5px;
+        border:1px #E2E7EB solid;
+    }
+    .plate-black {
+        background-color: black;
+        color: #FFFFFF;
+        text-align: center;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+        margin: 10px 20px;
+        border-radius: 5px;
+        border:1px #E2E7EB solid;
+    }
+    .plate-other {
+        background-color: #666;
+        color: black;
+        text-align: center;
+        width: 120px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 20px;
+        margin: 10px 20px;
+        border-radius: 5px;
+        border:1px #E2E7EB solid;
+    }
+    .plate-div {
+        background-color: #7BBFEA;
+        color: black;
+        text-align: center;
+        width: 80px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 16px;
+        border-radius: 5px;
+        border:1px #206482 solid;
+    }
+
+    .detailListBgColor {
+    	background-color: #8FCAE3;
+    }
+
+    .veh-detial {
+        margin-left: 5px;
+        color: #07011E;
+        font-size: 14px;
+    }
+    .veh-detial .tr{
+    	height:24px;
+    }
+    .cltzdiv {
+		height:58px;
+		line-height:18px;
+    }
+    .czxxdiv {
+        height:44px;
+		line-height:18px;
+    }
+    .cltztext {
+    	width:233px;
+    	height:58px;
+    	border:0px;
+    	color:#07011E;
+    	background-color: #C9ECF6;
+    }
+    .czxxtext {
+    	width:233px;
+    	height:44px;
+    	border:0px;
+    	color:#07011E;
+    	background-color: #C9ECF6;
+    }
+    
+    #searchAccompany .time {
+    	width: 140px;
+        color: #FF0000;
+        font-size: 12px;
+        padding-left: 24px;
+        background: url(themes/default/images/icon/time.png) no-repeat 2px 5px;
+    }
+    #searchAccompany .car {
+        color: #3868A9;
+        padding-left: 24px;
+        background: url(themes/default/images/icon/car.png) no-repeat 2px 5px;
+    }
+    #searchAccompany .place {
+        margin-top: 15px;
+        color: #3868A9;
+        padding-left: 24px;
+        background: url(themes/default/images/icon/place.png) no-repeat 2px 5px;
+    }
+    #searchAccompany .direction {
+        color: #3868A9;
+        padding-left: 24px;
+        background: url(themes/default/images/icon/direction.png) no-repeat 2px 5px;
+    }
+    #searchAccompany .position {
+        color: #3868A9;
+        padding-left: 24px;
+        background: url(themes/default/images/icon/position.png) no-repeat 2px 5px;
+    }
+</style>

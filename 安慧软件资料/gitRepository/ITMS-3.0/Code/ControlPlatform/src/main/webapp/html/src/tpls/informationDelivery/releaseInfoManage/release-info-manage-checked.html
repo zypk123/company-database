@@ -1,0 +1,81 @@
+<div class="easyui-layout">
+	<div  data-options="region:'north'" style="height: 40px;">
+		<form cy-form="formData">
+			<div id="releaseInfoCheck"  class="table">
+				<div class="tr">
+					<div class="th">任务类型：</div>
+					<div class="td" cy-name="formData.taskType" cy-filter="taskTypeOption"></div>
+					<div class="th">消息类型：</div>
+					<div class="td" cy-name="formData.messageType" cy-filter="messageTypeOption"></div>
+					<div class="th">诱导屏设备：</div>
+					<div class="td"style="width:170px;" cy-name="formData.deviceName"></div>
+					<div class="th">发布者：</div>
+					<div class="td" cy-name="formData.creator"></div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="dataGrid" cy-datagrid="options" cy-queryData="ledPublishLogData" cy-url="device/ledPublishLogAction/findLedPublishLogList"></table>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 40px;">
+		<div class="tr">
+			<div class="td" style="text-align : center">
+				<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+				cy-click="$closeSelf">关闭</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(['formData'],function($scope){
+		
+		$scope.$getDefaultCode(['611','617','619']);
+		$scope.load = function() {
+	 		$scope.$updateData("ledPublishLogData");
+			$scope.$search("ledPublishLogData");
+		 };
+		//任务类型Code转换名称 			
+		$scope.taskTypeOption =function(value,row,index){
+			return $scope.$getCodeName("617",value);
+		};
+		$scope.messageTypeOption =function(value,row,index){
+			return $scope.$getCodeName("611",value);
+		};
+			
+		$scope.options={
+			columns:[[
+				{field : 'id',checkbox : false,align : 'center'},
+				{field:'beginTime',title:'发布时间',align:'center',width:40},
+				{field:'result',title:'发布结果',align:'center',width:40,formatter:resultOption},
+				{field:'progContent',title:'发布内容',align:'center',width:40,formatter:option}
+			]],
+			pagination : false,
+		};     
+		//发布结果Code转换名称 
+		function resultOption(value){
+			return $scope.$getCodeName("619",value);
+		}	
+		//操作栏按钮
+		function option(value, row, index) {
+			var button1 = $("<a class='button-detail' title='查看' cy-click='details(" + index + ")'></a>");
+			
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			
+			return $("<span/>").append(button1).html();
+		};
+	});
+</script>
+<style  type="text/css">
+	#releaseInfoCheck .th{
+		text-align: right;
+		width: 80px;
+	}
+	#releaseInfoCheck .td{
+		text-align: left;
+		width: 100px;
+	}
+</style>

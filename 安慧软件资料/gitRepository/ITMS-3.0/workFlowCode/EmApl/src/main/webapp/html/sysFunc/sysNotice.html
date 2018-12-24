@@ -1,0 +1,111 @@
+<div ng-controller="SysNoticeController">
+    <div class="container-fluid">
+        <div classs="row-fluid">
+            <div class="col-md-12">
+                <div class="searchPanel" style="overflow:auto;">
+                    <div class="panel_title">查询条件</div>
+                    <form class="form-inline" style="margin-top: 20px">
+                        <lable class="lable">公告标题：</lable>
+                        <input type="text" class="form-control input-sm" ng-model="title">
+                        <lable class="lable">创建时间：</lable>
+                        <!-- <input type="text" ng-model="dueDate" ps-datetime-picker class="form-control"> -->
+                        <input id="startTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',maxDate:'#F{$dp.$D(\'endTime\') || \'%y-%M-%d\'}',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onchange="" ng-model="startTime" placeholder="请选择时间">&nbsp;至&nbsp;
+                        <input id="endTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onchange="" ng-model="endTime" placeholder="请选择时间">
+                        <!-- <input type="text" class="form-control input-sm" ng-model="queryTime"> -->
+                        <button class="btn btn-primary btn-sm" style="margin-left:50px" ng-click="getSysNoticeList()">查询</button>
+                    </form>
+                </div>
+                <button href="#" class="btn btn-warning" ng-click="addNotice()">新增</button>
+                <br>
+                <div style="height: 65%;width:100%;overflow: auto;">
+                    <table class="table table-bordered table-show table-striped" style="margin-top:5px">
+                        <tbody>
+                            <tr class="active">
+                                <td class="table-unite">
+                                    <span>
+                                      <input id="selectAll" name="selectAll" type="checkbox" ng-click="allSelect()" ng-checked="selectAll">
+                                </span>
+                                </td>
+                                <td class="table-unite">公告标题</td>
+                                <td class="table-unite">公告内容</td>
+                                <td class="table-unite">操作</td>
+                                <!-- <td class="table-unite">状态</td> -->
+                            </tr>
+                            <tr ng-repeat="info in showInfo" ng-click="userDetail(info)">
+                                <td class="table-unite" width="5%">
+                                    <span>
+                        <input type="checkbox" ng-click="selectState($index);$event.stopPropagation()" ng-checked="select[$index]">
+                    </span>
+                                </td>
+                                <td class="table-unite " width="15%">{{info.messageTitle}}
+                                </td>
+                                <td class="table-unite" width="25%">{{info.messageContent}}</td>
+                                <td class="table-unite" width="15%">
+                                    <!-- <button class="btn btn-default btn-xs" type="button" ng-click="assignAuthority(info.id);$event.stopPropagation()">密码重置</button> -->
+                                    <a title="编辑" style="cursor:pointer;" ng-click="editNotice(info)"><span class=" glyphicon glyphicon-pencil"></span></a>
+                                    <a title="删除" style="cursor:pointer;margin-left:10px;" ng-click="deleteNotice(info)"><span class="glyphicon glyphicon-remove"></span></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div style="float: left;">
+                        <uib-pagination boundary-links="true" total-items="totalItems" max-size="maxSize" force-ellipses="true" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+                    </div>
+                    <div style="float: left; line-height: 70px">共{{totalItems}}条</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+.table-show > thead > tr > th,
+.table-show > tbody > tr > th,
+.table-show > tfoot > tr > th,
+.table-show > thead > tr > td,
+.table-show > tbody > tr > td,
+.table-show > tfoot > tr > td {
+    font-size: 13px;
+    padding: 5px 12px 5px 12px;
+    /*vertical-align: middle;*/
+    border: 1px solid #EEE;
+}
+
+.table-unite {
+    text-align: center;
+}
+
+.searchPanel {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    float: left;
+    margin: 10px 1%;
+    padding: 10px 0;
+    width: 97%;
+}
+
+.cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.wrapper {
+    display: table;
+}
+
+.searchPanel .panel_title {
+    background: #ffffff none repeat scroll 0 0;
+    color: #6fb3e0;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-top: -20px;
+    padding: 0 5px;
+    position: absolute;
+}
+
+.lable {
+    font-size: 12px;
+    margin-left: 20px;
+}
+</style>

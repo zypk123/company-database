@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Position_RoleMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Position_RoleKey" >
+    <id column="POSITION_TYPE_ID" property="positionTypeId" jdbcType="VARCHAR" />
+    <id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_RoleKey" >
+    delete from T_SYS_POSITION_ROLE
+    where POSITION_TYPE_ID = #{positionTypeId,jdbcType=VARCHAR}
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_RoleKey" >
+    insert into T_SYS_POSITION_ROLE (POSITION_TYPE_ID, ROLE_ID)
+    values (#{positionTypeId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_RoleKey" >
+    insert into T_SYS_POSITION_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="positionTypeId != null" >
+        POSITION_TYPE_ID,
+      </if>
+      <if test="roleId != null" >
+        ROLE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="positionTypeId != null" >
+        #{positionTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

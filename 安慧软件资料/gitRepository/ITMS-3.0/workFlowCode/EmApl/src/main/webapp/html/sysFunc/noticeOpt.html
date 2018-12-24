@@ -1,0 +1,44 @@
+<div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
+            <h5 class="modal-title" id="exampleModalLabel" ng-show="showTitle">新增公告信息</h5>
+            <h5 class="modal-title" id="exampleModalLabel" ng-hide="showTitle">编辑公告信息</h5>
+        </div>
+        <form role="form" name="form" ng-submit="save()" novalidate="novalidate">
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-sm-2 control-label">标题:</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" class="form-control" id="recipient-name" ng-model="title" required ng-maxlength="100">
+                                <!-- <span ng-show="form.title.$dirty&&form.title.$invalid"> -->
+                                    <span ng-show="form.$dirty && form.title.$error.required" style="color:red;">*不能为空</span>
+                                    <span ng-show="form.$dirty && form.title.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                                <!-- </span> -->
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="form-group">
+                            <label for="message-text" class="col-sm-2 control-label">内容:</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="message-text" name="messageContent" ng-model="messageContent" required ng-maxlength="255"></textarea>
+                                <span ng-show="form.messageContent.$dirty&&form.messageContent.$invalid">
+                                    <span ng-show="form.messageContent.$error.required" style="color:red;">*不能为空</span>
+                                    <span ng-show="form.messageContent.$error.maxlength" style="color:red;">*最大不能超过225字</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-warning" data-dismiss="modal" ng-click="cancel()">取消</button>
+                <!-- <button type="button" class="btn btn-sm btn-primary" ng-click="save()">保存</button> -->
+                <button name=comfirm class="btn btn-sm btn-primary" type="submit" ng-disabled="form.$invalid">保存</button>
+            </div>
+        </form>
+    </div>
+</div>

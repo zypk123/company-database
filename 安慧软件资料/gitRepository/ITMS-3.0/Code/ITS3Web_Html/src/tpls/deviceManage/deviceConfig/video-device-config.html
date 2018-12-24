@@ -1,0 +1,28 @@
+<div id="videoDeviceTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div title="设备信息" data-options="href:'tpls/deviceManage/deviceConfig/video-device-base-info.html'">
+
+    </div>
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceConfig/certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceConfig/device-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     */
+    InitPage(["mode"],function($scope) {
+        //获取mode参数
+        var currentMode= $scope.mode;
+        //设置访问tab页
+        if(currentMode=="ADD")
+        {
+            var tollgateTabs=$scope.$("#videoDeviceTabs");
+            $scope.$setParam("tollgateTabs",tollgateTabs);
+            $scope.$("#videoDeviceTabs").tabs('disableTab', 1);
+            $scope.$("#videoDeviceTabs").tabs('disableTab', 2);
+        }
+    });
+</script>

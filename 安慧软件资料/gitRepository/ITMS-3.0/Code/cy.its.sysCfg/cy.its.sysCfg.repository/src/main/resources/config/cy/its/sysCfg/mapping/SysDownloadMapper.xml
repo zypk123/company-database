@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysDownloadMapper">
+	<resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.home.SysDownload">
+		<id column="DOWNLOAD_ID" property="downloadId" jdbcType="VARCHAR" />
+		<result column="DOWNLOAD_TITLE" property="downloadTitle"
+			jdbcType="VARCHAR" />
+		<result column="DOWNLOAD_CONTENT" property="downloadContent"
+			jdbcType="VARCHAR" />
+		<result column="DOWNLOAD_URL" property="downloadUrl" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		DOWNLOAD_ID, DOWNLOAD_TITLE, DOWNLOAD_CONTENT, DOWNLOAD_URL, CREATE_TIME,
+		UPDATE_TIME
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_DOWNLOAD
+		where DOWNLOAD_ID = #{downloadId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_SYS_DOWNLOAD
+		where DOWNLOAD_ID = #{downloadId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.syscfg.domain.model.home.SysDownload">
+		insert into T_SYS_DOWNLOAD (DOWNLOAD_ID, DOWNLOAD_TITLE,
+		DOWNLOAD_CONTENT,
+		DOWNLOAD_URL, CREATE_TIME, UPDATE_TIME
+		)
+		values (#{downloadId,jdbcType=VARCHAR}, #{downloadTitle,jdbcType=VARCHAR},
+		#{downloadContent,jdbcType=VARCHAR},
+		#{downloadUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.home.SysDownload">
+		insert into T_SYS_DOWNLOAD
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="downloadId != null">
+				DOWNLOAD_ID,
+			</if>
+			<if test="downloadTitle != null">
+				DOWNLOAD_TITLE,
+			</if>
+			<if test="downloadContent != null">
+				DOWNLOAD_CONTENT,
+			</if>
+			<if test="downloadUrl != null">
+				DOWNLOAD_URL,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="downloadId != null">
+				#{downloadId,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadTitle != null">
+				#{downloadTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadContent != null">
+				#{downloadContent,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadUrl != null">
+				#{downloadUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.home.SysDownload">
+		update T_SYS_DOWNLOAD
+		<set>
+			<if test="downloadTitle != null">
+				DOWNLOAD_TITLE = #{downloadTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadContent != null">
+				DOWNLOAD_CONTENT = #{downloadContent,jdbcType=VARCHAR},
+			</if>
+			<if test="downloadUrl != null">
+				DOWNLOAD_URL = #{downloadUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where DOWNLOAD_ID = #{downloadId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.home.SysDownload">
+		update T_SYS_DOWNLOAD
+		set DOWNLOAD_TITLE = #{downloadTitle,jdbcType=VARCHAR},
+		DOWNLOAD_CONTENT = #{downloadContent,jdbcType=VARCHAR},
+		DOWNLOAD_URL = #{downloadUrl,jdbcType=VARCHAR},
+		CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+		where DOWNLOAD_ID = #{downloadId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+		SELECT
+		 <include refid="Base_Column_List" />
+		FROM T_SYS_DOWNLOAD
+		ORDER BY CREATE_TIME DESC
+	</select>
+
+	<sql id="downloadwhere">
+		<where>
+			<if test="title != null and title != ''">
+				AND N.DOWNLOAD_TITLE like '%' || #{title,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="createTimeFrom != null">
+			 <![CDATA[ AND N.CREATE_TIME  >  #{createTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTimeTo != null">
+			 <![CDATA[ AND N.CREATE_TIME  <  #{createTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</sql>
+	<select id="selectDownloads" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (		
+		SELECT TA.*, ROWNUM RN FROM (
+		SELECT N.*
+		FROM T_SYS_DOWNLOAD N
+		<include refid="downloadwhere" />
+		ORDER BY N.CREATE_TIME DESC) TA		
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >= #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countDownloads" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT count(1)
+		FROM T_SYS_DOWNLOAD N
+		<include refid="downloadwhere" />
+	</select>
+</mapper>

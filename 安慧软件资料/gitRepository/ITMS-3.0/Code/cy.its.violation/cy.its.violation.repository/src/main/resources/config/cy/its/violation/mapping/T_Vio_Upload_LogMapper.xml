@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_Upload_LogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_Upload_Log" >
+    <id column="UPLOAD_LOG_ID" property="uploadLogId" jdbcType="VARCHAR" />
+    <result column="VIOLATION_ID" property="violationId" jdbcType="VARCHAR" />
+    <result column="UPLOAD_TIME" property="uploadTime" jdbcType="TIMESTAMP" />
+    <result column="UPLOAD_RESULT" property="uploadResult" jdbcType="VARCHAR" />
+    <result column="UPLOAD_CONTENT" property="uploadContent" jdbcType="VARCHAR" />
+    <result column="INTERFACE_ID" property="interfaceId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    UPLOAD_LOG_ID, VIOLATION_ID, UPLOAD_TIME, UPLOAD_RESULT, UPLOAD_CONTENT, INTERFACE_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_UPLOAD_LOG
+    where UPLOAD_LOG_ID = #{uploadLogId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_UPLOAD_LOG
+    where UPLOAD_LOG_ID = #{uploadLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_Upload_Log" >
+    insert into T_VIO_UPLOAD_LOG (UPLOAD_LOG_ID, VIOLATION_ID, UPLOAD_TIME, 
+      UPLOAD_RESULT, UPLOAD_CONTENT, INTERFACE_ID
+      )
+    values (#{uploadLogId,jdbcType=VARCHAR}, #{violationId,jdbcType=VARCHAR}, #{uploadTime,jdbcType=TIMESTAMP}, 
+      #{uploadResult,jdbcType=VARCHAR}, #{uploadContent,jdbcType=VARCHAR}, #{interfaceId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Upload_Log" >
+    insert into T_VIO_UPLOAD_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uploadLogId != null" >
+        UPLOAD_LOG_ID,
+      </if>
+      <if test="violationId != null" >
+        VIOLATION_ID,
+      </if>
+      <if test="uploadTime != null" >
+        UPLOAD_TIME,
+      </if>
+      <if test="uploadResult != null" >
+        UPLOAD_RESULT,
+      </if>
+      <if test="uploadContent != null" >
+        UPLOAD_CONTENT,
+      </if>
+      <if test="interfaceId != null" >
+        INTERFACE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uploadLogId != null" >
+        #{uploadLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="violationId != null" >
+        #{violationId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadResult != null" >
+        #{uploadResult,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadContent != null" >
+        #{uploadContent,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceId != null" >
+        #{interfaceId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Upload_Log" >
+    update T_VIO_UPLOAD_LOG
+    <set >
+      <if test="violationId != null" >
+        VIOLATION_ID = #{violationId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        UPLOAD_TIME = #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadResult != null" >
+        UPLOAD_RESULT = #{uploadResult,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadContent != null" >
+        UPLOAD_CONTENT = #{uploadContent,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceId != null" >
+        INTERFACE_ID = #{interfaceId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where UPLOAD_LOG_ID = #{uploadLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_Upload_Log" >
+    update T_VIO_UPLOAD_LOG
+    set VIOLATION_ID = #{violationId,jdbcType=VARCHAR},
+      UPLOAD_TIME = #{uploadTime,jdbcType=TIMESTAMP},
+      UPLOAD_RESULT = #{uploadResult,jdbcType=VARCHAR},
+      UPLOAD_CONTENT = #{uploadContent,jdbcType=VARCHAR},
+      INTERFACE_ID = #{interfaceId,jdbcType=VARCHAR}
+    where UPLOAD_LOG_ID = #{uploadLogId,jdbcType=VARCHAR}
+  </update>
+</mapper>

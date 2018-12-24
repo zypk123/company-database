@@ -1,0 +1,106 @@
+<div class="easyui-layout">
+    <form cy-form="illConfigData">
+        <div  id="code" data-options="region:'north'" style="height: 400px;">
+            <div id="illegalBusiness" class="table">
+                <div class="tr">
+                    <div class="th">
+                        配置名称：
+                    </div>
+                    <div class="td" cy-name="illConfigData.configName" style="width:200px;"></div>
+                    <div class="th" style="width: 60px;">
+                        值的类型：
+                    </div>
+                    <div id="illegalValueType" class="td" style="width: 160px;">
+                        <span  cy-name="illConfigData.valueType" cy-filter="valueType"></span>
+                        <input type="hidden" name="codeType"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        值：
+                    </div>
+                    <div class="td">
+                        <textarea name="value" style="height: 25px;width: 550px;white-space: normal"></textarea>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        默认值：
+                    </div>
+                    <div class="td"cy-name="illConfigData.defaultValue" style="height: auto;width: 550px;white-space: normal" ></div>
+                </div>
+                <div id="illegalSelectedValue" class="tr">
+                    <div class="th">
+                        值的可选枚举值：
+                    </div>
+                    <div class="td"  cy-name="illConfigData.selectedValue" style="height: auto;width: 550px;white-space: normal"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        配置项描述：
+                    </div>
+                    <div class="td"
+                    cy-name="illConfigData.configRemark"  style="height: auto;width: 550px;white-space: normal"></div>
+                </div>
+                <div id="illegalValueDesc"class="tr">
+                    <div class="th" style="width: 100px;">
+                        枚举值说明：
+                    </div>
+                    <div class="td"
+                    cy-name="illConfigData.selectedValueDesc"  style="height: auto;width: 550px;white-space: normal" ></div>
+                </div>
+            </div>
+        </div>
+
+        <div data-options="region:'center'" >
+            <div class="tr">
+                <br/>
+                <div class="td" align="center">
+                    <a class="easyui-linkbutton " data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                    <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["illConfigData", "saveData"], function($scope) {
+        $scope.$getDefaultCode(["122"]);
+        $scope.valueType = function(value) {
+            return $scope.$getCodeName("122", value);
+        };
+        $scope.load = function() {
+
+            switch($scope.illConfigData.valueType) {
+            case "0":
+                $scope.$('#illegalSelectedValue').show();
+                $scope.$('#illegalValueDesc').show();
+                break;
+            case "1":
+                $scope.$('#illegalSelectedValue').hide();
+                $scope.$('#illegalValueDesc').hide();
+                break;
+            case "2":
+                $scope.$('#illegalSelectedValue').hide();
+                $scope.$('#illegalValueDesc').hide();
+            }
+        };
+
+        //保存按钮
+        $scope.save = function() {
+            //更新获取form中的数据
+            $scope.$updateData("illConfigData");
+            $scope.saveData($scope.illConfigData);
+        };
+    }); 
+</script>
+<style>
+    #illegalBusiness .th {
+        width: 110px;
+        text-align: right;
+    }
+    #illegalBusiness .td {
+        width: 140px;
+    }
+</style>
+

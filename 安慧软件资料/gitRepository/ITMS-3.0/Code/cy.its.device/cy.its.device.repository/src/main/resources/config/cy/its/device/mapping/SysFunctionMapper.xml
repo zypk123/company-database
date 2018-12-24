@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SysFunctionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.SysFunction" >
+    <id column="DEVICE_SYS_FUNCTION_ID" property="deviceSysFunctionId" jdbcType="VARCHAR" />
+    <result column="FUNCTION_NAME" property="functionName" jdbcType="VARCHAR" />
+    <result column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+    <result column="FUNCTION_DESC" property="functionDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_SYS_FUNCTION_ID, FUNCTION_NAME, FUNCTION_CODE, FUNCTION_DESC
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_FUNCTION
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_SYS_FUNCTION
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.SysFunction" >
+    insert into T_DEVICE_SYS_FUNCTION (DEVICE_SYS_FUNCTION_ID, FUNCTION_NAME, 
+      FUNCTION_CODE, FUNCTION_DESC)
+    values (#{deviceSysFunctionId,jdbcType=VARCHAR}, #{functionName,jdbcType=VARCHAR}, 
+      #{functionCode,jdbcType=VARCHAR}, #{functionDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.SysFunction" >
+    insert into T_DEVICE_SYS_FUNCTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceSysFunctionId != null" >
+        DEVICE_SYS_FUNCTION_ID,
+      </if>
+      <if test="functionName != null" >
+        FUNCTION_NAME,
+      </if>
+      <if test="functionCode != null" >
+        FUNCTION_CODE,
+      </if>
+      <if test="functionDesc != null" >
+        FUNCTION_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceSysFunctionId != null" >
+        #{deviceSysFunctionId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null" >
+        #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionCode != null" >
+        #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="functionDesc != null" >
+        #{functionDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.SysFunction" >
+    update T_DEVICE_SYS_FUNCTION
+    <set >
+      <if test="functionName != null" >
+        FUNCTION_NAME = #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionCode != null" >
+        FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="functionDesc != null" >
+        FUNCTION_DESC = #{functionDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.SysFunction" >
+    update T_DEVICE_SYS_FUNCTION
+    set FUNCTION_NAME = #{functionName,jdbcType=VARCHAR},
+      FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR},
+      FUNCTION_DESC = #{functionDesc,jdbcType=VARCHAR}
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectFunctions" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_DEVICE_SYS_FUNCTION
+		<where>
+			<if test="modelId != null and modelId != '' ">
+				DEVICE_SYS_FUNCTION_ID IN  
+				(select DEVICE_SYS_FUNCTION_ID
+			    from T_DEVICE_MODEL_FUNCTION
+			    where DEVICE_SYS_MODEL_ID = #{modelId,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</select>
+</mapper>

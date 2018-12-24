@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_UserMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_User" >
+    <id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="OTHER_ORG_ID" property="otherOrgId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="POLICE_ID" property="policeId" jdbcType="VARCHAR" />
+    <result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR" />
+    <result column="LOGIN_PASSWORD" property="loginPassword" jdbcType="VARCHAR" />
+    <result column="PERMISSION_IP_LIST" property="permissionIpList" jdbcType="VARCHAR" />
+    <result column="IS_ONLINE" property="isOnline" jdbcType="CHAR" />
+    <result column="LATEST_LOGIN_TIME" property="latestLoginTime" jdbcType="TIMESTAMP" />
+    <result column="TOTAL_LOGIN_COUNTS" property="totalLoginCounts" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="VALID_DATE" property="validDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="loginTime" type="cy.its.syscfg.mybatis.model.LoginTime" >
+  	<result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="login_time" property="loginTime" jdbcType="DECIMAL" />
+    <result column="last_login_time" property="lastLoginTime" jdbcType="VARCHAR"/>
+  </resultMap>
+  <resultMap id="userCount" type="cy.its.syscfg.domain.model.duty.UserCount" >
+  	<result column="count_info" property="countInfo" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USER_ID, OTHER_ORG_ID, ORG_ID, POLICE_ID, LOGIN_NAME, LOGIN_PASSWORD, PERMISSION_IP_LIST, 
+    IS_ONLINE, LATEST_LOGIN_TIME, TOTAL_LOGIN_COUNTS, NAME, VALID_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_USER
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectUserResource" resultType="cy.its.syscfg.mybatis.model.UserResource" parameterType="String">
+  	select 
+		m1.menu_code as menuLevel1Code,
+		m1.menu_name as menuLevel1Name,
+		m1.menu_image_url as menuLevel1Image,
+		m1.target_url as targetURL1,
+		m2.menu_code as menuLevel2Code,
+		m2.menu_name as menuLevel2Name,
+		m2.menu_image_url as menuLevel2Image,
+		m2.target_url as targetURL2,
+		m3.menu_code as menuLevel3Code,
+		m3.menu_name as menuLevel3Name,
+		m3.menu_image_url as menuLevel3Image,
+		m3.target_url as targetURL3,
+		f.function_code as functionCode,
+		f.function_name as functionName
+	
+	from t_sys_role_permission p
+	left join t_sys_role r on r.role_id = p.role_id
+	left join t_sys_role_user u on u.role_id = p.role_id
+	left join t_sys_function f  on p.function_code = f.function_code
+	left join t_sys_menu m3 on m3.menu_code = f.menu_code
+	left join t_sys_menu m2 on m2.menu_code = m3.parent_code
+	left join t_sys_menu m1 on m1.menu_code = m2.parent_code
+	where u.user_id = #{userId,jdbcType=VARCHAR} 
+		and m3.menu_enable_flag = 1 
+		and m2.menu_enable_flag = 1
+		and m1.menu_enable_flag = 1
+		and f.function_flag = 1
+	order by m1.sort_index,m2.sort_Index,m3.sort_index
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_USER
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_User" >
+    insert into T_SYS_USER (USER_ID, OTHER_ORG_ID, ORG_ID, 
+      POLICE_ID, LOGIN_NAME, LOGIN_PASSWORD, 
+      PERMISSION_IP_LIST, IS_ONLINE, LATEST_LOGIN_TIME, 
+      TOTAL_LOGIN_COUNTS, NAME, VALID_DATE
+      )
+    values (#{userId,jdbcType=VARCHAR}, #{otherOrgId,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, 
+      #{policeId,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
+      #{permissionIpList,jdbcType=VARCHAR}, #{isOnline,jdbcType=CHAR}, #{latestLoginTime,jdbcType=TIMESTAMP}, 
+      #{totalLoginCounts,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, #{validDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_User" >
+    insert into T_SYS_USER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="otherOrgId != null" >
+        OTHER_ORG_ID,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="policeId != null" >
+        POLICE_ID,
+      </if>
+      <if test="loginName != null" >
+        LOGIN_NAME,
+      </if>
+      <if test="loginPassword != null" >
+        LOGIN_PASSWORD,
+      </if>
+      <if test="permissionIpList != null" >
+        PERMISSION_IP_LIST,
+      </if>
+      <if test="isOnline != null" >
+        IS_ONLINE,
+      </if>
+      <if test="latestLoginTime != null" >
+        LATEST_LOGIN_TIME,
+      </if>
+      <if test="totalLoginCounts != null" >
+        TOTAL_LOGIN_COUNTS,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="validDate != null" >
+        VALID_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="otherOrgId != null" >
+        #{otherOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="policeId != null" >
+        #{policeId,jdbcType=VARCHAR},
+      </if>
+      <if test="loginName != null" >
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null" >
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="permissionIpList != null" >
+        #{permissionIpList,jdbcType=VARCHAR},
+      </if>
+      <if test="isOnline != null" >
+        #{isOnline,jdbcType=CHAR},
+      </if>
+      <if test="latestLoginTime != null" >
+        #{latestLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalLoginCounts != null" >
+        #{totalLoginCounts,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="validDate != null" >
+        #{validDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_User" >
+    update T_SYS_USER
+    <set >
+      <if test="otherOrgId != null" >
+        OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="policeId != null" >
+        POLICE_ID = #{policeId,jdbcType=VARCHAR},
+      </if>
+      <if test="loginName != null" >
+        LOGIN_NAME = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <!-- <if test="loginPassword != null" >
+        LOGIN_PASSWORD = #{loginPassword,jdbcType=VARCHAR},
+      </if> -->
+      <if test="permissionIpList != null" >
+        PERMISSION_IP_LIST = #{permissionIpList,jdbcType=VARCHAR},
+      </if>
+      <if test="isOnline != null" >
+        IS_ONLINE = #{isOnline,jdbcType=CHAR},
+      </if>
+      <if test="latestLoginTime != null" >
+        LATEST_LOGIN_TIME = #{latestLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalLoginCounts != null" >
+        TOTAL_LOGIN_COUNTS = #{totalLoginCounts,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="validDate != null" >
+        VALID_DATE = #{validDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_User" >
+    update T_SYS_USER
+    set OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      POLICE_ID = #{policeId,jdbcType=VARCHAR},
+      LOGIN_NAME = #{loginName,jdbcType=VARCHAR},
+      <!-- LOGIN_PASSWORD = #{loginPassword,jdbcType=VARCHAR}, -->
+      PERMISSION_IP_LIST = #{permissionIpList,jdbcType=VARCHAR},
+      IS_ONLINE = #{isOnline,jdbcType=CHAR},
+      LATEST_LOGIN_TIME = #{latestLoginTime,jdbcType=TIMESTAMP},
+      TOTAL_LOGIN_COUNTS = #{totalLoginCounts,jdbcType=DECIMAL},
+      NAME = #{name,jdbcType=VARCHAR},
+      VALID_DATE = #{validDate,jdbcType=TIMESTAMP}
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateLoginPassword" parameterType="String">
+  		 update T_SYS_USER
+    set LOGIN_PASSWORD = #{password,jdbcType=VARCHAR}
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </update>
+  <select id="countUserLoginTimeInWeek" resultMap="loginTime" parameterType="java.util.ArrayList">
+  	select
+	upper(user_id) as user_name,count(upper(user_id)) as login_time,
+	to_char(max(login_time),'yyyy-mm-dd hh24:mi:ss') as last_login_time
+	from t_sys_user_login_log t
+	where t.login_time &gt; trunc(sysdate,'mm')
+	and upper(user_id) in 
+	<foreach item="item" index="index" collection="userNameList"  
+  		open="(" separator="," close=")">
+  		#{item}
+  	</foreach>
+	group by upper(user_id)
+  </select>
+  
+  <select id="countLoginTimesInCurMonth" resultType="java.lang.Integer"
+		parameterType="java.lang.String">		
+		SELECT NVL(SUM(LOGIN_COUNT), 0) loginTotalCurMonth
+		  FROM T_SYS_USER_STATUS
+		  <where>
+			  <if test="userId != null" >
+		       USER_ID = #{userId,jdbcType=VARCHAR}
+		      </if>
+		      AND CURRENT_TIME BETWEEN TRUNC(SYSDATE, 'MM') AND
+		          add_months(TRUNC(SYSDATE, 'MM'), 1) - 1 / 86400
+		  </where>
+   </select>
+  
+    <select id="countLoginTotal" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		SELECT COUNT(1) FROM T_SYS_USER_LOGIN_LOG 
+		<where>
+		  <if test="userId != null" >
+		       USER_ID = #{userId,jdbcType=VARCHAR}
+		  </if>
+		</where>
+   </select>
+   
+   <!--统计本月常用功能排名-->
+   <select id="countMenuCurrentMonthTop10" resultMap="userCount">
+   		select 
+		t.men_name as count_info,
+		count(t.men_name) as count
+		from t_sys_operate_menu_log t
+		where t.operate_time > trunc(sysdate, 'mm') 
+		group by t.menu_id,t.men_name
+		order by count(t.men_name) desc
+   </select>
+   <!--统计本月机构登录次数排名-->
+   <select id="countOrgLoginCurrentMonthTop10" resultMap="userCount">
+   		select
+		o.org_name as count_info,
+		count(o.org_name) as count
+		from t_sys_user_login_log t
+		left join t_sys_user  u on t.user_id = u.user_id
+		left join t_sys_org o on u.org_id = o.org_id
+		where t.login_time > trunc(sysdate, 'mm') and o.org_name is not null
+		group by o.org_name
+		order by count(o.org_name) desc
+   </select>
+   <!--统计本月IP登录排名-->
+   <select id="countIpLoginCurrentMonthTop10" resultMap="userCount">
+   		select
+		t.user_ip as count_info,
+		count(t.user_ip) as count
+		from t_sys_user_login_log t
+		where t.login_time > trunc(sysdate, 'mm') 
+		group by t.user_ip
+		order by count(t.user_ip) desc
+   </select>
+   <!--按日统计本月登录次数-->
+   <select id="countLoginTimeByDay" resultMap="userCount">
+   		select
+		to_char(t.login_time,'dd') as count_info,
+		count(to_char(t.login_time,'dd')) as count
+		from t_sys_user_login_log t
+		where t.login_time > trunc(sysdate, 'mm') 
+		group by to_char(t.login_time,'dd')
+		order by to_char(t.login_time,'dd')
+   </select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.RampMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.interflow.Ramp" >
+    <id column="RAMP_ID" property="rampId" jdbcType="VARCHAR" />
+    <result column="INTERFLOW_ID" property="interflowId" jdbcType="VARCHAR" />
+    <result column="RAMP_TYPE" property="rampType" jdbcType="CHAR" />
+    <result column="RAMP_LENGTH" property="rampLength" jdbcType="VARCHAR" />
+    <result column="RAMP_LIMIT_SPEED" property="rampLimitSpeed" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RAMP_ID, INTERFLOW_ID, RAMP_TYPE, RAMP_LENGTH, RAMP_LIMIT_SPEED
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_RAMP
+    where RAMP_ID = #{rampId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_RAMP
+    where RAMP_ID = #{rampId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.interflow.Ramp" >
+    insert into T_SYS_RAMP (RAMP_ID, INTERFLOW_ID, RAMP_TYPE, 
+      RAMP_LENGTH, RAMP_LIMIT_SPEED)
+    values (#{rampId,jdbcType=VARCHAR}, #{interflowId,jdbcType=VARCHAR}, #{rampType,jdbcType=CHAR}, 
+      #{rampLength,jdbcType=VARCHAR}, #{rampLimitSpeed,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.interflow.Ramp" >
+    insert into T_SYS_RAMP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rampId != null" >
+        RAMP_ID,
+      </if>
+      <if test="interflowId != null" >
+        INTERFLOW_ID,
+      </if>
+      <if test="rampType != null" >
+        RAMP_TYPE,
+      </if>
+      <if test="rampLength != null" >
+        RAMP_LENGTH,
+      </if>
+      <if test="rampLimitSpeed != null" >
+        RAMP_LIMIT_SPEED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rampId != null" >
+        #{rampId,jdbcType=VARCHAR},
+      </if>
+      <if test="interflowId != null" >
+        #{interflowId,jdbcType=VARCHAR},
+      </if>
+      <if test="rampType != null" >
+        #{rampType,jdbcType=CHAR},
+      </if>
+      <if test="rampLength != null" >
+        #{rampLength,jdbcType=VARCHAR},
+      </if>
+      <if test="rampLimitSpeed != null" >
+        #{rampLimitSpeed,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.interflow.Ramp" >
+    update T_SYS_RAMP
+    <set >
+      <if test="interflowId != null" >
+        INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR},
+      </if>
+      <if test="rampType != null" >
+        RAMP_TYPE = #{rampType,jdbcType=CHAR},
+      </if>
+      <if test="rampLength != null" >
+        RAMP_LENGTH = #{rampLength,jdbcType=VARCHAR},
+      </if>
+      <if test="rampLimitSpeed != null" >
+        RAMP_LIMIT_SPEED = #{rampLimitSpeed,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RAMP_ID = #{rampId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.interflow.Ramp" >
+    update T_SYS_RAMP
+    set INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR},
+      RAMP_TYPE = #{rampType,jdbcType=CHAR},
+      RAMP_LENGTH = #{rampLength,jdbcType=VARCHAR},
+      RAMP_LIMIT_SPEED = #{rampLimitSpeed,jdbcType=VARCHAR}
+    where RAMP_ID = #{rampId,jdbcType=VARCHAR}
+  </update>
+</mapper>

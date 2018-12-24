@@ -1,0 +1,239 @@
+<div id="sectionFlow" class="easyui-layout"  >
+
+        <div class="table" >
+            <div  class="searchPanel" >
+            <div class="tr">
+                <div class="th">
+                    点位位置：
+                </div>
+                <div class="td"style="width: 150px;">
+                    <span cy-name=newData.dwwz></span>
+                </div>
+
+                <div class="th"style="text-align: left;width: 40px;">
+                    方向：
+                </div>
+                <label ><input name="layer" type="checkbox" value="1" checked="true"cy-change="addInfoForUp" />上行</label>
+                <label ><input name="layer" type="checkbox" value="2" checked="true" cy-change="addInfoForDown" />下行</label>
+            </div>
+                <div class="tr">
+                    <div class="th">
+                        时段：
+                    </div>
+                    <div class="td"style="width: 150px;">
+                        <span style="color:#0000ff">当前时段</span>
+                    </div>
+                    <div class="td">
+                    <a  class="easyui-linkbutton button " cy-click="searchHistory">历史流量</a>
+                    </div>
+                </div>
+            </div>
+
+
+        <div  class="searchPanel" id="up">
+
+            <div class="panel_title">上行：
+            <img src="frameworks/easyui/themes/icons/reload.png">
+            <span id="state"></span>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    大车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.dc></span>&nbsp;辆&nbsp;
+                </div>
+
+                <div class="th">
+                    小车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.xc></span>&nbsp;辆&nbsp;
+                </div>
+                <div class="th">
+                    其他车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qtc></span>&nbsp;辆&nbsp;
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    平均速度：
+                </div>
+                <div class="td" >
+                    <span cy-name=newData.speed></span>&nbsp;千米/小时&nbsp;
+                </div>
+
+
+                <div class="th">
+                    车头时距：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.ctsj></span>&nbsp;秒/辆&nbsp;
+                </div>
+            </div>
+        </div>
+           <!-- <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>-->
+        <div class="searchPanel" id="down">
+
+            <div class="panel_title">下行：
+                <img src="frameworks/easyui/themes/icons/reload.png">
+                <span id="statex"></span>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    大车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.dcx></span>&nbsp;辆&nbsp;
+                </div>
+
+                <div class="th">
+                    小车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.xcx></span>&nbsp;辆&nbsp;
+                </div>
+                <div class="th">
+                    其他车：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qtcx></span>&nbsp;辆&nbsp;
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    平均速度：
+                </div>
+                <div class="td" >
+                    <span cy-name=newData.speedx></span>&nbsp;千米/小时&nbsp;
+                </div>
+
+                <div class="th">
+                    车头时距：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.ctsjx></span>&nbsp;秒/辆&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+        //页面登录时调用
+        $scope.load = function(){
+            $scope.initState();
+        }
+
+        //根据上行speed、下行speedx的值显示不同的交通状况和颜色
+        $scope.initState=function(){
+            var speed=parseInt($scope.newData.speed);
+            if(speed>=40){
+                $scope.$("#state").text(" 畅 通 ").addClass("green");
+            }
+            else if(speed>=20&&speed<40){
+                $scope.$("#state").text(" 缓 行 ").addClass("orange");
+            }
+            else if(speed<20){
+                $scope.$("#state").text(" 拥 堵 ").addClass("red");
+            }
+            var speedx=parseInt($scope.newData.speedx);
+            if(speedx>=40){
+                $scope.$("#statex").text(" 畅 通 ").addClass("green");
+            }
+            else if(speedx>=20&&speedx<40){
+                $scope.$("#statex").text(" 缓 行 ").addClass("orange");
+            }
+            else if(speedx<20){
+                $scope.$("#statex").text(" 拥 堵 ").addClass("red");
+            }
+        }
+        //上行信息选择是否显示
+        $scope.addInfoForUp=function(event) {
+            var target = event.currentTarget;
+            if (target.checked) {
+                $scope.$("#up").show();
+            }
+            else{
+                $scope.$("#up").hide();
+            }
+        }
+        //下行信息选择是否显示
+        $scope.addInfoForDown=function(event) {
+            var target = event.currentTarget;
+            if (target.checked) {
+                $scope.$("#down").show();
+            }
+            else{
+                $scope.$("#down").hide();
+            }
+        }
+        $scope.searchHistory=function(){
+
+        }
+        $scope.openDialog = function(obj) {
+            $scope.$setParam("history",obj);
+
+            $scope.$openDialog("createDialog", {
+                title: "历史信息",
+                height: 500,
+                width: 500,
+                href: "tpls/trafficMonitor/trafficState/section-flow-history.html"
+            }, true);
+        }
+
+    });
+</script>
+
+<style type="text/css">
+    #sectionFlow .th{
+        width : 95px;
+        text-align: right;
+    }
+   #sectionFlow .td{
+        width : 50px;
+    }
+   #sectionFlow .red{
+       padding: 0 5px;
+       background-color: red;
+       border : solid 1px darkred;
+       border-radius: 5px;
+       color: #fff;
+   }
+    #sectionFlow .green{
+        padding:0 5px;
+        background-color: green;
+        border : solid 1px darkgreen;
+        border-radius: 5px;
+        color: #fff;
+    }
+    #sectionFlow .orange{
+        padding:0 5px;
+        background-color: orange;
+        border : solid 1px darkgoldenrod;
+        border-radius: 5px;
+        color: #fff;
+    }
+    #sectionFlow span[cy-name]{
+        color:#0000ff;
+    }
+
+</style>

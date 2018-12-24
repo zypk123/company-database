@@ -1,0 +1,135 @@
+<div id="weatherHistoryChart" class="easyui-panel" data-options="fit:true" >
+    <div id="tt" class="easyui-tabs" >
+        <div title="能见度仪" data-options="fit:true">
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="mainUp"  style="height:380px;padding:20px"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    InitPage(["qxsbbm"],function($scope){
+        //能见度仪一分钟平均值 //时间横轴
+        var njdy_yfzpjz=[];
+        var njdy_yfzpjz_times=[];
+        //基础数据的数组、时间数组、title、legend、对应的字段值、单位、Json地址
+        var dataArray={
+            "njdy_yfzpjz":{
+                array:njdy_yfzpjz,
+                times:njdy_yfzpjz_times,
+                field:"yfzpjz",
+                title:"2小时能见度变化情况",
+                legend:["当前能见度"],
+                unitValue:"m"
+            }
+        };
+        //页面登录时调用初始化方法
+        $scope.load = function(){
+            initData();
+        };
+        //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar'
+                    ],
+                    function (ec) {
+                        showEcharts(ec,$scope.$("#mainUp").get(0));
+                    }
+            );
+        }
+        //读取Json数据初始化echarts
+        function showEcharts(ec,dom){
+            var myChart = ec.init(dom);
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficWeather/njdy-history-data.json",
+                success : function(data) {
+                    var currentArray=[];
+                    //根据气象设备代码过滤数据
+                    for(var ind in data){
+                        if(data[ind].qxsbbm==$scope.qxsbbm){
+                            currentArray.push(data[ind]);
+                        }
+                    }
+                    //填充风速及降雨量
+                    if(currentArray.length>0) {
+                        for (var ind in currentArray) {
+                            njdy_yfzpjz.push(currentArray[ind].yfzpjz);
+                            njdy_yfzpjz_times.push(currentArray[ind].gxsj.split(" ")[1]);
+                        }
+                    }
+                    //上行折线图的配置
+                    myChart.setOption(getOptions(dataArray.njdy_yfzpjz));
+                }
+            });
+        }
+        //根据速度值配置echarts折线图的参数配置
+        function getOptions(arr){
+            return {
+                title : {
+                    text: arr.title //subtext: '纯属虚构'
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:arr.legend
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : arr.times
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        axisLabel : {
+                            formatter: '{value} '+arr.unitValue
+                        }
+                    }
+                ],
+                series : [
+                    {
+                        name:arr.legend[0],
+                        type:'line',
+                        data:arr.array,
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        }
+                    }
+                ]
+            };
+        }
+
+    });
+</script>
+
+<style type="text/css">
+
+
+</style>

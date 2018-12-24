@@ -1,0 +1,237 @@
+<div class="easyui-layout" id="controlManage">
+	<div data-options="region:'north',border:false,height:150" style="border-bottom:solid 1px #ddd">
+		<form cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">号牌号码：</div>
+						<div class="td">
+							<input type="text" class="cy-vehNumberbox" name="plateNumber" style="width:110px;">
+						</div>
+						<div class="th">号牌颜色：</div>
+						<div class="td">
+							<input type="text" id="plateColor" class="easyui-combobox" name="plateColor" style="width:110px;">
+						</div>
+						<div class="th">布控时间：</div>
+						<div class="td">
+							<input type="text" class="easyui-datetimebox" name="controlDatetimeBegin" style="width:150px;">
+							至
+							<input type="text" class="easyui-datetimebox" name="controlDatetimeEnd" style="width:150px;">
+						</div>
+						
+					</div>
+					<div class="tr">
+						<div class="th">布控机关：</div>
+						<div class="td">
+							<input type="text" class="cy-org-radio" id="controlDistrict"  name="controlDistrict" style="width:110px;">
+						</div>
+						<div class="th">布控状态：</div>
+						<div class="td">
+							<input type="text" id="controlState" class="easyui-combobox" name="controlState" style="width:110px;">
+						</div>
+						<div class="th">布控原因：</div>
+						<div class="td" style="width:356px">
+							<input type="text" class="easyui-combobox" cy-code="206"id="controlReason" name="controlReason" style="width:170px;">
+							<input type="text" class="easyui-combobox" cy-code="207"id="controlReason" name="controlReason" style="width:170px;">
+						</div>
+						<div class="td">
+							<a cy-click="search" class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="linkbutton_toolbar">
+				<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addControl">手工布控</a>
+				<a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-undo'" cy-click="removeControl">撤销布控</a>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table cy-datagrid="options" cy-querydata="formData" cy-url="../html/src/data/passvehicle/controlData.json"></table>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		$scope.$getDefaultCode(["010","011","206"]);
+		//记录数据字典
+		var dicts;
+		//记录机构树
+		var district;
+		/**
+		 * 初始化加载方法
+		 */
+		$scope.load = function(){
+			//初始化查询
+			$scope.$search("formData");
+		};
+
+		/**
+		 * 定义格式化方法集
+		 * @type {Object}
+		 */
+		var formatters = {
+			//号牌颜色
+			plateColor : function(value){
+				return getNameFromDicts("005",value);
+			},
+			//车身颜色
+			vehColor : function(value){
+				return getNameFromDicts("006",value);
+			},
+			//号牌类型
+			plateType : function(value){
+				return getNameFromDicts("002",value);
+			},
+			//布控状态
+			controlState : function(value){
+				return getNameFromDicts("007",value);
+			},
+			//布控机构
+			controlDistrict : function(value){
+				return getDistrictNameById(value,district);
+			},
+			//布控原因
+			controlReason : function(value){
+				return getNameFromDicts("008",value);
+			},
+			//原因详细
+			controlReasonDetail : function(value){
+				return getNameFromDicts("009",value); 
+			},
+			//布控等级
+			controlLevel : function(value){
+				return getNameFromDicts("010",value);
+			},
+			//布控性质
+			controlAttr : function(value){
+				return getNameFromDicts("011",value);
+			},
+			//操作栏
+			operater : function(value,row,index){
+				var removeButton = $('<a class="button-remove" title="撤销布控" cy-click="removeControl(\'' + row.id + '\')"></a>');
+				removeButton.linkbutton({
+					iconCls : "icon-undo",
+					plain : true
+				});
+				return $("<span></span>").append(removeButton).html();
+			}
+		};
+		//datagrid参数
+		$scope.options = {
+			columns:[[
+				{field:"id",checkbox:true},
+				{title:"号牌号码",field:"plateNumber",width:100},
+				{title:"号牌颜色",field:"plateColor",width:100},
+				{title:"号牌种类",field:"plateType",width:100},
+				{title:"布控状态",field:"controlState",width:100},
+				{title:"布控机关",field:"controlDistrict",width:100},
+				{title:"布控时间",field:"createDatetime",width:100},
+				{title:"布控原因",field:"controlReason",width:100},
+				{title:"布控级别",field:"controlLevel",width:100},
+				{title:"布控起始时间",field:"controlBegin",width:100},
+				{title:"布控结束时间",field:"controlEnd",width:100},
+				{title:"操作",field:"operate",width:100,formatter:formatters.operater}
+			]],
+			//双击打开展示界面
+			onDblClickRow : function(index,data){
+				//当前行数据
+				$scope.$setParam("controlData",data);
+				//传递格式化方法
+				$scope.$setParam("formatters",formatters);
+				$scope.$openDialog("controlView",{
+					title : "布控信息查看",
+					width : 800,
+					height : 500,
+					href : "tpls/passVehicle/controlManager/control-manager-view.html"
+				});
+			}
+		};
+		/**
+		 * 查询数据
+		 * @return {[type]} [description]
+		 */
+		$scope.search = function(){
+			$scope.$search("formData");
+		};
+
+		/**
+		 * 布控撤销
+		 * @return {[type]} [description]
+		 */
+		$scope.removeControl = function(id){
+			$scope.$openDialog("uncontrolDialog",{
+				title : "撤销布控",
+				width : 300,
+				height : 300,
+				href : "tpls/passVehicle/controlManager/control-manager-uncontrol.html"
+			});
+		};
+
+		/**
+		 * 手工增加布控信息
+		 */
+		$scope.addControl = function(){
+			//传递数据字典项
+			$scope.$setParam("dicts",dicts);
+			//传递格式化方法
+			$scope.$setParam("formatters",formatters);
+			//打开手工布控窗口
+			$scope.$openDialog("addControl",{
+				title : "手工布控",
+				width : 800,
+				height : 550,
+				href : "tpls/passVehicle/controlManager/control-manager-input.html"
+			});
+		};
+		
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param code  数据字典code
+		 * @param value 需要获取的value值
+		 * @return 对应字典项的text值
+		 */
+		var getNameFromDicts =  function(code,value){
+			if(!value){
+				return "";
+			}
+			var items= dicts[code];
+			for(var index in items){
+				var item = items[index];
+				if(item.value == value){
+					return item.text;
+				}
+			}
+		};
+
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param value 机构ID
+		 * @param children 机构数对象，或children数据
+		 * @return 对应字典项的text值
+		 */
+		var getDistrictNameById = function(value,children){
+			if(!value){
+				return "";
+			}
+			for(var index=0; index<children.length; index++){
+				var item = children[index];
+				if(item.id == value){
+					return item.text;
+				}else if(item.children && item.children.length > 0){
+					return getDistrictNameById(value,item.children);//递归查找所有子节点
+				}
+			}
+		};
+		
+	});
+</script>
+<style>
+	#controlManage .th{
+		width: 80px;
+		text-align: right;
+	}
+	#controlManage .td{
+		width: 120px;
+	}
+</style>

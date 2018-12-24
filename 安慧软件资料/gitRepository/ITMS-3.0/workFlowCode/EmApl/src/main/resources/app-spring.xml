@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+    <context:component-scan base-package="ah.its.wrokflow">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <context:property-placeholder
+        ignore-unresolvable="true" location="classpath*:db.properties" />
+    <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">   
+        <property name="poolProperties"> 
+            <bean class="org.apache.tomcat.jdbc.pool.PoolProperties">   
+                <property name="driverClassName" value="${db.driver}"/> 
+                <property name="url" value="${db.url}"/>   
+                <property name="username" value="${db.username}"/>   
+                <property name="password" value="${db.password}"/> 
+                <property name="jmxEnabled" value="true"/> 
+                <property name="testWhileIdle" value="true"/> 
+                <property name="testOnBorrow" value="true"/>   
+                <property name="testOnReturn" value="false"/>   
+                <property name="validationInterval" value="30000"/>   
+                <property name="validationQuery" value="select 1 from dual "/>   
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>   
+                <property name="maxActive" value="10"/>   
+                <property name="initialSize" value="2"/>   
+                <property name="maxWait" value="10000"/>   
+                <property name="minEvictableIdleTimeMillis" value="30000"/>   
+                <property name="minIdle" value="10"/>   
+                <property name="logAbandoned" value="false"/>   
+                <property name="removeAbandoned" value="true"/>   
+                <property name="removeAbandonedTimeout" value="60"/> 
+                <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
+            </bean>   
+        </property>   
+    </bean>   
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut expression="execution(* ah.its.wrokflow.action.*.*(..))"
+            id="serviceCutPoint" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceCutPoint" />
+    </aop:config>
+    <import resource="app-activiti.xml" />
+    <import resource="app-mybatis.xml" />
+</beans>

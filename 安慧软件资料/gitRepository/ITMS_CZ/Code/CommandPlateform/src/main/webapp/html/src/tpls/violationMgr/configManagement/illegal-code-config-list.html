@@ -1,0 +1,273 @@
+<div class="easyui-layout">
+    <div data-options="region:'north'" style="height:120px;">
+        <form cy-form="deptIllCode">
+            <div class="searchPanel">
+                <div class="panel_title">
+                    查询条件
+                </div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th" style="padding-left:5px">
+                            违法代码：
+                        </div>
+                        <div class="td">
+                            <input  name="vioActionCode" class="easyui-textbox" type="text" width="150" />
+                        </div>
+                        <div class="th" style="padding-left:5px">
+                            违法类型：
+                        </div>
+                        <div class="td">
+                            <input name="vioType" class="easyui-combobox" cy-code="011" />
+                        </div>
+                        <div class="th" style="padding-left:5px">
+                            违法行为：
+                        </div>
+                        <div class="td">
+                            <input  name="vioSummary" class="easyui-textbox" type="text" width="150" />
+                        </div>
+                        <div class="td" style="width: 70px;">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                            cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton " data-options="iconCls:'icon-add'"
+            cy-click="addIllCode">添加</a>
+            <a class="easyui-linkbutton " data-options="iconCls:'icon-remove'"
+            cy-click="deleteIllCode">删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table id="illCode" cy-datagrid="optionsIllCode" cy-querydata="deptIllCode"
+        cy-url="violationCodeAction/findViolationCode"></table>
+    </div>
+</div>
+<script>
+    InitPage([], function($scope) {
+        $scope.load = function() {
+            //$scope.$updateData("deptIllCode");
+            //$scope.$search("deptIllCode");
+        };
+        $scope.searchData = function() {
+            $scope.$updateData("deptIllCode");
+            $scope.$search("deptIllCode");
+        };
+        $scope.optionsIllCode = {
+            columns : [
+                [
+                    {field : 'id',  checkbox : true, align : 'center',  width : 10 },
+                    {field : 'vioActionCode',  title : '违法行为代码', align : 'center', width : 30 },
+                    {field : 'vioType', title : '违法类型', align : 'center', formatter : vioType, width : 20  },
+                    {field : 'vioSummary',title : '违法描述',align : 'center',formatter : options,width : 70},
+                    {field : 'fineDefault',title : '罚金金额',align : 'center',width : 20},
+                    {field : 'fineScore',title : '扣分数',align : 'center',width : 20},
+                    {field : 'issueDay',title : '有效期始',align : 'center',width : 20},
+                    {field : 'issueEndDay',title : '有效期止 ',align : 'center',width : 20},
+                // {field: 'roadType', title: '适配道路类型', align: 'center', width: 30},
+                // {field: 'minRatio', title: '最小超速比', align: 'center', width: 20},
+                // {field: 'maxRatio', title: '最大超速比', align: 'center', width: 20},
+                // {field: 'limitSpeed', title: '限速值', align: 'center', width: 15},
+                    {field : 'cz',title : '操作',align : 'center',formatter : operateIllCode,width : 40}
+                ]
+            ],
+            pagination : false,
+            //双击事件查看当前违法代码信息
+            onDblClickRow : function(rowIndex, rowData) {
+
+                $scope.$setParam("vioAssoActionData", rowData);
+                //注入行内数据
+                $scope.$setParam("close", function() {
+                    $scope.$getDialog("checkDialog").dialog("close");
+                });
+                $scope.$openDialog("checkDialog", {
+                    title : "违法代码信息详情",
+                    height : 630,
+                    width : 800,
+                    href : "tpls/violationMgr/configManagement/illegal-code-config-add.html?type=edit"
+                });
+            }
+        };
+        //操作栏
+        function operateIllCode(value, row, index) {
+            var button1 = $("<a class='button-edit' cy-click='editIllCode(" + index + ")'></a>");
+            //编辑按钮
+            var button2 = $("<a class='button-remove' cy-click='removeIllCode(" + index + ")'></a>");
+            //删除按钮
+
+            button1.linkbutton({
+                iconCls : "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls : "icon-remove"
+            });
+
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+
+        /**
+         *根据号码类型code获取道路名称name
+         */
+        function vioType(value, row, index) {
+            var vioType = $scope.$getCodeName("011", value);
+            return vioType;
+        }
+
+        function options(value, row, index) {
+            var str = "";
+            if (value && value.length > 70) {
+                str = '' + value.subString(0, 70) + '...';
+            } else {
+                str = '' + value + '';
+            }
+            return "<span title='" + value + "'>" + str + "</span>";
+        }
+
+
+        $scope.addIllCode = function() {
+            $scope.$setParam("saveVioCode", function(vioAssoActionData) {
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "violationCodeAction/createVioationCode",
+                    method : "post",
+                    params : vioAssoActionData,
+                    success : function(data) {
+                        if (data == "success") {
+                           
+                            $scope.$search("deptIllCode");
+                            $scope.$getDialog("addDialog").dialog("close");
+                            $.messager.alert("提示", "保存成功！");
+                        } else {
+                            $.messager.alert("提示", "保存失败！");
+                        }
+                    },
+                    fail : function(errMsg) {
+                        $.messager.alert("提示", "请求失败！");
+                    }
+                });
+            });
+            $scope.$openDialog("addDialog", {
+                title : "违法代码",
+                width : 800,
+                height : 600,
+                href : "tpls/violationMgr/configManagement/illegal-code-config-add.html?type=add"
+            }, true);
+        };
+        $scope.editIllCode = function(index) {
+            //获得当前行的信息
+            var rowData = $scope.$("#illCode").datagrid("getData").rows[index];
+
+            $scope.$setParam("vioAssoActionData", rowData);
+            $scope.$setParam("editVioCode", function(data) {
+
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "violationCodeAction/updateVioationCode",
+                    params : data,
+                    success : function(data) {
+                       
+                        if (data == "success") {
+                            $scope.$search("deptIllCode");
+                            $scope.$getDialog("editDialog").dialog("close");
+                            $.messager.alert("提示", "保存成功！");
+                        } else {
+                            $.messageralert("提示", "保存失败！");
+                        }
+                    },
+                    fail : function(errMsg) {
+                        $.messager.alert("提示", "请求失败！");
+                    }
+                });
+            });
+            $scope.$openDialog("editDialog", {
+                title : "编辑页面",
+                width : 800,
+                height : 600,
+                href : "tpls/violationMgr/configManagement/illegal-code-config-add.html?type=edit"
+            }, true);
+        };
+        $scope.deleteIllCode = function() {
+            //获得所有的行数
+            var rows = $scope.$("#illCode").datagrid("getChecked");
+            console.log(rows);
+
+            var dataNum = $scope.$("#illCode").datagrid("getRows").length;
+
+            //var options = $scope.$("#roadData").datagrid("getPager").data("pagination").options;
+            //var pageNumber = options.pageNumber;
+            if (rows.length == 0) {
+                $.messager.alert("提示", "至少选中一条信息！");
+                return false;
+            } else {
+                var vioActionCodeStr = "";
+                var vioActionMatchIdStr = "";
+                for (var i = 0; i < rows.length; i++) {
+                    if (i > 0) {
+                        vioActionCodeStr = vioActionCodeStr + "," + rows[i].vioActionCode;
+                        vioActionMatchIdStr = vioActionMatchIdStr + "," + rows[i].vioActionMatchId;
+                        console.log(vioActionCodeStr);
+                        console.log(vioActionMatchIdStr);
+                    } else {
+                        vioActionCodeStr = vioActionCodeStr + rows[i].vioActionCode;
+                        vioActionMatchIdStr = vioActionMatchIdStr + rows[i].vioActionMatchId;
+                        console.log(vioActionCodeStr);
+                        console.log(vioActionMatchIdStr);
+                    }
+                }
+                $.messager.confirm("提示", "你是否删除信息？", function(flag) {
+                    if (flag) {
+                        $scope.$ajaxRequest({
+                            url : $scope.$restRoot + "violationCodeAction/deleteVioationCode",
+                            params : {
+                                vioActionCodeStr : vioActionCodeStr,
+                                vioActionMatchIdStr : vioActionMatchIdStr
+                            },
+                            memoth : "post",
+                            success : function(data) {
+                                if (data == 'success') {
+
+                                    $scope.$search("deptIllCode");
+                                    $.messager.alert("提示", "删除成功！");
+                                } else {
+                                    $.messager.alert("提示", "删除失败！");
+                                }
+                            },
+                            fail : function(errMsg) {
+                                $.messager.alert("提示", "请求失败！");
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        $scope.removeIllCode = function(index) {
+            //获得当前行的信息
+            var rowDatas = $scope.$("#illCode").datagrid("getData").rows[index];
+            console.log(rowDatas);
+            //获得当前行的Id
+            var vioActionCode = rowDatas.vioActionCode;
+            var vioActionMatchId =rowDatas.vioActionMatchId;
+            console.log(vioActionCode,vioActionMatchId);
+            $.messager.confirm("提示", "你确定要删除吗?", function(r) {
+                if (r) {
+                    $scope.$ajaxRequest({
+                        url : $scope.$restRoot + "violationCodeAction/removeVioationCode",
+                        params : {
+                            vioActionCode : vioActionCode,
+                            vioActionMatchId : vioActionMatchId
+                        },
+                        memoth : "post",
+                        success : function(data) {
+                            $scope.$search("deptIllCode");
+                            $.messager.alert("提示", "删除成功！");
+                        },
+                        fail : function(errMsg) {
+                            $.messager.alert("提示", "删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+    }); 
+</script>
+<style type=""></style>

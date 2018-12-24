@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Role_PermissionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission" >
+    <id column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+    <id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="DATA_ACCESS_FORMULA" property="dataAccessFormula" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FUNCTION_CODE, ROLE_ID, DATA_ACCESS_FORMULA, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_PermissionKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_ROLE_PERMISSION
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_PermissionKey" >
+    delete from T_SYS_ROLE_PERMISSION
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission" >
+    insert into T_SYS_ROLE_PERMISSION (FUNCTION_CODE, ROLE_ID, 
+      DATA_ACCESS_FORMULA, REMARK)
+    values (#{functionCode,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR},  
+      #{dataAccessFormula,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission" >
+    insert into T_SYS_ROLE_PERMISSION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="functionCode != null" >
+        FUNCTION_CODE,
+      </if>
+      <if test="roleId != null" >
+        ROLE_ID,
+      </if>
+      <if test="dataAccessFormula != null" >
+        DATA_ACCESS_FORMULA,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="functionCode != null" >
+        #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+     
+      <if test="dataAccessFormula != null" >
+        #{dataAccessFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission" >
+    update T_SYS_ROLE_PERMISSION
+    <set >
+      <if test="dataAccessFormula != null" >
+        DATA_ACCESS_FORMULA = #{dataAccessFormula,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission" >
+    update T_SYS_ROLE_PERMISSION
+    set 
+      DATA_ACCESS_FORMULA = #{dataAccessFormula,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="findFunctionCodesByRoleIds" parameterType="java.util.List" resultType="String">
+	select  distinct function_code
+	from t_sys_role_permission
+	where role_id in 
+	<foreach item="item" index="index" collection="roleIds"
+		open="(" separator="," close=")">
+  			#{item}
+	</foreach>  
+  </select>
+</mapper>

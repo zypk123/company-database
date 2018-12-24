@@ -1,0 +1,596 @@
+<!--区间信息添加页面-->
+<div  id="regionalMessage" class="easyui-layout" style="overflow:auto;">
+	<div data-options="region:'north',height:45,border:false">
+		<!--保存按钮-->
+		<div style="margin: 8px;">
+			<a class="easyui-linkbutton button-right button-main button-save" data-options="iconCls:'icon-right'" cy-click="saveAndNext">保存并下一步</a>
+			<a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'"  cy-click="saveOnly">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="destroyTab1">关闭</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<form id="form" cy-form="regionalData">
+				<div data-options="region:'north',border:false">
+					<div class="searchPanel">
+						<div class="panel_title">
+							区间信息
+						</div>
+						<div class="table">
+							<div class="tr">
+								<div class="th">
+									区间编号：
+								</div>
+								<div class="td">
+									<input id="deviceSysNbr" name="regionalCode" class="easyui-textbox"
+									data-options="validType:['fixedLength[18]','numOrLetter'],required: true"/>
+								</div>
+								<div class="th">
+									区间名称：
+								</div>
+								<div class="td">
+									<input name="regionalName" class="easyui-textbox"
+									data-options="validType:['length[0,32]','blank'],required: true" />
+								</div>
+								<div class="th">
+									行政区划：
+								</div>
+								<div class="td">
+									<input name="districtCode" class="cy-district-radio"
+									data-options="required: true" />
+								</div>
+								<div class="th">
+									所属机构：
+								</div>
+								<div class="td">
+									<input name="orgId" id="orgId" class="cy-org-radio" after-change="getSiteAndDeviceByOrg" data-options="required: true"/>
+								</div>
+							</div>
+							<div class="tr">
+			
+								<div class="th">
+									所在道路：
+								</div>
+								<div class="td">
+									<input id="roadId" name="roadId" class="cy-road-radio"
+									after-change="roadChange()" filter="getRoadByOrg" data-options="required: true" />
+								</div>
+								<div class="th">
+									方向类型：
+								</div>
+								<div class="td">
+									<input id="direcitonType" class="easyui-combobox"
+									name="directionType" cy-code="070" data-options="required:true" />
+								</div>
+								<div class="th">
+									方向名称：
+								</div>
+								<div class="td">
+									<input name="directionName" class="easyui-textbox" data-options="validType:'length[0,16]'"/>
+								</div>
+								<div class="th" style="width: 93px;">
+									区间距离：
+								</div>
+								<div class="td">
+									<input name="distance" class="easyui-textbox" style="width: 108px" data-options="validType:['length[0,8]','numOrDecimal'],required:true"/>
+									千米
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th" style="width: 90px;">
+									启用标识：
+								</div>
+								<div class="td">
+									<span id="enableFlag"></span>
+									<input type="hidden" name="enableFlag" value="0">
+									<!-- <input type="radio" name="enableFlag" value="1" checked="checked" />
+									启用 <input type="radio" name="enableFlag" value="0" /> 不启用 -->
+								</div>
+								<div class="th" style="margin-right:1px">
+									综合平台编号：
+								</div>
+								<div class="td">
+									<input class="easyui-numberbox" name="integratePlatformNbr"
+									data-options="validType:['number','length[0,32]'],required:true"/>
+								</div>
+								<div class="th">
+									关联诱导屏：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" name="relatedLedId" id="ydp"
+									data-options="valueField:'id',textField:'text',multiple:true" />
+								</div>
+								<div class="th">
+									关联限速牌：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" name="relatedVariableSpeed"
+									id="xsp"
+									data-options="valueField:'id',textField:'text',multiple:true" />
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th">
+									起点位置：
+								</div>
+								<div class="td" style="width: 156px;">
+									<input id="entrySiteName" name="entrySiteId"
+									class="easyui-textbox" data-options="required: true"
+									style="width: 100px;" readonly="true">
+									<a class="easyui-linkbutton"
+									cy-click="setStart()">起点</a>
+								</div>
+								<div class="th">
+									终点位置：
+								</div>
+								<div class="td">
+									<input id="exitSiteName" name="exitSiteId" class="easyui-textbox"
+									data-options="required: true" style="width: 100px;" readonly="true">
+									<a class="easyui-linkbutton" cy-click="setEnd()">终点</a>
+								</div>
+								<span style="color: red; line-height: 40px;">(请在地图上选取起止点位)</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div data-options="region:'center',border:false">
+					<div class="easyui-layout">
+						<div data-options="region:'center',border:false" style="padding-left: 10px">
+							<div id="divMapPanel" style="height:280px;">
+				
+							</div>
+						</div>
+						<div data-options="region:'east',border:false" style="width:310px;">
+								<div class="searchPanel" id="speed">
+									<div class="panel_title">
+										限速信息
+									</div>
+									<div class="table parameter">
+										<div class="tr">
+											<div class="th">
+												大车限高速：
+											</div>
+											<div class="td">
+												<input class="easyui-textbox" name="limitLarge" data-options="validType:['number','length[0,3]']"/>
+												km/h
+											</div>
+											<div class="th">
+												小车限高速：
+											</div>
+											<div class="td">
+												<input class="easyui-textbox" name="limitSmall" data-options="validType:['number','length[0,3]']"/>
+												km/h
+											</div>
+										</div>
+										<div class="tr">
+											<div class="th">
+												限低速：
+											</div>
+											<div class="td">
+												<input class="easyui-textbox" name="limitLower" data-options="validType:['number','length[0,3]']"/>
+												km/h
+											</div>
+											<div class="th">
+												大车限速容许值：
+											</div>
+											<div class="td">
+												<input class="easyui-textbox" name="limitLargeMargin" data-options="validType:['number','length[0,3]']"/>
+												km/h
+											</div>
+											<div class="th">
+												小车限速容许值：
+											</div>
+											<div class="td">
+												<input class="easyui-textbox" name="limitSmallMargin" data-options="validType:['number','length[0,3]']"/>
+												km/h
+											</div>
+										</div>
+									</div>
+								</div>
+				</div>	
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["destroyTab1","saveRegional", "regionalData", "remark", "intervalTabs","equipmentNbr"], function($scope) {
+		/**
+		 *定义传递给地图的对象
+		 */
+		var parentObjForMap = {
+			regionType : "DEVICEREGION", //ROADREGION
+			curSelectSiteCharacter : "START", //START表示起点,END表示终点
+			sendSite : function(site) {
+				//alert(site.siteId);
+				if (parentObjForMap.curSelectSiteCharacter == "START") {
+					$scope.startId = site.siteId;
+					$scope.$("#entrySiteName").textbox("setValue", site.siteId);	
+					$scope.$("#entrySiteName").textbox("setText", site.siteName);
+				} else {
+					$scope.endId = site.siteId;
+					$scope.$("#exitSiteName").textbox("setValue", site.siteId);
+					$scope.$("#exitSiteName").textbox("setText", site.siteName);
+				}
+			}
+		};
+
+		//初始化加载
+		$scope.load = function() {
+			//set flag sued to judge first entry modify page
+			$scope.modifyFlag = 1;
+			//更新获取表单数据
+			if ($scope.$("#ydp").combobox("getValues").length != 0) {
+				var relatedLedIdStr = $scope.$("#ydp").combobox("getValues").join(",");
+				$scope.$("#ydp").combobox("setValue", relatedLedIdStr);
+			}
+			if ($scope.$("#xsp").combobox("getValues").length != 0) {
+				var relatedVariableSpeedStr = $scope.$("#xsp").combobox("getValues").join(",");
+				$scope.$("#xsp").combobox("setValue", relatedVariableSpeedStr);
+			}
+
+			//判断是否是添加页面
+			if ($scope.remark == "add") {
+				if($scope.equipmentNbr){
+			    	$scope.$("#deviceSysNbr").textbox("setValue",$scope.equipmentNbr);
+	            	$scope.$("#orgId").textbox("setValue",$scope.UserInfo.orgId);//当前用户所在机构
+			    }
+				loadMapForAdd();
+			}else{
+				loadMapForEdit();
+			}
+			//保存并下一步
+			$scope.saveAndNext = function() {
+				$scope.regionalData.entrySiteId = $scope.startId;
+				$scope.regionalData.exitSiteId = $scope.endId;
+				$scope.regionalData.verificationMark = "1";
+				$scope.$updateData("regionalData");
+				if ($scope.remark == "add" && $scope.$("#form").form("validate")) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/IntervalManage/addIntervalSys",
+						params : $scope.regionalData,
+						success : function(data) {
+							$.messager.alert("提示","添加区间信息成功！");
+							$scope.$(".button-save").linkbutton('disable').removeAttr('cy-click');
+							$scope.$setParam("deviceSysNbr",$scope.regionalData.regionalCode);//传递新增区间测速设备的编号到年检信息页面
+							//检定tab页可用
+		                    $scope.intervalTabs.tabs('enableTab', 1);
+						},
+						fail : function(message) {
+							$.messager.alert("提示", message);
+						}
+					});
+				}else{
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/IntervalManage/updateIntervalSys",
+						params : $scope.regionalData,
+						success : function(data) {
+							if (data == 1) {
+								$.messager.alert("提示", "修改区间信息成功！");
+							}
+						},
+						fail : function(message) {
+							$.messager.alert("提示", message);
+						}
+					});
+				}
+			};
+			//保存并关闭窗口
+			$scope.saveOnly = function() {
+				if ($scope.$("#form").form("validate")) {
+					$scope.regionalData.entrySiteId = $scope.startId;
+					$scope.regionalData.exitSiteId = $scope.endId;
+					$scope.regionalData.verificationMark = "1";
+					$scope.$updateData("regionalData");
+					$scope.saveRegional($scope.regionalData);
+				}
+			};
+
+			if ($scope.regionalData != undefined) {
+				var regionalData = $scope.regionalData;
+				if ($scope.regionalData.relatedLedId == null) {
+					delete $scope.regionalData.relatedLedId;
+				}
+				if ($scope.regionalData.relatedVariableSpeed == null) {
+					delete $scope.regionalData.relatedVariableSpeed;
+				}
+				//$scope.formData = regionalData;
+				//$scope.$updateDom("formData");
+				$scope.$("#entrySiteName").textbox("setText", regionalData.entrySiteName);
+				$scope.$("#exitSiteName").textbox("setText", regionalData.exitSiteName);
+				//debugger;
+				var enableFlag;
+				switch($scope.regionalData.enableFlag) {
+				case "0" :
+					$scope.$("#enableFlag").text("备案");
+					break;
+				case "1" :
+					$scope.$("#enableFlag").text("启用");
+					break;
+				case "2" :
+					$scope.$("#enableFlag").text("停用");
+					break;
+				case "3" :
+					$scope.$("#enableFlag").text("报废");
+					break;
+
+				}
+
+			}
+			queryDeviceInfo();
+
+			//加载地图
+			//loadMap();
+		};
+
+		//czy给方向类型注册改变事件，一单方向类型改变需要调地图addSiteToMap方法来更改地图上显示的点位，道路选择的改变也是同样的道路
+		$scope.$("#direcitonType").combobox({
+			onSelect : function(record) {
+				//parentObjForMap.curSelectSiteCharacter="END";
+				//parentObjForMap.addSiteToMap("001","01");
+				//empty starting point & ending point if directionType have changed
+
+				$scope.$("#entrySiteName").textbox("setText", '');
+				$scope.$("#entrySiteName").textbox("setValue", '');
+				$scope.$("#exitSiteName").textbox("setText", '');
+				$scope.$("#exitSiteName").textbox("setValue", '');
+				var orgId = $scope.$("#orgId").textbox("getValue");
+				var roadId = $scope.$('input[type="hidden"][name="roadId"]').val();
+				var direcitonType = $scope.$("#direcitonType").combobox("getValue");
+				if (parentObjForMap.addSiteToMap) {
+					parentObjForMap.addSiteToMap(roadId, direcitonType,orgId);
+					//道路ID，方向类型
+				}
+			}
+		});
+		
+		//loading orgId if exitSite have changed
+		$scope.$("#exitSiteName").textbox({
+			onChange : function(newValue,oldValue){
+				//debugger;
+				var isSiteId = $scope.$("#exitSiteName").textbox("getValue");
+				var isOrgId = $scope.$("#orgId").val();
+				if(!isOrgId){
+					$scope.$ajaxRequest({
+						url :$scope.$restRoot + "device/IntervalManage/queryOrgIdBySiteId",
+						params : {siteId : isSiteId},
+						success : function(data){
+							$scope.$("#orgId").textbox("setValue",data);
+						},
+						fail:function(errMsg){
+	       			                $.messager.alert("提示",errMsg);
+	       			            }
+					});
+				}
+				
+			}
+		});
+
+		if ($scope.remark != undefined) {
+			//判断是查看的标识
+			var remark = $scope.remark;
+			if (remark == "look") {
+				$scope.$("input[class^='easyui-']").each(function() {
+					$(this).textbox('readonly', true);
+				});
+				$scope.$("#save").hide();
+			}
+		}
+		
+		
+		$scope.roadChange = function() {
+			//debugger;
+			var isOrgId = $scope.$("#orgId").val();
+			//道路发生变化，点位置空
+			if(isOrgId){
+			$scope.$("#entrySiteName").textbox("setText", '');
+			$scope.$("#entrySiteName").textbox("setValue", '');
+			$scope.$("#exitSiteName").textbox("setText", '');
+			$scope.$("#exitSiteName").textbox("setValue", '');
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var roadId = $scope.$('input[type="hidden"][name="roadId"]').val();
+			var direcitonType = $scope.$("#direcitonType").combobox("getValue");
+			if (direcitonType != '') {
+				parentObjForMap.addSiteToMap(roadId, direcitonType,orgId);
+				//道路ID，方向类型
+			}
+			}else{
+				var isRoadId = $scope.$("#roadId").textbox("getValue");
+				if(isRoadId){
+					$scope.$("#roadId").textbox("clear");
+					$.messager.alert("提示", "请先选择所属机构！");
+				}
+			}
+				
+		};
+
+		/**
+		 *加载地图
+		 */
+		function loadMapForAdd() {
+			$scope.$setParam("parentObjForMap", parentObjForMap);
+			var href = 'tpls/public/region-on-map.html';
+			$scope.$('#divMapPanel').panel({
+				href : href
+			});
+		}
+
+		function loadMapForEdit() {
+			//console.log($scope.regionalData.roadId);
+			//console.log($scope.regionalData.directionType);
+			$scope.$setParam("parentObjForMap", parentObjForMap);
+			$scope.$setParam("roadId", $scope.regionalData.roadId);
+			$scope.$setParam("directionType", $scope.regionalData.directionType);
+			var siteStart = {
+				siteId : $scope.regionalData.entrySiteId
+			};
+			var siteEnd = {
+				siteId : $scope.regionalData.exitSiteId
+			};
+			$scope.$setParam("startSite", siteStart);
+			$scope.$setParam("endSite", siteEnd);
+			var href = 'tpls/public/region-on-map.html';
+			$scope.$('#divMapPanel').panel({
+				href : href
+			});
+		}
+
+		//查询关联设备信息加载
+		function queryDeviceInfo(orgId) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceConfig/queryRelevanceDevice",
+				params : {},
+				method : "post",
+				success : function(data) {
+					if (data["06"]) {
+						$scope.$("#xsp").combobox("loadData", data["06"]);
+					}
+					if (data["07"]) {
+						//限速牌
+						$scope.$("#ydp").combobox("loadData", data["07"]);
+					}
+
+					//诱导屏
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "初始关联设备失败！");
+				}
+			});
+		}
+		
+		//根据机构加载点位或加载相关设备
+		$scope.getSiteAndDeviceByOrg = function(){
+			//debugger;
+			$scope.$("#roadId").textbox("clear");//清空原来加载的道路
+			$scope.$("#siteId").combobox("clear");//清空原来加载的点位
+			$scope.$("#ydp").combobox("clear");//清空原来加载的诱导屏设备
+			$scope.$("#xsp").combobox("clear");//清空原来加载的限速牌设备
+			var roadId = $scope.$("#roadId").textbox("getValue");
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			if(roadId != "" || orgId != ""){
+				var datas = {};//存机构或道路
+				datas.roadId = roadId;
+				datas.orgId = orgId;
+				$scope.$ajaxRequest({
+	        		url: $scope.$restRoot+'device/site/querySites',
+	        		params: datas,
+	        		success: function(data){
+	        			if(data!= undefined){//如果返回数据，加载数据，并清空之前选择的点位
+		        			$scope.$("#siteId").combobox("loadData",data);
+	            		}
+	        			if(orgId != ""){
+	        				//根据机构ID查询加载关联诱导屏
+	               			var privCode = $scope.$getOrgPrivCode(orgId);//根据机构ID查机构过滤代码
+	       		    		$scope.$ajaxRequest({
+	       			            url:$scope.$restRoot + "device/deviceConfig/queryRelevanceDevice",
+	       			            params:{orgPrivilegeCode : privCode},
+	       			            method:"post",
+	       			            success:function(data){
+	       			            	console.log(data);
+	       			            	if(data != undefined && data["07"]){
+	       			        			$scope.$("#ydp").each(function(){
+	       			               	   		$(this).combobox("loadData",data["07"]);//诱导屏设备
+	       				               	});
+	       			            	}
+	       			            	if(data != undefined && data["06"]){
+	       			        			$scope.$("#xsp").each(function(){
+	       			               	   		$(this).combobox("loadData",data["06"]);//诱导屏设备
+	       				               	});
+	       			            	}
+	       			            },
+	       			            fail:function(errMsg){
+	       			                $.messager.alert("提示","初始关联设备失败，请重新打开此页面！");
+	       			            }
+	       			        });
+	        			}else{
+	        				$scope.$("#ydp").each(function(){
+		               	   		$(this).combobox("loadData",[]);//诱导屏设备
+			               	});
+			               	$scope.$("#xsp").each(function(){
+		               	   		$(this).combobox("loadData",[]);//限速牌设备
+			               	});
+	        			}
+	        		},
+	        		fail: function(errMsg){
+	        			$.messager.alert("提示","点位加载失败！");
+	        		}	
+	        	});	
+			}else{
+				$scope.$("#siteId").combobox("loadData",[]);//点位
+				$scope.$("#ydp").each(function(){
+           	   		$(this).combobox("loadData",[]);//诱导屏设备
+               	});
+               	$scope.$("#xsp").each(function(){
+           	   		$(this).combobox("loadData",[]);//限速牌设备
+               	});
+			}
+		};
+
+		//设置起点位
+		$scope.setStart = function() {
+			parentObjForMap.curSelectSiteCharacter = "START";
+		};
+		//设置终点位
+		$scope.setEnd = function() {
+			parentObjForMap.curSelectSiteCharacter = "END";
+
+		};
+
+		//联动
+		$scope.getRoadByOrg = function(id, text, attribute) {
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if (!orgId || orgId == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for (var i in orgPrivCodes) {
+					if (orgPrivCodes[i].startWith(privCode)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#regionalMessage .th {
+		text-align: right;
+		width: 90px;
+	}
+
+	#regionalMessage .td {
+		text-align: left;
+		width: 155px;
+	}
+
+	#regionalMessage #road-structure .th {
+		text-align: right;
+		width: 130px;
+	}
+
+	#regionalMessage #road-structure .td {
+		text-align: left;
+		width: 100px;
+	}
+
+	#regionalMessage #p-right {
+		text-align: center;
+		border: 1px solid #ccc;
+		border-left: 0;
+		width: 150px;
+		background: #fafafa;
+		padding-top: 10px;
+	}
+	#regionalMessage #speed .th{
+		text-align: right;
+		width: 110px;
+	}
+</style>

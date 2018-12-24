@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysNoticeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.home.SysNotice" >
+    <id column="NOTICE_ID" property="noticeId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="NOTICE_TITLE" property="noticeTitle" jdbcType="VARCHAR" />
+    <result column="NOTICE_CONTENT" property="noticeContent" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    NOTICE_ID, USER_ID, NOTICE_TITLE, NOTICE_CONTENT, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_NOTICE
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_NOTICE
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.home.SysNotice" >
+    insert into T_SYS_NOTICE (NOTICE_ID, USER_ID, NOTICE_TITLE, 
+      NOTICE_CONTENT, CREATE_TIME, UPDATE_TIME
+      )
+    values (#{noticeId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{noticeTitle,jdbcType=VARCHAR}, 
+      #{noticeContent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.home.SysNotice" >
+    insert into T_SYS_NOTICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        NOTICE_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="noticeTitle != null" >
+        NOTICE_TITLE,
+      </if>
+      <if test="noticeContent != null" >
+        NOTICE_CONTENT,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        #{noticeId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeTitle != null" >
+        #{noticeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.home.SysNotice" >
+    update T_SYS_NOTICE
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeTitle != null" >
+        NOTICE_TITLE = #{noticeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        NOTICE_CONTENT = #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.home.SysNotice" >
+    update T_SYS_NOTICE
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      NOTICE_TITLE = #{noticeTitle,jdbcType=VARCHAR},
+      NOTICE_CONTENT = #{noticeContent,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </update>
+
+  <sql id="noticewhere" >
+    <where>
+		<if test="noticeTitle != null and noticeTitle != ''">
+			AND N.NOTICE_TITLE like '%' || #{noticeTitle,jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="createTimeFrom != null">
+			 <![CDATA[ AND N.CREATE_TIME  >  #{createTimeFrom,jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="createTimeTo != null and createTimeTo !=''">
+			 <![CDATA[ AND N.CREATE_TIME  <  #{createTimeTo,jdbcType=TIMESTAMP} ]]>
+		</if>
+		
+		<if test="userOrgPrivilegeCode != null and userOrgPrivilegeCode != ''">
+			AND N.USER_ID IN (
+                   SELECT DISTINCT U.USER_ID
+                     FROM T_SYS_ORG O, T_SYS_USER U
+                    WHERE (O.ORG_PRIVILEGE_CODE LIKE #{userOrgPrivilegeCode,jdbcType=VARCHAR} || '%' 	                       
+                     <if test="orgPrivCodeList != null and orgPrivCodeList.size() > 0 ">
+					 OR O.ORG_PRIVILEGE_CODE in 
+					<foreach collection="orgPrivCodeList" index="index" item="opc"
+						open="(" separator="," close=")">
+						#{opc,jdbcType=VARCHAR}
+					</foreach>
+				</if> )
+                      AND U.ORG_ID = O.ORG_ID                     
+                   )
+		</if>					
+	</where>
+  </sql>
+  <select id="selectNotices" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (SELECT TA.*, ROWNUM RN FROM (
+		     SELECT N.*
+		      FROM T_SYS_NOTICE N
+              <include refid="noticewhere" />
+		      ORDER BY N.CREATE_TIME DESC) TA
+		)
+		
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countNotices" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT count(1)
+		FROM T_SYS_NOTICE N
+        <include refid="noticewhere" />
+	</select>
+</mapper>

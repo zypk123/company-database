@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+    http://www.springframework.org/schema/mvc 
+    http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd 
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+   <mvc:annotation-driven />
+  <context:component-scan base-package="com.mangofactory.swagger.controllers" />
+    
+   <bean name="systemLog" class="cy.its.web.aop.SystemLog"></bean>
+   <aop:config>
+	    <aop:aspect id="serviceAspect" ref="systemLog">
+	        <aop:pointcut id="service_cut" expression="execution(* cy.its.*.rest..*.*(..))" />
+	        <aop:before pointcut-ref="service_cut" method="doBefore"/>
+	        <aop:after-throwing pointcut-ref="service_cut" method="doError" throwing="ex"/>
+	        <aop:after pointcut-ref="service_cut"  method="doAfter"/>
+	    </aop:aspect>
+	</aop:config>
+   <context:component-scan base-package="cy.its.*.rest" >
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+   </context:component-scan>
+   <context:component-scan base-package="cy.its.web.aop">
+       <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+   </context:component-scan>
+   <aop:aspectj-autoproxy proxy-target-class="true"/>
+   
+   <bean    class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+   <bean    class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+            </list>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficAlarmEventMapper" >
+	<resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficAlarmEvent" >
+		<id column="ALARM_EVENT_ID" property="alarmEventId" jdbcType="VARCHAR" />
+		<result column="ALARM_VALUE_ID" property="alarmValueId" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+		<result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+		<result column="REGIONAL_ID" property="regionalId" jdbcType="VARCHAR" />
+		<result column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+		<result column="ALARM_EVENT_TYPE" property="alarmEventType" jdbcType="CHAR" />
+		<result column="SUB_ALARM_EVENT" property="subAlarmEvent" jdbcType="CHAR" />
+		<result column="START_ALARM_TIME" property="startAlarmTime" jdbcType="TIMESTAMP" />
+		<result column="END_ALARM_TIME" property="endAlarmTime" jdbcType="TIMESTAMP" />
+		<result column="ALARM_GRADE" property="alarmGrade" jdbcType="CHAR" />
+		<result column="ALARM_DESC" property="alarmDesc" jdbcType="VARCHAR" />
+		<result column="NO_FLOW_PERIOD" property="noFlowPeriod" jdbcType="VARCHAR" />
+		<result column="REGION_SATURATION" property="regionSaturation" jdbcType="VARCHAR" />
+		<result column="VALIDITY" property="validity" jdbcType="CHAR" />
+		<result column="CONFIRM_PERSON" property="confirmPerson" jdbcType="VARCHAR" />
+		<result column="CONFIRM_TIME" property="confirmTime" jdbcType="TIMESTAMP" />
+		<result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+		<result column="site_name" property="siteName" jdbcType="VARCHAR"/>
+		
+				
+		<result column="WEATHER_DATA" property="weatherData" jdbcType="VARCHAR" />
+		<result column="MIN" property="min" jdbcType="VARCHAR" />
+		<result column="MAX" property="max" jdbcType="VARCHAR" />
+		
+		
+	</resultMap>
+	<sql id="Base_Column_List" >ALARM_EVENT_ID, ALARM_VALUE_ID, ORG_CODE, DEVICE_SYS_NBR, SITE_CODE, REGIONAL_ID,
+		SECTION_ID, ALARM_EVENT_TYPE, SUB_ALARM_EVENT, START_ALARM_TIME, END_ALARM_TIME,
+		ALARM_GRADE, ALARM_DESC, NO_FLOW_PERIOD, REGION_SATURATION, VALIDITY, CONFIRM_PERSON,
+		CONFIRM_TIME,ORG_PRIVILEGE_CODE</sql>
+		
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+		select
+		ALARM_EVENT_ID, t1.ALARM_VALUE_ID, t1.ORG_CODE, t1.DEVICE_SYS_NBR, t1.SITE_CODE, t1.REGIONAL_ID,
+		t1.SECTION_ID, t1.ALARM_EVENT_TYPE, t1.SUB_ALARM_EVENT, t1.START_ALARM_TIME, t1.END_ALARM_TIME,
+		t1.ALARM_GRADE, t1.ALARM_DESC, t1.NO_FLOW_PERIOD, t1.REGION_SATURATION, t1.VALIDITY, t1.CONFIRM_PERSON,
+		t1.CONFIRM_TIME,WEATHER_DATA,t1.ORG_PRIVILEGE_CODE,
+		t2.MIN,t2.MAX,site.site_name
+		
+		from T_TRAFFIC_ALARM_EVENT t1
+	    left join   T_TRAFFIC_ALARM_VALUE t2 on  t1.ALARM_VALUE_ID = t2.ALARM_VALUE_ID 
+		left join   t_sys_site site on site.site_code = t1.site_code
+		<where> 
+			1=1
+			<if test="startTime!=null and startTime != ''" >
+				<![CDATA[AND START_ALARM_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime!=null and endTime != ''" >
+				<![CDATA[AND START_ALARM_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="alarmEventType!=null and alarmEventType != ''" >
+				AND ALARM_EVENT_TYPE = #{alarmEventType,jdbcType=VARCHAR}
+			</if>
+			<if test="subAlarmEvent!=null and subAlarmEvent != ''" >
+				AND SUB_ALARM_EVENT = #{subAlarmEvent,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND t1.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND t1.DEVICE_SYS_NBR like #{deviceSysNbr,jdbcType=VARCHAR}||'%'
+			</if>
+			<![CDATA[AND t1.ALARM_GRADE <> '0']]>
+			
+		</where>
+		order by START_ALARM_TIME desc,site_code
+	</select>
+	
+	<select id="selectCountByType" resultType="Long" parameterType="java.util.HashMap" >
+		select count(*)
+		from T_TRAFFIC_ALARM_EVENT t
+		<where> 
+			1=1
+			<if test="alarmEventType!=null and alarmEventType != ''" >
+				AND t.ALARM_EVENT_TYPE = #{alarmEventType,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND t.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="validity!=null and validity != ''" >
+				AND (t.VALIDITY is null or t.VALIDITY='2')
+			</if>
+				AND trunc(t.START_ALARM_TIME) = trunc(Sysdate)				
+		</where>
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		select
+		<include refid="Base_Column_List" />
+		from T_TRAFFIC_ALARM_EVENT
+		where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String" >delete from T_TRAFFIC_ALARM_EVENT
+		where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}</delete>
+	<insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmEvent" >insert into T_TRAFFIC_ALARM_EVENT (ALARM_EVENT_ID, ALARM_VALUE_ID, ORG_CODE,
+		DEVICE_SYS_NBR, SITE_CODE, REGIONAL_ID,
+		SECTION_ID, ALARM_EVENT_TYPE, SUB_ALARM_EVENT,
+		START_ALARM_TIME, END_ALARM_TIME, ALARM_GRADE,
+		ALARM_DESC, NO_FLOW_PERIOD, REGION_SATURATION,
+		VALIDITY, CONFIRM_PERSON, CONFIRM_TIME
+		)
+		values (#{alarmEventId,jdbcType=VARCHAR}, #{alarmValueId,jdbcType=VARCHAR}, #{orgCode,jdbcType=VARCHAR},
+		#{deviceSysNbr,jdbcType=VARCHAR}, #{siteCode,jdbcType=VARCHAR}, #{regionalId,jdbcType=VARCHAR},
+		#{sectionId,jdbcType=VARCHAR}, #{alarmEventType,jdbcType=CHAR}, #{subAlarmEvent,jdbcType=CHAR},
+		#{startAlarmTime,jdbcType=TIMESTAMP}, #{endAlarmTime,jdbcType=TIMESTAMP}, #{alarmGrade,jdbcType=CHAR},
+		#{alarmDesc,jdbcType=VARCHAR}, #{noFlowPeriod,jdbcType=VARCHAR}, #{regionSaturation,jdbcType=VARCHAR},
+		#{validity,jdbcType=CHAR}, #{confirmPerson,jdbcType=VARCHAR}, #{confirmTime,jdbcType=TIMESTAMP}
+		)</insert>
+	<insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmEvent" >
+		insert into T_TRAFFIC_ALARM_EVENT
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="alarmEventId != null" >ALARM_EVENT_ID,</if>
+			<if test="alarmValueId != null" >ALARM_VALUE_ID,</if>
+			<if test="orgCode != null" >ORG_CODE,</if>
+			<if test="deviceSysNbr != null" >DEVICE_SYS_NBR,</if>
+			<if test="siteCode != null" >SITE_CODE,</if>
+			<if test="regionalId != null" >REGIONAL_ID,</if>
+			<if test="sectionId != null" >SECTION_ID,</if>
+			<if test="alarmEventType != null" >ALARM_EVENT_TYPE,</if>
+			<if test="subAlarmEvent != null" >SUB_ALARM_EVENT,</if>
+			<if test="startAlarmTime != null" >START_ALARM_TIME,</if>
+			<if test="endAlarmTime != null" >END_ALARM_TIME,</if>
+			<if test="alarmGrade != null" >ALARM_GRADE,</if>
+			<if test="alarmDesc != null" >ALARM_DESC,</if>
+			<if test="noFlowPeriod != null" >NO_FLOW_PERIOD,</if>
+			<if test="regionSaturation != null" >REGION_SATURATION,</if>
+			<if test="validity != null" >VALIDITY,</if>
+			<if test="confirmPerson != null" >CONFIRM_PERSON,</if>
+			<if test="confirmTime != null" >CONFIRM_TIME,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="alarmEventId != null" >#{alarmEventId,jdbcType=VARCHAR},</if>
+			<if test="alarmValueId != null" >#{alarmValueId,jdbcType=VARCHAR},</if>
+			<if test="orgCode != null" >#{orgCode,jdbcType=VARCHAR},</if>
+			<if test="deviceSysNbr != null" >#{deviceSysNbr,jdbcType=VARCHAR},</if>
+			<if test="siteCode != null" >#{siteCode,jdbcType=VARCHAR},</if>
+			<if test="regionalId != null" >#{regionalId,jdbcType=VARCHAR},</if>
+			<if test="sectionId != null" >#{sectionId,jdbcType=VARCHAR},</if>
+			<if test="alarmEventType != null" >#{alarmEventType,jdbcType=CHAR},</if>
+			<if test="subAlarmEvent != null" >#{subAlarmEvent,jdbcType=CHAR},</if>
+			<if test="startAlarmTime != null" >#{startAlarmTime,jdbcType=TIMESTAMP},</if>
+			<if test="endAlarmTime != null" >#{endAlarmTime,jdbcType=TIMESTAMP},</if>
+			<if test="alarmGrade != null" >#{alarmGrade,jdbcType=CHAR},</if>
+			<if test="alarmDesc != null" >#{alarmDesc,jdbcType=VARCHAR},</if>
+			<if test="noFlowPeriod != null" >#{noFlowPeriod,jdbcType=VARCHAR},</if>
+			<if test="regionSaturation != null" >#{regionSaturation,jdbcType=VARCHAR},</if>
+			<if test="validity != null" >#{validity,jdbcType=CHAR},</if>
+			<if test="confirmPerson != null" >#{confirmPerson,jdbcType=VARCHAR},</if>
+			<if test="confirmTime != null" >#{confirmTime,jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmEvent" >
+		update T_TRAFFIC_ALARM_EVENT
+		<set >
+			<if test="alarmValueId != null" >ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR},</if>
+			<if test="orgCode != null" >ORG_CODE = #{orgCode,jdbcType=VARCHAR},</if>
+			<if test="deviceSysNbr != null" >DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},</if>
+			<if test="siteCode != null" >SITE_CODE = #{siteCode,jdbcType=VARCHAR},</if>
+			<if test="regionalId != null" >REGIONAL_ID = #{regionalId,jdbcType=VARCHAR},</if>
+			<if test="sectionId != null" >SECTION_ID = #{sectionId,jdbcType=VARCHAR},</if>
+			<if test="alarmEventType != null" >ALARM_EVENT_TYPE = #{alarmEventType,jdbcType=CHAR},</if>
+			<if test="subAlarmEvent != null" >SUB_ALARM_EVENT = #{subAlarmEvent,jdbcType=CHAR},</if>
+			<if test="startAlarmTime != null" >START_ALARM_TIME = #{startAlarmTime,jdbcType=TIMESTAMP},</if>
+			<if test="endAlarmTime != null" >END_ALARM_TIME = #{endAlarmTime,jdbcType=TIMESTAMP},</if>
+			<if test="alarmGrade != null" >ALARM_GRADE = #{alarmGrade,jdbcType=CHAR},</if>
+			<if test="alarmDesc != null" >ALARM_DESC = #{alarmDesc,jdbcType=VARCHAR},</if>
+			<if test="noFlowPeriod != null" >NO_FLOW_PERIOD = #{noFlowPeriod,jdbcType=VARCHAR},</if>
+			<if test="regionSaturation != null" >REGION_SATURATION = #{regionSaturation,jdbcType=VARCHAR},</if>
+			<if test="validity != null" >VALIDITY = #{validity,jdbcType=CHAR},</if>
+			<if test="confirmPerson != null" >CONFIRM_PERSON = #{confirmPerson,jdbcType=VARCHAR},</if>
+			<if test="confirmTime != null" >CONFIRM_TIME = #{confirmTime,jdbcType=TIMESTAMP},</if>
+		</set>
+		where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmEvent" >update T_TRAFFIC_ALARM_EVENT
+		set ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR},
+		ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+		DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+		SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+		REGIONAL_ID = #{regionalId,jdbcType=VARCHAR},
+		SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+		ALARM_EVENT_TYPE = #{alarmEventType,jdbcType=CHAR},
+		SUB_ALARM_EVENT = #{subAlarmEvent,jdbcType=CHAR},
+		START_ALARM_TIME = #{startAlarmTime,jdbcType=TIMESTAMP},
+		END_ALARM_TIME = #{endAlarmTime,jdbcType=TIMESTAMP},
+		ALARM_GRADE = #{alarmGrade,jdbcType=CHAR},
+		ALARM_DESC = #{alarmDesc,jdbcType=VARCHAR},
+		NO_FLOW_PERIOD = #{noFlowPeriod,jdbcType=VARCHAR},
+		REGION_SATURATION = #{regionSaturation,jdbcType=VARCHAR},
+		VALIDITY = #{validity,jdbcType=CHAR},
+		CONFIRM_PERSON = #{confirmPerson,jdbcType=VARCHAR},
+		CONFIRM_TIME = #{confirmTime,jdbcType=TIMESTAMP},
+		ORG_PRIVILEGE_CODE= #{orgPrivilegeCode,jdbcType=VARCHAR}
+		where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}</update>
+</mapper>

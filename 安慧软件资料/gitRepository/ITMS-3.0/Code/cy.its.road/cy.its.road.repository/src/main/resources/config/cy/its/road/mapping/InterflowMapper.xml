@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.InterflowMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.interflow.Interflow" >
+    <id column="INTERFLOW_ID" property="interflowId" jdbcType="VARCHAR" />
+    <result column="INTERFLOW_NAME" property="interflowName" jdbcType="VARCHAR" />
+    <result column="INTERFLOW_TYPE" property="interflowType" jdbcType="CHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="CONNECT_ROAD_LIST" property="connectRoadList" jdbcType="VARCHAR" />
+    <result column="MILEAGE" property="mileage" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INTERFLOW_ID, INTERFLOW_NAME, INTERFLOW_TYPE, DISTRICT_CODE, CONNECT_ROAD_LIST, MILEAGE, 
+    REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_INTERFLOW
+    where INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_INTERFLOW
+    where INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.interflow.Interflow" >
+    insert into T_SYS_INTERFLOW (INTERFLOW_ID, INTERFLOW_NAME, INTERFLOW_TYPE, 
+      DISTRICT_CODE, CONNECT_ROAD_LIST, MILEAGE, 
+      REMARK)
+    values (#{interflowId,jdbcType=VARCHAR}, #{interflowName,jdbcType=VARCHAR}, #{interflowType,jdbcType=CHAR}, 
+      #{districtCode,jdbcType=VARCHAR}, #{connectRoadList,jdbcType=VARCHAR}, #{mileage,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.interflow.Interflow" >
+    insert into T_SYS_INTERFLOW
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="interflowId != null" >
+        INTERFLOW_ID,
+      </if>
+      <if test="interflowName != null" >
+        INTERFLOW_NAME,
+      </if>
+      <if test="interflowType != null" >
+        INTERFLOW_TYPE,
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE,
+      </if>
+      <if test="connectRoadList != null" >
+        CONNECT_ROAD_LIST,
+      </if>
+      <if test="mileage != null" >
+        MILEAGE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="interflowId != null" >
+        #{interflowId,jdbcType=VARCHAR},
+      </if>
+      <if test="interflowName != null" >
+        #{interflowName,jdbcType=VARCHAR},
+      </if>
+      <if test="interflowType != null" >
+        #{interflowType,jdbcType=CHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="connectRoadList != null" >
+        #{connectRoadList,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        #{mileage,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.interflow.Interflow" >
+    update T_SYS_INTERFLOW
+    <set >
+      <if test="interflowName != null" >
+        INTERFLOW_NAME = #{interflowName,jdbcType=VARCHAR},
+      </if>
+      <if test="interflowType != null" >
+        INTERFLOW_TYPE = #{interflowType,jdbcType=CHAR},
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="connectRoadList != null" >
+        CONNECT_ROAD_LIST = #{connectRoadList,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        MILEAGE = #{mileage,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.interflow.Interflow" >
+    update T_SYS_INTERFLOW
+    set INTERFLOW_NAME = #{interflowName,jdbcType=VARCHAR},
+      INTERFLOW_TYPE = #{interflowType,jdbcType=CHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      CONNECT_ROAD_LIST = #{connectRoadList,jdbcType=VARCHAR},
+      MILEAGE = #{mileage,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="selectInterflows" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_SYS_INTERFLOW V
+		<where>			
+			<if test="roadId != null and roadId != '' ">				
+				AND EXISTS (SELECT RI.INTERFLOW_ID
+                   FROM T_SYS_ROAD_INTERFLOW RI
+                   WHERE RI.ROAD_ID = #{roadId,jdbcType=VARCHAR} AND
+                         RI.INTERFLOW_ID = F.INTERFLOW_ID)
+			</if>
+			<if test="interflowName != null and interflowName != '' ">
+				AND INTERFLOW_NAME like '%' || #{interflowName,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+	<select id="countInterflows" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_INTERFLOW
+		<where>
+			<if test="roadId != null and roadId != '' ">				
+				AND EXISTS (SELECT RI.INTERFLOW_ID
+                   FROM T_SYS_ROAD_INTERFLOW RI
+                   WHERE RI.ROAD_ID = #{roadId,jdbcType=VARCHAR} AND
+                         RI.INTERFLOW_ID = F.INTERFLOW_ID)
+			</if>
+			<if test="interflowName != null and interflowName != '' ">
+				AND INTERFLOW_NAME like '%' || #{interflowName,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+	</select>
+</mapper>

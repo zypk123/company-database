@@ -1,0 +1,255 @@
+<div id="trafficWeatherInfo" class="easyui-layout"  >
+	<div data-options="region:'center',border:false" >
+		<div class="table" >
+			<div  class="searchPanel" id="other" style="display: none" >
+				<div class="panel_title" >
+					详情
+				</div>
+				<div class="tr">
+					<div class="th">
+						监测地点：
+					</div>
+					<div class="td">
+						<span cy-name=newData.siteName></span>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						当前值：
+					</div>
+					<div class="td">
+						<span cy-name=newData.weatherData></span>
+					</div>
+				
+					<div class="th">
+						阀值范围：
+					</div>
+					<div class="td">
+						<span cy-name=newData.min></span>- <span cy-name=newData.max></span>
+					</div> 
+					</div>
+				<div class="tr">
+					<div class="th">
+						预警类型：
+					</div>
+					<div class="td">
+						<span cy-name="newData.subAlarmEvent" cy-filter="convertSubType"style="color: red;"></span>
+					</div>
+					<div class="th">
+						预警级别：
+					</div>
+					<div class="td">
+						<span  cy-name="newData.alarmGrade"  cy-filter="convertGrade"></span>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						开始时间：
+					</div>
+					<div class="td">
+						<span cy-name=newData.startAlarmTime></span>
+					</div>
+					<div class="th">
+						结束时间：
+					</div>
+					<div class="td">
+						<span cy-name=newData.endAlarmTime></span>
+					</div>
+				</div>
+				<!-- <div class="tr">
+					<div class="th">
+						预警描述：
+					</div>
+					<div class="td">
+						<span cy-name=newData.alarmDesc></span>
+					</div>
+				</div> -->
+			</div>
+			<div  class="searchPanel" id="lmzk" style="display: none" >
+				<div class="panel_title" >
+					详情
+				</div>
+				<div class="tr">
+					<div class="th">
+						监测地点：
+					</div>
+					<div class="td">
+						<span cy-name=newData.siteName></span>
+					</div>
+				</div>
+
+				<div class="tr">
+					<div class="th">
+						预警类型：
+					</div>
+					<div class="td">
+						<span cy-name="newData.subAlarmEvent" cy-filter="convertSubType" style="color: red;"></span>
+					</div>
+					<div class="th">
+						路面状况：
+					</div>
+					<div class="td">
+						<span cy-name=newData.weatherData cy-filter="convertLmzk" ></span>
+					</div>
+				</div>
+
+				<div class="tr">
+					<div class="th">
+						开始时间：
+					</div>
+					<div class="td">
+						<span cy-name=newData.startAlarmTime></span>
+					</div>
+					<div class="th">
+						结束时间：
+					</div>
+					<div class="td">
+						<span cy-name=newData.endAlarmTime></span>
+					</div>
+				</div>
+				<!-- <div class="tr">
+					<div class="th">
+						预警描述：
+					</div>
+					<div class="td">
+						<span cy-name=newData.alarmDesc></span>
+					</div>
+				</div> -->
+			</div>
+
+			<div  class="searchPanel"  >
+				<div class="panel_title">
+					预警处理
+				</div>
+				<form cy-form="newData">
+					<div class="tr">
+						<div class="th">
+							预警确认：
+						</div>
+						<div class="td">
+							<input name="validity" type="radio" value="1" >有效</input>
+							<input name="validity" type="radio" value="0" >无效</input>
+							<!-- <input name="validity" type="radio" value="2" >未确认</input> -->
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th" style="height:40px;">
+							处理方法：
+						</div>
+						<div class="td" >
+							<textarea id="dealMethod" name="dealMethod" style="height:40px;width: 344px;"> </textarea>
+						</div>
+					</div>
+					<br>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 38px">
+		<div class="table">
+			<div class="tr" style="text-align: center">
+				<!-- <a class="easyui-linkbutton button-main" iconCls="icon-video" >视频录像</a> -->
+				<a class="easyui-linkbutton button-main" iconCls="icon-save" cy-click="save">提交</a>
+				<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf" >取消</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["newData", "saveData"], function($scope) {
+		//路况预警事件类别。506流量预警502气象预警434 交通事件500 人工记录
+		$scope.$getDefaultCode(["509","504", "507", "512","506","434","502"]);
+		//页面登录时调用
+		$scope.load = function() {
+			initState();
+			 $scope.$("input[name='validity']").trigger("change");
+		};
+		$scope.save = function() {
+			//从form取数据
+			$scope.$updateData("newData");
+			if($scope.newData.validity){
+				$scope.saveData($scope.newData);
+			}else{
+				//调用父页面方法
+				$.messager.alert("提示", "请确认预警！");
+			}
+		};
+
+		//根据是否有数据确定div是否显示
+		function initState() {
+			var type = $scope.newData.subAlarmEvent;
+			if (type == "5") {
+				$scope.$("#lmzk").show();
+			} else {
+				$scope.$("#other").show();
+			}
+		}
+
+		//convert 事件类型
+		$scope.convertSubType = function(value) {
+			return $scope.$getCodeName($scope.newData.alarmEventType, value);
+		};
+		//convert 事件类型
+		$scope.convertLmzk = function(value) {
+			return $scope.$getCodeName("509", value);
+		};
+		//convert 处理状态
+		$scope.convertValidity = function(value) {
+			return $scope.$getCodeName("504", value);
+		};
+		//convert 预警级别
+		$scope.convertGrade = function(value) {
+			return $scope.$getCodeName("507", value);
+		};
+
+		$scope.openDialogChart = function() {
+			$scope.$setParam("qxsbbm", $scope.newData.qxsbbm);
+			if ($scope.newData.lxmc == "气象仪") {
+				$scope.$openDialog("createDialog", {
+					title : "气象仪历史数据",
+					height : 500,
+					width : 800,
+					href : "tpls/trafficMonitor/trafficWeather/qxy-history-chart.html"
+				}, true);
+			} else if ($scope.newData.lxmc == "路感") {
+				$scope.$openDialog("createDialog", {
+					title : "路感历史数据",
+					height : 500,
+					width : 800,
+					href : "tpls/trafficMonitor/trafficWeather/lg-history-chart.html"
+				}, true);
+			} else if ($scope.newData.lxmc == "能见度仪") {
+				$scope.$openDialog("createDialog", {
+					title : "能见度仪历史数据",
+					height : 500,
+					width : 800,
+					href : "tpls/trafficMonitor/trafficWeather/njdy-history-chart.html"
+				}, true);
+			}
+		};
+		
+		$scope.$("input[name='validity']").change(function(){
+			var value=$scope.$("input[name='validity']:checked").val();
+			if(value=="1"){				
+				$scope.$("#dealMethod").prop('disabled', false);
+			}
+			else{
+				$scope.$("#dealMethod").prop('disabled', true);
+			}
+		 });
+	}); 
+</script>
+
+<style type="text/css">
+	#trafficWeatherInfo .th {
+		width: 85px;
+		text-align: right;
+	}
+	#trafficWeatherInfo .td {
+		width: 130px;
+	}
+
+	#trafficWeatherInfo span[cy-name] {
+		color: #0000ff;
+	}
+</style>

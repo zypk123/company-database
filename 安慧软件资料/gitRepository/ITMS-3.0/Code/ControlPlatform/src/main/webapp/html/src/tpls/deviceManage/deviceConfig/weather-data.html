@@ -1,0 +1,75 @@
+<div id="weatherData" class="easyui-layout">
+    <div id="north" data-options="region:'north',border:false">
+        <div class="searchPanel">
+            <div class="panel_title">查询条件</div>
+            <form cy-form="formData">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">时间：</div>
+                        <div class="td">
+                            <input class="easyui-datetimebox" name="startTime" style="width: 156px;"/>
+                                                                    至
+                            <input class="easyui-datetimebox" name="endTime" style="width: 156px;"/>
+                        </div>
+                        <div class="td" style="margin-left: 15px;">
+                           <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="dataGrid" cy-datagrid="options" cy-querydata="formData" cy-url="">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["wdata"],function($scope){
+        //判断是否隐藏查询条件
+       // var data = $scope.wdata;//获取判断值
+        //if(data == "uploadTime"){
+        //    $scope.$("#north").hide();
+          //  $scope.$("#dataGrid").attr("pagination",false);//隐藏分页
+       // }
+        $scope.load = function(){
+            //获取当前日期
+            var myDate = new Date();
+            var year = myDate.getFullYear();//当前年
+            var month = myDate.getMonth();//当前月
+            if(month > 10){
+                month = month + 1;
+            }else{
+                month = "0" + (month + 1);
+            }
+            var date = myDate.getDate();//当前日
+            if(date < 10){
+                date = "0" + date;
+            }
+            var startTime = year+"-"+month+"-"+date;
+            //默认初始时间为当天零点
+            $scope.$(".startTime").datetimebox('setValue',startTime);
+            //获取当前日期时间
+            var endTime = myDate.toLocaleTimeString();   
+            $scope.$(".endTime").datetimebox('setValue',endTime);
+        };
+        $scope.options = {
+            columns:[[
+               // {align:'center',field:"DEVICE_ID",checkbox:true},
+                {align:'center',title:"气象1",field:"DEVICE_NBR",width:100},
+                {align:'center',title:"气象2",field:"DEVICE_NAME",width:250},
+                {align:'center',title:"气象3",field:"ORG_NAME",width:150},
+                {align:'center',title:"气象4",field:"ROAD_NAME",width:100},
+                {align:'center',title:"气象5",field:"SITE_NAME",width:200},
+                {align:'center',title:"气象6",field:"CONTRACTOR",width:100}
+            ]]
+        };
+    });
+</script>
+<style type="text/css">
+    #weatherData .th{
+        width: 70px;
+        text-align:right;
+    }
+</style>

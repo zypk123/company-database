@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_RoleMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Role" >
+    <id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="ROLE_ENABLE_FLAG" property="roleEnableFlag" jdbcType="CHAR" />
+    <result column="ROLE_REMARK" property="roleRemark" jdbcType="VARCHAR" />
+    <result column="DATA_ACCESS_TYPE" property="dataAccessType" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROLE_ID, ROLE_NAME, ROLE_ENABLE_FLAG, ROLE_REMARK,DATA_ACCESS_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_ROLE
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_ROLE
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role" >
+    insert into T_SYS_ROLE (ROLE_ID, ROLE_NAME, ROLE_ENABLE_FLAG, 
+      ROLE_REMARK,DATA_ACCESS_TYPE)
+    values (#{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, #{roleEnableFlag,jdbcType=CHAR}, 
+      #{roleRemark,jdbcType=VARCHAR},#{dataAccessType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role" >
+    insert into T_SYS_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        ROLE_ID,
+      </if>
+      <if test="roleName != null" >
+        ROLE_NAME,
+      </if>
+      <if test="roleEnableFlag != null" >
+        ROLE_ENABLE_FLAG,
+      </if>
+      <if test="roleRemark != null" >
+        ROLE_REMARK,
+      </if>
+      <if test="dataAccessType != null">
+      	DATA_ACCESS_TYPE,
+      </if>
+      <if test="orgCode != null">
+      	org_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleName != null" >
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleEnableFlag != null" >
+        #{roleEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="roleRemark != null" >
+        #{roleRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="dataAccessType != null" >
+        #{dataAccessType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null">
+      	 #{orgCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role" >
+    update T_SYS_ROLE
+    <set >
+      <if test="roleName != null" >
+        ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleEnableFlag != null" >
+        ROLE_ENABLE_FLAG = #{roleEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="roleRemark != null" >
+        ROLE_REMARK = #{roleRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="dataAccessType != null">
+      	DATA_ACCESS_TYPE = #{dataAccessType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role" >
+    update T_SYS_ROLE
+    set ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+      ROLE_ENABLE_FLAG = #{roleEnableFlag,jdbcType=CHAR},
+      ROLE_REMARK = #{roleRemark,jdbcType=VARCHAR},
+      DATA_ACCESS_TYPE = #{dataAccessType,jdbcType=VARCHAR}
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="findSubsribeKeyByRoleIds" resultType="String" parameterType="List">
+  	select 
+  	messagekey
+  	from T_SYS_ROLE_ALARM_SUBSRIB
+  	<if test="roleIds != null">
+  		where role_id in
+  		<foreach item="item" index="index" collection="roleIds"  
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  	group by messagekey
+  </select>
+  <delete id="deleteAlarmSubsribePermission" parameterType="java.lang.String">
+  	delete from T_SYS_ROLE_ALARM_SUBSRIB where role_id = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="saveAlarmSubsribePermission" parameterType="java.lang.String">
+  	insert into T_SYS_ROLE_ALARM_SUBSRIB (role_id,messagekey)
+  	values(#{roleId,jdbcType=VARCHAR},#{key,jdbcType=VARCHAR})
+  </insert>
+</mapper>

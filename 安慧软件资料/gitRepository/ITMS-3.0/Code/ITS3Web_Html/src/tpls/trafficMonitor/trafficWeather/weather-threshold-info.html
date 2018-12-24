@@ -1,0 +1,171 @@
+<div class="easyui-layout" xmlns="http://www.w3.org/1999/html">
+    <form cy-form="codeData">
+        <div  id="code" data-options="region:'north'" style="height: 220px;">
+            <div class="table"><br/>
+                <div class="tr">
+                    <div class="th">气象参数：</div>
+                    <div class="td">
+                        <select type="text" name="qxcs"id="qxcs" class="easyui-combobox" style="width: 120px;">
+                            </select>
+                    </div>
+                    <div class="th">路面状况：</div>
+                    <div class="td">
+                        <input id="lmzk" type="text" name="lmzk" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+
+                </div>
+                <div class="tr">
+                    <div class="th">阀值最小值：</div>
+                    <div class="td">
+                        <input id="fzzxz" type="text" name="fzzxz" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+                    <div class="th">阀值最大值：</div>
+                    <div class="td">
+                        <input id="fzzdz" type="text" name="fzzdz" class="easyui-textbox" style="width: 120px;"/>
+                    </div>
+
+                </div>
+                <div class="tr">
+                    <div class="th">描述：</div>
+                    <div class="td">
+                        <input type="text" name="ms" class="easyui-textbox" style="width: 375px;"/>
+                    </div>
+
+                </div>
+                <div class="tr">
+                    <div class="th">限速值：</div>
+                    <div class="td">
+                        <input type="text" name="xsz" class="easyui-textbox" style="width: 120px;"/>km/h
+                    </div>
+
+                    <div class="th"style="width: 105px;">预警级别：</div>
+                    <div class="td">
+                        <select id="yjjb"  name="yjjb" class="easyui-combobox" style="width: 120px;">
+                        </select>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">发布内容：</div>
+                    <div class="td">
+                        <textarea  name="fbnr"  style="width: 375px;height:40px; "/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div data-options="region:'center'" >
+            <div class="tr"><br/>
+                <div class="td" align="center">
+                    <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="add">保存</a>
+                    <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="$destroySelf">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["codeData","dicts"],function($scope){
+            $scope.load=function(){
+                //初始化数据字典
+                initDicts();
+                setValueForEdit();
+            }
+            //读取字典数据
+            var initDicts = function(){
+                $scope.$("#qxcs").combobox("loadData",$scope.dicts.qxcs);
+                $scope.$("#yjjb").combobox("loadData",$scope.dicts.yjjb);
+            };
+            //修改状态固定气象参数值
+            var setValueForEdit=function(){
+                if( $scope.$("#qxcs").combobox("getText")){
+                    console.log($scope.$("#qxcs").combobox("getText"));
+                    $scope.$("#qxcs").combobox("disable");
+                }
+             };
+            //根据预警级别修改字体颜色
+            $scope.$("#yjjb").combobox({
+                onChange:function(value){
+                    switch (value){
+                        case "1":
+                            $scope.$("#yjjb").combobox("textbox").css("color","red");
+                            break;
+                        case "2":
+                            $scope.$("#yjjb").combobox("textbox").css("color","orange");
+                            break;
+                        case "3":
+                            $scope.$("#yjjb").combobox("textbox").css("color","goldenrod");
+                            break;
+                        case "4":
+                            $scope.$("#yjjb").combobox("textbox").css("color","blue");
+                            break;
+                        default :
+                            $scope.$("#yjjb").combobox("textbox").css("color","");
+                            break;
+                    }
+                }
+            });
+
+        //根据气象参数改变控件的启用状态
+        $scope.$("#qxcs").combobox({
+            onChange:function(value){
+                switch (value){
+                    case "1":
+                        $scope.$("#lmzk").textbox({disabled:true});
+                        $scope.$("#fzzxz").textbox({disabled:false});
+                        $scope.$("#fzzdz").textbox({disabled:false});
+                        $scope.$("#yjjb").combobox({disabled:false});
+                        break;
+                    case "2":
+                        $scope.$("#lmzk").textbox({disabled:true});
+                        $scope.$("#fzzxz").textbox({disabled:false});
+                        $scope.$("#fzzdz").textbox({disabled:false});
+                        $scope.$("#yjjb").combobox({disabled:false});
+                        break;
+                    case "3":
+                        $scope.$("#lmzk").textbox({disabled:true});
+                        $scope.$("#fzzxz").textbox({disabled:false});
+                        $scope.$("#fzzdz").textbox({disabled:false});
+                        $scope.$("#yjjb").combobox({disabled:false});
+                        break;
+                    case "4":
+                        $scope.$("#lmzk").textbox({disabled:true});
+                        $scope.$("#fzzxz").textbox({disabled:false});
+                        $scope.$("#fzzdz").textbox({disabled:false});
+                        $scope.$("#yjjb").combobox({disabled:false});
+                        break;
+                    case "5":
+                        $scope.$("#fzzxz").textbox("clear");
+                        $scope.$("#fzzxz").textbox({disabled:true});
+                        $scope.$("#fzzdz").textbox("clear");
+                        $scope.$("#fzzdz").textbox({disabled:true});
+                        $scope.$("#lmzk").textbox({disabled:false});
+                        $scope.$("#yjjb").combobox("clear");
+                        $scope.$("#yjjb").combobox({disabled:true});
+                        break;
+                    default :break;
+                }
+            }
+        });
+
+    })
+</script>
+<style type="text/css">
+
+    #code .th {
+        width: 135px;
+        text-align: right;
+    }
+    #code .red{
+        color: red;
+    }
+    #code .orange{
+        color: orange;
+    }
+    #code .yellow{
+        color:yellowgreen;
+    }
+    #code .blue{
+        color: blue;
+    }
+
+</style>

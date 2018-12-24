@@ -1,0 +1,384 @@
+<div id="homeMain" class="easyui-layout">
+	>
+	<div data-options="region:'east',border:false" style="width:320px">
+		<!-- <div id="noticeDiv" class="easyui-panel" data-options="headerCls:'panelHead'" style="height: 200px;">
+
+		</div>
+		<div class="easyui-panel" title="下载专区" style="height: 180px;">
+
+		</div>
+		<div class="easyui-panel" title="快捷菜单" style="height: 150px;">
+
+		</div>
+		-->
+		<div style="height: 200px;">
+			<div class="panelHead">
+				<div class="panelHeaderTitle">
+					<a>通知公告</a>
+				</div>
+				<div class="panelHeaderBtn">
+					<a id="btnNoticeReset" >更多</a>
+				</div>
+			</div>
+			<div id="noticeDlst">
+
+			</div>
+		</div>
+		<div style="height: 200px;">
+			<div class="panelHead">
+				<div class="panelHeaderTitle">
+					<a>下载专区</a>
+				</div>
+				<div class="panelHeaderBtn">
+					<a id="btnDownloadReset">更多</a>
+				</div>
+			</div>
+			<div id="downloadDlst">
+
+			</div>
+		</div>
+		<div style="width: 100%;float: left">
+			<div class="panelHead">
+				<div class="panelHeaderTitle">
+					<a>快捷菜单</a>
+				</div>
+				<div class="panelHeaderBtn">
+					<a id="btnFastMenuReset">设置</a>
+				</div>
+			</div>
+			<div id="fastMenuLst"></div>
+		</div>
+		<div style="width: 100%;float: left">
+			<div class="statLoginDiv">
+				<span>当前在线人数：</span><span id="currentUserTotal">--</span>
+				<span style="margin-left: 40px">本月累计登录：</span><span id="loginCountCurMonth">--</span>
+			</div>
+			<div class="statLoginDiv">
+				<span>系统登录总数：</span><span id="loginTotal">--</span>
+			</div>
+		</div>
+
+	</div>
+	<div data-options="region:'center',border:false">
+
+	</div>
+	<div id="searchResItemDiv" style="display: none">
+		<div class="searchResItem">
+			<div class="searchResItemTitle">
+				<a title="">智能交通管理平台3.0上线啦</a>
+			</div>
+			<div class="searchResItemDate">
+				<a>2016-03-24</a>
+			</div>
+		</div>
+	</div>
+	<li id="fastMenuLi" style="display: none">
+		<div class="imgDiv">
+			<img src="themes/default/images/fastMenu/fm8.png" >
+		</div>
+		<div class="txtDiv">
+			轨迹查询
+		</div>
+	</li>
+</div>
+<script type="text/javascript">
+	InitPage(["orgCodeClick"], function($scope) {
+		var hasNoticeSetAuth = false;
+		var hasDownloadSetAuth = false;
+		//获取当前用户的快捷菜单
+		var fastMenuLst;
+		$scope.$("#btnNoticeReset").click(function() {
+			showNoticeDialog();
+		});
+		$scope.$("#btnDownloadReset").click(function() {
+			showDownloadDialog();
+		});
+		$scope.$("#btnFastMenuReset").click(function() {
+			showFastMenuDialog();
+		});
+
+		function showNoticeDialog() {
+			$scope.$setParam("hasNoticeSetAuth", hasNoticeSetAuth);
+			$scope.$setParam("reloadNotice", function() {
+				//加载通知公告
+				loadNoticeLst();
+			});
+			//弹出通知公告框
+			$scope.$openDialog("noticeDialog", {
+				title : "通知公告",
+				height : 500,
+				width : 750,
+				href : "tpls/home/notice-list.html"
+			});
+		}
+
+		function showDownloadDialog() {
+			$scope.$setParam("hasDownloadSetAuth", hasDownloadSetAuth);
+			$scope.$setParam("reloadDownload", function() {
+				//加载下载列表
+				loadDownloadLst();
+			});
+			//弹出下载专区框
+			$scope.$openDialog("downloadDialog", {
+				title : "下载专区",
+				height : 500,
+				width : 750,
+				href : "tpls/home/download-list.html"
+			});
+		}
+
+		function showFastMenuDialog() {
+			$scope.$setParam("reloadFastMenu", function(data) {
+				$scope.$getDialog("fastMenuDialog").dialog("close");
+				alert("保存成功！");
+				loadFastMenu();
+			});
+			$scope.$setParam("fastMenuLst", fastMenuLst);
+			//弹出快捷菜单框
+			$scope.$openDialog("fastMenuDialog", {
+				title : "快捷菜单",
+				height : 550,
+				width : 800,
+				href : "tpls/home/fast-menu-set.html"
+			});
+		}
+
+		function loadHomePage(href,orgCodeClick) {
+			$scope.$('#homeMain').layout('panel', 'center').panel({
+				href : href
+			});
+			$scope.$setParam("orgCodeClick",orgCodeClick);
+			$scope.$setParam("loadHomePage",loadHomePage);
+		};
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			var currentUserOrgPrivCode = $scope.UserInfo.orgPrivCode;
+			var href = 'tpls/home/home-org.html';
+			if (currentUserOrgPrivCode.length >= 6)//大队及其以下等级的机构
+			{
+				href = 'tpls/home/home-dev.html';
+			}
+			loadHomePage(href,currentUserOrgPrivCode);
+			//加载通知公告
+			loadNoticeLst();
+			//加载下载专区
+			loadDownloadLst();
+			//加载快捷菜单
+			loadFastMenu();
+			//读取登录统计信息
+			loadLoginCount();
+			hasNoticeSetAuth = judgeSetAuth("btnNoticeReset", "0001");
+			hasDownloadSetAuth = judgeSetAuth("btnDownloadReset", "0002");
+
+		};
+
+		function judgeSetAuth(btnId, functionCode) {
+			var hasSetAuth = $scope.$hasAuth(functionCode);
+			if (hasSetAuth) {
+				$scope.$("#" + btnId).text("设置");
+			}
+			return hasSetAuth;
+		}
+
+		function loadNoticeLst() {
+			//加载结果列表
+			$scope.$("#noticeDlst").datalist({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/getLatestNoticeLst",
+				queryParams:{
+					currentOrgPrivilegeCode:$scope.UserInfo.orgPrivCode
+				},
+				nowrap : false,
+				border : true,
+				textFormatter : noticeFormatter
+			});
+		}
+
+		function loadDownloadLst() {
+			//加载结果列表
+			$scope.$("#downloadDlst").datalist({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/getLatestDownloadLst",
+				nowrap : false,
+				border : true,
+				textFormatter : downloadFormatter
+			});
+		}
+
+		function seachResultFormatter(title, tip, date) {
+			var divRow = $scope.$("#searchResItemDiv").clone().show();
+			divRow.remove("id");
+			var titleClm = divRow.find(".searchResItemTitle a");
+			titleClm.eq(0).text(title);
+			titleClm.eq(0).attr("title", tip);
+			if (arguments.length > 3) {
+				titleClm.eq(0).attr("href", arguments[3]);
+				titleClm.eq(0).attr("target", "_bank");
+			}
+			var dateClm = divRow.find(".searchResItemDate a");
+			dateClm.eq(0).text(date);
+			return divRow.html();
+		}
+
+		function noticeFormatter(value, rowData, rowIndex) {
+			if (rowData.noticeTitle) {
+				var showTitle = rowData.noticeTitle;
+				if (showTitle.length > 13) {
+					showTitle = showTitle.substr(0, 13) + "...";
+				}
+				return seachResultFormatter(showTitle, rowData.noticeTitle, rowData.createTime);
+			}
+		}
+
+		function downloadFormatter(value, rowData, rowIndex) {
+			if (rowData.downloadTitle) {
+				var showTitle = rowData.downloadTitle;
+				if (showTitle.length > 13) {
+					showTitle = showTitle.substr(0, 13) + "...";
+				}
+				return seachResultFormatter(showTitle, rowData.downloadTitle, rowData.createTime, rowData.downloadUrl);
+			}
+		}
+
+		function loadFastMenu() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/getUserFastMenu",
+				success : function(result) {
+					fastMenuLst = result;
+					createFastMenu();
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function createFastMenu() {
+			$scope.$("#fastMenuLst").html("");
+			var ul = $('<ul></ul>');
+			for (var i = 0; i < fastMenuLst.length; i++) {
+				ul.append(createFastMenuItem(i + 1, fastMenuLst[i]));
+			}
+			$scope.$("#fastMenuLst").append(ul);
+		}
+
+		function createFastMenuItem(index, menuItem) {
+			var li = $scope.$("#fastMenuLi").clone().show();
+			li.remove("id");
+			//li.attr("name", menuItem.targetUrl);
+			li.click(function() {
+				//var targetUrl = $(this).attr("name");
+				//alert(targetUrl);
+				$scope.$goto(menuItem.menuCode);
+			});
+			var img = li.find('img');
+			img.eq(0).attr("src", "themes/default/images/fastMenu/fm" + index + ".png");
+			var txtDiv = li.find('.txtDiv');
+			txtDiv.eq(0).text(menuItem.menuName);
+			return li;
+		}
+
+		function loadLoginCount() {
+			$.post($scope.$servletRoot + "/LoginServlet", {
+				loginType : 4
+			}, function(data) {
+				$scope.$("#currentUserTotal").text(data.usersCount);
+			});
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/getLoginTotalOfUser",
+				success : function(result) {
+					$scope.$("#loginCountCurMonth").text(result.loginCountCurMonth);
+					$scope.$("#loginTotal").text(result.loginTotal);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+
+		}
+
+	}); 
+</script>
+<style>
+	#homeMain .panelHead {
+		background: #2e91c3;
+		height: 24px;
+	}
+	#homeMain .panelHeaderBtn {
+		float: left;
+		margin-top: 2px;
+	}
+	#homeMain .panelHeaderBtn a {
+			
+		cursor: pointer;
+	}
+	#homeMain .panelHeaderTitle {
+		float: left;
+		margin-top: 2px;
+		margin-left: 5px;
+		width:85%;
+	}
+	#homeMain .panelHead a {
+		color: #ffffff;
+		font-size: 14px;
+	}
+	#homeMain .searchResItem {
+		float: left;
+	}
+	#homeMain .searchResItemTitle {
+		float: left;
+		margin-left: 6px;
+		cursor: pointer;
+	}
+	#homeMain .searchResItemTitle a {
+		color: black;
+	}
+	#homeMain .searchResItemDate {
+		float: left;
+		position: absolute;
+		right: 10px;
+		color: #767676;
+	}
+	/*#homeMain .datalist .datagrid-row td:nth-last-child(1) {
+	 border-left-color: transparent;
+	 border-right-color: transparent;
+	 border-style: solid;
+	 border-bottom-width: 1px;
+	 }*/
+	#homeMain .datalist .datagrid-row td {
+		border-left-color: transparent;
+		border-right-color: transparent;
+		border-bottom-style: dashed;
+		border-bottom-width: 1px;
+	}
+
+	#homeMain #fastMenuLst ul {
+		float: left;
+		list-style: none;
+		padding: 0px;
+	}
+	#homeMain #fastMenuLst ul li {
+		float: left;
+		width: 75px;
+		height: 60px;
+		cursor: pointer
+	}
+	#homeMain #fastMenuLst .imgDiv {
+		width: 24px;
+		height: 24px;
+		margin-left: auto;
+		margin-right: auto
+	}
+	#homeMain #fastMenuLst .txtDiv {
+		text-align: center
+	}
+	#homeMain .blueTxt {
+		color: blue;
+	}
+	#homeMain .statLoginDiv {
+		margin-left: 8px;
+		height: 30px;
+	}
+	#homeMain .statLoginDiv span:nth-child(2n) {
+		color: blue;
+	}
+</style>

@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_PoliceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Police" >
+    <id column="POLICE_ID" property="policeId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="POLICE_NBR" property="policeNbr" jdbcType="VARCHAR" />
+    <result column="POLICE_TYPE" property="policeType" jdbcType="CHAR" />
+    <result column="POLICE_CODE" property="policeCode" jdbcType="VARCHAR" />
+    <result column="POLICE_NAME" property="policeName" jdbcType="VARCHAR" />
+    <result column="PERSON_ID" property="personId" jdbcType="VARCHAR" />
+    <result column="AUTHORIZED_TYPE" property="authorizedType" jdbcType="CHAR" />
+    
+    <result column="EVENT_LEVEL" property="eventLevel" jdbcType="CHAR" />
+    <result column="LEADER_LEVEL" property="leaderLevel" jdbcType="VARCHAR" />
+    <result column="BIRTH_DATE" property="birthDate" jdbcType="TIMESTAMP" />
+    <result column="SEX" property="sex" jdbcType="VARCHAR" />
+    <result column="POLICE_RANK" property="policeRank" jdbcType="VARCHAR" />
+    <result column="JOB_LEVEL" property="jobLevel" jdbcType="VARCHAR" />
+    <result column="NATIVE_PLACE" property="nativePlace" jdbcType="VARCHAR" />
+    <result column="POLITICS_STATUS" property="politicsStatus" jdbcType="VARCHAR" />
+    <result column="PARTY_LEAGUE_TIME" property="partyLeagueTime" jdbcType="TIMESTAMP" />
+    <result column="RACE" property="race" jdbcType="VARCHAR" />
+    <result column="EDUCATION" property="education" jdbcType="VARCHAR" />
+    <result column="MAJOR" property="major" jdbcType="VARCHAR" />
+    <result column="POSITION" property="position" jdbcType="VARCHAR" />
+    <result column="JOIN_TIME" property="joinTime" jdbcType="TIMESTAMP" />
+    <result column="BEGIN_WORK" property="beginWork" jdbcType="TIMESTAMP" />
+    <result column="PRESENT_WORK" property="presentWork" jdbcType="TIMESTAMP" />
+    <result column="FAMILY_ADDRESS" property="familyAddress" jdbcType="VARCHAR" />
+    <result column="P_PHONE_NBR" property="pPhoneNbr" jdbcType="VARCHAR" />
+    <result column="OFFICE_PHONE" property="officePhone" jdbcType="VARCHAR" />
+    <result column="HOME_PHONE" property="homePhone" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+    <result column="QUALIFICATION_GRADE" property="qualificationGrade" jdbcType="CHAR" />
+    <result column="P_RECORD_STATUS" property="pRecordStatus" jdbcType="CHAR" />
+    <result column="P_EXPIRE_DATE" property="pExpireDate" jdbcType="TIMESTAMP" />
+    <result column="P_ENABLE_FLAG" property="pEnableFlag" jdbcType="CHAR" />
+    <result column="SSO_FLAG" property="ssoFlag" jdbcType="VARCHAR" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="BUSINESS_POST" property="businessPost" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    POLICE_ID, ORG_ID, POLICE_NBR, POLICE_TYPE, POLICE_CODE, POLICE_NAME, PERSON_ID, 
+    AUTHORIZED_TYPE, EVENT_LEVEL, LEADER_LEVEL, BIRTH_DATE, SEX, POLICE_RANK, 
+    JOB_LEVEL, NATIVE_PLACE, POLITICS_STATUS, PARTY_LEAGUE_TIME, RACE, EDUCATION, MAJOR, 
+    POSITION, JOIN_TIME, BEGIN_WORK, PRESENT_WORK, FAMILY_ADDRESS, P_PHONE_NBR, OFFICE_PHONE, 
+    HOME_PHONE, EMAIL, QUALIFICATION_GRADE, P_RECORD_STATUS, P_EXPIRE_DATE, 
+    P_ENABLE_FLAG, SSO_FLAG, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME,BUSINESS_POST
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE
+    where POLICE_ID = #{policeId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_POLICE
+    where POLICE_ID = #{policeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Police" >
+    insert into T_SYS_POLICE (POLICE_ID, ORG_ID, POLICE_NBR, 
+      POLICE_TYPE, POLICE_CODE, POLICE_NAME, 
+      PERSON_ID, AUTHORIZED_TYPE,
+      EVENT_LEVEL, LEADER_LEVEL, BIRTH_DATE, 
+      SEX, POLICE_RANK, JOB_LEVEL, 
+      NATIVE_PLACE, POLITICS_STATUS, PARTY_LEAGUE_TIME, 
+      RACE, EDUCATION, MAJOR, 
+      POSITION, JOIN_TIME, BEGIN_WORK, 
+      PRESENT_WORK, FAMILY_ADDRESS, P_PHONE_NBR, 
+      OFFICE_PHONE, HOME_PHONE, EMAIL, 
+      QUALIFICATION_GRADE, P_RECORD_STATUS, 
+      P_EXPIRE_DATE, P_ENABLE_FLAG, SSO_FLAG, 
+      CREATE_BY, CREATE_TIME, UPDATE_BY, 
+      UPDATE_TIME,BUSINESS_POST)
+    values (#{policeId,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{policeNbr,jdbcType=VARCHAR}, 
+      #{policeType,jdbcType=CHAR}, #{policeCode,jdbcType=VARCHAR}, #{policeName,jdbcType=VARCHAR}, 
+      #{personId,jdbcType=VARCHAR}, #{authorizedType,jdbcType=CHAR}, 
+      #{eventLevel,jdbcType=CHAR}, #{leaderLevel,jdbcType=VARCHAR}, #{birthDate,jdbcType=TIMESTAMP}, 
+      #{sex,jdbcType=VARCHAR}, #{policeRank,jdbcType=VARCHAR}, #{jobLevel,jdbcType=VARCHAR}, 
+      #{nativePlace,jdbcType=VARCHAR}, #{politicsStatus,jdbcType=VARCHAR}, #{partyLeagueTime,jdbcType=TIMESTAMP}, 
+      #{race,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, 
+      #{position,jdbcType=VARCHAR}, #{joinTime,jdbcType=TIMESTAMP}, #{beginWork,jdbcType=TIMESTAMP}, 
+      #{presentWork,jdbcType=TIMESTAMP}, #{familyAddress,jdbcType=VARCHAR}, #{pPhoneNbr,jdbcType=VARCHAR}, 
+      #{officePhone,jdbcType=VARCHAR}, #{homePhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{qualificationGrade,jdbcType=CHAR}, #{pPermitIp,jdbcType=VARCHAR}, #{pRecordStatus,jdbcType=CHAR}, 
+      #{pExpireDate,jdbcType=TIMESTAMP}, #{pEnableFlag,jdbcType=CHAR}, #{ssoFlag,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP},#}{businessPost,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Police" >
+    insert into T_SYS_POLICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="policeId != null" >
+        POLICE_ID,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="policeNbr != null" >
+        POLICE_NBR,
+      </if>
+      <if test="policeType != null" >
+        POLICE_TYPE,
+      </if>
+      <if test="policeCode != null" >
+        POLICE_CODE,
+      </if>
+      <if test="policeName != null" >
+        POLICE_NAME,
+      </if>
+      <if test="personId != null" >
+        PERSON_ID,
+      </if>
+      <if test="authorizedType != null" >
+        AUTHORIZED_TYPE,
+      </if>
+      <if test="eventLevel != null" >
+        EVENT_LEVEL,
+      </if>
+      <if test="leaderLevel != null" >
+        LEADER_LEVEL,
+      </if>
+      <if test="birthDate != null" >
+        BIRTH_DATE,
+      </if>
+      <if test="sex != null" >
+        SEX,
+      </if>
+      <if test="policeRank != null" >
+        POLICE_RANK,
+      </if>
+      <if test="jobLevel != null" >
+        JOB_LEVEL,
+      </if>
+      <if test="nativePlace != null" >
+        NATIVE_PLACE,
+      </if>
+      <if test="politicsStatus != null" >
+        POLITICS_STATUS,
+      </if>
+      <if test="partyLeagueTime != null" >
+        PARTY_LEAGUE_TIME,
+      </if>
+      <if test="race != null" >
+        RACE,
+      </if>
+      <if test="education != null" >
+        EDUCATION,
+      </if>
+      <if test="major != null" >
+        MAJOR,
+      </if>
+      <if test="position != null" >
+        POSITION,
+      </if>
+      <if test="joinTime != null" >
+        JOIN_TIME,
+      </if>
+      <if test="beginWork != null" >
+        BEGIN_WORK,
+      </if>
+      <if test="presentWork != null" >
+        PRESENT_WORK,
+      </if>
+      <if test="familyAddress != null" >
+        FAMILY_ADDRESS,
+      </if>
+      <if test="pPhoneNbr != null" >
+        P_PHONE_NBR,
+      </if>
+      <if test="officePhone != null" >
+        OFFICE_PHONE,
+      </if>
+      <if test="homePhone != null" >
+        HOME_PHONE,
+      </if>
+      <if test="email != null" >
+        EMAIL,
+      </if>
+      <if test="qualificationGrade != null" >
+        QUALIFICATION_GRADE,
+      </if>
+      <if test="pRecordStatus != null" >
+        P_RECORD_STATUS,
+      </if>
+      <if test="pExpireDate != null" >
+        P_EXPIRE_DATE,
+      </if>
+      <if test="pEnableFlag != null" >
+        P_ENABLE_FLAG,
+      </if>
+      <if test="ssoFlag != null" >
+        SSO_FLAG,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      CREATE_TIME,
+      <if test="updateBy != null" >
+        UPDATE_BY,
+      </if>
+      UPDATE_TIME,
+      <if test="businessPost != null">
+      BUSINESS_POST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="policeId != null" >
+        #{policeId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="policeNbr != null" >
+        #{policeNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="policeType != null" >
+        #{policeType,jdbcType=CHAR},
+      </if>
+      <if test="policeCode != null" >
+        #{policeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="policeName != null" >
+        #{policeName,jdbcType=VARCHAR},
+      </if>
+      <if test="personId != null" >
+        #{personId,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizedType != null" >
+        #{authorizedType,jdbcType=CHAR},
+      </if>
+      <if test="eventLevel != null" >
+        #{eventLevel,jdbcType=CHAR},
+      </if>
+      <if test="leaderLevel != null" >
+        #{leaderLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="policeRank != null" >
+        #{policeRank,jdbcType=VARCHAR},
+      </if>
+      <if test="jobLevel != null" >
+        #{jobLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="politicsStatus != null" >
+        #{politicsStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="partyLeagueTime != null" >
+        #{partyLeagueTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="race != null" >
+        #{race,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="joinTime != null" >
+        #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginWork != null" >
+        #{beginWork,jdbcType=TIMESTAMP},
+      </if>
+      <if test="presentWork != null" >
+        #{presentWork,jdbcType=TIMESTAMP},
+      </if>
+      <if test="familyAddress != null" >
+        #{familyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="pPhoneNbr != null" >
+        #{pPhoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="officePhone != null" >
+        #{officePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="homePhone != null" >
+        #{homePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="qualificationGrade != null" >
+        #{qualificationGrade,jdbcType=CHAR},
+      </if>
+      <if test="pPermitIp != null" >
+        #{pPermitIp,jdbcType=VARCHAR},
+      </if>
+      <if test="pRecordStatus != null" >
+        #{pRecordStatus,jdbcType=CHAR},
+      </if>
+      <if test="pExpireDate != null" >
+        #{pExpireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="pEnableFlag != null" >
+        #{pEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="ssoFlag != null" >
+        #{ssoFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      SYSDATE,
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      SYSDATE,
+      <if test="businessPost != null">
+      	 #{businessPost,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Police" >
+    update T_SYS_POLICE
+    <set >
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="policeNbr != null" >
+        POLICE_NBR = #{policeNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="policeType != null" >
+        POLICE_TYPE = #{policeType,jdbcType=CHAR},
+      </if>
+      <if test="policeCode != null" >
+        POLICE_CODE = #{policeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="policeName != null" >
+        POLICE_NAME = #{policeName,jdbcType=VARCHAR},
+      </if>
+      <if test="personId != null" >
+        PERSON_ID = #{personId,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizedType != null" >
+        AUTHORIZED_TYPE = #{authorizedType,jdbcType=CHAR},
+      </if>
+      <if test="eventLevel != null" >
+        EVENT_LEVEL = #{eventLevel,jdbcType=CHAR},
+      </if>
+      <if test="leaderLevel != null" >
+        LEADER_LEVEL = #{leaderLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        BIRTH_DATE = #{birthDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sex != null" >
+        SEX = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="policeRank != null" >
+        POLICE_RANK = #{policeRank,jdbcType=VARCHAR},
+      </if>
+      <if test="jobLevel != null" >
+        JOB_LEVEL = #{jobLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        NATIVE_PLACE = #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="politicsStatus != null" >
+        POLITICS_STATUS = #{politicsStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="partyLeagueTime != null" >
+        PARTY_LEAGUE_TIME = #{partyLeagueTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="race != null" >
+        RACE = #{race,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        EDUCATION = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        MAJOR = #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        POSITION = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="joinTime != null" >
+        JOIN_TIME = #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginWork != null" >
+        BEGIN_WORK = #{beginWork,jdbcType=TIMESTAMP},
+      </if>
+      <if test="presentWork != null" >
+        PRESENT_WORK = #{presentWork,jdbcType=TIMESTAMP},
+      </if>
+      <if test="familyAddress != null" >
+        FAMILY_ADDRESS = #{familyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="pPhoneNbr != null" >
+        P_PHONE_NBR = #{pPhoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="officePhone != null" >
+        OFFICE_PHONE = #{officePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="homePhone != null" >
+        HOME_PHONE = #{homePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="qualificationGrade != null" >
+        QUALIFICATION_GRADE = #{qualificationGrade,jdbcType=CHAR},
+      </if>
+      <if test="pRecordStatus != null" >
+        P_RECORD_STATUS = #{pRecordStatus,jdbcType=CHAR},
+      </if>
+      <if test="pExpireDate != null" >
+        P_EXPIRE_DATE = #{pExpireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="pEnableFlag != null" >
+        P_ENABLE_FLAG = #{pEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="ssoFlag != null" >
+        SSO_FLAG = #{ssoFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      UPDATE_TIME = SYSDATE,
+       <if test="businessPost != null">
+      	 BUSINESS_POST = #{businessPost,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where POLICE_ID = #{policeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Police" >
+    update T_SYS_POLICE
+    set ORG_ID = #{orgId,jdbcType=VARCHAR},
+      POLICE_NBR = #{policeNbr,jdbcType=VARCHAR},
+      POLICE_TYPE = #{policeType,jdbcType=CHAR},
+      POLICE_CODE = #{policeCode,jdbcType=VARCHAR},
+      POLICE_NAME = #{policeName,jdbcType=VARCHAR},
+      PERSON_ID = #{personId,jdbcType=VARCHAR},
+      AUTHORIZED_TYPE = #{authorizedType,jdbcType=CHAR},
+      EVENT_LEVEL = #{eventLevel,jdbcType=CHAR},
+      LEADER_LEVEL = #{leaderLevel,jdbcType=VARCHAR},
+      BIRTH_DATE = #{birthDate,jdbcType=TIMESTAMP},
+      SEX = #{sex,jdbcType=VARCHAR},
+      POLICE_RANK = #{policeRank,jdbcType=VARCHAR},
+      JOB_LEVEL = #{jobLevel,jdbcType=VARCHAR},
+      NATIVE_PLACE = #{nativePlace,jdbcType=VARCHAR},
+      POLITICS_STATUS = #{politicsStatus,jdbcType=VARCHAR},
+      PARTY_LEAGUE_TIME = #{partyLeagueTime,jdbcType=TIMESTAMP},
+      RACE = #{race,jdbcType=VARCHAR},
+      EDUCATION = #{education,jdbcType=VARCHAR},
+      MAJOR = #{major,jdbcType=VARCHAR},
+      POSITION = #{position,jdbcType=VARCHAR},
+      JOIN_TIME = #{joinTime,jdbcType=TIMESTAMP},
+      BEGIN_WORK = #{beginWork,jdbcType=TIMESTAMP},
+      PRESENT_WORK = #{presentWork,jdbcType=TIMESTAMP},
+      FAMILY_ADDRESS = #{familyAddress,jdbcType=VARCHAR},
+      P_PHONE_NBR = #{pPhoneNbr,jdbcType=VARCHAR},
+      OFFICE_PHONE = #{officePhone,jdbcType=VARCHAR},
+      HOME_PHONE = #{homePhone,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      QUALIFICATION_GRADE = #{qualificationGrade,jdbcType=CHAR},
+      P_RECORD_STATUS = #{pRecordStatus,jdbcType=CHAR},
+      P_EXPIRE_DATE = #{pExpireDate,jdbcType=TIMESTAMP},
+      P_ENABLE_FLAG = #{pEnableFlag,jdbcType=CHAR},
+      SSO_FLAG = #{ssoFlag,jdbcType=VARCHAR},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      BUSINESS_POST = #{businessPost,jdbcType=VARCHAR}
+    where POLICE_ID = #{policeId,jdbcType=VARCHAR}
+  </update>  
+  <select id="selectPolices" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE
+    <where>
+    	police_id in 
+		<foreach item="item" index="index" collection="policeIds" 
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+    </where>
+  </select>
+</mapper>

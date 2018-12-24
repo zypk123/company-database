@@ -1,0 +1,140 @@
+<div id="contractOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData" id="form">
+            <div class="searchPanel">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">合同编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="contractNbr" data-options="validType:['numOrLetter','length[0,32]'],required:true"/>
+                        </div>
+                        <div class="th">合同名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="contractName" data-options="validType:'length[0,64]',required:true" id="contractName"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">合同类型：</div>
+                        <div class="td">
+                            <input id="orgId" class="easyui-combobox" name="contractType" cy-code="437" data-options="required:true"/>
+                        </div>
+                        <div class="th">招标编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="bidNbr" data-options="validType:['numOrLetter','length[0,64]']"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">承建商：</div>
+                        <div class="td">
+                            <input id="contractorId" class="easyui-combobox" data-options="valueField:'contractorId',textField:'contractorName'"  name="contractorId"/>
+                        </div>
+                        <div class="th">签署时间：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" id="contractTime" name="contractTime" data-options="validType:'date',required:true"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">投标联系人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="bidContactName" validType="length[0,16]"/>
+                        </div>
+                        <div class="th">投标联系人电话：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="bidContactTel" data-options="validType:'phone'"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">售后服务期始：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" id="start" name="beginServiceDate" data-options="validType:['maxDate[\'end\']','date'],required:true"/>
+                        </div>
+                        <div class="th">售后服务期至：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" id="end" name="endServiceDate" data-options="validType:['minDate[\'start\']','date'],required:true"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">售后服务联系人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="servicePerson" validType="length[0,16]"/>
+                        </div>
+                        <div class="th">售后服务联系人电话：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="servicePersonTel" data-options="validType:'phone'"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">备注：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" data-options="validType:'length[0,16]',multiline:true" name="remark" style="width:390px;height:100px"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">
+        <div class="linkbutton_toolbar" style="text-align: center">
+            <a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            <a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * formData ：编辑时带过来的页面数据
+     */
+    InitPage(["formData","saveData","remark"],function($scope){
+        $scope.load = function(){
+            //判断是查看的标识
+            var remark = $scope.remark;
+            if(remark == "look"){
+                $scope.$("input[class^='easyui-']").each(function(){
+                    $(this).textbox('readonly',true);
+                });
+                $scope.$("#save").hide();
+            }
+            $scope.$ajaxRequest({
+                url:$scope.$restRoot+"device/companyManage/queryCompany",
+                params:{},
+                method:"post",
+                success:function(data){
+                    $scope.$("#contractorId").combobox("loadData",data);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","初始化承建商失败！");
+                }
+            });
+            $scope.$('#contractTime').datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+        };
+        /**
+         *保存新增合同信息 
+         */   
+        $scope.save = function(){
+        	if ($scope.$("#form").form("validate")) {
+	            //更新获取表单数据
+	            $scope.$updateData("formData");
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+	            $scope.saveData($scope.formData);
+	        }
+        }; 
+    });
+</script>
+<style type="text/css">
+    #contractOperate .th{
+        width: 120px;
+        text-align: right;
+    }
+    #contractOperate .td{
+        height:auto;
+    }
+    #contractOperate .td>input[class^='easyui-']{
+        width: 140px;
+    }
+</style>

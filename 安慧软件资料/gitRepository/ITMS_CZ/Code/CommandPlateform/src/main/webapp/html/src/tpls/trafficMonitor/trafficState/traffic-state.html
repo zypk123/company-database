@@ -1,0 +1,2717 @@
+<div id="trafficState" class="easyui-layout" >
+	<div data-options="region:'west'"style="width: 180px;" >
+		<div id="panel-count" class="easyui-panel" data-options="closable:true,height:140,width:180,cls:'panel-count'" ></div>
+		<div id="panel-bing" class="easyui-panel" data-options="closable:true,height:225,width:180,cls:'panel-bing'" >
+			<div id="tableTitle1" class="table">
+				<div class="tr" >
+					<div class="th" style="width: 90px;">
+						&nbsp;&nbsp;实时路况
+					</div>
+				</div>
+			</div>
+			<div id="circleChart"  style="height:183px;width:175px; "></div>
+		</div>
+		<div id="panel-important" class="easyui-panel" data-options="closable:true,height:298,width:180,cls:'panel-important'" style="overflow: hidden;"></div>
+	</div>
+	<div data-options="region:'center',border:true" >
+		<div id="map" style="width:100%;height: 100%;"></div>
+		<div id="panel-right" class="easyui-panel" data-options="closable:false,closed:true,height:'96%',title:'right',width:330,cls:'panel-right'" ></div>
+		<div id="layerDock"></div>
+		<div id="baseTool"></div>
+
+		<div id="legend">
+			<img id="changtongFlow" width="90" height="20" alt="" title="畅通" src="themes/default/images/roadState2.png">
+			<!-- <td ><img id="changtongFlow" width="30" height="20" alt="" title="畅通" src="frameworks/Openlayers/img/sslk_03.png"></td>
+			<td><img id="huanxingFlow" width="30" height="20"  alt="" title="缓行" src="frameworks/Openlayers/img/sslk_06.png"></td>
+			<td><img id="yongduFlow" width="30" height="20"  alt="" title="拥堵" src="frameworks/Openlayers/img/sslk_07.png"></td> -->
+		</div>
+		<div id="plus">
+			<img src="themes/default/images/plus3.png" style="width: 16px; height: 16px;cursor: pointer" title="隐藏/显示" cy-click="showPanel">
+		</div>
+		<div id="alarmHistory">
+			<img src="themes/default/images/no-alert.png" style="width: 16px; height: 16px;cursor: pointer" title="预警查询" cy-click="showAlarmHistory">
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//引入echarts需要的js
+		require.config({
+			paths : {
+				echarts : 'frameworks/echarts/js'
+			}
+		});
+		var wkt_c = new OpenLayers.Format.WKT();
+		var pointLayer;
+		var tempLayer;
+		//实时路况状态图层
+		var stateLayer;
+		//预警图层
+		var alarmLayer;
+
+		var polygonLayer;
+		var cyMap = null;
+		//子页面scope方法集合
+		var childScopeList = {};
+		//订阅
+		var regionSubsribe;
+		var sectionSubsribe;
+		var weatherSubsribe;
+		var visibilitySubsribe;
+		var roadsensorSubsribe;
+		var eventSubsribe;
+		var visibilityAlarmSubsribe;
+		var windAlarmSubsribe;
+		var temperatureAlarmSubsribe;
+		var roadCondtionAlarmSubsribe;
+		var waterThicknessAlarmSubsribe;
+		var sectionAlarmSubsribe;
+		var travalAlarmSubsribe;
+
+		//断面图层是否显示
+		var isSecLayer = false;
+		//断面列表是否显示
+		var isSecGrid = false;
+		//气象图层是否显示
+		var isWeaLayer = false;
+		//气象列表是否显示
+		var isWeaGrid = false;
+		//判断事件检测是被是否显示
+		var isEvent = false;
+		//道路网向右偏移的像素数
+		var iPixelOffset = -1.8;
+		//用于聚合
+		var strategy, clusters;
+		//聚合的最小像素
+		var distance = 20;
+		//聚合的最小数量
+		var threshold = 2;
+		//聚合的最小等级
+		var zoomCluster = 5;
+
+		var allFeatures = [];
+		var layerListeners;
+		//页面登录时调用
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			//初始化图层
+			initData();
+			//初始化地图基本工具
+			initBaseTool();
+			//添加图层控制工具条
+			initLayerContrl();
+			//初始化加载道路数据
+			readRoads();
+			//初始化断面数据
+			readSections();
+			//初始化气象数据
+			readWeather();
+			//初始化事件数据
+			readEvent();
+			//订阅区间流量
+			regionSubsribe = new Subsribe({
+				type : SubsribeType.trafficStatus,
+				onMessage : appendData_region,
+			});
+			//订阅事件
+			eventSubsribe = new Subsribe({
+				type : SubsribeType.trafficEvent,
+				onMessage : appendData_event,
+			});
+			//订阅能见度预警
+			visibilityAlarmSubsribe = new Subsribe({
+				type : SubsribeType.visibilityAlarm,
+				onMessage : appendData_visibilityAlarm,
+			});
+			//订阅大风预警
+			windAlarmSubsribe = new Subsribe({
+				type : SubsribeType.windAlarm,
+				onMessage : appendData_visibilityAlarm,
+			});
+			//高温预警
+			temperatureAlarmSubsribe = new Subsribe({
+				type : SubsribeType.temperatureAlarm,
+				onMessage : appendData_visibilityAlarm,
+			});
+			//冰雪预警
+			roadCondtionAlarmSubsribe = new Subsribe({
+				type : SubsribeType.roadCondtionAlarm,
+				onMessage : appendData_visibilityAlarm,
+			});
+			//水膜厚度预警
+			waterThicknessAlarmSubsribe = new Subsribe({
+				type : SubsribeType.waterThicknessAlarm,
+				onMessage : appendData_visibilityAlarm,
+			});
+			//断面断流预警
+			sectionAlarmSubsribe = new Subsribe({
+				type : SubsribeType.sectionAlarm,
+				onMessage : appendData_sectionAlarm,
+			});
+		};
+
+		//页面关闭
+		$scope.close = function() {
+			if (regionSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficStatus)) {
+					regionSubsribe.remove();
+				}
+			}
+			if (sectionSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficFlow)) {
+					sectionSubsribe.remove();
+				}
+			}
+			if (weatherSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficWeather)) {
+					weatherSubsribe.remove();
+				}
+			}
+			if (visibilitySubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficVisibility)) {
+					visibilitySubsribe.remove();
+				}
+			}
+			if (roadsensorSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficRoadsensor)) {
+					roadsensorSubsribe.remove();
+				}
+			}
+			if (eventSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficEvent)) {
+					eventSubsribe.remove();
+				}
+			}
+			if (visibilityAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.visibilityAlarm)) {
+					visibilityAlarmSubsribe.remove();
+				}
+			}
+			if (windAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.windAlarm)) {
+					windAlarmSubsribe.remove();
+				}
+			}
+			if (temperatureAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.temperatureAlarm)) {
+					temperatureAlarmSubsribe.remove();
+				}
+			}
+			if (roadCondtionAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.roadCondtionAlarm)) {
+					roadCondtionAlarmSubsribe.remove();
+				}
+			}
+			if (waterThicknessAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.waterThicknessAlarm)) {
+					waterThicknessAlarmSubsribe.remove();
+				}
+			}
+			if (sectionAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.sectionAlarm)) {
+					sectionAlarmSubsribe.remove();
+				}
+			}
+			if(childScopeList.clearTimeOutForCount){
+				childScopeList.clearTimeOutForCount();
+			}
+		};
+		//页面进入
+		$scope.enter = function() {
+			if (regionSubsribe) {
+				regionSubsribe.init();
+			}
+			if (sectionSubsribe) {
+				if (isSecGrid || isSecLayer) {
+					sectionSubsribe.init();
+				}
+			}
+			if (weatherSubsribe) {
+				if (isWeaGrid || isWeaLayer) {
+					weatherSubsribe.init();
+				}
+			}
+			if (visibilitySubsribe) {
+				if (isWeaGrid || isWeaLayer) {
+					visibilitySubsribe.init();
+				}
+			}
+			if (roadsensorSubsribe) {
+				if (isWeaGrid || isWeaLayer) {
+					roadsensorSubsribe.init();
+				}
+			}
+			if (eventSubsribe) {
+				eventSubsribe.init();
+			}
+			if (visibilityAlarmSubsribe) {
+				visibilityAlarmSubsribe.init();
+			}
+			if (windAlarmSubsribe) {
+				windAlarmSubsribe.init();
+			}
+			if (temperatureAlarmSubsribe) {
+				temperatureAlarmSubsribe.init();
+			}
+			if (roadCondtionAlarmSubsribe) {
+				roadCondtionAlarmSubsribe.init();
+			}
+			if (waterThicknessAlarmSubsribe) {
+				waterThicknessAlarmSubsribe.init();
+			}
+			if (sectionAlarmSubsribe) {
+				sectionAlarmSubsribe.init();
+			}
+			if(childScopeList.setTimeOutForCount){
+				childScopeList.setTimeOutForCount();
+			}
+		};
+		//离开页面
+		$scope.leave = function() {
+			if (regionSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficStatus)) {
+					regionSubsribe.remove();
+				}
+			}
+			if (sectionSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficFlow)) {
+					sectionSubsribe.remove();
+				}
+			}
+			if (weatherSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficWeather)) {
+					weatherSubsribe.remove();
+				}
+			}
+			if (visibilitySubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficVisibility)) {
+					visibilitySubsribe.remove();
+				}
+			}
+			if (roadsensorSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficRoadsensor)) {
+					roadsensorSubsribe.remove();
+				}
+			}
+			if (eventSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficEvent)) {
+					eventSubsribe.remove();
+				}
+			}
+			if (visibilityAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.visibilityAlarm)) {
+					visibilityAlarmSubsribe.remove();
+				}
+			}
+			if (windAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.windAlarm)) {
+					windAlarmSubsribe.remove();
+				}
+			}
+			if (temperatureAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.temperatureAlarm)) {
+					temperatureAlarmSubsribe.remove();
+				}
+			}
+			if (roadCondtionAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.roadCondtionAlarm)) {
+					roadCondtionAlarmSubsribe.remove();
+				}
+			}
+			if (waterThicknessAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.waterThicknessAlarm)) {
+					waterThicknessAlarmSubsribe.remove();
+				}
+			}
+			if (sectionAlarmSubsribe) {
+				if ($rootScope.$webSocket.hasSubsribe(SubsribeType.sectionAlarm)) {
+					sectionAlarmSubsribe.remove();
+				}
+			}
+			if(childScopeList.clearTimeOutForCount){
+				childScopeList.clearTimeOutForCount();
+			}
+		};
+
+		//初始化地图及相关图层和样式
+		function initData() {
+			tempLayer = new OpenLayers.Layer.Vector("temp");
+			cyMap = new CYMap($scope.$("#map")[0], {
+				locationLayer : tempLayer
+			});
+			//注册地图监听事件
+			layerListeners = {
+				featureover : function(e) {
+					if (e.feature.attributes.tips) {
+						var centerLonLat = e.feature.geometry.getBounds().getCenterLonLat();
+						//var popup = new OpenLayers.Popup.FramedCloud("info", e.feature.geometry.getBounds().getCenterLonLat(), null, e.feature.attributes.tips, null, true, null);
+						var popup = new OpenLayers.Popup.Anchored("chicken", centerLonLat, new OpenLayers.Size(160, 30), e.feature.attributes.tips, null, true);
+						popup.setOpacity(0.7);
+						popup.setBorder("1px solid gray");
+						//popup.setBackgroundColor("gray");
+						//popup.fixedRelativePosition = true;
+						e.feature.popup = popup;
+						cyMap.map.addPopup(popup);
+					}
+				},
+				featureout : function(e) {
+					if (e.feature.popup && e.feature.popup != null) {
+						cyMap.map.removePopup(e.feature.popup);
+						e.feature.popup.destroy();
+						e.feature.popup = null;
+					}
+				},
+				featureclick : function(e) {
+					if (e.feature.popup) {
+						cyMap.map.removePopup(e.feature.popup);
+						e.feature.popup.destroy();
+						e.feature.popup = null;
+					}
+					$scope.openDialog(e);
+				}
+			};
+			stateLayer = new OpenLayers.Layer.Vector("state", {
+				eventListeners : layerListeners
+			});
+			alarmLayer = new OpenLayers.Layer.Vector("alarm", {
+				eventListeners : layerListeners
+			});
+			// pointLayer = new OpenLayers.Layer.Vector("point", {
+			// eventListeners : layerListeners
+			// });
+			// polygonLayer = new OpenLayers.Layer.Vector("polygon", {
+			// eventListeners : layerListeners
+			// });
+
+			strategy = new OpenLayers.Strategy.Cluster();
+			strategy.distance = distance || strategy.distance;
+			strategy.threshold = threshold || strategy.threshold;
+
+			pointLayer = new OpenLayers.Layer.Vector("point", {
+				strategies : [strategy],
+				styleMap : new OpenLayers.StyleMap({
+					"default" : style_cluster,
+					"select" : {
+						fillColor : "#8aeeef",
+						strokeColor : "#32a8a9"
+					}
+				}),
+				eventListeners : layerListeners
+			});
+
+			// var select = new OpenLayers.Control.SelectFeature(
+			// pointLayer, {hover: true}
+			// );
+			// cyMap.map.addControl(select);
+			// select.activate();
+			// clusters.events.on({"featureclick": display});
+			cyMap.map.addLayers([stateLayer, pointLayer, alarmLayer, tempLayer]);
+			stateLayer.setVisibility(false);
+			//添加缩放事件
+			cyMap.map.events.on({
+				"zoomend" : zoomedEvent
+			});
+
+		}
+
+		//初始化地图工具
+		function initBaseTool() {
+			var gisBaseToolControl = new GisBaseToolControl({
+				mapObj : cyMap.map, //地图基本工具栏附加到的地图对象
+				dom : $scope.$("#baseTool")[0]
+			});
+		}
+
+		//聚合样式
+		var style_cluster = new OpenLayers.Style({
+			pointRadius : "${radius}",
+			fillColor : "#ffcc66",
+			fillOpacity : 0.8,
+			strokeColor : "#cc6633",
+			strokeWidth : "${width}",
+			strokeOpacity : 0.8,
+			label : "${name}",
+			fontSize : "10px"
+		}, {
+			context : {
+				width : function(feature) {
+					return (feature.cluster) ? 2 : 1;
+				},
+				radius : function(feature) {
+					var pix = 2;
+					if (feature.cluster) {
+						pix = Math.min(feature.attributes.count, 7) + 6;
+					}
+					return pix;
+				},
+				name : function(feature) {
+					var name;
+					if (feature.attributes.count > 1) {
+						name = feature.attributes.count;
+					} else {
+						name = 1;
+						//feature.cluster[0].attributes.name;
+					}
+					return name;
+				}
+			}
+		});
+		//重设聚合
+		function resetCluster() {
+			if (!pointLayer.options.strategies) {
+				var index = cyMap.map.getLayerIndex(pointLayer);
+				cyMap.map.removeLayer(pointLayer);
+				pointLayer = new OpenLayers.Layer.Vector("point", {
+					strategies : [strategy],
+					styleMap : new OpenLayers.StyleMap({
+						"default" : style_cluster,
+						"select" : {
+							fillColor : "#8aeeef",
+							strokeColor : "#32a8a9"
+						}
+					}),
+					eventListeners : layerListeners
+				});
+				cyMap.map.addLayer(pointLayer);
+				cyMap.map.setLayerIndex(pointLayer, index);
+			}
+			pointLayer.removeAllFeatures();
+			pointLayer.addFeatures(allFeatures);
+		}
+
+		//移除聚合图层，添加非聚合图层
+		function removeCluster() {
+			cyMap.map.removeLayer(pointLayer);
+			pointLayer = new OpenLayers.Layer.Vector("point", {
+				eventListeners : layerListeners
+			});
+			cyMap.map.addLayer(pointLayer);
+			pointLayer.addFeatures(allFeatures);
+		}
+
+		//从总集合中删除一类
+		function deletefeature(layerTpe) {
+			for (var i = 0; i < allFeatures.length; i++) {
+				if (allFeatures[i].attributes.layerType == layerTpe) {
+					allFeatures.splice(i--, 1);
+				}
+			}
+		}
+		//从总集合中删除一个图元
+		function deletefeatureFromAll(feature) {
+			for (var i = 0; i < allFeatures.length; i++) {
+				if (allFeatures[i].id == feature.id) {
+					allFeatures.splice(i--, 1);
+				}
+			}
+		}
+
+
+
+		var sectionAlarmFeatures = [];
+		//断面断流预警订阅的回调函数
+		function appendData_sectionAlarm(data) {
+			var data = $.parseJSON(data);
+			data.startAlarmTime = formatDateTimeStamp(data.startAlarmTime);
+			data.endAlarmTime = formatDateTimeStamp(data.endAlarmTime);
+			if (data.alarmGrade == "0") {
+				//如果预警等级为0，则删除该预警点
+				for (var i = 0; i < sectionAlarmFeatures.length; i++) {
+					if (data.sectionId == sectionAlarmFeatures[i].attributes.sectionId) {
+						var feature_new = sectionAlarmFeatures[i].clone();
+						var style = {
+							externalGraphic : "themes/default/images/layers/section03.png",
+							graphicWidth : 20,
+							graphicHeight : 20
+						};
+						feature_new.style = style;
+						feature_new.attributes.layerType = "section";
+						feature_new.attributes.dealMethod = null;
+						feature_new.attributes.validity = null;
+						feature_new.attributes.sectionId = null;
+						feature_new.attributes.directionType = null;
+
+						sectionFeatures.push(feature_new);
+						//添加到气象图层中
+						if (isSecLayer) {
+							allFeatures.push(feature_new);
+							//pointLayer.addFeatures(feature_new);
+							if (pointLayer.options.strategies) {
+								resetCluster();
+							} else {
+								pointLayer.addFeatures(feature_new);
+							}
+						}
+
+						if (sectionAlarmFeatures[i].popup && sectionAlarmFeatures[i].popup != null) {
+							cyMap.map.removePopup(sectionAlarmFeatures[i].popup);
+							sectionAlarmFeatures[i].popup.destroy();
+							sectionAlarmFeatures[i].popup = null;
+						}
+						//删除预警图元
+						//pointLayer.removeFeatures(sectionAlarmFeatures[i]);
+						alarmLayer.removeFeatures(sectionAlarmFeatures[i]);
+						sectionAlarmFeatures.splice(i--, 1);
+						//修改气象预警数量值
+						childScopeList.refreshCount({
+							"secAlarmCount" : sectionAlarmFeatures.length
+						});
+					}
+				}
+			} else {
+				var isExist = false;
+				for (var i = 0; i < sectionAlarmFeatures.length; i++) {
+					if (data.sectionId == sectionAlarmFeatures[i].attributes.sectionId) {
+						//如果已经存在于预警表修改具体参数
+						//pointLayer.removeFeatures(sectionAlarmFeatures[i]);
+						//更新预警数据,根据预警等级的不同修改图标
+						$.extend(sectionAlarmFeatures[i].attributes, data);
+						//修改预警图标的样式，暂无多种预警样式图标
+						//pointLayer.addFeatures(sectionAlarmFeatures[i]);
+					
+						alarmLayer.drawFeature(sectionAlarmFeatures[i]);
+						isExist = true;
+					}
+				}
+				if (!isExist) {
+					//如果不存在于预警表，添加预警
+					for (var i = 0; i < sectionFeatures.length; i++) {
+						for (var j = 0; j < sectionFeatures[i].attributes.sections.length; j++) {
+							var sec = sectionFeatures[i].attributes.sections[j];
+							if (sec.sectionId == data.sectionId) {
+								//从图层中删除图标
+								if (isSecLayer) {
+									if (sectionFeatures[i].popup && sectionFeatures[i].popup != null) {
+										cyMap.map.removePopup(sectionFeatures[i].popup);
+										sectionFeatures[i].popup.destroy();
+										sectionFeatures[i].popup = null;
+									}
+									//从总表中删除
+									deletefeatureFromAll(sectionFeatures[i]);
+									//pointLayer.removeFeatures(sectionFeatures[i]);
+									if (pointLayer.options.strategies) {
+										resetCluster();
+									} else {
+										pointLayer.removeFeatures(sectionFeatures[i]);
+									}
+								}
+								var style = {
+									graphicWidth : 20,
+									graphicHeight : 26,
+									externalGraphic : "themes/default/images/alarmIcon/506-02-4.png"
+								};
+								var feature_new = sectionFeatures[i].clone();
+								$.extend(feature_new.attributes, data);
+								feature_new.attributes.layerType = "sectionAlarm";
+								feature_new.attributes.directionType = sec.directionType;
+								feature_new.style = style;
+								//添加到预警图层中
+								sectionAlarmFeatures.push(feature_new);
+								alarmLayer.addFeatures(feature_new);
+								//pointLayer.addFeatures(feature_new);
+
+								sectionFeatures.splice(i--, 1);
+								//修改预警数量值
+								childScopeList.refreshCount({
+									"secAlarmCount" : sectionAlarmFeatures.length
+								});
+							}
+						}
+					}
+				}
+			}
+			//console.log("断面预警" + sectionAlarmFeatures.length + "断面" + sectionFeatures.length);
+		}
+		
+		//存储气象预警图元 的集合
+		var weatherAlarmFeatures = [];
+		//气象预警订阅的回调函数
+		function appendData_visibilityAlarm(data) {
+			var data = $.parseJSON(data);
+			data.startAlarmTime = formatDateTimeStamp(data.startAlarmTime);
+			data.endAlarmTime = formatDateTimeStamp(data.endAlarmTime);
+			var min;
+			var max;
+			if (data.alarmValueId != null) {
+				var arr = data.alarmValueId.split(",");
+				if (arr.length == 2) {
+					min = arr[0];
+					max = arr[1];
+				}
+			}
+
+			if (data.alarmGrade == "0") {
+				//如果预警等级为0，则删除该预警点
+				for (var i = 0; i < weatherAlarmFeatures.length; i++) {
+					if (data.deviceSysNbr == weatherAlarmFeatures[i].attributes.deviceSysNbr) {
+						var feature_new = weatherAlarmFeatures[i].clone();
+						feature_new.style = weatherStyleObj[feature_new.attributes.weatherType];
+						feature_new.attributes.layerType = "weather";
+						feature_new.attributes.dealMethod = null;
+						feature_new.attributes.validity = null;
+						weatherFeatures.push(feature_new);
+
+						//添加到气象图层中
+						if (isWeaLayer) {
+							//pointLayer.addFeatures(feature_new);
+							allFeatures.push(feature_new);
+							if (pointLayer.options.strategies) {
+								resetCluster();
+							} else {
+								pointLayer.addFeatures(feature_new);
+							}
+						}
+
+						if (weatherAlarmFeatures[i].popup && weatherAlarmFeatures[i].popup != null) {
+							cyMap.map.removePopup(weatherAlarmFeatures[i].popup);
+							weatherAlarmFeatures[i].popup.destroy();
+							weatherAlarmFeatures[i].popup = null;
+						}
+						//删除预警图元
+						//pointLayer.removeFeatures(weatherAlarmFeatures[i]);
+						alarmLayer.removeFeatures(weatherAlarmFeatures[i]);
+						weatherAlarmFeatures.splice(i--, 1);
+						//修改气象预警数量值
+						childScopeList.refreshCount({
+							"weaAlarmCount" : weatherAlarmFeatures.length
+						});
+					}
+				}
+			} else {
+				var isExist = false;
+				for (var i = 0; i < weatherAlarmFeatures.length; i++) {
+					if (data.deviceSysNbr == weatherAlarmFeatures[i].attributes.deviceSysNbr) {
+						//如果已经存在于预警表修改具体参数
+						//pointLayer.removeFeatures(weatherAlarmFeatures[i]);
+						//更新预警数据,根据预警等级的不同修改图标
+						//var startTime=weatherAlarmFeatures[i].attributes.startAlarmTime;
+						$.extend(weatherAlarmFeatures[i].attributes, data);
+						//weatherAlarmFeatures[i].attributes.startAlarmTime=startTime;
+						weatherAlarmFeatures[i].attributes.min = min;
+						weatherAlarmFeatures[i].attributes.max = max;
+						// var imgUrl="themes/default/images/alarmIcon/"+
+							// weatherAlarmFeatures[i].attributes.alarmEventType+"-"+
+							// weatherAlarmFeatures[i].attributes.subAlarmEvent+"-"+
+							// weatherAlarmFeatures[i].attributes.alarmGrade+".png";
+						// //修改预警图标的样式，暂无多种预警样式图标
+						// weatherAlarmFeatures[i].style={
+							// graphicWidth : 20,
+							// graphicHeight : 26,
+							// externalGraphic : imgUrl
+						// };		
+						alarmLayer.drawFeature(weatherAlarmFeatures[i]);
+						isExist = true;
+					}
+				}
+				if (!isExist) {
+					//如果不存在于预警表，添加预警
+					for (var i = 0; i < weatherFeatures.length; i++) {
+						if (data.deviceSysNbr == weatherFeatures[i].attributes.deviceSysNbr) {
+							//从气象图层中删除图标
+							if (isWeaLayer) {
+								if (weatherFeatures[i].popup && weatherFeatures[i].popup != null) {
+									cyMap.map.removePopup(weatherFeatures[i].popup);
+									weatherFeatures[i].popup.destroy();
+									weatherFeatures[i].popup = null;
+								}
+								//从总表中删除
+								deletefeatureFromAll(weatherFeatures[i]);
+								//pointLayer.removeFeatures(weatherFeatures[i]);
+								if (pointLayer.options.strategies) {
+									resetCluster();
+								} else {
+									pointLayer.removeFeatures(weatherFeatures[i]);
+								}
+							}
+							// var imgUrl="themes/default/images/alarmIcon/"+
+							// weatherAlarmFeatures[i].attributes.alarmEventType+"-"+
+							// weatherAlarmFeatures[i].attributes.subAlarmEvent+"-"+
+							// weatherAlarmFeatures[i].attributes.alarmGrade+".png";
+							// var style = {
+								// graphicWidth : 20,
+								// graphicHeight : 26,
+								// externalGraphic : imgUrl
+							// };
+							
+							var style = {
+								graphicWidth : 24,
+								graphicHeight : 24,
+								externalGraphic : "themes/default/images/alarm_2.gif"
+							};
+							var feature_new = weatherFeatures[i].clone();
+							$.extend(feature_new.attributes, data);
+							feature_new.attributes.layerType = "weatherAlarm";
+							feature_new.attributes.min = min;
+							feature_new.attributes.max = max;
+							feature_new.style = style;
+							//添加到预警图层中
+							weatherAlarmFeatures.push(feature_new);
+							//pointLayer.addFeatures(feature_new);
+							alarmLayer.addFeatures(feature_new);
+
+							weatherFeatures.splice(i--, 1);
+
+							//修改气象预警数量值
+							childScopeList.refreshCount({
+								"weaAlarmCount" : weatherAlarmFeatures.length
+							});
+						}
+					}
+				}
+			}
+		}
+
+		//事件检测订阅的回调函数
+		function appendData_event(data) {
+			var data = $.parseJSON(data);
+			data.startAlarmTime = formatDateTimeStamp(data.startAlarmTime);
+			data.endAlarmTime = formatDateTimeStamp(data.endAlarmTime);
+			var isExist = false;
+			for (var i = 0; i < eventAlarmFeatures.length; i++) {
+				if (data.deviceSysNbr == eventAlarmFeatures[i].attributes.deviceSysNbr) {
+					//如果已经存在于预警表修改具体参数
+					//pointLayer.removeFeatures(eventAlarmFeatures[i]);
+					//更新预警数据
+					$.extend(eventAlarmFeatures[i].attributes, data);
+					alarmLayer.drawFeature(eventAlarmFeatures[i]);
+					isExist = true;
+				}
+			}
+			if (!isExist) {
+				for (var index = 0; index < eventFeatures.length; index++) {
+					if (data.deviceSysNbr == eventFeatures[index].attributes.deviceSysNbr) {
+						var style = {
+							graphicWidth : 24,
+							graphicHeight : 24,
+							externalGraphic : "themes/default/images/alarm_1.gif"
+						};
+						var feature_new = eventFeatures[index].clone();
+						$.extend(feature_new.attributes, data);
+						feature_new.attributes.layerType = "eventAlarm";
+						feature_new.style = style;
+						eventAlarmFeatures.push(feature_new);
+						//pointLayer.addFeatures(feature_new);
+						alarmLayer.addFeatures(feature_new);
+						if (isEvent) {
+							if (eventFeatures[index].popup && eventFeatures[index].popup != null) {
+								cyMap.map.removePopup(eventFeatures[index].popup);
+								eventFeatures[index].popup.destroy();
+								eventFeatures[index].popup = null;
+							}
+							//pointLayer.removeFeatures(eventFeatures[index]);
+							deletefeatureFromAll(eventFeatures[index]);
+							if (pointLayer.options.strategies) {
+								resetCluster();
+							} else {
+								pointLayer.removeFeatures(eventFeatures[index]);
+							}
+						}
+						eventFeatures.splice(index--, 1);
+						//定时删除预警图标
+						setTimeout(function() {
+							var isInAlarm = false;
+							//从预警数组中删除预警元素
+							if (eventAlarmFeatures.indexOf(feature_new) > -1) {
+								eventAlarmFeatures.splice(eventAlarmFeatures.indexOf(feature_new), 1);
+								if (feature_new.popup && feature_new.popup != null) {
+									cyMap.map.removePopup(feature_new.popup);
+									feature_new.popup.destroy();
+									feature_new.popup = null;
+								}
+								//pointLayer.removeFeatures(feature_new);
+								alarmLayer.removeFeatures(feature_new);
+								isInAlarm = true;
+							}
+							if (!isInAlarm) {
+								return;
+							}
+							var style_event={
+								graphicWidth : 20,
+								graphicHeight:20,
+								externalGraphic:"themes/default/images/layers/event03.png"
+							};
+							feature_new.style = style_event;
+							feature_new.attributes.layerType = "event";
+							feature_new.attributes.dealMethod = null;
+							feature_new.attributes.validity = null;
+							feature_new.attributes.subAlarmEvent = null;
+							feature_new.attributes.alarmEventId = null;
+							feature_new.attributes.alarmDesc = null;
+							feature_new.attributes.startAlarmTime = null;
+							feature_new.attributes.endAlarmTime = null;
+
+							eventFeatures.push(feature_new);
+							if (isEvent) {
+								allFeatures.push(feature_new);
+								//pointLayer.addFeatures(feature_new);
+								if (pointLayer.options.strategies) {
+									resetCluster();
+								} else {
+									pointLayer.addFeatures(feature_new);
+								}
+							}
+						}, 90*1000);
+					}
+				}
+			}
+		}
+
+		//断面订阅回调函数
+		function appendData_section(data) {
+			var data = $.parseJSON(data);
+			data.updateTime = formatDateTimeStamp(data.updateTime);
+			//更新断面图元属性数据
+			if (sectionFeatures.length) {
+				for (var index in sectionFeatures) {
+					for (var ind in sectionFeatures[index].attributes.sections) {
+						if (sectionFeatures[index].attributes.sections[ind].sectionId == data.sectionId) {
+							$.extend(sectionFeatures[index].attributes.sections[ind], data);
+						}
+					}
+				}
+			}
+			//打开页面才能调用、更新实时断面列表
+			var win = $scope.$("#panel-right");
+			if (win.panel("options").title == "断面流量") {
+				if (childScopeList.refreshSection) {
+					childScopeList.refreshSection(data);
+				}
+			}
+		}
+
+		//根据打开的子页面窗口判断气象种类
+		var weatherPage;
+		//根据打开的子页面窗口改变气象种类
+		function changeWeatherKind(value) {
+			weatherPage = value;
+		}
+
+		//气象仪订阅回调函数
+		function appendData_weather(data) {
+			var data = $.parseJSON(data);
+			data.recordTime = formatDateTimeStamp(data.recordTime);
+			//设备类型
+			var weatherType;
+			for (var index in weatherFeatures) {
+				if (weatherFeatures[index].attributes.deviceSysNbr == data.deviceSysNbr) {
+					$.extend(weatherFeatures[index].attributes, data);
+					weatherType = weatherFeatures[index].attributes.weatherType;
+				}
+			}
+			//打开页面才能调用、更新实时列表
+			var win = $scope.$("#panel-right");
+			if (win.panel("options").title == "交通气象") {
+				if (weatherType == "1009") {
+					if (weatherPage == "njdy") {
+						childScopeList.refreshNjd(data);
+					}
+				} else if (weatherType == "1010") {
+					if (weatherPage == "qxy") {
+						childScopeList.refreshQxy(data);
+					}
+				} else if (weatherType == "1008") {
+					if (weatherPage == "lg") {
+						childScopeList.refreshLg(data);
+					}
+				}
+			}
+		}
+
+		//实时路况订阅的回调函数
+		function appendData_region(data) {
+			//var data=$.parseJSON(data);
+			//debugger;
+			data.updateTime = formatDateTimeStamp(data.updateTime);
+			var features = stateLayer.getFeaturesByAttribute("regionalId", data.regionalId);
+			if (features.length != 1) {
+				return;
+			}
+			var feature = features[0];
+			if (data.trafficState != feature.attributes.trafficState) {
+				//feature.style.strokeColor=stateStyle[data.trafficState].strokeColor;
+				feature.style = stateStyle[data.trafficState];
+				stateNum[data.trafficState]++;
+				stateNum[feature.attributes.trafficState]--;
+				//刷新重点道路页面内容
+				childScopeList.refreshImportant(feature, data);
+				//刷新数量页面区间流量内容
+				childScopeList.refreshCount({
+					"regAlarmCount" : stateNum["3"]
+				});
+				//刷新饼图
+				showPie();
+				stateLayer.drawFeature(feature);
+			}
+			var arr = {};
+			$.extend(arr, feature.attributes, data);
+			feature.attributes = arr;
+			//更新图层
+			//stateLayer.addFeatures(feature.clone());
+			//stateLayer.removeFeatures(feature);
+			//打开页面才能调用、更新实时路况列表
+			var win = $scope.$("#panel-right");
+			if (win.panel("options").title == "实时路况") {
+				if (childScopeList.refrashState) {
+					childScopeList.refrashState(data);
+				}
+			}
+			//暂时接收不到区间流量数据，预留
+			if (win.panel("options").title == "区间状态") {
+				if (childScopeList.refreshRegion) {
+					childScopeList.refreshRegion(data);
+				}
+			}
+		}
+
+		//无路况
+		var style0 = {
+			strokeColor : "gray",
+			strokeWidth : 2,
+			fillOpacity : "0.8"
+		};
+		//畅行
+		var style1 = {
+			strokeColor : "#0D842B",
+			strokeWidth : 2,
+			fillOpacity : "0.8"
+		};
+		//缓行
+		var style2 = {
+			strokeColor : "#FF8A3E",
+			strokeWidth : 2,
+			fillOpacity : "0.8"
+		};
+		//拥堵
+		var style3 = {
+			strokeColor : "#e80000",
+			strokeWidth : 2,
+			fillOpacity : "0.8"
+		};
+		//各种状态样式
+		var stateStyle = {
+			"0" : style0,
+			"1" : style1,
+			"2" : style2,
+			"3" : style3
+		};
+		//各种状态数量
+		var stateNum = {
+			"0" : 0,
+			"1" : 0,
+			"2" : 0,
+			"3" : 0
+		};
+		//修改路段的样式
+		function changeStrokeWidth() {
+			var zoom = cyMap.map.getZoom();
+			//线条的粗细
+			var strokeWidth = 2;
+			//在根据级别设置线条的除夕
+			if (zoom == 0)
+				strokeWidth = 1.5;
+			else if (zoom == 1)
+				strokeWidth = 1.5;
+			else if (zoom == 2)
+				strokeWidth = 2;
+			else if (zoom == 3)
+				strokeWidth = 2;
+			else if (zoom == 4)
+				strokeWidth = 2.5;
+			else if (zoom == 5)
+				strokeWidth = 2.5;
+			else
+				strokeWidth = 2.5;
+				
+			style0.strokeWidth = strokeWidth;
+			style1.strokeWidth = strokeWidth;
+			style2.strokeWidth = strokeWidth;
+			style3.strokeWidth = strokeWidth;
+		}
+
+		//读取道路数据，包括已经被干预的路况数据
+		function readRoads() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/mapRoad/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						if(data[index].regionalId)
+							{
+							var geometry = transformFromWktToGeometry(data[index].wkt).clone();
+							geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+							var str = "道路名称：" + data[index].name;
+							var arr = {};
+							$.extend(arr, data[index]);
+							//arr.tips = str;
+							arr.layerType = "road";
+							//空状态转为无状态
+							if (!data[index].trafficState) {
+								arr.trafficState = "0";
+							}
+							var state = arr.trafficState;
+							stateNum[state]++;
+							//修改路段的样式
+							changeStrokeWidth();
+							stateLayer.addFeatures(transtromRoad(arr, stateStyle[state]));
+							
+						}
+					}
+					showPie();
+					showImportant();
+					showCount();
+				},
+				fail : function(errMsg) {
+				}
+			});
+		}
+
+		//显示路况图层
+		$scope.openStateLayer = function() {
+			stateLayer.setVisibility(true);
+		};
+		//隐藏路况图层
+		$scope.closeStateLayer = function() {
+			stateLayer.setVisibility(false);
+		};
+		//测试用
+		function add(){
+			var wkt="LINESTRING(102.92749 25.13443,102.90749 25.12443,102.96749 25.11443,102.96749 25.02699,102.96749 24.89195,102.97749 24.87195)";
+			var geometry = transformFromWktToGeometry(wkt).clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var arr={};
+			arr.wkt=wkt;
+			var fea = new OpenLayers.Feature.Vector(geometry, arr, style3);
+			stateLayer.addFeatures(fea);
+		}
+		//测试用
+		function add1(){
+			var wkt="LINESTRING(102.92749 25.13443,102.90749 25.12443,102.96749 25.11443,102.96749 25.02699,102.96749 24.89195,102.97749 24.87195)";
+			var geometry = transformFromWktToGeometry(wkt).clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var arr={};
+			arr.wkt=wkt;
+			var fea = new OpenLayers.Feature.Vector(geometry, arr, style1);
+			tempLayer.addFeatures(fea);
+		}
+		//偏移像素
+		function transtromRoad(arr, style) {
+			var resolution = cyMap.map.getResolution();
+			var geometry = transformFromWktToGeometry(arr.wkt).clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var vertices=geometry.getVertices();
+			var points=[];
+			var pixels=[];
+			//转到像素坐标的时候 如果重复舍弃此点
+			if(vertices.length>1){
+				for(var index in vertices){
+					var lonlat=new OpenLayers.LonLat(vertices[index].x,vertices[index].y);
+					var pix=cyMap.map.getPixelFromLonLat(lonlat);
+					if(jQuery.inArray(pix.x+","+pix.y, pixels)<0){
+						pixels.push(pix.x+","+pix.y);
+						points.push(vertices[index]);
+					}
+				}
+			}
+			// console.log("vertices----"+vertices.length);
+			// console.log("pixels----"+pixels.length);
+			// console.log("points----"+points.length);
+			// console.log("------------------------------");
+			var points_offset = OffsetPoint(points, iPixelOffset * resolution);
+			var geo_new = new OpenLayers.Geometry.LineString(points_offset);
+			//var fea_new = new OpenLayers.Feature.Vector(geometry, arr, style);
+			var fea_new = new OpenLayers.Feature.Vector(geo_new, arr, style);
+			return fea_new;
+		}
+
+		//缩放事件,缩放时改变线条的粗细
+		function zoomedEvent() {
+			//先取得当前地图的缩放级别
+			var zoom = cyMap.map.getZoom();
+			//大于5级删除聚合
+			if (zoom < zoomCluster) {
+				if (!pointLayer.options.strategies) {
+					resetCluster();
+				}
+			} else {
+				if (pointLayer.options.strategies) {
+					removeCluster();
+				}
+			}
+			//修改路段的样式
+			changeStrokeWidth();
+			var feas = [];
+			//循环遍历图层的features，并改变每个feature的粗细
+			for (var i = 0, len = stateLayer.features.length; i < len; i++) {
+				var featrue = stateLayer.features[i];
+				feas.push(transtromRoad(featrue.attributes,featrue.style));
+				//改变过之后再绘制一遍
+				// stateLayer.drawFeature(featrue);
+				// stateLayer.addFeatures(fea_new);
+				//stateLayer.removeFeatures(featrue);
+			}
+			stateLayer.removeAllFeatures();
+			stateLayer.addFeatures(feas);
+		}
+
+		//把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		function formatDateTimeStamp(dateTimeStamp) {
+			if (dateTimeStamp == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(dateTimeStamp);
+			return newDate.format('yyyy-MM-dd hh:mm:ss');
+		}
+
+		//地图平移至中心点
+		function moveToCenterPoint() {
+			centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			cyMap.map.panTo(centerPoint);
+		}
+
+		//加载视频图层
+		$scope.openVideo = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/selectByType",
+				params : {
+					deviceType : "03"
+				},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							graphicXOffset : -31,
+							graphicYOffset : -10,
+							externalGraphic : "themes/default/images/layers/video03.png"
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].deviceName;
+						arr.layerType = "video";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+		//关闭视频图层
+		$scope.closeVideo = function() {
+			deletefeature("video");
+			resetCluster();
+		};
+
+		//加载警务站
+		$scope.openPost = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/policePost/selectAll",
+				params : {},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							externalGraphic : "themes/default/images/layers/gangting03.png"
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].postName;
+						arr.layerType = "post";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+
+		//关闭警务站
+		$scope.closePost = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "post");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("post");
+			resetCluster();
+		};
+
+		//加载单兵图层
+		$scope.openPolice = function() {
+			$scope.closePolice();
+			$scope.$ajaxRequest({
+				url : "data/trafficMonitor/trafficState/resourceData/danbing.json",
+				params : {},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							externalGraphic : "themes/default/images/layers/09.png"
+						};
+						var str = "警员姓名：" + data[index].name + "<br>";
+						str += "所属机构：" + data[index].ssjg + "<br>";
+						str += "电话：" + data[index].tel;
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = str;
+						arr.layerType = "police";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+		//关闭单兵图层
+		$scope.closePolice = function() {
+			//var feas = pointLayer.getFeaturesByAttribute("layerType", "police");
+			//pointLayer.removeFeatures(feas);
+			deletefeature("police");
+			resetCluster();
+		};
+
+		//加载警车图层
+		$scope.openCar = function() {
+			$scope.closeCar();
+			$scope.$ajaxRequest({
+				url : "data/trafficMonitor/trafficState/resourceData/jingche.json",
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							externalGraphic : "themes/default/images/layers/08.png"
+						};
+						var str = "车牌号：" + data[index].name + "<br>";
+						str += "所属机构：" + data[index].ssjg + "<br>";
+						str += "电话：" + data[index].tel;
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = str;
+						arr.layerType = "car";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+
+		//关闭警车图层
+		$scope.closeCar = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "car");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("car");
+			resetCluster();
+		};
+
+		//加载led
+		$scope.openLed = function() {
+			$scope.closeLed();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/selectByType",
+				params : {
+					deviceType : "07"
+				},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							externalGraphic : "themes/default/images/layers/03.png"
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].deviceName;
+						arr.layerType = "led";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+
+		//关闭led
+		$scope.closeLed = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "led");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("led");
+			resetCluster();
+		};
+
+		//加载卡口
+		$scope.openKakou = function() {
+			$scope.closeKakou();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/selectByType",
+				params : {
+					deviceType : "01"
+				},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							graphicWidth : 20,
+							graphicHeight : 20,
+							externalGraphic : "themes/default/images/layers/0701.png"
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].devName;
+						arr.layerType = "kakou";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+
+		//关闭卡口
+		$scope.closeKakou = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "kakou");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("kakou");
+			resetCluster();
+		};
+
+		//显示执法服务站
+		$scope.openZhifa = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/enforceStation/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertZhifa(data[index]);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中插入执法服务站
+		function insertZhifa(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+			var style = {
+				graphicWidth : 20,
+				graphicHeight : 20,
+				externalGraphic : "themes/default/images/layers/zhifa03.png"
+			};
+
+			var arr = {};
+			$.extend(arr, data);
+			var str;
+			if (data.lawEnforceStationName) {
+				str = data.lawEnforceStationName;
+			}
+			arr.tips = str;
+			arr.layerType = "zhifa";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+			//pointLayer.addFeatures(feature);
+			allFeatures.push(feature);
+		}
+
+		//关闭执法服务站
+		$scope.closeZhifa = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "zhifa");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("zhifa");
+			resetCluster();
+		};
+		//显示超限检查站
+		$scope.openChaoxian = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/overRun/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertChaoxian(data[index]);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中加入超限检查站
+		function insertChaoxian(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var style = {
+				graphicWidth : 20,
+				graphicHeight : 20,
+				externalGraphic : "themes/default/images/layers/chaoxian03.png"
+			};
+			var arr = {};
+			$.extend(arr, data);
+			var str;
+			if (data.checkpointName) {
+				str = data.checkpointName;
+			}
+			arr.tips = str;
+			arr.layerType = "chaoxian";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+			//pointLayer.addFeatures(feature);
+			allFeatures.push(feature);
+		}
+
+		//关闭超限检查站
+		$scope.closeChaoxian = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "chaoxian");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("chaoxian");
+			resetCluster();
+		};
+
+		//显示超限检查站
+		$scope.openXiaqu = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/policeArea/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertXiaqu(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中加入超限检查站
+		function insertXiaqu(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var style = {
+				graphicWidth : 20,
+				graphicHeight : 20,
+				externalGraphic : "themes/default/images/layers/08.png"
+			};
+			var arr = {};
+			$.extend(arr, data);
+			var str = "交警辖区";
+			if (data.orgId) {
+				str = "<br>" + $scope.$getOrgName(data.orgId);
+			}
+			arr.tips = str;
+			arr.layerType = "xiaqu";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, null);
+			polygonLayer.addFeatures(feature);
+		}
+
+		//关闭超限检查站
+		$scope.closeXiaqu = function() {
+			var feas = polygonLayer.getFeaturesByAttribute("layerType", "xiaqu");
+			polygonLayer.removeFeatures(feas);
+		};
+
+		//缓存事件图元
+		var eventFeatures = [];
+		var eventAlarmFeatures = [];
+		function readEvent() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/selectByType",
+				params : {
+					deviceType : "08"
+				},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							externalGraphic : "themes/default/images/layers/event03.png",
+							graphicWidth : 20,
+							graphicHeight : 20
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].deviceName;
+						arr.layerType = "event";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						eventFeatures.push(feature);
+					}
+				},
+				fail : function() {
+				}
+			});
+		}
+
+		//加载气象图层
+		$scope.openEvent = function() {
+			//pointLayer.addFeatures(eventFeatures);
+			for (var index in eventFeatures) {
+				var feature = eventFeatures[index];
+				allFeatures.push(feature);
+			}
+			resetCluster();
+			isEvent = true;
+		};
+		//隐藏气象图层
+		$scope.closeEvent = function() {
+			//pointLayer.removeFeatures(eventFeatures);
+			deletefeature("event");
+			resetCluster();
+			isEvent = false;
+		};
+
+		//缓存气象图元
+		var weatherFeatures = [];
+		var weatherStyleObj = {
+			"1008" : {
+				externalGraphic : "themes/default/images/layers/lg03.png",
+				graphicWidth : 20,
+				graphicHeight : 20,
+				graphicXOffset : 11,
+				graphicYOffset : -10,
+				cursor : "pointer"
+			},
+			"1009" : {
+				externalGraphic : "themes/default/images/layers/njdy03.png",
+				graphicWidth : 20,
+				graphicHeight : 20,
+				graphicXOffset : 11,
+				graphicYOffset : -10,
+				cursor : "pointer"
+			},
+			"1010" : {
+				externalGraphic : "themes/default/images/layers/weather03.png",
+				graphicWidth : 20,
+				graphicHeight : 20,
+				graphicXOffset : 11,
+				graphicYOffset : -10,
+				cursor : "pointer"
+			}
+		};
+		function readWeather() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/selectByType",
+				params : {
+					deviceType : "05"
+				},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style;
+						if (data[index].weatherType) {
+							style = weatherStyleObj[data[index].weatherType];
+						} else {
+							style = weatherStyleObj["1010"];
+						}
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].deviceName;
+						arr.layerType = "weather";
+						style.title = data[index].deviceName;
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						weatherFeatures.push(feature);
+					}
+				},
+				fail : function() {
+				}
+			});
+		}
+
+		//加载气象图层
+		$scope.openWeather = function() {
+			//pointLayer.addFeatures(weatherFeatures);
+			for (var index in weatherFeatures) {
+				var feature = weatherFeatures[index];
+				allFeatures.push(feature);
+			}
+			resetCluster();
+			isWeaLayer = true;
+			if (!weatherSubsribe) {
+				//订阅气象
+				weatherSubsribe = new Subsribe({
+					type : SubsribeType.trafficWeather,
+					onMessage : appendData_weather
+				});
+			} else {
+				//判断是否已订阅
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficWeather)) {
+					weatherSubsribe.init();
+				}
+			}
+			if (!visibilitySubsribe) {
+				visibilitySubsribe = new Subsribe({
+					type : SubsribeType.trafficVisibility,
+					onMessage : appendData_weather
+				});
+			} else {
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficVisibility)) {
+					visibilitySubsribe.init();
+				}
+			}
+
+			if (!roadsensorSubsribe) {
+				roadsensorSubsribe = new Subsribe({
+					type : SubsribeType.trafficRoadsensor,
+					onMessage : appendData_weather
+				});
+			} else {
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficRoadsensor)) {
+					roadsensorSubsribe.init();
+				}
+			}
+		};
+
+		//加载气象图层
+		$scope.closeWeather = function() {
+			// if(weatherFeatures.length>0){
+			// pointLayer.removeFeatures(weatherFeatures);
+			// }
+			deletefeature("weather");
+			resetCluster();
+			isWeaLayer = false;
+			if (!isWeaGrid) {
+				weatherSubsribe.remove();
+				visibilitySubsribe.remove();
+				roadsensorSubsribe.remove();
+			}
+		};
+		var sectionFeatures = [];
+
+		function readSections() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficState/multiple/selectSiteSections",
+				success : function(data) {
+					for (var index in data) {
+						if (data[index].siteLongitude && data[index].siteLatitude) {
+							var wkt = "POINT(" + data[index].siteLongitude + " " + data[index].siteLatitude + ")";
+							var geometry = wkt_c.read(wkt).geometry.clone();
+							geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+							var style;
+							style = {
+								externalGraphic : "themes/default/images/layers/section03.png",
+								graphicWidth : 20,
+								graphicHeight : 20
+							};
+							var str = data[index].siteName;
+							//siteName;
+							var arr = {};
+							$.extend(arr, data[index]);
+							arr.tips = str;
+							arr.layerType = "section";
+							var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+							sectionFeatures.push(feature);
+
+						}
+					}
+				},
+				fail : function() {
+				}
+			});
+		}
+
+		//读取断面实时数据，加载到地图上
+		$scope.openSection = function() {
+			// if(sectionFeatures.length>0){
+			// pointLayer.addFeatures(sectionFeatures);
+			// }
+			for (var index in sectionFeatures) {
+				var feature = sectionFeatures[index];
+				allFeatures.push(feature);
+			}
+			resetCluster();
+			isSecLayer = true;
+			if (!sectionSubsribe) {
+				//订阅断面流量
+				sectionSubsribe = new Subsribe({
+					type : SubsribeType.trafficFlow,
+					onMessage : appendData_section
+				});
+			} else {
+				//判断是否已订阅
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficFlow)) {
+					sectionSubsribe.init();
+				}
+			}
+		};
+		//关闭断面图层
+		$scope.closeSection = function() {
+			// if(sectionFeatures.length>0){
+			// pointLayer.removeFeatures(sectionFeatures);
+			// }
+			deletefeature("section");
+			resetCluster();
+			isSecLayer = false;
+			if (!isSecGrid) {
+				sectionSubsribe.remove();
+			}
+		};
+		//加载“有效的”交通管制图层
+		$scope.openCone = function() {
+			$scope.closeCone();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficControl/selectValid",
+				params : {},
+				success : function(data) {
+					for (var index in data) {
+						var geometry = wkt_c.read(data[index].lonLat).geometry.clone();
+						geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+						var style = {
+							externalGraphic : "themes/default/images/layers/control03.png",
+							graphicWidth : 20,
+							graphicHeight : 20
+						};
+						var arr = {};
+						$.extend(arr, data[index]);
+						arr.tips = data[index].trafficControlName;
+						arr.layerType = "cone";
+						var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+						//pointLayer.addFeatures(feature);
+						allFeatures.push(feature);
+					}
+					resetCluster();
+				},
+				fail : function() {
+				}
+			});
+		};
+
+		//加载交通管制图层
+		$scope.closeCone = function() {
+			// var feas = pointLayer.getFeaturesByAttribute("layerType", "cone");
+			// pointLayer.removeFeatures(feas);
+			deletefeature("cone");
+			resetCluster();
+		};
+
+		//根据(wkt)定位
+		function locationSite(wkt) {
+			if(tileSourceType=="ARCGIS"){
+				cyMap.location(createGeoFromWkt(wkt));
+			}else{
+				cyMap.location(rectifyGeometryAdaptGoogle(createGeoFromWkt(wkt)));
+			}
+		}
+		
+		
+		//平移至要素
+		function moveToFeature(feature) {
+			var bounds = feature.geometry.getBounds();
+			var lonlat = bounds.getCenterLonLat();
+			var zoom = cyMap.map.getZoomForExtent(bounds, false) - 1;
+			cyMap.map.setCenter(lonlat, zoom);
+		}
+		//点击不同状态流量图标平移地图
+		$scope.addSpeedRegion = function(event) {
+			if (event.currentTarget.id == "changtongFlow") {
+				var features = stateLayer.getFeaturesByAttribute("trafficState", "1");
+				if (features.length > 0) {
+					moveToMap(features);
+				}
+			} else if (event.currentTarget.id == "huanxingFlow") {
+				var features = stateLayer.getFeaturesByAttribute("trafficState", "2");
+				if (features.length > 0) {
+					moveToMap(features);
+				}
+			} else if (event.currentTarget.id == "yongduFlow") {
+				var features = stateLayer.getFeaturesByAttribute("trafficState", "3");
+				if (features.length > 0) {
+					moveToMap(features);
+				}
+			}
+		};
+		//平移地图至要素
+		function moveToMap(features) {
+			stateLayer.removeAllFeatures();
+			stateLayer.addFeatures(features);
+			cyMap.map.zoomToExtent(stateLayer.getDataExtent(), false);
+		}
+
+		//判断是否触发取消订阅断面流量
+		function changeSubsribe() {
+			var title = $scope.$("#panel-right").panel("options").title;
+			if (title != "断面流量") {
+				isSecGrid = false;
+				if (!isSecLayer) {
+					if (sectionSubsribe) {
+						if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficFlow)) {
+							sectionSubsribe.remove();
+						}
+					}
+				}
+			}
+			if (title != "交通气象") {
+				isWeaGrid = false;
+				if (!isWeaLayer) {
+					if (weatherSubsribe) {
+						if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficWeather)) {
+							weatherSubsribe.remove();
+						}
+					}
+					if (visibilitySubsribe) {
+						if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficVisibility)) {
+							visibilitySubsribe.remove();
+						}
+					}
+					if (roadsensorSubsribe) {
+						if ($rootScope.$webSocket.hasSubsribe(SubsribeType.trafficRoadsensor)) {
+							roadsensorSubsribe.remove();
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		//打开右边的Panel
+		function showRightPanel(title,url){
+			var win = $scope.$("#panel-right");
+			if (win.panel("options").title == title) {
+				if (win.is(":visible")) {
+					win.panel("close");
+				} else {
+					win.panel("open");
+				}
+			} else {
+				win.panel("setTitle", title);
+				win.panel("open").panel('refresh', url);
+			}
+		}
+		
+		//弹出交通管制信息窗口
+		$scope.showControl = function() {
+			$scope.$setParam("locationSite", locationSite);
+			showRightPanel("交通管制","tpls/trafficMonitor/trafficControl/traffic-control-detail.html");
+			//触发取消订阅断面流量
+			changeSubsribe();
+		};
+		//弹出断面流量窗口
+		$scope.showSection = function() {
+			$scope.$setParam("locationSite", locationSite);
+			$scope.$setParam("childScopeList", childScopeList);
+			showRightPanel("断面流量",'tpls/trafficMonitor/trafficFlow/section-flow-detail.html');
+			isSecGrid = true;
+			if (!sectionSubsribe) {
+				//订阅断面流量
+				sectionSubsribe = new Subsribe({
+					type : SubsribeType.trafficFlow,
+					onMessage : appendData_section
+				});
+			} else {
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficFlow)) {
+					sectionSubsribe.init();
+				}
+			}
+			//触发取消订阅
+			changeSubsribe();
+		};
+		//弹出区间流量窗口
+		$scope.showRegion = function() {
+			$scope.$setParam("locationSite", locationSite);
+			$scope.$setParam("childScopeList", childScopeList);
+			showRightPanel("区间状态",'tpls/trafficMonitor/trafficFlow/region-flow-detail.html');
+			//触发取消订阅
+			changeSubsribe();
+		};
+		//弹出实时路况窗口
+		$scope.showState = function() {
+			$scope.$setParam("locationSite", locationSite);
+			$scope.$setParam("childScopeList", childScopeList);
+			$scope.$setParam("appendData_region", appendData_region);
+			showRightPanel("实时路况",'tpls/trafficMonitor/trafficState/traffic-state-detail.html');
+			//触发取消订阅
+			changeSubsribe();
+		};
+		//显示交通气象栏
+		$scope.showWeather = function() {
+			$scope.$setParam("locationSite", locationSite);
+			$scope.$setParam("childScopeList", childScopeList);
+			$scope.$setParam("changeWeatherKind", changeWeatherKind);
+			showRightPanel("交通气象",'tpls/trafficMonitor/trafficState/weather-multiple.html');
+			isWeaGrid = true;
+			if (!weatherSubsribe) {
+				//订阅气象
+				weatherSubsribe = new Subsribe({
+					type : SubsribeType.trafficWeather,
+					onMessage : appendData_weather
+				});
+			} else {
+				//判断是否已订阅
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficWeather)) {
+					weatherSubsribe.init();
+				}
+			}
+			if (!visibilitySubsribe) {
+				visibilitySubsribe = new Subsribe({
+					type : SubsribeType.trafficVisibility,
+					onMessage : appendData_weather
+				});
+			} else {
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficVisibility)) {
+					visibilitySubsribe.init();
+				}
+			}
+
+			if (!roadsensorSubsribe) {
+				roadsensorSubsribe = new Subsribe({
+					type : SubsribeType.trafficRoadsensor,
+					onMessage : appendData_weather
+				});
+			} else {
+				if (!$rootScope.$webSocket.hasSubsribe(SubsribeType.trafficRoadsensor)) {
+					roadsensorSubsribe.init();
+				}
+			}
+			//触发取消订阅
+			changeSubsribe();
+		};
+		//控制显示预警历史框
+		$scope.showAlarmHistory = function() {
+			$scope.$setParam("locationSite", locationSite);
+			showRightPanel("预警信息",'tpls/trafficMonitor/trafficState/traffic-alarm-history.html');
+			//触发取消订阅
+			changeSubsribe();
+		};
+		
+		//控制显示预警历史框
+		$scope.showEvent = function() {
+			$scope.$setParam("locationSite", locationSite);
+			showRightPanel("事件检测",'tpls/trafficMonitor/trafficState/traffic-alarm-event.html');
+			//触发取消订阅
+			changeSubsribe();
+		};
+		//显示或隐藏右边panel
+		$scope.showPanel = function() {
+			var win = $scope.$("#panel-right");
+			if (win.panel("options").title != "right") {
+				if (win.is(":visible")) {
+					win.panel("close");
+				} else {
+					win.panel("open");
+				}
+				
+			}
+			else{
+				$scope.showSection();
+			}
+		};
+		//重点路段
+		function showImportant() {
+			var arr = [];
+			var hxArr = stateLayer.getFeaturesByAttribute("trafficState", "2");
+			var ydArr = stateLayer.getFeaturesByAttribute("trafficState", "3");
+			for (var index in hxArr) {
+				arr.push(hxArr[index]);
+			}
+			for (var index in ydArr) {
+				arr.push(ydArr[index]);
+			}
+			var dataImportant = {
+				"locationSite" : locationSite,
+				"important" : arr,
+				"showState" : $scope.showState
+			};
+			$scope.$setParam("dataImportant", dataImportant);
+			$scope.$setParam("childScopeList", childScopeList);
+			$scope.$("#panel-important").panel("open").panel('refresh', 'tpls/trafficMonitor/trafficState/important-road-state.html');
+		}
+
+		//数量统计显示
+		function showCount() {
+			var param = {
+				"secAlarmCount" : 0,
+				"secCount" : 0,
+				"regAlarmCount" : stateNum["3"],
+				"regCount" : 0,
+				"weaAlarmCount" : 0,
+				"weaCount" : 0,
+				"eventAlarmCount" : 0,
+				"eventCount" : 0,
+				"controlCount" : 0
+
+			};
+			var func = {
+				"showSection" : $scope.showSection,
+				"showRegion" : $scope.showRegion,
+				"showEvent" : $scope.showEvent,
+				"showControl" : $scope.showControl,
+				"showWeather" : $scope.showWeather,
+			};
+			$scope.$setParam("dataCount", param);
+			$scope.$setParam("func", func);
+			$scope.$setParam("childScopeListCount", childScopeList);
+			$scope.$("#panel-count").panel("open").panel('refresh', 'tpls/trafficMonitor/trafficState/traffic-count.html');
+		}
+
+		//刷新饼图页面，暂时不用
+		function showStateChart() {
+			var dataArr = [];
+			dataArr.push({
+				value : stateNum["0"],
+				name : "无状态"
+			});
+			dataArr.push({
+				value : stateNum["3"],
+				name : "拥堵"
+			});
+			dataArr.push({
+				value : stateNum["2"],
+				name : "缓行"
+			});
+			dataArr.push({
+				value : stateNum["1"],
+				name : "畅通"
+			});
+			console.log("showStateChart"+dataArr);
+			//机构信息注入当前行数据
+			$scope.$setParam("dataArr", dataArr);
+			$scope.$("#panel-bing").panel("open").panel('refresh', 'tpls/trafficMonitor/trafficState/traffic-state-current-chart.html');
+		}
+
+		//饼图
+		function showPie() {
+			var dataArr = [];
+			dataArr.push({
+				value : stateNum["0"],
+				name : "无状态"
+			});
+			dataArr.push({
+				value : stateNum["1"],
+				name : "畅通"
+			});
+			dataArr.push({
+				value : stateNum["2"],
+				name : "缓行"
+			});
+			dataArr.push({
+				value : stateNum["3"],
+				name : "拥堵"
+			});
+			createPie($scope.$('#circleChart')[0], dataArr);
+		}
+
+		//创建pie
+		function createPie(dom, data) {
+			require(['echarts', 'echarts/chart/line', 'echarts/chart/pie', 'echarts/chart/funnel'], function(ec) {
+				var pieObj = ec.init(dom);
+				var optionPie = {
+					tooltip : {
+						trigger : 'item',
+						formatter : "{c}条 ({d}%)",
+						textStyle : {
+							fontSize : 11
+						},
+						showDelay : 200
+					},
+					legend : {
+						orient : 'vertical',
+						x : 'left',
+						y : 'top',
+						data : ["无状态", '畅通', '缓行','拥堵' ],
+						textStyle : {
+							fontSize : 11
+						},
+						itemGap : 1
+					},
+					calculable : true,
+					color : ['gray', 'green', '#FF7F50', 'red'],
+                  	// toolbox: {
+	                     // show: true,
+	                     // feature: {
+	                        // restore: { show: true },
+	                         // saveAsImage: { show: true }
+	                     // }
+	                // },
+                   calculable: false,//禁止拖动
+					series : [{
+						name : '路况',
+						type : 'pie',
+						radius : '45%',
+						center : ['50%', '60%'],
+						itemStyle : {
+							normal : {
+								label : {
+									show : false
+								},
+								labelLine : {
+									show : false
+								}
+							}
+						},
+						data : data
+					}]
+				};
+				pieObj.setOption(optionPie);
+			});
+		}
+
+		//打开新的openDialog
+		$scope.openDialog = function(obj) {
+			var feature = obj.feature;
+			$scope.$setParam("newData", feature.attributes);
+			//数据字典
+			var layerName = feature.attributes.layerType;
+			if (layerName == "section") {
+				$scope.$openDialog("createDialog", {
+					title : "断面信息",
+					height : 510,
+					width : 550,
+					href : "tpls/trafficMonitor/trafficState/section-flow-info.html"
+				}, true);
+			} else if (layerName == "region") {
+				$scope.$openDialog("createDialog", {
+					title : "区间信息",
+					height : 310,
+					width : 400,
+					href : "tpls/trafficMonitor/trafficState/region-flow-info.html"
+				}, true);
+			} else if (layerName == "sectionAlarm") {
+				$scope.$openDialog("createDialog", {
+					title : "流量预警",
+					height : 380,
+					width : 550,
+					href : "tpls/trafficMonitor/trafficState/alarm/section-alarm.html"
+				}, true);
+			} else if (layerName == "regionAlarm") {
+				$scope.$openDialog("createDialog", {
+					title : feature.attributes.qjmc + "&nbsp;&nbsp;流量预警",
+					height : 510,
+					width : 470,
+					href : "tpls/trafficMonitor/trafficFlow/region-alarm-info.html"
+				}, true);
+			} else if (layerName == "cone") {
+				$scope.$openDialog("createDialog", {
+					title : "&nbsp;&nbsp;交通管制",
+					height : 480,
+					width : 550,
+					href : "tpls/trafficMonitor/trafficControl/traffic-control-info.html"
+				}, true);
+			} else if (layerName == "manual") {
+				$scope.$openDialog("createDialog", {
+					title : "人工干预",
+					height : 400,
+					width : 550,
+					href : "tpls/trafficMonitor/trafficState/manual-state-current-edit.html"
+				}, true);
+			} else if (layerName == "zhifa") {
+				$scope.$openDialog("InfoDialog", {
+					title : "执法服务站详情",
+					height : 300,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/zhifa-info.html"
+				}, true);
+			} else if (layerName == "post") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警岗亭详情",
+					height : 190,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/gangting-info.html"
+				}, true);
+			} else if (layerName == "chaoxian") {
+				$scope.$openDialog("InfoDialog", {
+					title : "超限检查站详情",
+					height : 190,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/chaoxian-info.html"
+				}, true);
+			} else if (layerName == "xiaqu") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警辖区",
+					height : 120,
+					width : 300,
+					href : "tpls/sysManagement/traffic/trafficInfo/xiaqu-info.html"
+				}, true);
+			} else if (layerName == "weather") {
+				if (obj.feature.attributes.weatherType == "1010") {
+					$scope.$openDialog("InfoDialog", {
+						title : "气象数据详情",
+						height : 340,
+						width : 490,
+						href : "tpls/trafficMonitor/trafficWeather/weatherQxy/weather-qxy-info.html"
+					}, true);
+				} else if (obj.feature.attributes.weatherType == "1009") {
+					$scope.$openDialog("InfoDialog", {
+						title : "能见度数据详情",
+						height : 240,
+						width : 490,
+						href : "tpls/trafficMonitor/trafficWeather/weatherNjdy/weather-njdy-info.html"
+					}, true);
+				} else if (obj.feature.attributes.weatherType == "1008") {
+					$scope.$openDialog("InfoDialog", {
+						title : "路感数据详情",
+						height : 310,
+						width : 490,
+						href : "tpls/trafficMonitor/trafficWeather/weatherLg/weather-lg-info.html"
+					}, true);
+				}
+			} else if (layerName == "eventAlarm") {
+				$scope.$openDialog("createDialog", {
+					title : "&nbsp;&nbsp;交通事件",
+					height : 450,
+					width : 700,
+					href : "tpls/trafficMonitor/trafficState/alarm/event-alarm.html"
+				}, true);
+			} else if (layerName == "weatherAlarm") {
+				$scope.$openDialog("createDialog", {
+					title : "气象预警",
+					height : 400,
+					width : 500,
+					href : "tpls/trafficMonitor/trafficState/alarm/weather-alarm.html"
+				}, true);
+			} else if (layerName == "led") {
+				showTipInfoWnd(feature);
+			} else if (layerName == "video") {
+				$scope.$setParam("deviceIds", [feature.attributes.deviceId]);
+				//feature.attributes.deviceId);["3110fc3d4abc48cdb234827b3dbb17cf"]
+				$scope.$openDialog("videoDialog", {
+					title : "实时预览",
+					width : 600,
+					height : 600,
+					//modal:false,
+					//inline:true,
+					href : "tpls/video/popPreView.html"
+				}, true);
+			} else if (layerName == "undefined") {
+				pointLayer.removeFeatures(obj.feature);
+				if (obj.feature.cluster) {
+					pointLayer.addFeatures(obj.cluster);
+				}
+			}
+			//保存按钮、通过Ajax提交和后台交互
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/alarmEvent/update",
+					params : params,
+					success : function(data) {
+						// if(parseInt(data)<1){
+						// $.messager.alert("提示", "处理失败！");
+						// }
+						// else{
+						//修改成功关闭dialog
+						$scope.$getDialog("createDialog").dialog("close");
+						//删除popup
+						if (feature.popup && feature.popup != null) {
+							cyMap.map.removePopup(feature.popup);
+							feature.destroy();
+							feature.popup = null;
+						}
+						//删除预警图标
+						//pointLayer.removeFeatures(feature);
+						alarmLayer.removeFeatures(feature);
+
+						var type = feature.attributes.alarmEventType;
+						//气象预警
+						if (type == "502") {
+							//把图元加入到气象数组中
+							var feature_new = feature.clone();
+							feature_new.style = weatherStyleObj[feature_new.attributes.weatherType];
+							feature_new.attributes.layerType = "weather";
+							feature_new.attributes.dealMethod = null;
+							feature_new.attributes.validity = null;
+							weatherFeatures.push(feature_new);
+
+							//从预警数组中删除预警元素
+							if (weatherAlarmFeatures.indexOf(feature) > -1) {
+								weatherAlarmFeatures.splice(weatherAlarmFeatures.indexOf(feature), 1);
+								//修改气象预警数量值
+								childScopeList.refreshCount({
+									"weaAlarmCount" : weatherAlarmFeatures.length
+								});
+							}
+							//如果气象图层已加入地图那么把新元素加入地图
+							if (isWeaLayer) {
+								//pointLayer.addFeatures(feature_new);
+								allFeatures.push(feature_new);
+								if (pointLayer.options.strategies) {
+									resetCluster();
+								} else {
+									pointLayer.addFeatures(feature_new);
+								}
+							}
+							console.log("气象预警："+weatherAlarmFeatures.length+"--非预警："+weatherFeatures.length);
+						}
+						//事件检测预警
+						else if (type == "434") {
+							//把图元加入到事件数组中
+							var feature_new = feature.clone();
+							var style_event = {
+								externalGraphic : "themes/default/images/layers/event03.png",
+								graphicWidth : 20,
+								graphicHeight : 20
+							};
+							feature_new.style = style_event;
+							feature_new.attributes.layerType = "event";
+							feature_new.attributes.dealMethod = null;
+							feature_new.attributes.validity = null;
+							eventFeatures.push(feature_new);
+
+							//从预警数组中删除预警元素
+							if (eventAlarmFeatures.indexOf(feature) > -1) {
+								eventAlarmFeatures.splice(eventAlarmFeatures.indexOf(feature), 1);
+								//修改预警数量值
+								// childScopeList.refreshCount({
+									// "eventAlarmCount" : eventAlarmFeatures.length
+								// });
+							}
+							//如果事件图层已加入地图那么把新元素加入地图
+							if (isEvent) {
+								//pointLayer.addFeatures(feature_new);
+								allFeatures.push(feature_new);
+								if (pointLayer.options.strategies) {
+									resetCluster();
+								} else {
+									pointLayer.addFeatures(feature_new);
+								}
+							}
+						}
+						//流量预警
+						else if (type == "506") {
+							//把图元加入到数组中
+							var feature_new = feature.clone();
+							var style = {
+								externalGraphic : "themes/default/images/layers/section03.png",
+								graphicWidth : 20,
+								graphicHeight : 20
+								
+							};
+							feature_new.style = style;
+							feature_new.attributes.layerType = "section";
+							feature_new.attributes.dealMethod = null;
+							feature_new.attributes.validity = null;
+							feature_new.attributes.sectionId = null;
+							feature_new.attributes.directionType = null;
+							sectionFeatures.push(feature_new);
+
+							//从预警数组中删除预警元素
+							if (sectionAlarmFeatures.indexOf(feature) > -1) {
+								sectionAlarmFeatures.splice(sectionAlarmFeatures.indexOf(feature), 1);
+								//修改预警数量值
+								childScopeList.refreshCount({
+									"secAlarmCount" : sectionAlarmFeatures.length
+								});
+							}
+							//如果断面图层已加入地图那么把新元素加入地图
+							if (isSecLayer) {
+								//pointLayer.addFeatures(feature_new);
+								allFeatures.push(feature_new);
+								if (pointLayer.options.strategies) {
+									resetCluster();
+								} else {
+									pointLayer.addFeatures(feature_new);
+								}
+							}
+						}
+						// }
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "处理失败！");
+					}
+				});
+			});
+		};
+
+		/**
+		 *显示设备提示信息
+		 */
+		function showTipInfoWnd(feature) {
+			var lon = feature.geometry.x;
+			var lat = feature.geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(lon, lat);
+			var centerPix = cyMap.map.getPixelFromLonLat(centerLonLat);
+			//当前地图长宽
+			var mapSize = cyMap.map.size;
+			var left = centerPix.x;
+			if (mapSize.w - centerPix.x < 500) {
+				left = centerPix.x - 500;
+			}
+			var top = centerPix.y;
+			if (mapSize.h - centerPix.y < 210) {
+				top = centerPix.y - 220;
+			}
+			$scope.$setParam("devTipInfo", feature.attributes);
+			//弹出设备信息框
+			$scope.$openDialog("tipInfoDialog", {
+				title : "设备信息",
+				height : 210,
+				width : 500,
+				modal : false,
+				href : "tpls/trafficMonitor/trafficState/device-tip-wnd.html"
+			}, true);
+			$scope.$getDialog("tipInfoDialog").dialog("resize", {
+				left : left + 200,
+				top : top + 110
+			});
+		}
+
+		//初始化图层控制控件
+		function initLayerContrl() {
+			var domDiv = $scope.$("#layerDock")[0];
+			var showItem = [];
+			var notShowItem = [];
+			//获取该用户能够拥有的设备图层
+			var showItemsStr = localStorage.getItem("trafficState-showItem");
+			var showItemLocalStorage = $.parseJSON(showItemsStr);
+
+			var notShowItemsStr = localStorage.getItem("trafficState-notShowItem");
+			var notShowItemLocalStorage = $.parseJSON(notShowItemsStr);
+			
+			if (showItemLocalStorage == null && notShowItemLocalStorage == null) {
+				showItem.push(new LayerItem("video", "0", "视频", "themes/default/images/layers/video01.png", "themes/default/images/layers/video02.png", false));
+				showItem.push(new LayerItem("gangting", "1", "交警岗亭", "themes/default/images/layers/gangting01.png", "themes/default/images/layers/gangting02.png", false));
+				showItem.push(new LayerItem("chaoxian", "10", "超限检查站", "themes/default/images/layers/chaoxian01.png", "themes/default/images/layers/chaoxian02.png", false));
+				showItem.push(new LayerItem("zhifa", "11", "执法服务站", "themes/default/images/layers/zhifa01.png", "themes/default/images/layers/zhifa02.png", false));
+				//showItem.push(new LayerItem("xiaqu", "12", "交警辖区", "themes/default/images/layers/xiaqu01.png", "themes/default/images/layers/xiaqu02.png", false));
+				// showItem.push(new LayerItem("danbing", "2", "单兵", "themes/default/images/layers/danbing01.png", "themes/default/images/layers/danbing02.png", false));
+				// showItem.push(new LayerItem("car", "3", "警车", "themes/default/images/layers/car01.png", "themes/default/images/layers/car02.png", false));	item.push(new LayerItem("led", "4", "诱导屏", "themes/default/images/layers/03.png", "themes/default/images/layers/03_1.png", false));
+				//showItem.push(new LayerItem("kakou", "5", "卡口", "themes/default/images/layers/kakou01.png", "themes/default/images/layers/kakou02.png", false));
+				showItem.push(new LayerItem("weather", "6", "气象", "themes/default/images/layers/weather01.png", "themes/default/images/layers/weather02.png", false));
+				showItem.push(new LayerItem("section", "7", "断面流量", "themes/default/images/layers/section01.png", "themes/default/images/layers/section02.png", false));
+				showItem.push(new LayerItem("state", "8", "实时路况", "themes/default/images/layers/state01.png", "themes/default/images/layers/state02.png", true));
+				showItem.push(new LayerItem("control", "9", "交通管制", "themes/default/images/layers/control01.png", "themes/default/images/layers/control02.png", false));
+				showItem.push(new LayerItem("event", "13", "交通事件", "themes/default/images/layers/event01.png", "themes/default/images/layers/event02.png", false));
+			}else{
+				for(var index in showItemLocalStorage){
+					var data=showItemLocalStorage[index];
+					var iconDefaultUrl="themes/default/images/layers/"+data.layerType+"01.png";
+					var iconSelectUrl="themes/default/images/layers/"+data.layerType+"02.png";
+					showItem.push(new LayerItem(data.layerType, index, data.layerName, iconDefaultUrl, iconSelectUrl, data.isDefaultShow));
+				}
+				for(var index in notShowItemLocalStorage){
+					var data=notShowItemLocalStorage[index];
+					var iconDefaultUrl="themes/default/images/layers/"+data.layerType+"01.png";
+					var iconSelectUrl="themes/default/images/layers/"+data.layerType+"02.png";
+					notShowItem.push(new LayerItem(data.layerType, index, data.layerName, iconDefaultUrl, iconSelectUrl, data.isDefaultShow));
+				}
+			}
+			var layerControl = new LayerControl({
+				dom : domDiv,
+				showItem : showItem,
+				notShowItem : notShowItem,
+				setItemImgUrl : 'themes/default/images/layers/setting02.png',
+				onLayerClick : layerItemClick,
+				saveKey:"trafficState"
+			});
+			defaultLayerControl();
+		}
+		//默认控制条左边距
+		function defaultLayerControl(){
+			var dockWd = $scope.$("#layerDock").width();
+			$scope.$("#layerDock").css("margin-left", -dockWd/ 2);
+		}
+		//改变图层控制条的左边距
+		function changeLayerControl(){
+			var dockWd = $scope.$("#layerDock").width()+330;
+			$scope.$("#layerDock").css("margin-left", -dockWd/ 2);
+		}
+		//设置right面板打开和关闭改变事件，改变图层控制条的左边距
+		$scope.$("#panel-right").panel({
+			onOpen:changeLayerControl,
+			onClose:defaultLayerControl
+		});
+		
+		//显示或者关闭图层的回调函数
+		function layerItemClick(isLayerSelected, layerType) {
+			//alert("czy");
+			if (isLayerSelected)//选中该图层
+			{
+				switch(layerType) {
+				case "video":
+					$scope.openVideo();
+					break;
+				case "gangting":
+					$scope.openPost();
+					break;
+				// case "police":
+				// $scope.openPolice();
+				// break;
+				// case "car":
+				// $scope.openCar();
+				// break;
+				// case "led":
+					// $scope.openLed();
+					// break;
+				// case "kakou":
+				// $scope.openKakou();
+				// break;
+				case "weather":
+					$scope.openWeather();
+					break;
+				case "section":
+					$scope.openSection();
+					break;
+				case "state":
+					$scope.openStateLayer();
+					break;
+				case "control":
+					$scope.openCone();
+					break;
+				case "chaoxian":
+					$scope.openChaoxian();
+					break;
+				case "zhifa":
+					$scope.openZhifa();
+					break;
+				// case "xiaqu":
+				// $scope.openXiaqu();
+				// break;
+				case "event":
+					$scope.openEvent();
+					break;
+				}
+
+			} else {
+				switch(layerType) {
+				case "video":
+					$scope.closeVideo();
+					break;
+				case "gangting":
+					$scope.closePost();
+					break;
+				// case "police":
+				// $scope.closePolice();
+				// break;
+				// case "car":
+				// $scope.closeCar();
+				// break;
+				// case "led":
+					// $scope.closeLed();
+					// break;
+				// case "kakou":
+				// $scope.closeKakou();
+				// break;
+				case "weather":
+					$scope.closeWeather();
+					break;
+				case "section":
+					$scope.closeSection();
+					break;
+				case "state":
+					$scope.closeStateLayer();
+					break;
+				case "control":
+					$scope.closeCone();
+					break;
+				case "chaoxian":
+					$scope.closeChaoxian();
+					break;
+				case "zhifa":
+					$scope.closeZhifa();
+					break;
+				// case "xiaqu":
+				// $scope.closeXiaqu();
+				// break;
+				case "event":
+					$scope.closeEvent();
+					break;
+				}
+			}
+		}
+	});
+
+</script>
+
+<style>
+	#trafficState #legend {
+		width: 90px;
+		height: 20px;
+		position: absolute;
+		right: 3px;
+		top: 3px;
+		z-index: 100000;
+	}
+	#trafficState .panel-right {
+		position: absolute;
+		right: 3px;
+		top: 25px;
+		z-index: 100000;
+		opacity: 0.8;
+		border-radius: 10px;
+	}
+	#trafficState .panel-count {
+		position: absolute;
+		left: 0px;
+		top: 2px;
+	}
+	#trafficState .panel-bing {
+		position: absolute;
+		left: 0px;
+		top: 140px;
+	}
+	#trafficState .panel-important {
+		position: absolute;
+		left: 0px;
+		top: 360px;
+		z-index: 100000;
+	}
+
+	#trafficState #plus {
+		width: 18px;
+		height: 18px;
+		right: 7px;
+		top: 32px;
+		position: absolute;
+		z-index: 100000;
+	}
+	#trafficState #alarmHistory {
+		width: 18px;
+		height: 18px;
+		right: 0px;
+		bottom: 35px;
+		position: absolute;
+		z-index: 100000;
+	}
+	#trafficState #layerDock {
+		position: absolute;
+		bottom: 0px;
+		left: 50%;
+		z-index: 100000;
+	}
+	#trafficState #baseTool {
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		z-index: 100001;
+	}
+
+	#trafficState #tableTitle1 .tr {
+		background: #005AB5;
+		color: white;
+		font-size: 12px;
+		opacity: 0.6;
+		line-height: 15px;
+		height: 24px;
+	}
+	#trafficState #tableTitle1 .th {
+		width: 85px;
+		height: 13px;
+		line-height: 15px;
+		font-size: 12px;
+	}
+
+</style>

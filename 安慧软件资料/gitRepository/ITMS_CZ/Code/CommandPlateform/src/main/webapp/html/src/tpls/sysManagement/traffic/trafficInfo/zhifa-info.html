@@ -1,0 +1,121 @@
+<div id="zhifa" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    编码：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.lawEnforceStationCode"> </span>
+                </div>
+                <div class="th">
+                    名称：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.lawEnforceStationName"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.orgId" cy-filter="$getOrgName"> </span>
+                </div>
+                <div class="th">
+                    编制人数：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.policeCounts"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    值守模式：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.dutyModel" cy-filter="convertSysCode"> </span>
+                </div>
+                <div class="th">
+                    等级：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.stationRating" cy-filter="convertSysCode2"> </span>
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    负责人：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.serviceStationHeader"> </span>
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.headerTel"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    进辖区卡口：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.entranceTollgateId"> </span>
+                </div>
+                <div class="th">
+                    出辖区卡口：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.exitTollgateId"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="width:100px">
+                    是否接入公安网：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.isConnectPoliceNet"  cy-filter="convertSysCode1"> </span>
+                </div>
+
+            </div>
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData"],function($scope){
+    	$scope.$getDefaultCode(["200","201","240"]);
+    	//转换值守模式
+       $scope.convertSysCode = function(value){
+    		return $scope.$getCodeName("200",value);
+    	};
+    	//转换是否接入公安网
+    	$scope.convertSysCode1 = function(value){
+    		return $scope.$getCodeName("201",value);
+    	};
+    	//转换执法服务站等级
+    	$scope.convertSysCode2 = function(value){
+    		return $scope.$getCodeName("240",value);
+    	};
+    });
+</script>
+<style type="text/css">
+    #zhifa .th{
+        width : 70px;
+        text-align: right;
+    }
+    #zhifa .td{
+        width : 140px;
+        color :blue;
+    }
+
+</style>

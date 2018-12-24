@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_ServiceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Service" >
+    <id column="SERVICE_ID" property="serviceId" jdbcType="VARCHAR" />
+    <result column="SERVICE_NAME" property="serviceName" jdbcType="VARCHAR" />
+    <result column="SERVICE_URL" property="serviceUrl" jdbcType="VARCHAR" />
+    <result column="HEADER" property="header" jdbcType="VARCHAR" />
+    <result column="SN" property="sn" jdbcType="VARCHAR" />
+    <result column="DESK_TYPE" property="deskType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVICE_ID, SERVICE_NAME, SERVICE_URL, HEADER, SN, DESK_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SERVICE
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SERVICE
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service" >
+    insert into T_SYS_SERVICE (SERVICE_ID, SERVICE_NAME, SERVICE_URL, 
+      HEADER, SN, DESK_TYPE
+      )
+    values (#{serviceId,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR}, #{serviceUrl,jdbcType=VARCHAR}, 
+      #{header,jdbcType=VARCHAR}, #{sn,jdbcType=VARCHAR}, #{deskType,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service" >
+    insert into T_SYS_SERVICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        SERVICE_ID,
+      </if>
+      <if test="serviceName != null" >
+        SERVICE_NAME,
+      </if>
+      <if test="serviceUrl != null" >
+        SERVICE_URL,
+      </if>
+      <if test="header != null" >
+        HEADER,
+      </if>
+      <if test="sn != null" >
+        SN,
+      </if>
+      <if test="deskType != null" >
+        DESK_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null" >
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceUrl != null" >
+        #{serviceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="header != null" >
+        #{header,jdbcType=VARCHAR},
+      </if>
+      <if test="sn != null" >
+        #{sn,jdbcType=VARCHAR},
+      </if>
+      <if test="deskType != null" >
+        #{deskType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service" >
+    update T_SYS_SERVICE
+    <set >
+      <if test="serviceName != null" >
+        SERVICE_NAME = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceUrl != null" >
+        SERVICE_URL = #{serviceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="header != null" >
+        HEADER = #{header,jdbcType=VARCHAR},
+      </if>
+      <if test="sn != null" >
+        SN = #{sn,jdbcType=VARCHAR},
+      </if>
+      <if test="deskType != null" >
+        DESK_TYPE = #{deskType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service" >
+    update T_SYS_SERVICE
+    set SERVICE_NAME = #{serviceName,jdbcType=VARCHAR},
+      SERVICE_URL = #{serviceUrl,jdbcType=VARCHAR},
+      HEADER = #{header,jdbcType=VARCHAR},
+      SN = #{sn,jdbcType=VARCHAR},
+      DESK_TYPE = #{deskType,jdbcType=VARCHAR}
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,119 @@
+<div id="zhifa" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    服务站代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="zfdm">
+                </div>
+                <div class="th">
+                    服务站名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gljg">
+                </div>
+                <div class="th">
+                    公里米数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="glms" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    值守模式：
+                </div>
+                <div class="td">
+                    <select  class="easyui-combobox"  style="width: 135px" name="zsms">
+                        <option value="0">--请选择--</option>
+                        <option value="1">24小时值守</option>
+                        <option value="2">白天值守</option>
+                        <option value="3">夜间值守</option>
+                    </select>
+                </div>
+                <div class="th">
+                    执法服务站等级：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="zffwzdj" >
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    服务站负责人：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="jgfzr" >
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="tel">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    进辖区卡口：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="jxqkk">
+                </div>
+                <div class="th">
+                    出辖区卡口：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="cxqkk" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否接入公安网：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="sfjrgaw">
+                </div>
+
+            </div>
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #zhifa .th{
+        width : 100px;
+        text-align: right;
+    }
+    #zhifa .td{
+        width : 150px;
+    }
+
+</style>

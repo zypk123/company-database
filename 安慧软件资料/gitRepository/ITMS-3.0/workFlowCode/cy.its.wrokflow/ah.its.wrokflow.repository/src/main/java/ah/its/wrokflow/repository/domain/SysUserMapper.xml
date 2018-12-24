@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.SysUserMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.SysUser" >
+    <id column="ID_" property="id" jdbcType="OTHER" />
+    <result column="REV_" property="rev" jdbcType="DECIMAL" />
+    <result column="FIRST_" property="first" jdbcType="OTHER" />
+    <result column="LAST_" property="last" jdbcType="OTHER" />
+    <result column="EMAIL_" property="email" jdbcType="OTHER" />
+    <result column="PWD_" property="pwd" jdbcType="OTHER" />
+    <result column="PICTURE_ID_" property="pictureId" jdbcType="OTHER" />
+    <result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID_, REV_, FIRST_, LAST_, EMAIL_, PWD_, PICTURE_ID_
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Object" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACT_ID_USER
+    where ID_ = #{id,jdbcType=OTHER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Object" >
+    delete from ACT_ID_USER
+    where ID_ = #{id,jdbcType=OTHER}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+    insert into ACT_ID_USER (ID_, REV_, FIRST_, LAST_, 
+      EMAIL_, PWD_, PICTURE_ID_)
+    values (#{id,jdbcType=OTHER}, #{rev,jdbcType=DECIMAL}, #{first,jdbcType=OTHER}, #{last,jdbcType=OTHER}, 
+      #{email,jdbcType=OTHER}, #{pwd,jdbcType=OTHER}, #{pictureId,jdbcType=OTHER})
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+    insert into ACT_ID_USER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID_,
+      </if>
+      <if test="rev != null" >
+        REV_,
+      </if>
+      <if test="first != null" >
+        FIRST_,
+      </if>
+      <if test="last != null" >
+        LAST_,
+      </if>
+      <if test="email != null" >
+        EMAIL_,
+      </if>
+      <if test="pwd != null" >
+        PWD_,
+      </if>
+      <if test="pictureId != null" >
+        PICTURE_ID_,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=OTHER},
+      </if>
+      <if test="rev != null" >
+        #{rev,jdbcType=DECIMAL},
+      </if>
+      <if test="first != null" >
+        #{first,jdbcType=OTHER},
+      </if>
+      <if test="last != null" >
+        #{last,jdbcType=OTHER},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=OTHER},
+      </if>
+      <if test="pwd != null" >
+        #{pwd,jdbcType=OTHER},
+      </if>
+      <if test="pictureId != null" >
+        #{pictureId,jdbcType=OTHER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+    update ACT_ID_USER
+    <set >
+      <if test="rev != null" >
+        REV_ = #{rev,jdbcType=DECIMAL},
+      </if>
+      <if test="first != null" >
+        FIRST_ = #{first,jdbcType=OTHER},
+      </if>
+      <if test="last != null" >
+        LAST_ = #{last,jdbcType=OTHER},
+      </if>
+      <if test="email != null" >
+        EMAIL_ = #{email,jdbcType=OTHER},
+      </if>
+      <if test="pwd != null" >
+        PWD_ = #{pwd,jdbcType=OTHER},
+      </if>
+      <if test="pictureId != null" >
+        PICTURE_ID_ = #{pictureId,jdbcType=OTHER},
+      </if>
+    </set>
+    where ID_ = #{id,jdbcType=OTHER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+    update ACT_ID_USER
+    set REV_ = #{rev,jdbcType=DECIMAL},
+      FIRST_ = #{first,jdbcType=OTHER},
+      LAST_ = #{last,jdbcType=OTHER},
+      EMAIL_ = #{email,jdbcType=OTHER},
+      PWD_ = #{pwd,jdbcType=OTHER},
+      PICTURE_ID_ = #{pictureId,jdbcType=OTHER}
+    where ID_ = #{id,jdbcType=OTHER}
+  </update>
+  
+  <select id="queryUserShipById" resultMap="BaseResultMap" parameterType="java.lang.Object" >
+    select a.id_,b.group_id_ GROUP_ID,a.PWD_ , a.first_   from  act_id_user  a  
+	inner join  act_id_membership  b   on  b.user_id_  = a.id_ 
+    where ID_ = #{id,jdbcType=OTHER} 
+  </select>
+   <select id="queryUsers" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+   select 
+    <include refid="Base_Column_List" />
+    from ACT_ID_USER
+    where 1 = 1
+    <if test="id != null and id !=''" >
+     and ID_ LIKE CONCAT(CONCAT('%', #{id,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="email != null and email !=''" >
+     and EMAIL_ LIKE CONCAT(CONCAT('%', #{email,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="first != null and first !=''" >
+     and FIRST_ LIKE CONCAT(CONCAT('%', #{first,jdbcType=OTHER}),'%') 
+     </if>
+  </select>
+  <select id="queryUsersWithGroupinfo" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.SysUser" >
+   select u.ID_, u.REV_, u.FIRST_, LAST_, u.EMAIL_, u.PWD_, u.PICTURE_ID_ ,g.ID_ AS GROUP_ID,g.NAME_ AS GROUP_NAME
+        from act_id_user u,act_id_group g,act_id_membership m 
+        where  u.ID_ = m.USER_ID_ and g.ID_ = m.GROUP_ID_
+    <if test="id != null and id !=''" >
+     and u.ID_ LIKE CONCAT(CONCAT('%', #{id,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="email != null and email !=''" >
+     and u.EMAIL_ LIKE CONCAT(CONCAT('%', #{email,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="first != null and first !=''" >
+     and u.FIRST_ LIKE CONCAT(CONCAT('%', #{first,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="groupId != null and groupId !=''" >
+     and g.ID_ LIKE CONCAT(CONCAT('%', #{groupId,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="groupName != null and groupName !=''" >
+     and g.NAME_ LIKE CONCAT(CONCAT('%', #{groupName,jdbcType=OTHER}),'%') 
+     </if>
+  </select>
+  <select id="queryUsersByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACT_ID_USER u,ACT_ID_MEMBERSHIP m
+    where m.GROUP_ID_ = #{groupId,jdbcType=OTHER} and u.ID_ = m.USER_ID_ 
+  </select>
+</mapper>

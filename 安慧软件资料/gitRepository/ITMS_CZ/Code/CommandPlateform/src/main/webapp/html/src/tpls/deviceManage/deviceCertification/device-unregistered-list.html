@@ -1,0 +1,297 @@
+<div class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height: auto;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div id="unregisteredMessage" class="table">
+					<div class="tr">
+						<div class="th">委托单位：</div>
+						<div class="td">
+                           <input class="easyui-textbox" id="orgName" name="orgName" style="width:150px"/>
+                        </div>
+						<div class="th">设备类型：</div>
+						<div class="td">
+							<input id="equipmentType" name="equipmentType" cy-code="488" class="easyui-combobox" data-options="valueField:'value',textField:'text',multiple:true"/>
+						</div>
+						<div class="th">检定日期：</div>
+						<div class="td">
+							<input class="easyui-datebox"
+								data-options="showSeconds:false,validType:['maxDate[\'endCertificatedDate\']','date']"
+								type="text" id="beginCertificatedDate" name="beginCertificatedDate" style="width: 135px" />
+						</div>
+						<div class="th" style="width:30px">至：</div>
+						<div class="td">
+							<input class="easyui-datebox"
+								data-options="showSeconds:false,validType:['minDate[\'beginCertificatedDate\']','date']"
+								type="text" id="endCertificatedDate" name="endCertificatedDate" style="width: 135px" />
+						</div>
+						<div class="th">
+							<a class="easyui-linkbutton" cy-click="searchData"
+								data-options="iconCls:'icon-search'">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="certificationGrd" cy-datagrid="optionsDm" cy-querydata="formData"
+			cy-url="device/certificationManage/getNoEquipmentCertificationList"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope) {
+		var equipmentNbr = null;
+		$scope.$getDefaultCode(['488']);
+		//初始化查询
+		$scope.load = function() {
+			$scope.formData.orderName = "certificatedDate";
+			$scope.formData.orderType = "asc";
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+		};
+		$scope.searchData = function() {
+			if ($scope.$("#form").form("validate")) {
+			$scope.$updateData("formData");
+		    $scope.formData.equipmentTypeArray = $scope.$("#equipmentType").combobox("getValues").join(",");
+			//获得当前第几页页数
+			var count = $scope.$("#certificationGrd").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转到第一页
+				$scope.$("#certificationGrd").datagrid("getPager").pagination("select", 1);
+			} 
+			else{
+		    $scope.$search("formData");
+	    	  }
+			}
+		};
+		$scope.$('.easyui-datebox').each(function() {
+			$(this).datebox('calendar').calendar({
+				validator : function(date) {
+					var now = new Date();
+					var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+					return date <= d1;
+				}
+			});
+		});
+		//检定信息列表字段
+		$scope.optionsDm = {
+			sortName : "certificatedDate",
+			sortOrder : "asc",
+			columns : [ [ {
+				field : 'certificationId',
+				checkbox : false,
+				align : 'center',
+				width : 30,
+				hidden : true
+			}, {
+				field : 'equipmentNbr',
+				title : '设备编号',
+				align : 'center',
+				width : 60,
+				sortable : true
+			}, {
+				field : 'equipmentTypeName',
+				title : '设备类型',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'orgName',
+				title : '委托单位',
+				align : 'center',
+				width : 70
+			}, {
+				field : 'certificationNbr',
+				title : '证书编号',
+				align : 'center',
+				width : 50,
+				sortable : true
+			}, {
+				field : 'expireDate',
+				title : '证书有效期',
+				align : 'center',
+				formatter:expireDate,
+				width : 50
+			}, {
+				field : 'certificatedDate',
+				title : '最近检定日期',
+				align : 'center',
+				width : 50,
+				sortable : true
+			} , {
+				field : 'operate',
+				title : '登记',
+				align : 'center',
+				width : 20,
+				formatter:operate
+			} ] ],
+			onSortColumn : function(sortName,sortType){
+            	$scope.formData.orderName = sortName;
+           		$scope.formData.orderType = sortType;
+           		$(this).datagrid("getPager").pagination("select",1);
+            },
+			pagination : true,
+			nowrap : false
+		};
+		
+		function operate(value, row, index){
+			var button1 = $("<a title='登记' class='button-add' cy-click='addData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain : true,
+                iconCls:"icon-add-solid"
+            });
+            return  $("<span/>").append(button1).html();
+		}
+
+		function deviceType(value, row, index) {
+			var deviceType = $scope.$getCodeName("400", value);
+			return deviceType;
+		}
+		 //显示隐藏机构名称
+	    function optionsOrgName(value, row, index) {
+	        var orgName = $scope.$getOrgName(value);
+	        if(orgName == null){
+	            return "<span/>";
+	        }
+	        var orgNameStr = "";
+	        if (orgName) {
+	            orgNameStr = '' + orgName + '';
+	        }
+	        return "<span title='" + orgName + "'>" + orgNameStr + "</span>";
+	    };
+	    
+	    function expireDate(value, row, index) {
+	    	var expireDate = value;
+	    	if(expireDate == null || expireDate == undefined){
+	    		return "<span/>";
+	    	}
+	    	var date = new Date(expireDate.replace(/-/g,"/"));
+	    	var day =parseInt((new Date(date.format("yyyy-MM-dd")).getTime()-new Date(new Date().format("yyyy-MM-dd")).getTime())/(1000*60*60*24)); 
+	    	if(day<0){
+	    		return "<span style='color:red'>超期 </span>";
+	    	}
+	    	else if(day>=0 && day<30){
+	    		return "<span style='color:#ff00ff'>1个月内过期 </span>";
+	    	}
+	    	else if(day>=30 && day<60){
+	    		return "<span style='color:orange'>2个月内过期 </span>";	
+	    	}
+	    	else{
+	    		return "<span>" + expireDate + "</span>";	
+	    	}
+	    }
+		$scope.addData = function(index){
+     	    var rowData = $scope.$("#certificationGrd").datagrid("getData").rows[index];
+            var whichType = rowData.equipmentType.substring(6);//截取获取设备类型编号
+            $scope.$setParam("whichType", whichType);
+            $scope.$setParam("equipmentNbr", rowData.equipmentNbr);
+            $scope.$setParam("certificationUnregistered", "certificationUnregistered");
+			if(rowData.equipmentType.substring(3) == "00001"){
+				$scope.$setParam("remark","add");
+				$scope.$openDialog("addDialog", {
+					title : "新增区间信息",
+					width : 1050,
+					height : 600,
+					href : "tpls/deviceManage/deviceConfig/interval-config.html",
+					onClose:function(){
+				    	$scope.$search("formData");
+				    }
+				});
+				//关闭窗口
+				$scope.$setParam("closeSelf", function() {
+					$scope.$getDialog("addDialog").dialog("close");
+					$scope.$search("formData");
+				});
+				$scope.$setParam("saveRegional", function(data) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/IntervalManage/addIntervalSys",
+						params : data,
+						success : function(data) {
+							if (data == 1) {
+								$scope.$getDialog("addDialog").dialog("close");
+								$.messager.alert("提示", "添加基本信息成功！");
+							}
+						},
+						fail : function(message) {
+							$.messager.alert("提示", message);
+						}
+					});
+				});
+			}else if(whichType == "01"){
+				$scope.$openDialog("addBayonetDialog",{
+					title : "卡口备案",
+					width : 900,
+					height : 600,
+					href : "tpls/deviceManage/deviceRecord/bayonet-manage-config.html",
+					onClose:function(){
+				    	$scope.$search("formData");
+				    }
+				}, true);
+				$scope.$setParam("mode", "ADD");
+				$scope.$setParam("closeSelf", function() {
+					$scope.$getDialog("addBayonetDialog").dialog("close");
+					$scope.$search("formData");
+				});
+			}else{
+				//弹出页面要增加的设备类型
+				var href = '';//跳转页面链接
+				var url = '';//保存的方法链接 
+				if(whichType == "1" || whichType == "2" || whichType == "3"){
+					href = 'tpls/deviceManage/deviceConfig/device-equipment-config.html';
+					url = 'device/equipment/addEquipment';
+				}else{
+					href = 'tpls/deviceManage/deviceConfig/device-sys-config.html';
+					url = 'device/deviceConfig/addDeviceInfo';
+				}
+				//弹出页面要增加的设备名称
+				$scope.$setParam("mode", "ADD");
+				$scope.$setParam("closeDialog", $scope.closeTollgateConfig);
+				$scope.$setParam("deviceInfoDto", {});
+				$scope.$openDialog("addDialog", {
+					title : rowData.equipmentTypeName + "备案",
+					width : 900,
+					height : 600,
+					href : href,
+					onClose:function(){
+				    	$scope.$search("formData");
+				    }
+				}, true);
+				$scope.$setParam("saveData", function(data) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + url,
+						params : data,
+						success : function(data) {
+							if(data != "nbrError" && data != "keyError" && data != "videoNbrError"){
+								$.messager.alert("提示", "添加基本信息成功！");
+								//关闭窗体
+								$scope.$getDialog("addDialog").dialog("close");
+								$scope.$search("formData");
+							}else if(data == "nbrError"){
+								$.messager.alert("提示","设备编号已存在，请重新输入！");
+        	       	   	   		return false;
+							}else if(data == "keyError"){
+								$.messager.alert("提示","唯一性标识已存在，请重新输入！");
+        	       	   	   		return false;
+							}else if(data == "videoNbrError"){
+								$.messager.alert("提示","视频编号已存在，请重新输入！");
+        	       	   	   		return false;
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "添加基本信息失败！");
+						}
+					});
+				});
+				$scope.$setParam("closeSelf", function() {
+					$scope.$getDialog("addDialog").dialog("close");
+					$scope.$search("formData");
+				});	
+			}
+        };
+	});
+</script>
+<style type="text/css">
+#unregisteredMessage .th {
+	text-align: right;
+	width: 80px;
+}

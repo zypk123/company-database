@@ -1,0 +1,193 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cy.its</groupId>
+		<artifactId>itms-parent</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>Report</artifactId>
+	<packaging>war</packaging>
+	<version>3.0</version>
+	<name>Birt Report for ITMS Maven Webapp</name>
+	<url>http://www.cychina.cn</url>
+	<properties>
+		<skip_maven_deploy>true</skip_maven_deploy>
+		<skip_maven_install>true</skip_maven_install>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${javax.servlet_version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet.jsp</groupId>
+				<artifactId>javax.servlet.jsp-api</artifactId>
+				<version>${javax.servlet.jsp_version}</version>
+			</dependency>
+			<!-- jstl -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${jstl_version}</version>
+			</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1-rev-1</version>
+		</dependency>
+
+		<!-- oracle驱动 -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc</artifactId>
+		</dependency>
+		<!-- 添加Birt Runtime包 -->
+
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>viewservlets</artifactId>
+			<version>${birt_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.rpc</groupId>
+			<artifactId>javax.xml.rpc-api</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- 更换为新版本的 eclipse core -->
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>3.11.0.v20150405-1723</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>56.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.runtime</artifactId>
+			<exclusions>
+				<!-- 排除自带equinox common，使用3.7 -->
+				<exclusion>
+					<groupId>org.eclipse.birt.runtime</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
+				<!-- 去掉老版本 js包 -->
+				<exclusion>
+					<artifactId>org.mozilla.javascript</artifactId>
+					<groupId>org.eclipse.birt.runtime.3_7_1</groupId>
+				</exclusion>
+				<!-- 去掉老版本 sac包 -->
+				<exclusion>
+					<groupId>org.eclipse.birt.runtime.3_7_1</groupId>
+					<artifactId>org.w3c.css.sac</artifactId>
+				</exclusion>
+				<!-- 不需要较大的derby包 -->
+				<exclusion>
+					<groupId>org.eclipse.birt.runtime.3_7_1</groupId>
+					<artifactId>derby</artifactId>
+				</exclusion>
+				<!-- 更换为新版本的icu4j -->
+				<exclusion>
+					<groupId>org.eclipse.birt.runtime</groupId>
+					<artifactId>com.ibm.icu</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>
+		<!-- 引用自定义语言包 -->
+		<dependency>
+			<groupId>cy.its</groupId>
+			<artifactId>org.eclipse.birt.report.viewer.nl_zh</artifactId>
+		</dependency>
+		<!-- 以下jar包需要自行上传到maven仓库中-->
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.equinox.common</artifactId>
+			<version>3.7.0.v20150402-1709</version>
+		</dependency>
+		<!-- 官方语言包
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.report.viewer.nl_zh</artifactId>
+			<version>${birt_version}</version>
+		</dependency>
+		-->
+	</dependencies>
+	<build>
+
+		<finalName>Report</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>report</directory>
+				<targetPath>report</targetPath>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>scriptlib</directory>
+				<targetPath>scriptlib</targetPath>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<!-- Always download and attach dependencies source code -->
+					<downloadSources>false</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<!-- Avoid type mvn eclipse:eclipse -Dwtpversion=2.0 -->
+					<wtpversion>2.0</wtpversion>
+					<additionalProjectFacets>
+						<jst.web>3.0</jst.web>
+						<wst.jsdt.web>1.0</wst.jsdt.web>
+					</additionalProjectFacets>
+					<additionalProjectnatures>
+						<projectnature>org.eclipse.birt.report.designer.ui.reportprojectnature</projectnature>
+						<projectnature>org.eclipse.m2e.core.maven2Nature</projectnature>
+					</additionalProjectnatures>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warSourceExcludes>html/node_modules/**,log/*</warSourceExcludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<configuration>
+					<skipSource>true</skipSource>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+					<source>${java_source_version}</source>
+					<target>${java_target_version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<maxmem>512m</maxmem>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

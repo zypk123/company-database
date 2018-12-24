@@ -1,0 +1,175 @@
+<!--角色权限添加页面 -->
+<div class="easyui-layout" id="role-permission-message-add">
+	<form cy-form="roleData" id="form">
+		<div data-options="region:'north',border:false"
+			style="height: 70px; border-bottom: solid 1px #ddd;">
+			<div class="table">
+				<div class="tr">
+					<div class="th">角色名称：</div>
+					<div class="td">
+						<input type="text" name="roleName" class="easyui-textbox"
+							data-options="required:true,validType:['length[0,32]','notBlank']" style="width: 135px;" />
+					</div>
+					<div class="th">备注：</div>
+					<div class="td">
+						<input class="easyui-textbox" name="roleRemark"  data-options="multiline:true,validType:['length[0,129]']" 
+						style="width: 260px;height: 41px;"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center',border:false,title:'权限分配'">
+			<div class="easyui-layout">
+				<div data-options="region:'center',border:false">
+					<div id='tree'></div>
+				</div>
+				<div data-options="region:'east',border:false,width:'50%'">
+					<div id="checked" class="searchPanel" style="padding-bottom: 0px;">
+						<div class="panel_title">已选列表</div>
+						<div id="checkedDiv"
+							style="height: 290px;overflow-y: auto; overflow-x: hidden"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'south',border:false" style="height: 40px;">
+			<div class="linkbutton_toolbar" style="text-align: center">
+				<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+					cy-click="save">保存</a> <a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+			</div>
+		</div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	InitPage([ "roleData" ,"saveRole"], function($scope) {
+		/**
+		 * 已选功能点
+		 */
+		var checkList = [];
+		/**
+		 * 初始化树
+		 */
+		$scope.$("#tree").tree(
+				{
+					data : $scope.UserInfo.menus,
+					checkbox : true,
+					onLoadSuccess : function() {
+						//初始化状态，收缩所有节点，展开根节点
+						$(this).tree("collapseAll");
+						$(this).tree("expand",$(this).tree("getRoots")[0].target);
+						//编辑页面，选择默认的节点
+						if($scope.roleData && $scope.roleData.functions && $scope.$params.get("type") == "edit"){
+							var functionIds = $scope.roleData.functions.split(",");
+							for(var index in functionIds){
+								var node = $scope.$("#tree").tree("find",functionIds[index]);
+								if(node){
+									$scope.$("#tree").tree("check",node.target);
+								}
+							}
+						}
+						//选中首页查看节点
+						var homeView = $(this).tree("find","0000");
+						$(this).tree("check",homeView.target);
+					},
+					onCheck : function(node) {
+						if(node.id == '0000' && !node._checked){
+							$(this).tree("check",node.target);
+							return;
+						}
+						clearTimeout($scope.timeout);
+						$scope.timeout = setTimeout(function(){
+							//清空历史
+							checkList = [];
+							//获得所有选择的节点
+							var checked = $scope.$("#tree").tree("getChecked");
+							//只能选子节点
+							for (var index = 0; index < checked.length; index++) {
+								if (!checked[index].children
+										|| checked[index].children.length == 0) {
+									checkList.push(checked[index]);
+								}
+							}
+							//在已选列表中展示选择的节点
+							$scope.$("#checkedDiv").html("");
+							addNewCheckedList();
+						},500);
+					}
+
+				});
+
+		/**
+		 * 重置已选列表
+		 */
+		var addNewCheckedList = function() {
+			var table = $("<div class='table'></div>");
+			for ( var index in checkList) {
+				var tr = $("<div class='tr'></div>");
+				var th = $("<div class='th'></div>");
+				var td = $("<div class='td'></div>");
+				var closeButton = $("<a></a>").linkbutton({
+					iconCls : 'icon-cancel-solid',
+					plain : true
+				}).click({
+					removeEl : tr
+				}, function(e) {
+					//取消该元素的选中状态
+					var node = e.data.removeEl.data("node");
+					$scope.$("#tree").tree("uncheck", node.target);
+				});
+				tr.data("node", checkList[index]);
+				th.text(checkList[index].text);
+				td.append(closeButton);
+				if (index % 2 == 0) {
+					tr.css("backgroundColor", "#efefef");
+				} else {
+					tr.css("backgroundColor", "#e5e5e5");
+				}
+				table.append(tr.append(th).append(td));
+			}
+			$scope.$("#checkedDiv").append(table);
+		};
+		
+		/**
+		 * 保存
+		 */
+		$scope.save = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("roleData");
+				var functionIds = "";
+				for(var index in checkList){
+				functionIds += checkList[index].id + ",";
+				}
+				functionIds = functionIds.substring(0,functionIds.length - 1);
+				$scope.roleData.functions = functionIds;
+				$scope.saveRole($scope.roleData);
+			}
+		};
+	});
+</script>
+<style type="text/css">
+#role-permission-message-add .th {
+	width: 70px;
+	text-align: right;
+}
+
+#role-permission-message-add .td {
+	width: 120px;
+}
+
+#role-permission-message-add #checked .th {
+	width: 75%;
+	padding: 0 12px;
+	height: 30px;
+	text-align: left;
+	line-height: 30px;
+}
+
+#role-permission-message-add #checked .td {
+	padding: 0 12px;
+	height: 30px;
+	line-height: 30px;
+	width:5%
+}
+</style>

@@ -1,0 +1,402 @@
+<div class="easyui-layout" id="accessPlatform">
+	<div data-options="region:'west',title:'导航区域',split : true," style="width:210px;">
+    	<div class="easyui-layout">
+    		<div data-options="region:'center',border:false">
+    			<div id="cy-tree">
+					
+        		</div>
+    		</div>
+    		<div data-options="region:'south',border:false">
+    			<div style="color: red">
+                   1、【左键单击】树任意子节点，右侧显示该节点接入平台下的服务器组件列表。
+               </div>
+               <div style="color: red">
+                   2、【右键单击】树任意节点，显示相应的上下文菜单。
+               </div>
+    		</div>
+    	</div>
+    </div>
+    <div data-options="region:'center',border:true">
+    	<div id="accessPlatformRight" class="easyui-layout">
+    		<div data-options="region:'north',border:false">
+		        <div class="linkbutton_toolbar">
+		            <a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addData">新增接入平台</a>
+		            <!--a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData"批量删除-->
+		        </div>
+			</div>
+			<div data-options="region:'center',border:true">
+				<table id="accessPlat" cy-datagrid="options" cy-querydata="formData" cy-url="device/monitorPlatformManage/queryPlatformServerAppList">
+		        
+		        </table>
+			</div>
+    	</div>
+    </div>
+</div>
+<div id="mmF" style="width:120px;">
+    <div id="mmf-treeadd" data-options="iconCls:'icon-add-solid'" cy-click="addAccessPlatform">新增接入平台</div>
+</div>
+<div id="mmC" style="width:120px;">
+	<div id="mmc-treeadd" data-options="iconCls:'icon-add-solid'" cy-click="addAccessPlatform">新增接入平台</div>
+    <div id="mmc-treeclose" data-options="iconCls:'icon-remove-solid'" cy-click="removeAccessPlatform">删除接入平台</div>
+    <div id="mmc-treeedit" data-options="iconCls:'icon-edit-solid'" cy-click="editAccessPlatform">编辑接入平台</div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+    	$scope.$getDefaultCode(["436"]);
+    	$scope.load = function(){
+    		//菜单初始化变量
+        	$scope.fTreeMenu = null;
+        	$scope.cTreeMenu = null;
+        	initMenu();//初始化树菜单
+			loadTree(0);//加载树
+        };
+        var monitorTree = [];//监控中心树数组
+        //查询监控中心与服务器形成树
+        function loadTree(datas){
+            //查询监控中心数据
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot+"device/monitorPlatformManage/queryMonitorAndPlatform",
+                params: {},
+                method: "post",
+                success: function(data){
+                    monitorTree = data;
+                    //加载树操作
+                    $scope.$('#cy-tree').tree({
+                        lines : true,
+                        animate : true,
+                        data : monitorTree,
+                        onContextMenu : $scope.showTreeMenu,
+                        onSelect : $scope.clickTreeMenu,
+                        onLoadSuccess : function(){
+                        	if(datas != undefined){
+	                            var root = $(this).tree("getRoots")[0];
+								//收起全部节点
+								$(this).tree("collapseAll");
+                        		var node = $(this).tree("getChildren")[0];
+	                            $(this).tree("select",node.target);
+	                            //获取树的第一个父节点的第一个子节点
+						        var nodes = $scope.$("#cy-tree").tree("getChildren")[0].children;//第一个父节点获取下的子节点数组
+						        $scope.formData.serverPlatId = nodes[0].id;
+						        $scope.formData.surveySystemId = $scope.$("#cy-tree").tree("getChildren")[0].id;
+						        $scope.formData.surveySystemName = $scope.$("#cy-tree").tree("getChildren")[0].text;
+						        $scope.$search("formData");
+                        	}
+                        }
+                    });
+                },
+                fail: function(){
+                    $.messager.alert("提示","查询初始化监控中心树失败！");
+                }
+            });
+        }
+        function initMenu(){
+            //初始化父节点右键菜单
+            $scope.fTreeMenu = $scope.$('#mmF').menu().menu("hide");
+            //初始化子节点右键菜单
+            $scope.cTreeMenu = $scope.$('#mmC').menu().menu("hide");
+        }
+        //右击选中的树的监控中心名称变量
+        var rightClickNameF = "";
+        //右击选中的树的监控中心ID变量
+        var rightClickIdF = "";
+        //右击选中的树的服务器名称变量
+        var rightClickNameC = "";
+        //右击选中的树的服务器ID变量
+        var rightClickIdC = "";
+        //右击选中的树的服务器其他变量
+        var rightClickAttribute = {};
+        $scope.showTreeMenu = function(e,node){
+            //禁用系统默认右键菜单
+            e.preventDefault();
+            
+            // 显示父节点快捷菜单
+            if(!$scope.$('#cy-tree').tree('isLeaf',node.target)){
+            	//变量赋值
+	        	rightClickNameF = node.text;
+	            rightClickIdF = node.id;
+            	$scope.fTreeMenu.menu('show', {
+	                left: e.pageX,
+	                top: e.pageY
+	            });
+            }else{
+            	var nodes = $(this).tree("getParent",node.target);//获取子节点的父节点
+	            //子节点变量赋值
+	            //点击子节点获取其父节点对象信息
+	        	rightClickNameF = nodes.text;
+	            rightClickIdF = nodes.id;
+	            //子节点对象赋值
+	            rightClickNameC = node.text;
+	            rightClickIdC = node.id;
+	            //子节点的Attribute属性值对象
+	            rightClickAttribute = node.attribute;
+	            // 显示子节点快捷菜单
+            	$scope.cTreeMenu.menu('show', {
+	                left: e.pageX,
+	                top: e.pageY
+	            });
+            }
+        };
+        //左击选中的树名称变量
+        var leftClickName = "";
+        //左击选中的树ID变量
+        var leftClickId = "";
+        //左击选中查询该监控中心
+        $scope.clickTreeMenu = function(node){
+        	leftClickName = node.text;
+        	leftClickId = node.id;
+        	var nodes = $scope.$('#cy-tree').tree('getSelected');//获取当前选中的节点
+        	if($scope.$('#cy-tree').tree('isLeaf',nodes.target)){
+        		$scope.formData.serverPlatId = node.id;
+        		var nodess = $scope.$('#cy-tree').tree("getParent",nodes.target);//获取子节点的父节点
+        		$scope.formData.surveySystemId = nodess.id;
+        		$scope.formData.surveySystemName = nodess.text;
+        		$scope.$updateData("formData");
+                $scope.$search("formData");
+        	}
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+                {align : 'center',title : "监控中心名称",field : "surveySystemName",width : 100},
+                {align : 'center',title : "接入平台名称",field : "serverPlatName",width : 100},
+                {align : 'center',title : "服务器组件类型",field : "appType",width : 100,formatter : findAppTypeByCode},
+                {align : 'center',title : "操作",field : "operater",width : 80,formatter : operate}
+            ]],
+            pagination : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain:true,
+                iconCls:"icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain:true,
+                iconCls:"icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         *根据监控中心ID查监控中心Name 
+         */
+        function findAppTypeByCode(value,row,index){
+            var appType = $scope.$getCodeName("436",value);
+            return appType;
+        }
+        /**
+         *按钮新增接入平台 
+         */
+       	 $scope.addData = function(){
+        	var node = $scope.$('#cy-tree').tree('getSelected');//获取当前选中的节点
+        	if($scope.$('#cy-tree').tree('isLeaf',node.target)){//判断选择的是子节点
+        		var nodes = $scope.$('#cy-tree').tree("getParent",node.target);//获取子节点的父节点
+        		//传递树父节点名称
+	            $scope.$setParam("clickName",nodes.text);
+	            $scope.$setParam("clickId",nodes.id);
+        	}else{
+        		//传递树节点名称
+	            $scope.$setParam("clickName",leftClickName);
+	            $scope.$setParam("clickId",leftClickId);
+        	}
+        	$scope.$setParam("remark","add");
+        	$scope.$openDialog("addDialog",{
+        		title : "新增接入平台",
+                width : 640,
+                height : 560,
+                href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+        	});
+        	saveAccessPlatform();
+        };
+        /**
+         *树监控中心下新增接入平台 
+         */
+         $scope.addAccessPlatform = function(){
+    		//传递树节点名称
+            $scope.$setParam("clickName",rightClickNameF);
+            $scope.$setParam("clickId",rightClickIdF);
+            $scope.$setParam("remark","add");
+        	$scope.$openDialog("addDialog",{
+        		title : "新增接入平台",
+                width : 640,
+                height : 560,
+                href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+        	});
+        	saveAccessPlatform();
+        };
+        /**
+         * 新增接入平台保存数据
+         */
+        function saveAccessPlatform(){
+        	$scope.$setParam("saveData",function(data) {
+	            //后台保存数据
+	            $scope.$ajaxRequest({
+	                url: $scope.$restRoot + "device/monitorPlatformManage/addPlatform",
+	                params: data,
+	                method: "post",
+	                success: function(data){
+	                    $scope.$getDialog("addDialog").dialog("close");
+	                    $scope.$("#accessPlat").datagrid("getPager").pagination("select",1);
+	                    loadTree();
+	                },
+	                fail: function(errMsg){
+	                    $.messager.alert("提示",errMsg +　"！");
+	                }
+	            });
+	        });
+        }
+        /**
+         * 按钮编辑接入平台与服务器组件关系
+         * @param index  整数类型 编辑行下标
+        */ 
+        $scope.editData = function(index){
+            var rowDatas = $scope.$("#accessPlat").datagrid("getData").rows[index];
+        	$scope.$setParam("formData",rowDatas);
+        	$scope.$setParam("clickName",rowDatas.surveySystemName);
+            $scope.$setParam("clickId",rowDatas.surveySystemId);
+        	$scope.$setParam("remark","edit");
+            //创建编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑接入平台",
+                width : 640,
+                height : 560,
+                href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+            },true);
+            editSaveData();
+        };
+        /**
+         * 树编辑接入平台
+         */
+        $scope.editAccessPlatform = function(){
+        	var formData = {};
+        	formData.serverPlatId = rightClickIdC;
+        	formData.serverPlatName = rightClickNameC;
+        	if(rightClickAttribute != null){
+        		formData.serverAppIdStr = rightClickAttribute.serverAppIdStr;
+        	}
+            $scope.$setParam("formData",formData);
+            $scope.$setParam("clickName",rightClickNameF);
+            $scope.$setParam("clickId",rightClickIdF);
+            $scope.$setParam("remark","edit");
+            //创建编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑接入平台",
+                width : 640,
+                height : 560,
+                href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+            },true);
+            editSaveData();
+        };
+        /**
+         *编辑接入平台保存数据
+         */
+        function editSaveData(){
+        	 //保存
+            $scope.$setParam("saveData",function(data) {
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "device/monitorPlatformManage/editPlatform",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                        $.messager.alert("提示","编辑成功！");
+                        $scope.$getDialog("editDialog").dialog("close");
+        				$scope.$updateData("formData");
+                        $scope.$search("formData");
+                        loadTree();
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示",errMsg +　",编辑失败！");
+                    }
+                });
+            });
+        }
+        /**
+         * 按钮删除接入平台下的服务器组件
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+        	var rowDatas = $scope.$("#accessPlat").datagrid("getData").rows[index];
+    		$.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot + "device/monitorPlatformManage/deletePlatformAndServerApp",
+                        params: rowDatas,
+                        method: "post",
+                        success: function(data){
+    						$scope.$updateData("formData");
+                            $scope.$search("formData");
+                            $.messager.alert("提示","删除成功！");
+                            loadTree();
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+	    };
+	    
+	    /**
+	     *树删除接入平台 
+	     */
+	    $scope.removeAccessPlatform = function(){
+            var serverPlatId = rightClickIdC;
+	    	$.messager.confirm("提示","是否确认删除该接入平台？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot + "device/monitorPlatformManage/deletePlatform",
+                        params: {serverPlatId: serverPlatId},
+                        method: "post",
+                        success: function(data){
+                        	if(data == 1){
+                        		$scope.$updateData("formData");
+                                $scope.$search("formData");
+                                $.messager.alert("提示","删除成功！");
+                                loadTree();
+                        	}else{
+                        		$.messager.alert("提示","接入平台下已绑定服务器组件禁止删除！");
+                        	}
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+	    };
+	    /**
+         *查看接入平台信息 
+         
+        $('#accessPlat').datagrid({
+            onDblClickCell: function(index,field,value){
+                var rowDatas = $scope.$("#accessPlat").datagrid("getData").rows[index];
+                $scope.$setParam("formData",rowDatas);
+                $scope.$setParam("remark","look");
+                $scope.$openDialog("lookDialog",{
+                    title : "查看接入平台信息",
+                    width : 640,
+                    height : 560,
+                    href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+                },true);
+            }
+        });*/
+    });
+</script>
+<style type="text/css">
+	#accessPlatform .th{
+        width: 100px;
+        text-align: right;
+    }
+    #accessPlatform .button-search{
+        margin-left: 10px;
+    }
+</style>

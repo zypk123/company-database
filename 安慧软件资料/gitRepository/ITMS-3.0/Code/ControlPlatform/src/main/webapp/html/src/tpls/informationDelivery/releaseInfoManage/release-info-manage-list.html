@@ -1,0 +1,370 @@
+<!--发布记录信息主页面 -->
+<div  class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="releaseInfo" class="table">
+					<div class="tr">
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td" >
+							<input  name="orgPrivilegeCode" class="cy-org-radio"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input  name="roadId"  class="cy-road-radio"/>
+						</div>
+						<div class="th">
+							诱导屏设备：
+						</div>
+						<div class="td">
+							<input id="inducedSreenDeviceName" name="deviceId" class="easyui-combobox"
+							data-options="valueField:'Id',textField:'text'" />
+						</div>
+						<div class="th">
+							任务类型：
+						</div>
+						<div class="td">
+							<input name="taskType" class="easyui-combobox" cy-code='617'/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							消息类型：
+						</div>
+						<div class="td">
+							<input  name="messageType" class="easyui-combobox" cy-code='611'/>
+						</div>
+						<div class="th">
+							创建时间：
+						</div>
+						<div class="td" style="width: 300px;">
+							<input id="start" name="createTimeFrom" class="easyui-datetimebox" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']" />至
+							<input id="end" name="createTimeTo" class="easyui-datetimebox" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"/>
+						</div>
+						<div class="th">
+							执行状态：
+						</div>
+						<div class="td" id="issueStatusId" style="width: 220px;">
+							<input type="hidden" name="issueStatusArrs" id="issueStatusArrs"/>
+							<input  type="checkbox" name="issueStatus" value="0"/>未下发
+							<input  type="checkbox" name="issueStatus" value="2"/>执行成功
+							<input  type="checkbox" name="issueStatus" value="1"/>下发失败
+						</div>
+						<div class="td" style="width: 80px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dataGrid" cy-datagrid="options" cy-querydata="formData"
+		cy-url="device/IReleaseTaskManager/findReleaseTaskList"></table>
+	</div>
+
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['611','617','619']);
+		//初始化加载
+	 	$scope.load = function() {
+	 		queryinducedSreenDeviceName();
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+		 };
+		 //执行状态拼接字符串
+		 $scope.$("#issueStatusId").click(function(){
+	 		var issueStatusValue="";
+	 		$scope.$("input[name='issueStatus']:checked").each(function(){
+				issueStatusValue +=$(this).val()+",";
+			});
+			$scope.$("#issueStatusArrs").val(issueStatusValue);
+		});
+		
+		function queryinducedSreenDeviceName(){
+			$scope.$ajaxRequest({
+               	url:$scope.$restRoot+"device/IReleaseTaskManager/findReleaseTaskList",
+                params:{},
+                method:"post",
+                success:function(data){
+                   	$scope.$("#inducedSreenDeviceName").combobox("loadData",data.ydpData);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","诱导屏设备失败，请重新打开此页面！");
+                }
+            });
+		}
+		 $scope.$("#inducedSreenDeviceName").combobox({
+	      	onSelect : function(value){
+	      		if(value.text=="请选择"){
+	      			$scope.$("#inducedSreenDeviceName").textbox("setText",null);
+	      		}
+	      	} 
+	      });
+		$scope.searchData = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				var count = $scope.$("#dataGrid").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					$scope.$("#dataGrid").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("formData");
+				}
+			};
+		};
+		
+		//列表头部信息
+		$scope.options = {
+			columns : [[{
+				field : 'Id',
+				checkbox : false,
+				align : 'center'
+			},{
+				field : 'taskId',
+				title : '任务流水号',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'taskName',
+				title : '任务名称',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'taskType',
+				title : '任务类型',
+				align : 'center',
+				formatter : taskTypeOption,
+				width : 15
+			}, {
+				field : 'messageType',
+				title : '消息类型',
+				align : 'center',
+				formatter : messageTypeOption,
+				width : 15
+			},{
+				field : 'deviceName',
+				title : '诱导屏设备',
+				align : 'center',
+				width : 30
+			},{
+				field : 'issueStatus',
+				title : '执行状态',
+				align : 'center',
+				formatter : issueStatusOption,
+				width : 12
+			},{
+				field : 'timeString',
+				title : '任务执行时间',
+				align : 'center',
+				width : 40
+			},{
+				field : 'createTime',
+				title : '创建时间',
+				align : 'center',
+				width : 20
+			},{
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				width : 20,
+				formatter:optionCz
+			}]],
+			nowrap :false,
+		};
+		
+		//任务类型Code转换名称 			
+		function taskTypeOption(value,row,index){
+			return $scope.$getCodeName("617",value);
+		}
+		//信息类型Code转换名称 
+		function messageTypeOption(value){
+			return $scope.$getCodeName("611",value);
+		}	
+		//执行状态Code转换名称
+		function issueStatusOption(value){
+			return $scope.$getCodeName("619",value);
+		}
+		// 操作栏按钮
+		function optionCz(value, row, index) {
+			//根据任务类型做判断
+			var menu;
+			if(row.taskType=="20"){
+				menu=true;
+				
+			}else{
+				menu=false;
+			}
+			//根据启用按钮做判断
+			var menuFlag;
+			if(row.enableFlag=="1"){
+				menuFlag=true;
+			}else{
+				menuFlag=false;
+			}
+			//详情按钮
+			var button1 = $("<a class='button-detail' title='节目详情' cy-click='details(" + index + ")'></a>");
+			//启用
+			var button2 = $("<a  class='button-enable' title='启用' cy-click='start(" + index + ")'></a>");
+			//停用
+			var button3 = $("<a class='button-disabled' title='停用' cy-click='end(" + index + ")'></a>");
+			//手动下发按钮 			
+			var button4 = $("<a class='button-remove' title='重新下发' cy-click='downLoad(" + index + ")'></a>");
+			//删除按钮 			
+			var button5 = $("<a class='button-remove' title='删除' cy-click='deleteData(" + index + ")'></a>");
+			if(menu){
+                button2.hide();
+            	button4.hide();
+            	button5.hide();
+            }else{
+            	button1.hide();
+                button2.hide();
+                button3.hide();
+            }
+            if(menuFlag && menu){
+                button2.hide();
+                button3.show();
+            }else if(menu){
+            	button2.show();
+            	button3.hide();
+            	button5.show();
+            }
+            button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true,
+				
+			});
+			button2.linkbutton({
+				iconCls : "icon-enable-solid",
+				plain : true,
+						
+			});
+			button3.linkbutton({
+				iconCls : "icon-disable-solid",
+				plain : true,
+				
+			});
+			button4.linkbutton({
+				iconCls : "icon-download-solid",
+				plain : true,
+				
+			});
+			button5.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).append(button3).append(button4).append(button5).html();
+		};
+		
+		//查看发布日志
+		$scope.details=function(index){
+			var dataRows=$scope.$("#dataGrid").datagrid("getData").rows[index];
+			$scope.$setParam("formData",dataRows);
+				$scope.$openDialog("editDialog",{
+					title:'发布日志',
+					height:900,	
+					width:900,
+					href:"tpls/informationDelivery/releaseInfoManage/release-info-manage-checked.html"
+				});
+				
+			};
+			//启用操作 			
+			$scope.start=function(index){
+				var dataRows=$scope.$("#dataGrid").datagrid("getData").rows[index];
+				var taskId=dataRows.taskId;
+				$.messager.confirm("提示","确定启用么？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "/device/IReleaseTaskManager/enableAutoTask",
+							params : {taskId:taskId},
+							success : function(data){
+								$scope.$search("formData");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "启用失败！");
+							}
+						});
+						
+					}
+				});
+			};
+			//停用操作			
+			$scope.end=function(index){
+				var dataRows=$scope.$("#dataGrid").datagrid("getData").rows[index];
+				var taskId=dataRows.taskId;
+				$.messager.confirm("提示","确定停用么？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "/device/IReleaseTaskManager/disableAutoTask",
+							params : {taskId:taskId},
+							success : function(data){
+								$scope.$search("formData");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "停用失败！");
+							}
+						});
+						
+					}
+				});
+			};		
+			//重新下发操作			
+			$scope.downLoad=function(index){
+				var dataRows=$scope.$("#dataGrid").datagrid("getData").rows[index];
+				var taskId=dataRows.taskId;
+				$.messager.confirm("提示","确定下发么？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "/device/IReleaseTaskManager/repubManualTask",
+							params : {taskId:taskId},
+							success : function(data){
+								$scope.$search("formData");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "下发失败！");
+							}
+						});
+						
+					}
+				});
+			};		
+			//删除操作			
+			$scope.deleteData=function(index){
+				var dataRows=$scope.$("#dataGrid").datagrid("getData").rows[index];
+				var taskId=dataRows.taskId;
+				$.messager.confirm("提示","确定删除么？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "/device/IReleaseTaskManager/removeLedTask",
+							params : {taskId:taskId},
+							success : function(data){
+								$scope.$search("formData");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+						
+					}
+				});
+			};		
+	}); 
+</script>
+<style type="text/css">
+	#releaseInfo .th {
+		text-align: right;
+		width: 80px;
+	}
+	#releaseInfo .td {
+		width: 150px;
+	}
+	
+</style>

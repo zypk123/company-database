@@ -1,0 +1,147 @@
+<div id="info-publish" class="easyui-layout">
+	<div data-options="region:'west',width:250,border:false" style="border-right: #ddd solid 1px;">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false,height:40">
+				<div class="table">
+					<div class="tr">
+						<div class="td">
+							<input class="easyui-searchbox" data-options="width:200,prompt:'请输入关键字'" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div data-options="region:'center',border:false">
+				<div class="easyui-tabs" data-options="fit:true">
+					<div data-options="title:'按机构'">
+						<div id="org-tree"></div>
+					</div>
+					<div data-options="title:'按道路'">
+						<div id="road-tree"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<div data-options="region:'north',height:40" style="border-bottom: solid 1px #ddd">
+				<div class="linkbutton_toolbar">
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-list',group:'model',toggle:true,selected:true">模拟监控</a>
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-picture',group:'model',toggle:true">视频监控</a>
+				</div>
+			</div>
+			<div data-options="region:'center',border:false">
+				<div class="easyui-layout">
+					<div data-options="region:'center',border:false">
+						<div class="table" style="height:100%;display:table">
+							<div class="td" style="vertical-align:middle;display:table-cell;height:100%;width:100%;text-align: center;">
+								<object
+									id="PREVIEWOCX"
+									TYPE="application/x-itst-activex"
+									WIDTH="640" HEIGHT="420"
+									clsid="{DD78DE84-048C-4324-BB6B-1252C12881CB}"
+									progid="PREVIEWOCX"></object>
+							</div>
+						</div>
+					</div>
+					<div data-options="region:'south',border:false,height:150">
+						<div class="linkbutton_toolbar" style="padding-left: 20px;width:auto;">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-stop'">软关屏</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-time'">定时开关</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-light'">亮度</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-time'">校时</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div data-options="region:'east',width:400,title:'节目列表',iconCls:'icon-list-solid',collapsible:false">
+				<div class="easyui-layout">
+					<div data-options="region:'north',height:38,border:false">
+						<div class="linkbutton_toolbar">
+							<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'">添加</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'">刪除</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-up'">上移</a>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-down'">下移</a>
+						</div>
+					</div>
+					<div data-options="region:'center',border:false">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+
+		$scope.load = function() {
+			//初始化树信息
+			initTree();
+
+		};
+
+		function initTree() {
+			//查询LED设备
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceConfig/queryLedDevice",
+				success : function(data) {
+					var orgTree = $scope.$("#org-tree").tree({
+						data : $scope.$org
+					});
+					var roadTree = $scope.$("#road-tree").tree({
+						data : $scope.$road
+					});
+					for (var index in data) {
+						var device = data[index];
+						var deviceData = {
+							id : device.deviceId,
+							text : device.deviceName,
+							attribute : {
+								nodeType : "device"
+							}
+						};
+						//增加到机构树中
+						var parent = orgTree.tree("find", device.orgId);
+						orgTree.tree("append", {
+							parent : parent.target,
+							data : deviceData
+						});
+						//增加到道路树中
+						parent = roadTree.tree("find", device.roadId);
+						roadTree.tree("append", {
+							parent : parent.target,
+							data : deviceData
+						});
+					}
+					//删除多余的节点
+					deleteEmptyNode(orgTree.tree("getRoots")[0], orgTree);
+					deleteEmptyNode(roadTree.tree("getRoots")[0], roadTree);
+				}
+			});
+
+		};
+
+		//删除多余的空节点
+		function deleteEmptyNode(node, tree) {
+			if (node.children && node.children.length > 0) {
+				for (var index = 0; index < node.children.length; index++) {
+					var item = node.children[index];
+					if (deleteEmptyNode(item, tree)) {
+						index--;
+					}
+				}
+			}
+			if (!node.children || node.children.length == 0) {
+				if (!node.attribute || !node.attribute.nodeType || node.attribute.nodeType != "device") {
+					var deleteNode = tree.tree("find", node.id);
+					tree.tree("remove", deleteNode.target);
+					return true;
+				}
+			}
+			return false;
+		}
+
+	});
+
+</script>

@@ -1,0 +1,828 @@
+<div id="vehicle-query-all" class="easyui-layout">
+
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:600" class="hide">
+		<form cy-form="formData" id='searchForm'>
+			<div class="searchPanel" style="margin-top:20px;" >
+				<div class="panel_title">
+					时间地点
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							<span class="red">* </span>过车时间：
+						</div>
+						<div class="td" style="width:250px;">
+							<input name="passTimeStart" id="passTimeStart" data-options="required:true,validType:['maxDate[\'passTimeEnd\']','date']"
+							class="easyui-datetimebox input" style="width:190px;height: 30px;" />
+							至
+							<input name="passTimeEnd" id="passTimeEnd" data-options="required:true,validType:['maxDate[\'passTimeEnd\']','date']"
+							class="easyui-datetimebox input" style="width:190px;height: 30px;" />
+						</div>
+
+						<!-- <div class="th">
+						行政区划：
+						</div>
+						<div class="td" style="width:150px;height: 25px;">
+						<input class="cy-district-checkbox" iscode="true" name="distritCodes" id ="distritCodes" after-change="getRoadAndSite" style="width:150px;height:25px"/>
+						</div>
+						<div class="th">
+						道路：
+						</div>
+						<div class="td" style="width:150px;height: 25px;">
+						<input class="cy-road-checkbox"  iscode="true" filter="getRoadByDistrict" name="roadCodes" id="roadCodes" style="width:150px;height:25px"/>
+						</div>
+						<div class="th">
+						点位：
+						</div>
+						<div class="td" style="width:150px;height: 25px;">
+						<input class="cy-site-checkbox" iscode="true" name="siteCodes" id= "siteCodes" style="width:150px;height:25px"/>
+						</div> -->
+					</div>
+					<div class="tr hide" >
+						<div class="th">
+							<input type="checkbox" name="selectType" value="siteType" id="selectType" checked>按点位
+						</div>
+						<div class="th" style="margin-left: 20px;">
+							<a class="easyui-linkbutton" id="searchArea" style="font-size: 14px;display: none" cy-click="chooseArea">选择范围</a>
+						</div>
+						<div class="td" style="width:220px;text-align: center">
+							<input type="radio" name="direction" value="" checked="checked"/>
+							双向
+							<input type="radio" name="direction" value="1" />
+							上行
+							<input type="radio" name="direction" value="2" />
+							下行
+						</div>
+						<div class="td" style="width:100px;">
+							<input class="easyui-textbox" name="lane" style="width:50px;height: 30px;" />
+							车道
+						</div>
+						<div class="th" style="width:60px;">
+							车速：
+						</div>
+						<div class="td">
+							<input class="easyui-numberbox" name="speedStart" style="width:51px;height: 30px;" />
+							至
+							<input class="easyui-numberbox" name="speedEnd" style="width:51px;height: 30px;" />
+						</div>
+					</div>
+					<div class="tr">
+						<li class="select-result" style="display: none">
+							<dl>
+								<dt>
+									已选条件：
+								</dt>
+								<dd class="select-no" >
+									暂时没有选择过滤条件
+								</dd>
+							</dl>
+						</li>
+						
+						<div class="th siteHide" >
+							点位：
+						</div>
+						<div class="td siteHide" style="width: 255px;">
+							<!--点位多选 -->
+							<input class="cy-site-checkbox" style="width: 250px;height: 30px;"  name="checkboxSiteCodes" iscode="true">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="searchPanel hide">
+				<div class="panel_title">
+					号牌特征
+					<span class="blue">
+						<input type="checkbox" name ="justSearchNullPlate" id="nullPlate" value="nullPlate">
+						无牌车 </span>
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							号牌号码：
+						</div>
+						<div class="td">
+							<input class="cy-vehNumberbox" name="plateNbr" id = "plateNbr" style="width:150px;height: 30px;" />
+						</div>
+						<div class="th hide">
+							号牌颜色：
+						</div>
+						<div class="td hide">
+							<input class="easyui-combobox"
+							name="plateColor" id = "plateColor" style="width:150px;height: 30px;" cy-code="003" />
+						</div>
+					</div>
+					<div class="tr">
+						<div class="td" style="width:1000px;">
+							<span class="local-radio" style="margin-left:25px;">
+								<input type="radio" name ="vehLocal" checked value="">
+								不限 </span>
+							<span class="local-radio">
+								<input type="radio" name ="vehLocal" value="1">
+								本市 </span>
+							<span class="local-radio">
+								<input type="radio" name ="vehLocal" value="2">
+								本市以外 </span>
+							<span class="local-radio">
+								<input type="radio" name ="vehLocal" value="3">
+								本省 </span>
+							<span class="local-radio">
+								<input type="radio" name ="vehLocal" value="4">
+								外省 </span>
+							<span class="local-radio">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="searchPanel  hide">
+				<div class="panel_title">
+					车辆特征
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							车辆品牌：
+						</div>
+						<div class="td">
+							<input class="cy-brandbox" name="vehBrand" style="width:150px;height: 30px;" />
+						</div>
+						<div class="th">
+							子品牌：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="vehBrand" style="width:150px;height: 30px;" />
+						</div>
+						<div class="th">
+							车辆颜色：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="VEHICLE_COLOR" name="vehicleColor" style="width:150px;height: 30px;" cy-code="006" />
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="td" style="width:1000px;padding-left:40px;">
+						<input type="checkbox" name="justFirstApear"  id="justFirstApear">
+						陌生车
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<!-- <a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"
+						cy-click="searchSlideUp">收起</a>&nbsp; -->
+						<a class="easyui-linkbutton button-main" id="searchButton" cy-click="search('normal')">查 询</a>&nbsp;
+					</div>
+				</div>
+			</div>
+
+		</form>
+	</div>
+
+	<!--数据展示区 -->
+	<div data-options="region:'center',border:false" id="dataView">
+
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(['plateNbr', 'passTimeStart', 'passTimeEnd', 'model','siteCode','siteName'], function($scope) {
+
+		//获得本页面需要的数据字典,依次：车辆外形，号牌颜色，车辆颜色
+		$scope.$getDefaultCode(["004", "003", "006"]);
+		var areaDataTemp;
+
+		//页面默认模式--列表模式
+		var currentModel = "list";
+
+		$scope.load = function() {
+
+			$scope.$("#nullPlate").bind("click", function() {
+				  if(this.checked && $scope.$("#justFirstApear")[0].checked){
+				 $scope.$('#justFirstApear').attr("checked", false);
+				 }
+				if (this.checked) {
+					$scope.$('#plateNbr').textbox('disable');
+					$scope.$('#plateColor').textbox('disable');
+					//将无牌车查询使用impala，提交效率
+					//$scope.formData.dbType = "impala";
+					$scope.$('#plateNbr').textbox('setValue', '');
+					$scope.formData.plateNbr = "";
+					$scope.$('#plateColor').combobox('setValue', '');
+					$scope.formData.plateColor = "";
+					$scope.$("input[name='vehLocal']:radio").attr("disabled",true)
+					//$scope.$("input[name='vehLocal']:radio:checked").attr("checked",false)
+
+				} else {
+					$scope.$('#plateNbr').textbox('enable');
+					$scope.$('#plateColor').textbox('enable');
+					$scope.$("input[name='vehLocal']:radio").attr("disabled",false)
+				}
+			});
+			 $scope.$("#justFirstApear").bind("click",function(){
+				 if(this.checked && $scope.$("#nullPlate")[0].checked){
+					 $scope.$('#nullPlate').attr("checked", false); 
+					 //$scope.$('#vehLocalization').textbox('enable');
+					 $scope.$('#plateNbr').textbox('enable');
+					 $scope.$('#plateColor').textbox('enable');
+					 $scope.$("input[name='vehLocal']:radio").attr("disabled",false)
+				 }
+			 });
+			 //选择范围的checkbox
+			 $scope.$("#selectType").bind("click",function(){
+				 if(this.checked){
+					 $scope.$("#searchArea").css("display","none");
+					 $scope.$(".select-result").css("display","none");
+					 $scope.$(".siteHide").css("display","block");
+					 
+				 }else{
+					 $scope.$("#searchArea").css("display","block");
+					 $scope.$(".select-result").css("display","block");
+					 $scope.$(".siteHide").css("display","none");
+				 }
+				 
+			 });
+			 
+
+			//给号牌号码增加提示
+			$scope.$("#plateNbr").textbox("textbox").attr("title", "?表示单字符, *表示多字符");
+
+			//这个是从高危地域车辆分析过来的参数
+			if ($scope.model == 'image') {
+				currentModel = "image";
+				$scope.formData.plateNbr = $scope.plateNbr;
+				//监控地图使用
+				if($scope.siteCode !=null && $scope.siteName !=null){
+					var data = {};
+					data.siteCodes = $scope.siteCode;
+					data.siteNames = $scope.siteName;
+					createSelectedMenu(data);
+				}
+				$scope.formData.passTimeStart = $scope.passTimeStart;
+				$scope.formData.passTimeEnd = $scope.passTimeEnd;
+				$scope.$updateDom("formData");
+				//查询
+				$scope.search();
+			}
+		};
+
+		$scope.search = function(searchType) {
+			if (!$scope.$("#searchForm").form("validate")) {
+				return;
+			}
+			var plateNbr = $scope.$("#plateNbr").val();
+			//当输入的车牌号码中不包含'*'或者'='?'且长度小于7，自动给他补足‘*’
+			if (!(plateNbr.indexOf("*") >= 0 || plateNbr.indexOf("?") >= 0) && plateNbr.length < 7) {
+				$scope.$("#plateNbr").textbox("setValue", plateNbr + '*');
+			}
+
+			//收起查询条件
+			
+			//更新数据
+			$scope.$updateData("formData");
+			var vehLocal = $scope.formData.vehLocal;
+			var orgCode = ($scope.UserInfo.orgCode).substr(0,4)+"00000000";
+			var platePrefix = $scope.$getPlatePrefix(orgCode);
+			if (!platePrefix) {
+				platePrefix = "云";
+			}
+			$scope.formData.justNonlocalVeh='';
+			if (plateNbr != null && plateNbr != '' && plateNbr != '*') {
+				//本市
+				if ("1" == vehLocal) {
+					if("云B"==platePrefix){
+						if (!plateNbr.startWith("云B") && !plateNbr.startWith("云A")) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}else {
+					//如果输入车牌号，且车牌号和车牌前缀有冲突，例如plateNbr =云A，platePrefix=云B
+						if (!plateNbr.startWith(platePrefix) && "云" != plateNbr) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}
+				} else if ("2" == vehLocal) {//本市以外 如果输入车牌号，只用是非云A
+					// 昆明市特殊处理云A 云B
+					if("云B"==platePrefix){
+						if (plateNbr.startWith(platePrefix) || plateNbr.startWith("云A")) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}
+					if (plateNbr.startWith(platePrefix)) {
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				} else if ("3" == vehLocal) {//本省以外 如果输入车牌号，只能是属于云南的
+					if (!plateNbr.startWith("云")) {
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				} else if ("4" == vehLocal) {//本省以外 如果输入车牌号，只能是不属于云南的
+					if (plateNbr.startWith("云")) {
+						/* $scope.formData.plateNbr = "云*";
+						$scope.formData.justNonlocalVeh = 'unlocal'; */
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				}
+			} else {
+				// 昆明市特殊处理云A 云B
+				if("云B"==platePrefix){
+					platePrefix = platePrefix + "*,云A*"
+				}else{
+					platePrefix = platePrefix +"*"
+				}
+				if ("1" == vehLocal) {
+					$scope.formData.plateNbr = platePrefix;
+				} else if ("2" == vehLocal) {
+					$scope.formData.plateNbr = platePrefix;
+					$scope.formData.justNonlocalVeh = 'unlocal';
+				} else if ("3" == vehLocal) {
+					$scope.formData.plateNbr = "云*";
+				} else if ("4" == vehLocal) {
+					$scope.formData.plateNbr = "云*";
+					$scope.formData.justNonlocalVeh = 'unlocal';
+				}
+
+			}
+
+			if ($scope.$("#justFirstApear")[0].checked) {
+				if (!$scope.formData.distritCodes || $scope.formData.distritCodes == '') {
+					$.messager.alert("提示", "请选择行政区划");
+					return;
+				}
+				firstTime = new Date($scope.formData.passTimeStart.replace(/-/g, "/"));
+				$scope.formData.firstAppearDistrictCodes = "530000";
+				firstTime = $scope.$dateAdd('d', -7, firstTime)
+				$scope.formData.dbType = "impala";
+				$scope.formData.firstTime = firstTime.format("yyyy-MM-dd hh:mm:ss");
+				$scope.formData.justFirstApear = "true"
+			} else {
+				$scope.formData.dbType = "";
+				$scope.formData.justFirstApear = ""
+			}
+			//无牌车
+			if (!$scope.$("#nullPlate").get(0).checked) {
+				$scope.formData.justSearchNullPlate = '';
+			} else {
+				//将无牌车查询使用impala，提交效率
+				//$scope.formData.dbType = "impala";
+				$scope.formData.plateNbr = "";
+			}
+			//选择点将行政区划和道路设置为空，此时点位应该点位控件的点位
+			if($scope.$("#selectType").get(0).checked){
+				$scope.formData.distritCodes="";
+				$scope.formData.roadCodes="";
+				$scope.formData.siteCodes = $scope.formData.checkboxSiteCodes;
+			}else{
+				if(areaDataTemp){
+					$scope.formData.distritCodes=areaDataTemp.districtCodes;
+					$scope.formData.roadCodes=areaDataTemp.roadCodes;
+					$scope.formData.siteCodes = areaDataTemp.siteCodes;
+				}
+			}
+			//显示查询进度条
+			searchProgress();
+			//加载数据界面，并传递参数到数据中
+			$scope.formData.pageNumber = 1;
+			$scope.$setParam("searchData", $scope.formData);
+			//设置显示进度条方法
+			$scope.$setParam("searchProgress", searchProgress);
+			//切换显示模式方法
+			$scope.$setParam("changeViewModel", changeViewModel);
+			//searchSlideUp
+			$scope.$setParam("searchSlideUp", $scope.searchSlideUp);
+			//searchBack
+			$scope.$setParam("searchBack", $scope.searchBack);
+			
+			//更改页面数据
+			if (currentModel == "list") {
+				//列表模式
+				$scope.$("#dataView").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-passInfo-list.html");
+			} else {
+				//大图模式
+				$scope.$("#dataView").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-passInfo-image.html");
+			}
+		};
+
+		/**
+		 *联动
+		 */
+		//机构和道路的联动
+		$scope.getRoadByDistrict = function(id, text, attribute) {
+			var distritCodes = $scope.$("#distritCodes").textbox("getValue").split(",");
+			if (!distritCodes || distritCodes == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				if (!attribute.districtCode || attribute.districtCode == '') {
+					return true;
+				}
+				var dCodes = attribute.districtCode.split(",");
+				for (var i in dCodes) {
+					for (var j in distritCodes) {
+						if (dCodes[i] == distritCodes[j]) {
+							return true;
+						}
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+
+		$scope.getRoadAndSite = function(newValue, oldValue) {
+			if (oldValue != "") {
+				$scope.$("#roadCodes").textbox("clear");
+				//清空原来加载的道路
+				//$scope.$("#siteCodes").combobox("clear");//清空原来加载的点位
+			}
+
+		};
+
+		/**
+		 *打开选择范围的页面
+		 */
+		$scope.chooseArea = function() {
+			$scope.$setParam("getData", function(data) {
+				createSelectedMenu(data);
+				$scope.$getDialog("chooseArea").dialog("close");
+			});
+			$scope.$openDialog("chooseArea", {
+				title : "选择范围",
+				href : "tpls/public/choose-location.html",
+				width : 700,
+				height : 500
+			},false)
+		};
+
+		/**
+		 * 创建选择条件菜单
+		 * @param data 范围数据
+		 */
+		var createSelectedMenu = function(data) {
+			areaDataTemp = data;
+			//当重新选择范围的时候将原来的范围信息删除
+			$scope.$(".selectedSpan").each(function(i) {
+				$scope.formData.distritCodes = "";
+				$scope.formData.roadCodes = "";
+				$scope.formData.siteCodes = "";
+				$(this).remove();
+			});
+			//当没有选择范围的结果的时候显示未选择
+			if ($(".select-result span").length > 1) {
+				$scope.$(".select-no").hide();
+			} else {
+				$scope.$(".select-no").show();
+			}
+			
+			if (data.districtNames) {
+				var span = $('<span class="selectedSpan"></span')
+				var selectedArea = $('<a id="districtArea" class="selectedArea"></a>');
+				var a = $('<a id="districtCancel" class="selectedCancel"></a>');
+				$scope.$(".select-no").hide();
+				var content = data.districtNames.split(",")[0];
+				if((data.districtNames.split(",")).length>1){
+					content = content +",..."
+				}
+				selectedArea.append(content);
+				selectedArea.tooltip({
+					position : 'top',
+					content : data.districtNames,
+					showEvent:'click'
+				});
+				span.append(selectedArea).append(a);
+				$scope.$(".select-result dl").append(span.attr("id", "districtCodes"));
+				$scope.formData.distritCodes = data.districtCodes;
+			}
+			if (data.roadNames) {
+				var span = $('<span class="selectedSpan"></span')
+				var selectedArea = $('<a id="roadArea" class="selectedArea"></a>');
+				var a = $('<a id="roadCancel" class="selectedCancel"></a>');
+				$scope.$(".select-no").hide();
+				var content = data.roadNames.split(",")[0];
+				if((data.roadNames.split(",")).length>1){
+					content = content +",..."
+				}
+				selectedArea.append(content);
+				selectedArea.tooltip({
+					position : 'top',
+					content : data.roadNames,
+					showEvent:'click'
+				});
+				span.append(selectedArea).append(a);
+				$scope.$(".select-result dl").append(span.attr("id", "roadCodes"));
+				$scope.formData.roadCodes = data.roadCodes;
+			}
+			if (data.siteNames) {
+				var span = $('<span class="selectedSpan"></span')
+				var selectedArea = $('<a id="sitetArea" class="selectedArea"></a>');
+				var a = $('<a id="siteCancel" class="selectedCancel"></a>');
+				$scope.$(".select-no").hide();
+				var content = data.siteNames.split(",")[0];
+				if((data.siteNames.split(",")).length>1){
+					content = content +",..."
+				}
+				selectedArea.append(content);
+				selectedArea.tooltip({
+					position : 'top',
+					content : data.siteNames,
+					showEvent:'click'
+				});
+				span.append(selectedArea).append(a);
+				$scope.$(".select-result dl").append(span.attr("id", "siteCodes"));
+				$scope.formData.siteCodes = data.siteCodes;
+			}
+			
+			$scope.$('.selectedArea').linkbutton({  
+			}); 
+			$scope.$('.selectedCancel').linkbutton({    
+			    iconCls: 'icon-cancel'   
+			}); 
+			$scope.$(".selectedCancel").each(function(i) {
+				$scope.$(this).bind("click", function() {
+					$scope.$(this).prev(".selectedArea").tooltip("destroy");
+					$scope.$(this).parent(".selectedSpan").remove();
+					if("districtCancel" == this.id){
+						$scope.formData.distritCodes = "";
+						areaDataTemp.districtCodes = ""
+					}else if("roadCancel" == this.id){
+						$scope.formData.roadCodes = "";
+						areaDataTemp.roadCodes = ""
+					}else {
+						$scope.formData.siteCodes = "";
+						areaDataTemp.siteCodes = ""
+					}
+					if ($(".select-result span").length > 1) {
+						$scope.$(".select-no").hide();
+					} else {
+						$scope.$(".select-no").show();
+					}
+				});
+			});
+		};
+
+		/**
+		 * 切换显示模式
+		 * @param passData 过车数据
+		 */
+		var changeViewModel = function(model, passData) {
+			//更改模式
+			currentModel = model;
+			//设置查询参数
+			$scope.$setParam("searchData", $scope.formData);
+			//设置显示进度条方法
+			$scope.$setParam("searchProgress", searchProgress);
+			//切换显示模式方法
+			$scope.$setParam("changeViewModel", changeViewModel);
+			//searchSlideUp
+			$scope.$setParam("searchSlideUp", $scope.searchSlideUp);
+			//过车数据
+			$scope.$setParam("passData", passData);
+			//更改页面数据
+			if (currentModel == "list") {
+				//列表模式
+				$scope.$("#dataView").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-passInfo-list.html");
+			} else {
+				//大图模式
+				$scope.$("#dataView").panel("refresh", "tpls/passVehicle/vehicleQuery/vehicle-passInfo-image.html");
+			}
+		};
+		/**
+		 * 显示查询进度条
+		 */
+		var searchProgress = function() {
+			$.messager.progress({
+				title : false,
+				msg : "正在查询，请稍后...",
+				interval : 1000,
+				text : "查询中..."
+			});
+		};
+
+		$.extend($scope, {
+			/**
+			 * 初始化参数
+			 * @type {Object}
+			 */
+			formData : {
+				passTimeStart : new Date().format("yyyy-MM-dd 00:00:00"),
+				passTimeEnd : new Date().format("yyyy-MM-dd hh:mm:ss"),
+				//plateNbr : $scope.$getPlatePrefix($scope.UserInfo.orgCode)
+			},
+			/**
+			 * 增加查询标签
+			 */
+			addSearchTag : function() {
+
+			},
+			/**
+			 * 导出查询标签
+			 * @return {[type]} [description]
+			 */
+			loadSearchTag : function() {
+
+			},
+			/**
+			 * 收起剩余搜索项
+			 * @return {[type]} [description]
+			 */
+			searchSlideUp : function() {
+				$scope.$(".hide").hide();
+				$scope.$("#vehicle-query-all").layout("panel", "north").panel("resize", {
+					height : 118
+				});
+				$scope.$("#dataView").show();
+				$scope.$("#vehicle-query-all").layout("resize");
+				/* $scope.$("#searchSlideUp").hide();
+				$scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" "); */
+			},
+			/**
+			 * 展开剩余搜索项
+			 * @return {[type]} [description]
+			 */
+			searchSlideDown : function() {
+				$scope.$(".hide").show();
+				$scope.$("#vehicle-query-all").layout("panel", "north").panel("resize", {
+					height : 195
+				});
+				$scope.$("#vehicle-query-all").layout("resize");
+				$scope.$("#searchSlideDown").hide();
+				$scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+			},
+			searchBack: function(){
+				$scope.$(".hide").show();
+				$scope.$("#dataView").hide();
+				$scope.$("#vehicle-query-all").layout("panel", "north").panel("resize", {
+					height : 600
+				});
+				$scope.$("#vehicle-query-all").layout("resize");
+				/* $scope.$("#searchSlideDown").hide();
+				$scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" "); */
+			}
+			 
+		});
+	}); 
+</script>
+<style>
+#vehicle-query-all #searchForm .th {
+	width: 110px;
+	text-align: right;
+	font-size: 16px;
+	height: 40px;
+	line-height: 40px;
+}
+
+#vehicle-query-all #searchForm .td {
+	width: 150px;
+	font-size: 16px;
+	line-height: 40px;
+	height: 40px;
+}
+
+#vehicle-query-all .textbox-text {
+	font-size: 16px;
+	height: 30px;
+	margin-top: -5px;
+}
+
+#vehicle-query-all  #searchArea .l-btn-text {
+	font-size: 16px;
+}
+
+#vehicle-query-all .searchPanel {
+	margin-left: 30px;
+	margin-top: 10px;
+	width: 1000px;
+}
+
+#vehicle-query-all .input {
+	width: 190px;
+	font-size: 16px;
+}
+
+#vehicle-query-all .textbox {
+	height: 30px;
+}
+
+/* select */
+#vehicle-query-all li {
+	list-style: none;
+	padding: 10px 0 5px 100px
+}
+
+#vehicle-query-all .select-list {
+	border-bottom: #eee 1px dashed
+}
+
+#vehicle-query-all dl {
+	zoom: 1;
+	position: relative;
+	line-height: 24px;
+	width: 60%
+}
+
+#vehicle-query-all dl:after {
+	content: " ";
+	display: block;
+	clear: both;
+	height: 0;
+	overflow: hidden
+}
+
+#vehicle-query-all dt {
+	width: 110px;
+	margin-bottom: 5px;
+	position: absolute;
+	top: 0;
+	left: -100px;
+	text-align: right;
+	color: #666;
+	height: 24px;
+	line-height: 24px
+}
+
+#vehicle-query-all .select-result .selected a {
+	color: #fff;
+	background-color: #f60
+}
+
+#vehicle-query-all .select-result dt {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+#vehicle-query-all .select-no {
+	color: #999;
+	/* float: left;
+		display: inline;
+		margin-left: 20px;
+		font-size: 14px; */
+}
+
+#vehicle-query-all .select-result a {
+	/* padding-right: 10px;
+		background: #f60 url("themes/default/images/close2.gif") right 9px;
+		no-repeat */
+	
+}
+
+#vehicle-query-all .select-result a:hover {
+	background-position: right -15px
+}
+
+#vehicle-query-all .panel_title {
+	font-size: 16px;
+}
+
+#vehicle-query-all #searchArea {
+	padding: 5px 10px;
+}
+
+#vehicle-query-all #searchButton {
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+#vehicle-query-all #searchButton .l-btn-text {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#vehicle-query-all .blue {
+	font-size: 16px;
+	color: blue;
+}
+
+#vehicle-query-all .local-radio {
+	float: left;
+	margin-left: 10px;
+	font-size: 16px;
+}
+
+#vehicle-query-all dd {
+	float: left;
+	display: inline;
+	margin: 0 0 5px 5px;
+}
+
+#vehicle-query-all .selectedArea {
+	margin: 0 -3px;
+	padding-right: 0px;
+	border-radius: 0px;
+}
+
+#vehicle-query-all .selectedCancel {
+	margin: 0 -3px;
+	padding-right: 0px;
+	border-radius: 0px;
+}
+
+#vehicle-query-all .selectedSpan {
+	padding-left: 10px;
+}
+</style>
+

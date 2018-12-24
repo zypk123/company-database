@@ -1,0 +1,172 @@
+<div id="SiteRealFlowView" style="height: 100%;">
+	<div class="easyui-layout" id="queryView">
+		<div data-options="region:'north'">
+			<form cy-form="cyFrmCond" class="searchForm" method="post">
+				<div class="searchPanel">
+					<div class="panel_title">查询条件</div>
+					<div class="table">
+						<div class="tr">
+							<!--<div class="th" style="padding-left: 5px">管理机构：</div>
+							<div class="td">
+								<input class="cy-org-radio" id="cmbOrgQ" name="orgId" after-change="getSiteByOrg">
+							</div>
+							<div class="th" style="padding-left: 5px;">采集道路：</div>
+							<div class="td">
+								<input class="cy-road-radio" id="cmbRoadQ" name="roadId" after-change="getSiteByRoad" filter="getRoadByOrg">
+							</div>
+							<div class="th" style="padding-left: 5px">采集点位：</div>
+							<div class="td" style="padding-left: 5px">
+								<input id="cmbSiteQ" class="easyui-combobox" name="siteCode" style="width:150px" data-options="valueField:'siteCode',textField:'siteName',multiple:true"/>
+							</div> -->
+							<div class="th" style="padding-left: 5px">采集点位：</div>
+							<div class="td" style="padding-left: 5px">
+								<input class="cy-site-checkbox" id="cmbSiteQ" bayonet="true" name="siteCode" data-options="required:true"
+									iscode="true" width="135px;">
+							</div>
+							<div class="th" style="padding-left: 5px">显示方式：</div>
+						<div class="td" style="width: 210px;">
+							<input type="radio" name="displayType" value="" style="width: 10px" checked="checked"/>
+							全部
+							<input type="radio" name="displayType" value="1" style="width: 10px"/>
+							过车数量
+							<input type="radio" name="displayType" value="2" style="width: 10px"/>
+							平均速度
+						</div>
+							<div class="th" style="padding-left: 5px;">统计日期：</div>
+							<div class="td">
+								<input class="easyui-datetimebox"
+									data-options="editable:false,required:true,validType:['maxDate[\'endTime\']','date']" type="text"
+									id="beginTime" name="beginTime" style="width: 150px" />
+							</div>
+							<div class="th" style="padding-left: 5px">至：</div>
+							<div class="td">
+								<input class="easyui-datetimebox"
+									data-options="editable:false,required:true,validType:['minDate[\'beginTime\']','date']" type="text"
+									id="endTime" name="endTime" style="width: 150px" />
+							</div>
+							<div class="td" style="text-align: right; width: 100px">
+								<a class="easyui-linkbutton button" cy-click="searchReport"
+									id="searchButton" data-options="iconCls:'icon-search'">查询</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div data-options="region:'center'" style="padding-left: 12px">
+			<iframe id="iframe" src="" align="center" width="100%" height="100%"
+				marginwidth=0 scrolling="yes" frameborder="0"> </iframe>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$.extend($scope, {
+			//查询表单 设置默认查询时间范围
+			cyFrmCond : {
+				beginTime : new Date(new Date().format("yyyy-MM-dd")+ " 00:00:00").dateAdd('d', -1).format('yyyy-MM-dd HH:MM:ss'),
+				endTime : new Date().format('yyyy-MM-dd HH:mm:ss')
+			}
+		})
+		$scope.searchReport = function() {
+			if($scope.$(".searchForm").form('validate')){//验证通过
+			var paramString = "";//获取参数字符串
+			var siteCode = $scope.$("#cmbSiteQ").textbox("getValue");
+			var displayType = $("input[name='displayType']:checked").val();
+			var beginTime = $scope.$("#beginTime").datebox('getValue');
+			var endTime = $scope.$("#endTime").datebox('getValue');
+			paramString += "&SITE_CODE=" + siteCode + "&DISPLAY_TYPE=" + displayType + "&BEGIN_TIME=" + beginTime + "&END_TIME=" + endTime;
+			$scope.$("#iframe").attr("src","../../../Report/run?__report=Real_Time_Pass_FLow.rptdesign"+ paramString);
+			console.log("../../frameset?__report=Real_Time_Pass_Flow.rptdesign" + paramString);
+		   }
+		}
+		//时间选择限定范围在7天，不包括当天
+		$scope.$('.easyui-datetimebox').each(function() {
+            $(this).datebox('calendar').calendar({
+            validator: function(date){
+                var now = new Date();
+                var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()-7);
+                return d1 <= date && date <= now;
+            }
+          })
+		});
+        
+		//根据道路加载点位
+		$scope.getSiteByRoad = function() {
+			$scope.$("#cmbSiteQ").combobox("clear");
+			var roadId = $scope.$("#cmbRoadQ").textbox("getValue");
+			var orgId = $scope.$("#cmbOrgQ").textbox("getValue");
+			var datas = {};//存机构或道路
+			if (roadId != null || roadId != "") {
+				datas.roadId = roadId;
+			}
+			if (orgId != null || orgId != "") {
+				datas.orgId = orgId;
+			}
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + 'device/site/querySites',
+				params : datas,
+				success : function(data) {
+					if (data.length != 0) {
+						$scope.$("#cmbSiteQ").combobox("loadData", data);
+					}
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "点位加载失败！");
+				}
+			});
+		};
+
+		$scope.getSiteByOrg = function() {
+			$scope.$("#cmbRoadQ").textbox("clear");//清空原来加载的道路
+			$scope.$("#cmbSiteQ").combobox("clear");//清空原来加载的点位
+			var roadId = $scope.$("#cmbRoadQ").textbox("getValue");
+			var orgId = $scope.$("#cmbOrgQ").textbox("getValue");
+			if (roadId != "" || orgId != "") {
+				var datas = {};//存机构或道路
+				if (roadId != null || roadId != "") {
+					datas.roadId = roadId;
+				}
+				if (orgId != null || orgId != "") {
+					datas.orgId = orgId;
+				}
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + 'device/site/querySites',
+					params : datas,
+					success : function(data) {
+						if (data != undefined) {//如果返回数据，加载数据，并清空之前选择的点位
+							$scope.$("#cmbSiteQ").combobox("loadData", data);
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "点位加载失败！");
+					}
+				});
+			} else {
+				$scope.$("#cmbSiteQ").combobox("loadData", []);//点位
+			}
+		};
+		/**
+		 *联动
+		 */
+		//机构和道路的联动
+		$scope.getRoadByOrg = function(id, text, attribute) {
+			var orgId = $scope.$("#cmbOrgQ").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if (!orgId || orgId == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for ( var i in orgPrivCodes) {
+					if (orgPrivCodes[i].startWith(privCode)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+	});
+</script>

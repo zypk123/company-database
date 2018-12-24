@@ -1,0 +1,27 @@
+<div class="easyui-layout">
+    <form cy-form="dataJs">
+        <div data-options="region:'center'">
+            <div id="cy-tree"></div>
+        </div>
+        <div data-options="region:'south'"  style="height: 60px;">&nbsp;
+            <div class="tr">
+                <div class="td" style="text-align: center">
+                    <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                    <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'"
+                       cy-click="close">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    InitPage(["dataJs", "close"], function ($scope) {
+            $scope.$("#cy-tree").tree({
+                lines: true,
+                checkbox: true,
+                animate: true,
+                url: "data/sysManagement/js-tree.json"
+            });
+
+      });
+</script>

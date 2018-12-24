@@ -1,0 +1,354 @@
+<!--规格配置信息主页面 -->
+<div id="specificationsConfig" class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div  class="table">
+					<div class="tr">
+						<div class="th">
+							规格名称：
+						</div>
+						<div class="td" >
+							<input  name="specName" class="easyui-textbox" data-options="validType:['notBlank','length[0,6]']" />
+						</div>
+						<div class="th">
+							颜色类型：
+						</div>
+						<div class="td">
+							<input  name="colorType"  class="easyui-combobox" cy-code="600" />
+						</div>
+						<div class="th">
+							功能类型：
+						</div>
+						<div class="td">
+							<input name="ledFunctionType" class="easyui-combobox" cy-code="615" />
+						</div>
+						<div class="th">
+							控制方式：
+						</div>
+						<div class="td" id="controlTypeId">
+							<input id="controlTypeStrId" type="hidden" name="controlTypeStr"/>
+							<input  type="checkbox" name="controlType" value="1" />同步
+							<input  type="checkbox" name="controlType"  value="2" />异步
+						</div>
+						<div class="td" style="width: 90px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+			cy-click="add">添加</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+			cy-click="remove">删除</a>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dataGrid" cy-datagrid="options" cy-querydata="formData"
+		cy-url='DeviceLedSpecAction/findByDeviceLedSpec'></table>
+	</div>
+
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['016','600','601','602','603','615','616']);
+		//初始化加载
+	 	$scope.load = function() {
+	 		$scope.$updateData("formData");
+			$scope.$search("formData");
+		 };
+		$scope.$("#controlTypeId").click(function(){
+	 		var controlTypeValue="";
+	 		$scope.$("input[name='controlType']:checked").each(function(){
+				controlTypeValue +=$(this).val()+",";
+			});
+			$scope.$("#controlTypeStrId").val(controlTypeValue);
+		});
+		
+		$scope.searchData = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				var count = $scope.$("#dataGrid").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					$scope.$("#dataGrid").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("formData");
+				}
+			};
+		};
+		
+		//列表头部信息
+		$scope.options = {
+			
+			columns : [[{
+				field : 'specId',
+				checkbox : true,
+				align : 'center'
+			}, {
+				field : 'specName',
+				title : '规格名称',
+				align : 'center',
+				width : 35
+			}, {
+				field : 'colorType',
+				title : '颜色类型',
+				align : 'center',
+				formatter : colorTypeOptions,
+				width : 20
+			}, {
+				field : 'ledShape',
+				title : '设备外形',
+				align : 'center',
+				formatter : ledShapeOptions,
+				width : 20
+			}, {
+				field : 'ledFunctionType',
+				title : '功能类型',
+				align : 'center',
+				formatter : ledFunctionTypeOptions,
+				width : 20
+			},{
+				field : 'controlType',
+				title : '控制方式',
+				align : 'center',
+				formatter : controlTypeOptions,
+				width : 15
+			},{
+				field : 'ledDeviceModel',
+				title : '诱导屏型号',
+				align : 'center',
+				formatter : ledDeviceModelOptions,
+				width : 25
+			},{
+				field : 'controlContractor',
+				title : '控制卡厂商',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'pixesWidth',
+				title : '像素点宽(px)'+'*'+'像素点高(px)',
+				align : 'center',
+				formatter : pixesWidthHeightoptions,
+				width : 40
+			},{
+				field : 'width',
+				title : '诱导屏宽(cm)'+'*'+'诱导屏高(cm)',
+				align : 'center',
+				formatter : widthHeight,
+				width : 40
+			},{
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionCz,
+				width : 20
+			}]],
+			nowrap : false
+		};
+		//拼接LED像素点宽和像素点高
+		function pixesWidthHeightoptions(value,row,index){
+			if (row.pixesWidth){
+				return (row.pixesWidth ==null ? 0 : row.pixesWidth) +" "+'x'+" "+ (row.pixesHeight ==null ? 0 : row.pixesHeight);
+			} else if(row.pixesHeight){
+				return (row.pixesWidth ==null ? 0 : row.pixesWidth) +" "+'x'+" "+ (row.pixesHeight ==null ? 0 : row.pixesHeight);
+			}else{
+				return value;
+			}
+		}
+		//拼接LED宽和高
+		function widthHeight(value,row,index){
+			if (row.width){
+				var strW=(row.width ==null ? 0 : row.width) +" "+'x'+" "+ (row.height ==null ? 0 : row.height);
+				return strW;
+			} else if(row.height){
+				var strH=(row.width ==null ? 0 : row.width) +" "+'x'+" "+ (row.height ==null ? 0 : row.height);
+				return strH;
+			}else{
+				return value;
+			}
+		}
+		//控制方式Code转化为名称
+		function controlTypeOptions(value){
+			return $scope.$getCodeName("616",value);
+		}
+		//功能类型Code转化为名称
+		function ledFunctionTypeOptions(value){
+			return $scope.$getCodeName("615",value);
+		}
+		//诱导屏型号code转化为名称
+		function ledDeviceModelOptions(value){
+			return $scope.$getCodeName("603",value);
+		}
+		//颜色类型code转化为名称
+		function colorTypeOptions(value){
+			return $scope.$getCodeName("600",value);
+		}
+		//Led外形code转化为名称
+		function ledShapeOptions(value){
+			return $scope.$getCodeName("602",value);
+		}
+		//诱导屏类型code转化为名称
+		function ledDeviceTypeOptions(value){
+			return $scope.$getCodeName("601",value);
+		}
+			
+		//操作栏按钮
+		function optionCz(value, row, index) {
+			var button1 = $("<a class='button-edit' title='编辑' cy-click='edit(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='button-remove' title='删除' cy-click='deleteData(" + index + ")'></a>");
+			//删除按钮
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		};
+
+		//添加诱导屏配置信息
+		$scope.add = function() {
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "DeviceLedSpecAction/goSave",
+					method : "post",
+					params : data,
+					success : function(data) {
+							$scope.$getDialog("addDialog").dialog("close");
+							var opts = $scope.$("#dataGrid").datagrid('options');
+							//获得当前页面对象中的属性对象
+							var options = $scope.$("#dataGrid").datagrid('getPager').data("pagination").options;
+							//获得当前第几页数
+							var curr = options.pageNumber;
+							//获得页面总数
+							var total = options.total;
+							//获得总页数
+							var max = Math.ceil(total / options.pageSize);
+							if (curr > 1) {
+								//刷新,跳转到第一页
+								$scope.$("#dataGrid").datagrid("getPager").pagination("select", 1);
+							} else {
+								$scope.$search("formData");
+							}
+															
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", errMsg+"--"+"添加失败！");
+					}
+				});
+
+			});     
+
+			$scope.$openDialog("addDialog", {
+				title : "新增诱导屏规格",
+				width : 500,
+				height : 350,
+				href : "tpls/informationDelivery/inducedScreenRelease/specifications-config-input.html?type=add"
+			}, true);
+		};
+		//编辑信息
+		$scope.edit = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];
+			$scope.$setParam("formData", rowDatas);
+			$scope.$setParam("editData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "DeviceLedSpecAction/goUpdate",
+					params : data,
+					success : function(data) {
+							//关闭编辑窗口
+							$scope.$getDialog("editDialog").dialog("close");
+							//刷新列表
+							$scope.$search("formData");
+						
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", errMsg+"--"+"更新失败！");
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改诱导屏规格",
+				width : 500,
+				height : 350,
+				href : "tpls/informationDelivery/inducedScreenRelease/specifications-config-input.html?type=edit"
+			}, true);
+		};
+		/**
+         * 按行删除
+         */
+        $scope.deleteData = function(index) {
+        	
+            var rowData = $scope.$("#dataGrid").datagrid("getRows")[index];
+          
+			remove(rowData.specId);
+			
+        };
+
+        /**
+         * 批量删除
+         */
+			$scope.remove = function() {
+				var rows = $scope.$("#dataGrid").datagrid("getChecked");
+				if (rows.length == 0) {
+					 $.messager.alert("提示", "至少选中一条信息！");
+					 return false;
+				} else {
+					var ids = "";
+					for (var index in rows) {
+						ids += rows[index].specId + ",";
+					}
+					var Id = ids.substring(0, ids.length - 1);
+					
+						remove(Id);
+				}
+			};
+
+        /**
+         * ajax删除
+         */
+        var remove = function(ids) {
+        	
+			if(!ids || ids == ""){
+				$.messager.alert("提示","请选择需要删除的记录！");
+			}else{
+				$.messager.confirm("警告","确定删除？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "DeviceLedSpecAction/deleteByDeviceLedSpecId",
+							params : {ids:ids},
+							success : function(data){
+								if(data>0){
+									$scope.$search("formData");
+								}
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+        };
+	}); 
+</script>
+<style type="text/css">
+	#specificationsConfig .th {
+		text-align: right;
+		width: 100px;
+	}
+	#specificationsConfig .td {
+		text-align: left;
+		width: 120px;
+	}
+	
+</style>

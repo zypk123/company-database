@@ -1,0 +1,57 @@
+<!--角色权限页面-->
+<div class="easyui-layout">
+    <div data-options="region:'center'">
+        <div id="roleFp"></div>
+    </div>
+    <div data-options="region:'east',width: '50%'" id="checkList" style="border-right: solid 1px #ddd">
+    </div>
+    <div data-options="region:'south'" style="height: 60px;">
+        <div class="tr"><br/>
+            <div class="td" align="center">
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="close">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //接受数据
+    InitPage(["close"], function ($scope) {
+        $scope.$("#roleFp").tree({
+            checkbox: true,
+            animate: true,
+            url: "data/sysManagement/roleFp-tree.json",
+            onCheck: function(node,checked) {
+
+             /* var node = $scope.$('#roleFp').tree('getChecked');
+                for (var index = 0; index < node.length; index++) {
+                    var isLeaf = $scope.$('#roleFp').tree('isLeaf', node[index].target);
+                    if (isLeaf) {
+                        var checkedId = node[index].text;
+                        $scope.$('#checkList').append('<div>' + checkedId + '</div>');
+                    }
+                }
+             */
+             $scope.$("#checkList").html("");
+                //获得所有的选中的节点
+                var node=$scope.$('#roleFp').tree('getChecked');
+//                遍历所有节点中的对象
+               for(var index= 0;index<node.length;index++){
+//                   获得所有节点的叶子节点
+                   var isLeaf =$scope.$('#roleFp').tree('isLeaf',node[index].target);
+//                    判断叶子节点
+                    if(isLeaf){
+                          //获取选中的文本信息
+                       var checkedText=node[index].text;
+                          //展现在另一个页面区域（绑定另一页面ID追加一个Div通过字符串拼接的形式）
+                       $scope.$('#checkList').append('<div>'+ checkedText +'</div>' );
+                   }
+
+                }
+            }
+
+        });
+
+    })
+</script>

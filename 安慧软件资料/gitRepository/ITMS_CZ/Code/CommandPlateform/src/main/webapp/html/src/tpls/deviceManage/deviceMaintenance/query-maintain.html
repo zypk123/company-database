@@ -1,0 +1,580 @@
+<div class="easyui-layout" id="maintainInfo">
+    <div data-options="region:'north',border:false">
+        <div class="linkbutton_toolbar">
+            <!--<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>-->
+            <a class="easyui-linkbutton" style="width:90px" cy-click="dispatchSomeMaintain">分派维护单</a>
+        </div>
+        </div>
+    <div data-options="region:'center',border:true">
+        <table cy-datagrid="options" id="maintainList"  cy-querydata="formData" cy-url="device/maintainManage/queryMaintianByDeviceId">
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+	InitPage(["deviceId","deviceSysNbr"],function($scope){	
+		$scope.$getDefaultCode(["468","469"]);
+		$scope.load = function(){
+			$scope.$ajaxRequest({
+                url:$scope.$restRoot + "device/companyManage/queryCompany",
+                params:{},
+                method:"post",
+                success:function(data){
+                    $scope.$("#contractorId").combobox("loadData",data);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","初始化厂商失败！");
+                }
+            });
+			
+			//判断是否是跳转页面
+				$scope.$updateData("formData");
+				 //debugger;
+				if($scope.deviceId != null){
+					
+					$scope.formData.deviceId = $scope.deviceId;
+				}
+				
+				 
+			
+				$scope.$search("formData");
+				};
+				$scope.searchData = function() {
+					if ($scope.$("#form").form("validate")) {
+						$scope.$updateData("formData");
+						$scope.$search("formData");
+					}
+				};
+				$scope.options = {
+					pagination:false,
+					columns : [ [//注意，此处是二维数组
+					{
+						align : 'center',
+						field : 'maintenanceId',
+						checkbox : true
+					}, {
+						align : 'center',
+						title : "维护单号",
+						field : "maintenanceNbr",
+						width : 15
+					}, {
+						align : 'center',
+						title : "维护厂家",
+						field : "maintenanceCompanyName",
+						width : 10,
+						formatter : querymaintenanceCompanyNameById
+					}, {
+						align : 'center',
+						title : "联系方式",
+						field : "phoneNbr",
+						width : 10,
+						formatter : queryPhoneNbr
+					}, {
+						align : 'center',
+						title : "维护单状态",
+						field : "maintenanceStatus",
+						width : 10,
+						formatter : queryStatusByCode
+					}, {
+						align : 'center',
+						title : "分派时间",
+						field : "assignTime",
+						width : 10,
+						formatter : queryAssignTime
+					}, {
+						align : 'center',
+						title : "要求完成时间",
+						field : "finishTime",
+						width : 10,
+						formatter : queryFinishTime
+					}, {
+						align : 'center',
+						title : "维护结论",
+						field : "maintendanceResult",
+						width : 10,
+						formatter : queryResultByCode
+					}, {
+						align : 'center',
+						title : "解决方法",
+						field : "solution",
+						width : 10,
+						formatter : querySolution
+					}, {
+						align : 'center',
+						title : "解决时间",
+						field : "solutionTime",
+						width : 10,
+						formatter : querySolutionTime
+					}, {
+						align : 'center',
+						title : "操作",
+						field : "operate",
+						width : 10,
+						formatter : operate
+					} ] ]
+				};
+				function operate(value, rowData, index) {
+					var dispatchBtn = $("<a title='分派' class='button-up'></a>");
+					dispatchBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-up-solid"
+					}).attr('cy-click', "dispatch('" + index + "')");
+
+					var registerBtn = $("<a title='登记' class='button-edit'></a>");
+					registerBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-edit-solid"
+					}).attr('cy-click', "register('" + index + "')");
+
+					var printBtn = $("<a title='打印预览' class='button-save'></a>");
+					printBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-save-solid"
+					}).attr('cy-click', "printPreview('" + index + "')");
+
+					var removeBtn = $("<a title='删除' class='button-remove'></a>");
+					removeBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-remove-solid"
+					}).attr('cy-click', "removeData('" + index + "')");
+
+					if (rowData.maintenanceStatus == '0') {//维护单状态未分派
+						printBtn.linkbutton('disable').removeAttr('cy-click');//禁止打印
+						registerBtn.linkbutton('disable')
+								.removeAttr('cy-click');//禁止登记
+					}
+					if (rowData.maintendanceResult == '3') {//维护结论是完全修好
+						dispatchBtn.linkbutton('disable')
+								.removeAttr('cy-click');//禁止分派
+						registerBtn.linkbutton('disable')
+								.removeAttr('cy-click');//禁止登记
+					}
+					return $("<span/>").append(dispatchBtn).append("  ")
+							.append(registerBtn).append("  ").append(printBtn)
+							.append("  ").append(removeBtn).html();
+				}
+				function querymaintenanceCompanyNameById(value, rowData, index) {
+					if (value == null || value == '') {
+						return maintenanceCompanyName = '--';
+					} else {
+						return value;
+					}
+				}
+				function queryPhoneNbr(value, rowData, index) {
+					if (value == null || value == '') {
+						return phoneNbr = '--';
+					} else {
+						return value;
+					}
+				}
+				function queryAssignTime(value, rowData, index) {
+					if (value == null || value == '') {
+						return assignTime = '--';
+					} else {
+						return value;
+					}
+				}
+				function queryFinishTime(value, rowData, index) {
+					if (value == null || value == '') {
+						return finishTime = '--';
+					} else {
+						return value;
+					}
+				}
+				function querySolution(value, rowData, index) {
+					if (value == null || value == '') {
+						return solution = '--';
+					} else {
+						return value;
+					}
+				}
+				function querySolutionTime(value, rowData, index) {
+					if (value == null || value == '') {
+						return solutionTime = '--';
+					} else {
+						return value;
+					}
+				}
+				function queryStatusByCode(value, rowData, index) {
+					var maintenanceStatus = $scope.$getCodeName("468", value);
+					return maintenanceStatus;
+				}
+				;
+				function queryResultByCode(value, rowData, index) {
+					var maintendanceResult = '--';
+					if (value != null && value != '') {
+						maintendanceResult = $scope.$getCodeName("469", value);
+					}
+					return maintendanceResult;
+				}
+
+				/**
+				 *	删除维护单 
+				 */
+				$scope.removeData = function(index) {
+					var rowDatas = $scope.$("#maintainList")
+							.datagrid("getData").rows[index];//选中的数据
+					var dataNum = $scope.$("#maintainList").datagrid("getRows").length; //当前页行数
+					var options = $scope.$("#maintainList")
+							.datagrid("getPager").data("pagination").options;
+					var pageNumber = options.pageNumber;//获取当前页
+					var maintenanceId = rowDatas.maintenanceId;//维护单ID
+					$.messager
+							.confirm(
+									"提示",
+									"是否确认删除？",
+									function(flag) {
+										if (flag) {
+											$scope
+													.$ajaxRequest({
+														url : $scope.$restRoot
+																+ 'device/maintainManage/deleteMaintain',
+														params : {
+															maintenanceId : maintenanceId
+														},
+														success : function(data) {
+															if (dataNum == 1) {
+																$scope
+																		.$(
+																				"#maintainList")
+																		.datagrid(
+																				"getPager")
+																		.pagination(
+																				"select",
+																				pageNumber - 1);//跳转大当前页的前一页
+															} else {
+																$scope
+																		.$updateData("formData");
+																$scope
+																		.$search("formData");
+															}
+															$.messager.alert(
+																	"提示",
+																	"删除成功！");
+														},
+														fail : function(errMsg) {
+															$.messager.alert(
+																	"提示",
+																	"删除失败！");
+														}
+													});
+										}
+									});
+				};
+
+				/**
+				 *	批量分派维护单 
+				 */
+				$scope.dispatchSomeMaintain = function() {
+					var rows = $scope.$('#maintainList').datagrid('getChecked');//勾选选中的行数组
+					if (rows.length == 0) {
+						$.messager.alert("提示", "请选择需要分派的维护单！");
+						return false;
+					} else {
+						var maintenanceIdStr = "";
+						for (var i = 0; i < rows.length; i++) {
+							if (i > 0) {
+								if (rows[i])
+									maintenanceIdStr = maintenanceIdStr + ","
+											+ rows[i].maintenanceId;
+							} else {
+								maintenanceIdStr = maintenanceIdStr
+										+ rows[i].maintenanceId;
+							}
+						}
+						$scope
+								.$openDialog(
+										"maintenanceSomeAssign",
+										{
+											width : 300,
+											height : 250,
+											title : "分派维护单",
+											href : "tpls/deviceManage/deviceMaintenance/dispatch-maintenance-info.html"
+										});
+						$scope
+								.$setParam(
+										"saveData",
+										function(data) {
+											data.maintenanceIdStr = maintenanceIdStr;
+											$scope
+													.$ajaxRequest({
+														url : $scope.$restRoot
+																+ 'device/maintainManage/updateSomeMaintain',
+														params : data,
+														success : function(data) {
+															$scope
+																	.$getDialog(
+																			"maintenanceSomeAssign")
+																	.dialog(
+																			"close");
+															$scope
+																	.$updateData("formData");
+															$scope
+																	.$search("formData");
+															$.messager.alert(
+																	"提示",
+																	"分派成功！");
+															$scope
+																	.$setParam(
+																			"printMaintain",
+																			function(
+																					data) {
+																				$scope
+																						.$setParam(
+																								"maintenanceId",
+																								data);
+																				$scope
+																						.$openDialog(
+																								"maintenanceSomeAssign",
+																								{
+																									width : 300,
+																									height : 250,
+																									title : "打印维护单",
+																									href : "tpls/deviceManage/deviceMaintenance/maintain-print.html"
+																								});
+																			});
+														},
+														fail : function(errMsg) {
+															$.messager.alert(
+																	"提示",
+																	"分派失败！");
+														}
+													});
+										});
+					}
+				};
+				/**
+				 *单个分派维护单 
+				 */
+				$scope.dispatch = function(index) {
+					var rowData = $scope.$("#maintainList").datagrid("getData").rows[index];
+					$scope.$setParam("formData", rowData);
+					$scope.$setParam("remark", "dispatch");
+					$scope
+							.$openDialog(
+									"maintenanceDispatch",
+									{
+										width : 800,
+										height : 400,
+										title : "分派维护单",
+										href : "tpls/deviceManage/deviceMaintenance/dispatch-maintenance-assign.html"
+									});
+					$scope
+							.$setParam(
+									"deleteMaintain",
+									function(data) {
+										$.messager
+												.confirm(
+														"提示",
+														"维护单已无故障信息是否删除维护单？",
+														function(flag) {
+															if (flag) {
+																$scope
+																		.$ajaxRequest({
+																			url : $scope.$restRoot
+																					+ 'device/maintainManage/deleteMaintain',
+																			params : {
+																				maintenanceId : data
+																			},
+																			success : function(
+																					data) {
+																				$scope
+																						.$getDialog(
+																								"maintenanceDispatch")
+																						.dialog(
+																								"close");
+																				$scope
+																						.$updateData("formData");
+																				$scope
+																						.$search("formData");
+																			},
+																			fail : function(
+																					errMsg) {
+																				$.messager
+																						.alert(
+																								"提示",
+																								"删除失败！");
+																			}
+																		});
+															}
+														});
+									});
+					$scope
+							.$setParam(
+									"saveData",
+									function(data) {
+										var maintenanceId = data.maintenanceId;
+										var companyId = data.maintenanceCompany;
+										var contactor = data.contactPerson;
+										var phone = data.phoneNbr;
+										var finishTime = data.finishTime;
+										var dispatchPerson = $scope.UserInfo.userId;//当前用户ID
+										$scope
+												.$ajaxRequest({
+													url : $scope.$restRoot
+															+ 'device/maintainManage/updateMaintain',
+													params : {
+														maintenanceId : maintenanceId,
+														companyId : companyId,
+														contactor : contactor,
+														phone : phone,
+														finishTime : finishTime,
+														dispatchPerson : dispatchPerson
+													},
+													success : function(data) {
+														$.messager
+																.confirm(
+																		"提示",
+																		"分派成功，是否需要打印？",
+																		function(
+																				flag) {
+																			if (flag) {
+																				$scope
+																						.$setParam(
+																								"maintenanceId",
+																								maintenanceId);
+																				$scope
+																						.$openDialog(
+																								"maintenanceSomeAssign",
+																								{
+																									width : 800,
+																									height : 550,
+																									title : "打印维护单",
+																									href : "tpls/deviceManage/deviceMaintenance/maintain-print.html"
+																								});
+																			} else {
+																				$scope
+																						.$getDialog(
+																								"maintenanceDispatch")
+																						.dialog(
+																								"close");
+																			}
+																		});
+														$scope
+																.$updateData("formData");
+														$scope
+																.$search("formData");
+													},
+													fail : function(errMsg) {
+														$.messager.alert("提示",
+																"分派失败！");
+													}
+												});
+									});
+				};
+				/**
+				 *单个登记维护单 
+				 */
+				$scope.register = function(index) {
+					var rowData = $scope.$("#maintainList").datagrid("getData").rows[index];
+					$scope.$setParam("formData", rowData);
+					$scope.$setParam("remark", "register");
+					$scope
+							.$openDialog(
+									"maintenanceRegister",
+									{
+										width : 800,
+										height : 630,
+										title : "登记维护单",
+										href : "tpls/deviceManage/deviceMaintenance/dispatch-maintenance-assign.html"
+									});
+					$scope
+							.$setParam(
+									"saveData",
+									function(data) {
+										var maintenanceId = data.maintenanceId;
+										var mainResult = data.maintendanceResult;
+										var solution = data.solution;
+										var solutionTimes = data.solutionTime;
+										var photoUrl = data.maintenancePhoto;
+										var remark = data.remark;
+										var faultIdStr = data.faultIdStr;//部分维修好的故障ID字符串
+										$scope
+												.$ajaxRequest({
+													url : $scope.$restRoot
+															+ 'device/maintainManage/updateMaintainResult',
+													params : {
+														maintenanceId : maintenanceId,
+														mainResult : mainResult,
+														solution : solution,
+														solutionTimes : solutionTimes,
+														photoUrl : photoUrl,
+														remark : remark,
+														faultIdStr : faultIdStr
+													},
+													success : function(data) {
+														$scope
+																.$getDialog(
+																		"maintenanceRegister")
+																.dialog("close");
+														$scope
+																.$updateData("formData");
+														$scope
+																.$search("formData");
+														$.messager.alert("提示",
+																"登记成功！");
+													},
+													fail : function(errMsg) {
+														$.messager.alert("提示",
+																"登记失败！");
+													}
+												});
+									});
+				};
+
+				/**
+				 *打印预览 
+				 */
+				$scope.printPreview = function(index) {
+					var rowData = $scope.$("#maintainList").datagrid("getData").rows[index];
+					var maintenanceId = rowData.maintenanceId; //维护单ID 
+					$scope.$setParam("maintenanceId", maintenanceId);
+					$scope
+							.$openDialog(
+									"maintenanceSomeAssign",
+									{
+										width : 800,
+										height : 550,
+										title : "打印维护单",
+										href : "tpls/deviceManage/deviceMaintenance/maintain-print.html"
+									});
+				};
+
+				/**
+				 *查看维护单信息 
+				 */
+				$('#maintainList')
+						.datagrid(
+								{
+									onDblClickCell : function(index, field,
+											value) {
+										var rowDatas = $scope
+												.$("#maintainList").datagrid(
+														"getData").rows[index];
+										$scope.$setParam("formData", rowDatas);
+										$scope.$setParam("remark", "look");
+										$scope
+												.$openDialog(
+														"lookDialog",
+														{
+															title : "查看维护单信息",
+															width : 800,
+															height : 630,
+															href : "tpls/deviceManage/deviceMaintenance/dispatch-maintenance-assign.html"
+														}, true);
+									}
+								});
+			});
+</script>
+<style type="text/css">
+    #maintainInfo .th{
+        width : 80px;
+        text-align:right;
+    }
+    #maintainInfo .td{
+        height:auto;
+    }
+    #maintainInfo .td>input[class^='easyui-']{
+        width: 144px;
+    }
+</style>

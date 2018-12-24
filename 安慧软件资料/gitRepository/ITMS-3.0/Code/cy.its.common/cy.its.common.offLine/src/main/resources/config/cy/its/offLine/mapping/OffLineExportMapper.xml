@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.common.offLine.client.OffLineExportMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.common.offLine.domain.OffLineExport" >
+    <id column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+    <result column="FUNC_KEY" property="funcKey" jdbcType="VARCHAR" />
+    <result column="FILE_NAME" property="fileName" jdbcType="VARCHAR" />
+    <result column="EXPORT_SQL" property="exportSql" jdbcType="VARCHAR" />
+    <result column="EXPORT_SQL2" property="exportSql2" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="CHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR" />
+    <result column="FILE_URL" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    
+    <result column="FUNC_NAME" property="funcName" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TASK_ID, FUNC_KEY, FILE_NAME, EXPORT_SQL, EXPORT_SQL2, STATUS, UPDATE_TIME, LOGIN_NAME, 
+    FILE_URL, REMARK,FUNC_NAME,CREATE_TIME
+  </sql>
+  <select id="selectAllListloginName" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_EXPORT
+    where LOGIN_NAME = #{loginName,jdbcType=VARCHAR} 
+    <if test="status != null and status != '' ">  
+        AND STATUS = #{status, jdbcType=VARCHAR}  
+    </if>  
+    <if test="fileName != null and fileName != '' ">  
+        AND FILE_NAME LIKE '%'||#{fileName,jdbcType=VARCHAR}||'%'
+    </if>  
+    <if test="startTime!=null and startTime != ''" >
+		<![CDATA[AND CREATE_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+	</if>
+	<if test="endTime!=null and endTime != ''" >
+		<![CDATA[AND CREATE_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+	</if>
+    order by UPDATE_TIME desc 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_EXPORT
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="cy.its.common.offLine.domain.OffLineExport" >
+    insert into T_SYS_EXPORT (TASK_ID, FUNC_KEY, FILE_NAME, 
+      EXPORT_SQL, EXPORT_SQL2, STATUS, 
+      UPDATE_TIME, LOGIN_NAME, FILE_URL, 
+      REMARK,FUNC_NAME,CREATE_TIME)
+    values (#{taskId,jdbcType=VARCHAR}, #{funcKey,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, 
+      #{exportSql,jdbcType=VARCHAR}, #{exportSql2,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{loginName,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR},#{funcName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="java.util.Map" >
+  
+    update T_SYS_EXPORT
+    set 
+    
+    STATUS = #{status,jdbcType=CHAR} 
+      
+    where TASK_ID = #{taskId,jdbcType=VARCHAR} 
+  </update>
+</mapper>

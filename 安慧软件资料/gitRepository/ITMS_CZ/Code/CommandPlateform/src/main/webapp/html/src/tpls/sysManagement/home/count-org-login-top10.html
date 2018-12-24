@@ -1,0 +1,72 @@
+<div id="count-org-login-top10" style="width:100%;height:100%;">
+
+</div>
+<script>
+	InitPage([],function($scope) {
+		$scope.load = function() {
+			//初始化echars
+			initData();
+		};
+
+		function initData() {
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			require(['echarts', 'echarts/chart/bar'],findData);
+		}
+
+		function findData(ec) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/userAction/countOrgLoginCurrentMonthTop10",
+				success : function(data) {
+					var itemData = [];
+					var countData = [];
+					for (var index in data) {
+						itemData.unshift(data[index].countInfo);
+						countData.unshift(data[index].count);
+					}
+					var myChart = ec.init($scope.$("#count-org-login-top10").get(0));
+					var option = {
+						title : {
+							text : '本月机构登录排名',
+						},
+						tooltip : {
+							trigger : 'axis',
+							axisPointer : {
+								type : 'shadow'
+							}
+						},
+						grid: {
+					        x: 200,
+					        containLabel: true
+					    },
+						xAxis : {
+							name : '次数',
+							type : 'value',
+							boundaryGap : [0, 0.01]
+						},
+						yAxis : {
+							name : '机构',
+							type : 'category',
+							data : itemData
+						},
+						series : [{
+							name : '登录次数',
+							type : 'bar',
+							data : countData,
+							itemStyle :{
+								normal : {
+									color : '#24739d'
+								}
+							}
+						}]
+					};
+					myChart.setOption(option);
+				}
+			});
+		}
+
+	}); 
+</script>

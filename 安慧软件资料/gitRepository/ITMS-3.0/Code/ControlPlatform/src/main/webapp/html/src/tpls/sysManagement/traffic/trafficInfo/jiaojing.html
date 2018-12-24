@@ -1,0 +1,75 @@
+<div id="jiaojing" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    机构代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="jgdm">
+                </div>
+                <div class="th">
+                    机构名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    机构驻地：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="jgzd">
+                </div>
+                <div class="th">
+                    机构负责人：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="jgfzr" >
+                </div>
+            </div>
+
+
+
+
+            <div class="tr">
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="tel">
+                </div>
+
+            </div>
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+               <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        };
+    });
+</script>
+<style type="text/css">
+    #jiaojing .th{
+        width : 100px;
+        text-align: right;
+    }
+    #jiaojing .td{
+        width : 150px;
+    }
+
+</style>

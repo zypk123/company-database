@@ -1,0 +1,99 @@
+<div id="serverGroupOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="width: 240px;">服务器类型组名称：</div>
+                    <div class="td">
+                        <input id="serverGroupTypeName" class="easyui-textbox" name="serverGroupTypeName" required="required"/>
+                        <input type="hidden" name="serverGroupTypeId" id="serverGroupTypeId"/>
+                    </div>
+                </div>
+            </div>
+        </form> 
+        <div id="serverDiv" class="searchPanel" style="height: 290px;overflow: auto;">
+            <div class="panel_title">服务器类型</div>
+            <table id="serverType" cy-datagrid="options" cy-queryData="queryData" cy-url="device/serverTypeManage/queryServerType">
+                
+            </table>
+        </div>
+    </div>
+    <div data-options="region:'south',border:false">
+        <div class="linkbutton_toolbar" style="text-align: center">
+            <a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+            <a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["saveData","serverGroupTypeName","serverGroupTypeId","serverType"],function($scope){
+        $scope.$getDefaultCode(["436"]);
+        var serverGroupTypeName = $scope.serverGroupTypeName;
+        var serverGroupTypeId = $scope.serverGroupTypeId;
+        $scope.load = function(){
+            $scope.$("#serverGroupTypeName").textbox('setValue',serverGroupTypeName).textbox('readonly',true);
+            $scope.$("#serverGroupTypeId").val(serverGroupTypeId);
+            $scope.$search("queryData",{},function(data){
+                var row = data.rows;
+                var serverTypes = $scope.serverType;
+                if(serverTypes.length != 0){
+                    for(var i = 0; i < serverTypes.length; i++){
+                        for(var j = 0; j < row.length; j++){
+                            if(serverTypes[i].serverTypeId == row[j].serverTypeId){
+                                $scope.$("#serverType").datagrid("checkRow",j);
+                            }
+                        }
+                    } 
+                }
+            });
+        };
+        
+        $scope.options = {
+            columns : [[
+                {field:'serverTypeId', checkbox:true},
+                {align:'center', field:'serverType', title:'服务器类型', width:100,formatter:getServerTypeName},
+                {align:'center', field:'serverIp', title:'服务器IP', width:100},
+                {align:'center', field:'serverPort', title:'端口号', width:100}
+            ]],
+            
+            pagination:false
+        };
+        
+        function getServerTypeName(value,row,index){
+            var serverType = $scope.$getCodeName("436",value);
+            return serverType;
+        }
+        
+        $scope.save = function(){
+             var rows = $scope.$('#serverType').datagrid('getChecked');//勾选选中的行数组
+             if(rows.length == 0){
+                $.messager.alert("提示","请选择需要添加的服务器类型！");
+                return false;
+             }else{
+                var serverTypeId = "";
+                for(var i = 0; i < rows.length; i++){
+                    if(i > 0){
+                        serverTypeId = serverTypeId + "," + rows[i].serverTypeId;
+                    }else{
+                        serverTypeId = serverTypeId + rows[i].serverTypeId;
+                    }
+                }
+                $scope.formData.serverTypeId = serverTypeId;
+             }
+             //更新获取数据
+             $scope.$updateData("formData");
+    		 trimObject($scope.formData);//对对象中的每个元素进行trim操作
+             //实现保存
+             $scope.saveData($scope.formData);  
+        };
+    });
+</script>
+<style type="text/css">
+    #serverGroupOperate .th{
+        width: 80px;
+        text-align: right;
+    }
+    #serverGroupOperate .td>input[class^='easyui-']{
+        width: 150px;
+    }
+</style>

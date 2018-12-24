@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceSysUseStatusMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.DeviceSysUseStatus">
+		<id column="SYS_USE_STATUS_ID" property="sysUseStatusId" jdbcType="VARCHAR" />
+		<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="ORIGINAL_STATUS" property="originalStatus"
+			jdbcType="CHAR" />
+		<result column="UPDATE_STATUS" property="updateStatus"
+			jdbcType="CHAR" />
+		<result column="UPDATE_REASON" property="updateReason"
+			jdbcType="VARCHAR" />
+		<result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="DEVICE_OR_REGION" property="deviceOrRegion" jdbcType="CHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SYS_USE_STATUS_ID, DEVICE_ID, ORIGINAL_STATUS, UPDATE_STATUS, UPDATE_REASON, UPDATE_BY,
+		UPDATE_TIME,DEVICE_OR_REGION
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_SYS_USE_STATUS
+		where SYS_USE_STATUS_ID = #{sysUseStatusId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_DEVICE_SYS_USE_STATUS
+		where SYS_USE_STATUS_ID = #{sysUseStatusId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.DeviceSysUseStatus">
+		insert into T_DEVICE_SYS_USE_STATUS (SYS_USE_STATUS_ID, DEVICE_ID,
+		ORIGINAL_STATUS,
+		UPDATE_STATUS, UPDATE_REASON, UPDATE_BY,
+		UPDATE_TIME,DEVICE_OR_REGION)
+		values (#{sysUseStatusId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR},
+		#{originalStatus,jdbcType=CHAR},
+		#{updateStatus,jdbcType=CHAR}, #{updateReason,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},#{deviceOrRegion,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.DeviceSysUseStatus">
+		insert into T_DEVICE_SYS_USE_STATUS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="sysUseStatusId != null">
+				SYS_USE_STATUS_ID,
+			</if>
+			<if test="deviceId != null">
+				DEVICE_ID,
+			</if>
+			<if test="originalStatus != null">
+				ORIGINAL_STATUS,
+			</if>
+			<if test="updateStatus != null">
+				UPDATE_STATUS,
+			</if>
+			<if test="updateReason != null">
+				UPDATE_REASON,
+			</if>
+			<if test="updateBy != null">
+				UPDATE_BY,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="deviceOrRegion != null">
+				DEVICE_OR_REGION
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="sysUseStatusId != null">
+				#{sysUseStatusId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="originalStatus != null">
+				#{originalStatus,jdbcType=CHAR},
+			</if>
+			<if test="updateStatus != null">
+				#{updateStatus,jdbcType=CHAR},
+			</if>
+			<if test="updateReason != null">
+				#{updateReason,jdbcType=VARCHAR},
+			</if>
+			<if test="updateBy != null">
+				#{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deviceOrRegion != null">
+				#{deviceOrRegion,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.DeviceSysUseStatus">
+		update T_DEVICE_SYS_USE_STATUS
+		<set>
+			<if test="deviceId != null">
+				DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="originalStatus != null">
+				ORIGINAL_STATUS = #{originalStatus,jdbcType=CHAR},
+			</if>
+			<if test="updateStatus != null">
+				UPDATE_STATUS = #{updateStatus,jdbcType=CHAR},
+			</if>
+			<if test="updateReason != null">
+				UPDATE_REASON = #{updateReason,jdbcType=VARCHAR},
+			</if>
+			<if test="updateBy != null">
+				UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deviceOrRegion != null">
+				DEVICE_OR_REGION = #{deviceOrRegion,jdbcType=CHAR},
+			</if>
+		</set>
+		where SYS_USE_STATUS_ID = #{sysUseStatusId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DeviceSysUseStatus">
+		update T_DEVICE_SYS_USE_STATUS
+		set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+		ORIGINAL_STATUS = #{originalStatus,jdbcType=CHAR},
+		UPDATE_STATUS = #{updateStatus,jdbcType=CHAR},
+		UPDATE_REASON = #{updateReason,jdbcType=VARCHAR},
+		UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+		UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+		DEVICE_OR_REGION = #{deviceOrRegion,jdbcType=CHAR}
+		where SYS_USE_STATUS_ID = #{sysUseStatusId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectUseStatus" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		from T_DEVICE_SYS_USE_STATUS
+		<where>
+			<if test="deviceId != null">
+				AND DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="updateTimeFrom != null">
+				 <![CDATA[  AND UPDATE_TIME > #{updateTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="updateTimeTo != null">
+				<![CDATA[  AND UPDATE_TIME < #{updateTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,37 @@
+<div id="useStatus" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<div class="table" style="margin-top:50px;">
+			<div class="tr">
+				<div class="th">更改原因：</div>
+				<div class="td">
+					<input class="easyui-textbox" id="reason" data-options="multiline:true" name="reason" style="width:208px;height:90px"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="text-align:center">
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+            <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" > 
+	InitPage(["saveData"],function($scope){
+    	$scope.save = function(){
+    		//获取状态改变原因
+    	    var reason = $scope.$("#reason").textbox("getValue");
+    	    //保存
+    	    $scope.saveData(reason);
+    	};
+	});
+</script>
+<style type="text/css">
+	#useStatus .th{
+		width: 100px;
+		text-align: right;
+	}
+	#useStatus .td > input[class^='easyui-']{
+		width: 200px;
+	}
+</style>

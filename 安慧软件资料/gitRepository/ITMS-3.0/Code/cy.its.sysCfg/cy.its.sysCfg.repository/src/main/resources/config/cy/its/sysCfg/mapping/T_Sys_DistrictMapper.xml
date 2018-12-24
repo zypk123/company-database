@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_DistrictMapper">
+	<resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_District">
+		<id column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+		<result column="DISTRICT_NAME" property="districtName"
+			jdbcType="VARCHAR" />
+		<result column="PARENT_DISTRICT_CODE" property="parentDistrictCode"
+			jdbcType="VARCHAR" />
+		<result column="DISTRICT_GRADE" property="districtGrade"
+			jdbcType="CHAR" />
+		<result column="CANCEL_FLAG" property="cancelFlag" jdbcType="CHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		DISTRICT_CODE, DISTRICT_NAME, PARENT_DISTRICT_CODE, DISTRICT_GRADE, CANCEL_FLAG,
+		REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_DISTRICT
+		where DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_SYS_DISTRICT
+		where DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_District">
+		insert into T_SYS_DISTRICT (DISTRICT_CODE, DISTRICT_NAME,
+		PARENT_DISTRICT_CODE,
+		DISTRICT_GRADE, CANCEL_FLAG, REMARK
+		)
+		values (#{districtCode,jdbcType=VARCHAR}, #{districtName,jdbcType=VARCHAR},
+		#{parentDistrictCode,jdbcType=VARCHAR},
+		#{districtGrade,jdbcType=CHAR}, #{cancelFlag,jdbcType=CHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_District">
+		insert into T_SYS_DISTRICT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="districtCode != null">
+				DISTRICT_CODE,
+			</if>
+			<if test="districtName != null">
+				DISTRICT_NAME,
+			</if>
+			<if test="parentDistrictCode != null">
+				PARENT_DISTRICT_CODE,
+			</if>
+			<if test="districtGrade != null">
+				DISTRICT_GRADE,
+			</if>
+			<if test="cancelFlag != null">
+				CANCEL_FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="districtCode != null">
+				#{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtName != null">
+				#{districtName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentDistrictCode != null">
+				#{parentDistrictCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtGrade != null">
+				#{districtGrade,jdbcType=CHAR},
+			</if>
+			<if test="cancelFlag != null">
+				#{cancelFlag,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_District">
+		update T_SYS_DISTRICT
+		<set>
+			<if test="districtName != null">
+				DISTRICT_NAME = #{districtName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentDistrictCode != null">
+				PARENT_DISTRICT_CODE = #{parentDistrictCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtGrade != null">
+				DISTRICT_GRADE = #{districtGrade,jdbcType=CHAR},
+			</if>
+			<if test="cancelFlag != null">
+				CANCEL_FLAG = #{cancelFlag,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_District">
+		update T_SYS_DISTRICT
+		set DISTRICT_NAME = #{districtName,jdbcType=VARCHAR},
+		PARENT_DISTRICT_CODE = #{parentDistrictCode,jdbcType=VARCHAR},
+		DISTRICT_GRADE = #{districtGrade,jdbcType=CHAR},
+		CANCEL_FLAG = #{cancelFlag,jdbcType=CHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectDistricts" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		DISTRICT_CODE, DISTRICT_NAME, PARENT_DISTRICT_CODE, DISTRICT_GRADE, CANCEL_FLAG,
+		REMARK
+		FROM (
+		SELECT TA.*, ROWNUM RN FROM (
+		SELECT U.*
+		FROM T_SYS_DISTRICT U
+		<where>
+			<if test="districtCode != null and districtCode != '' ">
+				AND U.DISTRICT_CODE like
+				#{districtCode,jdbcType=VARCHAR}||'%'
+			</if>
+		</where>
+		ORDER BY U.DISTRICT_CODE ASC) TA
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countDistricts" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_SYS_DISTRICT
+		<where>
+			<if test="districtCode != null and districtCode != '' ">
+				DISTRICT_CODE like #{districtCode,jdbcType=VARCHAR}||'%'
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,320 @@
+<div id="deviceMoniterTipWnd" class="easyui-layout" style="width: 100%;height: 100%">
+	<div data-options="region:'center',border:false">
+		<div class="rowDiv">
+			<div style="height:140px;width:232px;float: left">
+				<img id="photoImg" src="themes/default/images/defaultDevPic.png" style="height:135px;width:225px;">
+			</div>
+			<div style="float: left;width: 248px">
+				<div  class="rowDiv">
+					<span>设备名称：</span><span id="devName"></span>
+				</div>
+				<div  class="rowDiv">
+					<span>所属机构：</span><span id="orgName"></span>
+				</div>
+				<div  class="rowDiv">
+					<span>安装点位：</span><span id="siteName"></span>
+				</div>
+				<div id="directionDiv"  class="rowDiv">
+					<span>监控方向：</span><span id="directionName">未知</span>
+				</div>
+			</div>
+		</div>
+		<div class="rowDiv">
+			<div style="font-size: 14px;font-weight: bold">
+				设备工作情况
+			</div>
+			<div style="width:100%;height: 1px;background: silver"></div>
+		</div>
+		<div class="rowDiv" id="devStatusDiv">
+			<div class="rowDiv">
+				<div>
+					设备状态：
+				</div>
+				<div style="width:162px;" id="devStatus">
+					-
+				</div>
+				<div >
+					最近心跳时间：
+				</div>
+				<div id="heartTime">
+					-
+				</div>
+			</div>
+			<div class="rowDiv">
+				<div >
+					校时偏差：
+				</div>
+				<div style="width:135px;" id="calibrationTime">
+					-
+				</div>
+				<div >
+					最近上传数据时间：
+				</div>
+				<div id="upDataTime">
+					-
+				</div>
+			</div>
+			<!-- <div class="rowDiv">
+			<div >
+			今日累计抓拍：
+			</div>
+			<div style="width:135px;" id="snapTotal">
+			-
+			</div>
+			<div >
+			数据积压率：
+			</div>
+			<div id="backLog">
+			-
+			</div>
+			</div> -->
+			<div class="rowDiv">
+				<div>
+					检定证书过期时间：
+				</div>
+				<div style="width:145px;" id="certificationDate">
+					-
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div data-options="region:'south',border:false" style="height:36px;">
+		<div style="width:100%;height: 1px;background: silver"></div>
+		<div style="text-align: right;margin-top: 4px">
+			<a name="isTollgateSupport" class="easyui-linkbutton spanNoVisble" cy-click="qryPass">过车查询</a>
+			<a name="isTollgateSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewPass">过车监控</a>
+			<a id="isFlowSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewFlow">流量查看</a>
+			<a id="isVioSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewVio">违法查询</a>
+			<a id="isEventSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewEvent">事件查询</a>
+			<a id="isMeteorologicSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewMeteorologic">气象查看</a>
+			<a name="isVideoSupport" class="easyui-linkbutton spanNoVisble" cy-click="viewVideo">视频预览</a>
+			<a name="isVideoSupport" class="easyui-linkbutton spanNoVisble" cy-click="playbackVideo">视频回放</a>
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+	InitPage(["devTipInfo"], function($scope) {
+		var devTipInfo = $scope.devTipInfo;
+		var isWeatherSupport = devTipInfo.isWeatherSupport;
+		var isVisibilitySupport = devTipInfo.isVisibilitySupport;
+		var isRoadsensorSupport = devTipInfo.isRoadsensorSupport;
+		$scope.load = function() {
+			//流量功能，暂没有在表中进行配置，只能根据设备类型来判断如果是卡口、流量监测设备显示流量查询
+			var isFlowSupport = devTipInfo.isFlowSupport;
+			if (isFlowSupport && isFlowSupport == "1") {
+				$scope.$("#isFlowSupport").removeClass('spanNoVisble');
+			}
+			var isTollgateSupport = devTipInfo.isTollgateSupport;
+			if (isTollgateSupport && isTollgateSupport == "1") {
+				//$scope.$("#isTollgateSupport").removeClass('spanNoVisble');
+				$scope.$("a[name='isTollgateSupport']").removeClass('spanNoVisble');
+			}
+			var isVioSupport = devTipInfo.isVioSupport;
+			if (isVioSupport && isVioSupport == "1") {
+				$scope.$("#isVioSupport").removeClass('spanNoVisble');
+			}
+			var isEventSupport = devTipInfo.isEventSupport;
+			if (isEventSupport && isEventSupport == "1") {
+				$scope.$("#isEventSupport").removeClass('spanNoVisble');
+			}
+			var isMeteorologicSupport = false;
+			if (isWeatherSupport && isWeatherSupport == "1") {
+				isMeteorologicSupport = true;
+			} else if (isVisibilitySupport && isVisibilitySupport == "1") {
+				isMeteorologicSupport = true;
+			} else if (isRoadsensorSupport && isRoadsensorSupport == "1") {
+				isMeteorologicSupport = true;
+			}
+			if (isMeteorologicSupport) {
+				$scope.$("#isMeteorologicSupport").removeClass('spanNoVisble');
+			}
+			var isVideoSupport = devTipInfo.isVideoSupport;
+			if (isVideoSupport && isVideoSupport == "1") {
+				$scope.$("a[name='isVideoSupport']").removeClass('spanNoVisble');
+			}
+			$scope.$("#photoImg").attr("src", "http://" + devTipInfo.devImgUrl);
+			$scope.$("#devName").text(devTipInfo.devName);
+			$scope.$("#orgName").text(devTipInfo.orgName);
+			$scope.$("#siteName").text(devTipInfo.siteName);
+			//监控断面有可能有多个
+			if (devTipInfo.directionName != null)//需要调整
+			{
+				var directionNameArry = devTipInfo.directionName.split(',');
+				$scope.$("#directionName").text(directionNameArry[0]);
+				if (directionNameArry.length > 1) {
+					for (var i = 1; i < directionNameArry.length; i++) {
+						var directionNameDiv = $('<div style="margin-left: 65px"></div>');
+						directionNameDiv.text(directionNameArry[i]);
+						$scope.$("#directionDiv").append(directionNameDiv);
+					}
+				}
+			}
+			//
+			if (devTipInfo.devStatus != null) {
+				var statusName = "-";
+				if (devTipInfo.devStatus == "1") {
+					statusName = "正常";
+				} else if (devTipInfo.devStatus == "2") {
+					statusName = "离线";
+				} else if (devTipInfo.devStatus == "3") {
+					statusName = "故障";
+				} else if (devTipInfo.devStatus == "4") {
+					statusName = "异常";
+				}
+				$scope.$("#devStatus").text(statusName);
+			}
+			if (devTipInfo.latestHeartTime != null && devTipInfo.latestHeartTime != "") {
+				$scope.$("#heartTime").text(devTipInfo.latestHeartTime);
+			}
+			if (devTipInfo.timeDiff != null && devTipInfo.timeDiff != "") {
+				$scope.$("#calibrationTime").text(devTipInfo.timeDiff + "秒");
+			}
+			if (devTipInfo.latestUpDataTime != null && devTipInfo.latestUpDataTime != "") {
+				$scope.$("#upDataTime").text(devTipInfo.latestUpDataTime);
+			}
+			// if (devTipInfo.snapTotal != null && devTipInfo.snapTotal != "") {
+			// $scope.$("#snapTotal").text(devTipInfo.snapTotal);
+			// }
+			// if (devTipInfo.snapBackLogPercent != null && devTipInfo.snapBackLogPercent != "") {
+			// $scope.$("#backLog").text(devTipInfo.snapBackLogPercent);
+			// }
+			if (devTipInfo.certificationExpireTime != null && devTipInfo.certificationExpireTime != "") {
+				$scope.$("#certificationDate").text(devTipInfo.certificationExpireTime);
+			}
+		};
+
+		$scope.viewVideo = function() {
+			var devIds = [];
+			devIds.push(devTipInfo.devId);
+			$scope.$setParam("deviceIds", devIds);
+			$scope.$openDialog("videoDialog", {
+				title : "实时视频预览",
+				draggable : false,
+				height : 600,
+				width : 600,
+				href : "tpls/video/popPreView.html"
+			}, true);
+		};
+		$scope.playbackVideo = function() {
+			var devIds = [];
+			devIds.push(devTipInfo.devId);
+			$scope.$setParam("deviceIds", devIds);
+			$scope.$openDialog("videoPlaybackDialog", {
+				title : "历史视频查看",
+				draggable : false,
+				height : 600,
+				width : 1024,
+				href : "tpls/video/popPlayBack.html"
+			}, true);
+		};
+
+		$scope.viewPass = function() {
+			var devNbr = devTipInfo.devNbr;
+			$scope.$setParam("deviceSysNbr", devNbr);
+			$scope.$openDialog("deviceVehicleMonitor", {
+				href : "tpls/public/device-vehicle-monitor.html",
+				width : 700,
+				height : 400,
+				title : "设备过车监控",
+				onClose : function() {
+					$scope.$getDialog("deviceVehicleMonitor").data("winScope").subsribe.remove();
+				}
+			});
+		};
+
+		$scope.qryPass = function() {
+			var siteCode = devTipInfo.siteCode;
+			var siteName = devTipInfo.siteName;
+			//过车查询
+			$scope.$goto("030201", {
+				siteCode : siteCode,
+				siteName : siteName,
+				passTimeStart : new Date().format("yyyy-MM-dd 00:00:00"),
+				passTimeEnd : new Date().format("yyyy-MM-dd hh:mm:ss"),
+				model : 'image'
+			});
+		};
+
+		$scope.viewFlow = function() {
+			var devNbr = devTipInfo.devNbr;
+			$scope.$setParam("deviceSysNbr", devNbr);
+			$scope.$openDialog("flowDialog", {
+				title : "流量查看",
+				height : 560,
+				width : 1000,
+				href : "tpls/deviceManage/deviceConfig/flow-detection-look-config.html"
+			}, true);
+		};
+
+		$scope.viewMeteorologic = function() {
+			var devNbr = devTipInfo.devNbr;
+			$scope.$setParam("deviceSysNbr", devNbr);
+			var alarmType = "";
+			var url = "";
+			if (isWeatherSupport && isWeatherSupport == "1") {
+				alarmType = "1";
+				url = "tpls/deviceManage/deviceConfig/weather-look-config.html";
+			} else if (isVisibilitySupport && isVisibilitySupport == "1") {
+				alarmType = "2";
+				url = "tpls/deviceManage/deviceConfig/weather-visibility.html";
+			} else if (isRoadsensorSupport && isRoadsensorSupport == "1") {
+				alarmType = "3";
+				url = "tpls/deviceManage/deviceConfig/weather-road-feel.html";
+			}
+			$scope.$setParam("alarmType", alarmType);
+			$scope.$openDialog("meteorologicDialog", {
+				title : "气象查看",
+				height : 500,
+				width : 1000,
+				href : url
+			}, true);
+		};
+
+		$scope.viewVio = function() {
+			var devNbr = devTipInfo.devNbr;
+			$scope.$setParam("deviceSysNbr", devNbr);
+			var res = $scope.$openDialog("violationDialog", {
+				title : "设备违法信息",
+				width : 1000,
+				height : 600,
+				href : "tpls/violationMgr/popViolation.html"
+			}, true);
+
+		};
+
+		$scope.viewEvent = function() {
+			var devNbr = devTipInfo.devNbr;
+			$scope.$setParam("deviceSysNbr", devNbr);
+			$scope.$setParam("alarmType", "4");
+			$scope.$openDialog("eventDialog", {
+				title : "事件查看",
+				height : 500,
+				width : 800,
+				href : "tpls/deviceManage/deviceConfig/event-detection-look-config.html"
+			}, true);
+		};
+
+	}); 
+</script>
+<style>
+	#deviceMoniterTipWnd .spanNoVisble {
+		display: none;
+	}
+
+	#deviceMoniterTipWnd span {
+		font-size: 13px;
+	}
+	#deviceMoniterTipWnd .rowDiv {
+		float: left;
+		width: 100%;
+	}
+	#devStatusDiv .rowDiv div {
+		float: left;
+		font-size: 13px;
+	}
+	#devStatusDiv .rowDiv div:nth-child(1) {
+		margin-left: 5px;
+	}
+</style>

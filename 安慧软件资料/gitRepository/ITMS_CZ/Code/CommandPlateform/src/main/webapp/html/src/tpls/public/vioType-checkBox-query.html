@@ -1,0 +1,205 @@
+<div id="dangerousVehicle" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:110"
+		style="border-bottom: solid 1px #ddd">
+		<form cy-form="searchParams" id="vioTypeForm">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+					
+					<div class="th" style="margin-left: 25px;">
+							违法类型代码：
+						</div>
+					<div class="td" style="margin-left: 15px;">
+							<!--交通行政处罚项 -->
+							<input class="easyui-textbox"  width="120px;"
+								name="vioCode" id="vioCode">
+					</div>
+						<div class="th" style="margin-left: 25px;">
+							违法类型：
+						</div>
+					<div class="td" style="margin-left: 15px;">
+							<!--交通行政处罚项 -->
+							<input name="vioType" class="easyui-combobox" cy-code="011" />
+							<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search" style="width:70px;margin-left: 50px">查找</a>
+					</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar" style="font-size: 14px;">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" cy-click="chooseVio" id= "OK">确定</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="vioDatagrid" cy-datagrid="vioOptions" cy-querydata="searchParams"
+			cy-url="violationCodeAction/findViolationCode">
+
+		</table>
+
+		<!-- <table id="dg"></table> -->
+	</div>
+</div>
+<script type="text/javascript">
+    //启用严格模式
+    'use strict';
+    InitPage(["vioType"],function($scope){
+    	var allData;
+
+        //保存本页面数据字典，object类型，key：code，value：字典项数组
+        var dicts;
+        //保存行政区划，easyui树类型（数组）
+        var district;
+
+        //页面初始化动作
+        $scope.load = function(){
+        	//加入tooltip
+        	$scope.$("#vioType").combobox({onSelect:function(record){
+        		$scope.$("#vioType").textbox("textbox").tooltip("destroy");
+        		$scope.$("#vioType").textbox("textbox").tooltip({content:$scope.$("#vioType").textbox("getText")});
+        	}});
+        	//道路类型
+    		$scope.$("#vioType").combobox("loadData",$rootScope.$vioType);
+            //获取数据字典并填入选项
+            $scope.$("#vioDatagrid").datagrid({
+				pageSize:200,
+				pageList:[200,300,500,1000]	
+			});
+        }
+
+        $.extend($scope, {
+            /**
+             * datagrid配置
+             * @type easyui的datagrid中的参数对象
+             */
+             vioOptions : {
+                columns:[[
+                     {field : 'id',  checkbox : true, align : 'center',  width : 10 },
+                    {field : 'vioActionCode',  title : '违法行为代码', align : 'center', width : 30 },
+                    {field : 'vioType', title : '违法类型', align : 'center', formatter : vioType, width : 20  },
+                    {field : 'vioSummary',title : '违法描述',align : 'center',formatter : options,width : 70},
+                    {field : 'fineDefault',title : '罚金金额',align : 'center',width : 20},
+                    {field : 'fineScore',title : '扣分数',align : 'center',width : 20},
+                    {field : 'issueDay',title : '有效期始',align : 'center',width : 20},
+                    {field : 'issueEndDay',title : '有效期止 ',align : 'center',width : 20},
+                ]],
+                /* onDblClickRow:function(rowIndex,rowData){
+                	 $scope.$excute($scope.vioType, "11", rowData.vio_action_code, rowData.vio_conetent);
+                     $scope.$closeSelf();
+                }, */
+                remoteSort:false,
+                singleSelect:true,
+                rownumbers:true,
+            },
+            /**
+        
+            /**
+             * 查询操作
+             * @return {[type]} [description]
+             */
+            search : function(){
+        		 var jsonData = $scope.$('#vioTypeForm').serializeArray();
+        		 if (jsonData.length == 1){
+        			 jsonData.push({name:"vioType",value:""});
+        		 }
+            	 $.ajax({
+                     url : $scope.$restRoot+"violationCodeAction/findViolationCode",
+                     type : "post",
+                     data : jsonData,
+                     dataType : "json",
+                     success : function(retData) {
+                    	 $scope.$("#vioDatagrid").datagrid("loaded");
+                    	 allData = retData.result.rows;
+                    	//查询成功 加载数据
+                    	//前台分页
+                         $scope.$('#vioDatagrid').datagrid({loadFilter:pagerFilter}).datagrid('loadData', allData);
+                     },
+                     error : function(err) {
+                     }
+                 }); 
+        		
+            },
+         });
+        
+        /**
+         * 点击确定按钮
+         */
+        $scope.chooseVio = function() {
+        	 var names = "";
+             var ids = "";
+             var codes = "";
+        	var checkedRows = $scope.$("#vioDatagrid").datagrid('getChecked');
+        	for (var i = 0;i <checkedRows.length;i++){
+        		 names += checkedRows[i].vioSummary + ",";
+                 codes += checkedRows[i].vioActionCode + ",";
+        	}
+        	  names = names.substring(0, names.length - 1);
+              codes = codes.substring(0, codes.length - 1);
+            $scope.$excute($scope.vioType, ids, codes, names);
+            $scope.$closeSelf();
+        };
+        
+         /**
+          * 前台分页
+          * 
+          */
+         function pagerFilter(data){
+			if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
+				data = {
+					total: data.length,
+					rows: data
+				}
+			}
+			var dg = $(this);
+			var opts = dg.datagrid('options');
+			var pager = dg.datagrid('getPager');
+			pager.pagination({
+				onSelectPage:function(pageNum, pageSize){
+					opts.pageNumber = pageNum;
+					opts.pageSize = pageSize;
+					pager.pagination('refresh',{
+						pageNumber:pageNum,
+						pageSize:pageSize
+					});
+					dg.datagrid('loadData',data);
+				}
+			});
+			if (!data.originalRows){
+				data.originalRows = (data.rows);
+			}
+			var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
+			var end = start + parseInt(opts.pageSize);
+			data.rows = (data.originalRows.slice(start, end));
+			return data;
+		} ;
+		
+		 /*根据号码类型code获取道路名称name
+         */
+        function vioType(value, row, index) {
+            var vioType = $scope.$getCodeName("011", value);
+            return vioType;
+        };
+
+        function options(value, row, index) {
+            var str = "";
+            if (value && value.length > 70) {
+                str = '' + value.subString(0, 70) + '...';
+            } else {
+                str = '' + value + '';
+            }
+            return "<span title='" + value + "'>" + str + "</span>";
+        };
+    })
+</script>
+<style type="text/css">
+#dangerousVehicle .th {
+	margin-left: 30px;
+	width: 70px;
+	text-align: right;
+}
+
+#dangerousVehicle .td {
+	width: 120px;
+}
+</style>

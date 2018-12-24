@@ -1,0 +1,123 @@
+<div class="easyui-layout" fit="true">
+    <div region="center" border="false" style="padding: 5px; background: #fff; border: 1px solid #ccc;">
+        <form method="post" cy-form="formData" id="faultInfoForm">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="padding-left: 5px">
+                        故障设备：
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-combobox" id="device" name="device" data-options="valueField:'id',textField:'text'">
+                        </input>
+                    </div>
+                    <div class="th" style="padding-left: 5px">
+                        故障类型：
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-combobox" id="faultType" name="faultType"
+                               data-options="valueField:'id',textField:'text'"
+                                />
+                    </div>
+                    <div class="th" style="padding-left: 5px">
+                        发生时间：
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-datetimebox" id="faultTime" name="faultTime"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="padding-left: 5px;">
+                        备注：
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <textarea rows="3" style="width: 583px" id="remark" name="remark"></textarea>
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="padding-left: 5px">
+                            采集方式：
+                        </div>
+                        <div class="td" style="padding-left: 5px;width: 150px">
+                            <label style="text-align: left;" id="collectType">人工添加</label>
+                        </div>
+                        <div class="th" style="padding-left: 5px">
+                            创建人：
+                        </div>
+                        <div class="td" style="padding-left: 5px;width: 150px">
+                            <label style="text-align: left;">李四</label>
+                        </div>
+                        <div class="th" style="padding-left: 5px">
+                            创建时间：
+                        </div>
+                        <div class="td" style="padding-left: 5px">
+                            <input class="easyui-datetimebox" id="createTime" name="createTime" disabled="true"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+        </div>
+    <div region="south" border="false" style="text-align: center; padding: 5px 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton button-save"
+           data-options="iconCls:'icon-save',plain:true" cy-click="ok">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton button-close"
+           data-options="iconCls:'icon-close',plain:true" cy-click="close_fault">关闭</a>
+    </div>
+</div>
+<script>
+    InitPage(["paramData","close_fault"], function ($scope) {
+        var sysCodeDic;
+        //查询数据
+        $scope.$ajaxRequest({
+            url: "data/deviceManage/chooseInit.json",
+            params: { OrgCode: $scope.UserInfo.OrgCode },
+            success: function (retData) {
+                sysCodeDic = retData.dicts;
+                $scope.$('#device').combobox('loadData', sysCodeDic["T_DIC_DEVICE"]);
+                $scope.$('#faultType').combobox('loadData', sysCodeDic["T_DIC_FAULT"]);
+                $scope.$('#createTime').datetimebox('setValue', new Date().format("yyyy-MM-dd hh:mm:ss"));
+            },
+            fail: function (errTxt) {
+                alert(errTxt);
+            }
+        });
+        //获取数据
+        function getData() {
+            var formData = $scope.$("#faultInfoForm").getParams();
+            return formData;
+        }
+
+        //确定
+        $scope.ok = function () {
+            var formData = getData();
+            console.log(formData);
+            //关闭窗口
+            $scope.close_fault();
+        }
+    });
+</script>
+<style>
+    #faultInfoForm .th{
+        width : 60px;
+        text-align:right;
+    }
+    body {
+        font: 12px/20px "微软雅黑", "宋体", Arial, sans-serif, Verdana, Tahoma;
+        padding: 0;
+        margin: 0;
+    }
+
+    fieldset {
+        border: #ddd solid 1px;
+        padding: 0px 10px 0px 10px;
+        margin-bottom: 10px;
+    }
+
+    fieldset legend {
+        color: #2A6496;
+        font-size: 12px;
+        background: #fff;
+        border-bottom: 0px;
+        width: auto;
+        margin-bottom: 0px;
+    }
+</style>

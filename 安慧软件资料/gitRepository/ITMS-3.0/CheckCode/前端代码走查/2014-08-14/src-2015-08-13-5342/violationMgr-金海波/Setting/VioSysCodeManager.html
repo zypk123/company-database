@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>违法代码</title>
+
+    <link rel="stylesheet" type="text/css" href="../../assets/css/demo.css">
+
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="application/javascript" src="../../assets/scripts/App.js"></script>
+    <script type="text/css">
+
+    </script>
+
+    <script type="application/javascript">
+
+        function selectView(menuId) {
+            $(".divView").css("display", "none");
+            $("#" + menuId).css("display","");
+        }
+
+        $(document).ready(function () {
+            App.init();
+            $("#gridVioSysCode").datagrid({
+                data: [
+                    {SysCodeType:'废弃类型',CodeNo:'0',CodeName:'其它',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'1',CodeName:'车速不足',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'2',CodeName:'查无车辆信息',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'3',CodeName:'无号牌',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'4',CodeName:'多车图片',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'5',CodeName:'摭挡号牌',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'6',CodeName:'号牌不完整',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'7',CodeName:'军警车',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' },
+                    {SysCodeType:'废弃类型',CodeNo:'8',CodeName:'套牌车',Remark:'描述', EnableFlag: '启用', Edit: ' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">编辑</a>' }
+                ]
+            })
+
+            //("#win").window('close');
+
+            $(".datagrid-body").dblclick(function(){
+                $("#win").window('open');
+            })
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+<fieldset style="text-align: center;margin-left:auto;margin-right: auto;width: 800px">
+    <div class="row" style="text-align: center">
+        <label class="control-label col-1">编码类型</label>
+        <div class="col-2">
+            <input class="easyui-textbox" type="text"/>
+        </div>
+        <label class="control-label col-1">系统编码</label>
+        <div class="col-2">
+            <select class="form-control select2me"data-placeholder="Selected..." style="width: 100%">
+                <option value="01" selected="true">超高速</option>
+                <option value="02">闯红灯</option>
+            </select>
+        </div>
+        <label class="control-label col-1">编码名称</label>
+        <div class="col-2">
+            <input class="easyui-textbox" type="text" />
+        </div>
+        <div class="col-3">
+            <a  href="#" class="easyui-linkbutton" style="width: 50px">查询</a>
+            <a  href="#" class="easyui-linkbutton" style="width: 50px">新增</a>
+            <a  href="#" class="easyui-linkbutton" style="width: 50px">删除</a>
+        </div>
+    </div>
+</fieldset>
+<div class="row">
+    <table id="gridVioSysCode" class="easyui-datagrid" data-options="singleSelect:true,url:'datagrid_data1.json',method:'get',fitColumns:true,striped:true,selectOnCheck:false,pagination:true">
+        <thead>
+        <tr>
+            <th data-options="field:'ck',checkbox:true">
+            </th>
+            <th data-options="field:'SysCodeType'">
+                代码类型
+            </th>
+            <th data-options="field:'CodeNo'">
+                系统代码
+            </th>
+            <th data-options="field:'CodeName'">
+                代码名称
+            </th>
+            <th data-options="field:'Remark'">
+                代码说明
+            </th>
+            <th data-options="field:'EnableFlag'">
+                启用状态
+            </th>
+            <th data-options="field:'Edit'">
+                修改
+            </th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<!--弹出的详细编辑窗口-->
+<div id="win" class="easyui-window" title="编码详细信息" style="width:400px;height:180px"
+     data-options="iconCls:'icon-save',modal:true">
+    <div style="margin-left: auto;margin-right: auto;text-align: center">
+        <div class="row">
+            <label class="control-label col-2">代码类型：</label>
+
+            <div class="col-4">
+
+                <select class="form-control easyui-selectbox" name="" id="">
+                    <option value="">超高速</option>
+                    <option value="">闯红灯</option>
+                </select>
+            </div>
+            <label class="control-label col-2">系统代码</label>
+
+            <div class="col-4">
+                <input class="form-control" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <label class="control-label col-2">代码名称</label>
+
+            <div class="col-4">
+                描述
+            </div>
+            <label class="control-label col-2">代码说明</label>
+
+            <div class="col-4">
+                <input class="form-control" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <label class="control-label col-2">启用状态</label>
+
+            <div class="col-10">
+                <input type="radio"/>启用
+                <input type="radio"/>不启用
+            </div>
+        </div>
+        <div class="row" style="text-align: center">
+            <a href="#" class="easyui-linkbutton" style="width: 50px">保存</a>
+            <a href="#" class="easyui-linkbutton" style="width: 50px" id="btnCancel" onclick="$('#win').window('close');">取消</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

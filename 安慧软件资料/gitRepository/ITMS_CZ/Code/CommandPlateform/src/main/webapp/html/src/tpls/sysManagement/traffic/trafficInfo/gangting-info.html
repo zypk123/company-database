@@ -1,0 +1,73 @@
+<div id="gangting" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    岗亭名称：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.postName"> </span>
+                </div>
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.manageOrg" cy-filter="$getOrgName"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                
+                <div class="th">
+                    岗亭地址：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.address"> </span>
+                </div>
+                <div class="th">
+                    值守模式：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.dutyModel" cy-filter="convertSysCode"> </span>
+                </div>
+            </div>
+            <div class="tr">
+                
+                <div class="th">
+                    负责人：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.headerName"> </span>
+                </div>
+                 <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                	<span cy-name="newData.headerPhone"> </span>
+                </div>
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData"],function($scope){
+    	$scope.convertSysCode = function(value){
+    		return $scope.$getCodeName("200",value);
+    	};    	
+    });
+</script>
+<style type="text/css">
+    #gangting .th{
+        width : 70px;
+        text-align: right;
+    }
+    #gangting .td{
+        width : 140px;
+        color:blue;
+    }
+
+</style>

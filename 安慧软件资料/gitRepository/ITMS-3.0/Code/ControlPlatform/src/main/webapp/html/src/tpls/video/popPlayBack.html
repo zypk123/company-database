@@ -1,0 +1,155 @@
+<!--实时监控-->
+<div class="popPreView" style="height: 100%;">
+    <div class="easyui-layout">
+        <!--控件-->
+        <div class="easyui-layout"  data-options='fit:true' >
+            <div data-options="region:'center'"  style="overflow:hidden;">
+                <iframe id="ifVideo" style="width:100%;height: 100%"
+                        src="tpls/video/haiKang8600/playBack.html?parentUrl=popPlayBack">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["deviceIds","startTime","endTime"], function ($scope) {
+        $scope.$getData("vio", "VioInit")($scope);
+        $scope.ChaoYuanPreviewSrc='tpls/video/chaoYuan/playBack.html?parentUrl=popPlayBack';
+        $scope.Hik8600PreviewSrc='tpls/video/haiKang8600/playBack.html?parentUrl=popPlayBack';
+        $scope.preViewVideoLst=[];
+
+        $.extend($scope, {
+            curVideoDevice: {
+                deviceId: "",
+                deviceSysNbr: "44020000001320000002",
+                cameraServerTypeIp: "192.168.10.39",
+                videoDeviceName: "IPdome"
+            },
+            iframeLoaded:function(){
+                //console.log('frame load');
+                $scope.videoControl=$scope.$("#ifVideo")[0].contentWindow;
+                //$scope.videoControl.setContext($scope);
+                //继续播放其它视频
+                $scope.playVideoIteral($scope.preViewVideoLst);
+                if($scope.startTime){
+                    $scope.videoControl.searchBack($scope.startTime, $scope.endTime);
+                }
+            },
+            playVideoIteral:function(videoArr){
+                var video=videoArr.pop();
+                if(video){
+                    $scope.videoControl.initVideo(video);
+                    setTimeout(function(){
+                        $scope.playVideoIteral(videoArr);
+                    }, 500);
+                }
+            }
+        });
+        /**
+         * 页面加载完后一些初始化处理
+         */
+        $scope.load = function () {
+            if($scope.deviceIds&&$scope.deviceIds.length>0){
+                //console.log($scope.deviceIds);
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/videoPlay/getVideoByIds",
+                    params: {deviceIds:JSON.stringify($scope.deviceIds)},
+                    method: "post",
+                    success: function (result) {
+                        if(result&&result.length>0){
+                            var curVideoDevice=result[0];
+                            //关闭左侧菜单栏
+                            var src=$scope.Hik8600PreviewSrc;
+                            if(curVideoDevice.videoAccessMode) {
+                                switch(curVideoDevice.videoAccessMode){
+                                    case "1"://海康平台
+                                    case "2"://海康直连设备
+                                        src=$scope.Hik8600PreviewSrc;
+                                        break;
+                                    case "3"://大华平台
+                                    case "4"://大华直连设备
+                                    case "5"://超远平台
+                                        src=$scope.ChaoYuanPreviewSrc;
+                                        break;
+                                };
+                                $scope.preViewVideoLst=result;
+                                var sqrtNum=Math.sqrt($scope.preViewVideoLst.length);
+                                var gridNum=sqrtNum>Math.floor(sqrtNum)?Math.floor(sqrtNum)+1:sqrtNum;
+                                src+='&gridNum='+gridNum;
+                                src+=$scope.startTime?'&singlePreview=1':'';
+                                //console.log(src);
+                                $scope.preViewVideoLst=result;
+                                $scope.$("#ifVideo").attr('src',src);
+                                setTimeout(function(){
+                                    $scope.iframeLoaded();
+                                },2000);
+                            }
+                            else{
+                                $scope.alertMessage("该设备的视频监控类型未配置，请至设备管理页面检查配置");
+                            }
+                        }
+                        else{
+                            $scope.alertMessage("未获取到设备信息");
+                        }
+                    },
+                    fail: function (errMsg) {
+                        $scope.alertMessage('获取设备信息失败，原因：' + errMsg);
+                    }
+                });
+            }
+            else{
+                //todo
+            }
+        };
+
+        //关闭
+        $scope.close = function() {
+
+        };
+        //退出
+        $scope.leave = function() {
+        };
+        //进入
+        $scope.enter = function() {
+            //console.log("enter");
+        };
+
+        /**
+         * 警告信息
+         * @param msg
+         */
+        $scope.alertMessage= function (msg) {
+            $.messager.alert({
+                title: '提示',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .divPanel {
+        background: #ffffff;
+
+    }
+
+    .divPanel > .title {
+        text-align: left;
+        vertical-align: 80%;
+        height: 25px;
+        margin: 5px, 0px;
+        background: #00438a;
+        display: block;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 14;
+        clear: both;
+    }
+</style>

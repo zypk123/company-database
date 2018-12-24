@@ -1,0 +1,150 @@
+<div id="dataTransmissionPath" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">卡口名称：</div>
+                        <div class="td">
+                            <input id="kakou" class="easyui-combobox" name="deviceId" data-options="valueField:'id',textField:'text'"/>
+                        </div>
+                        <div class="th">相机名称：</div>
+                        <div class="td">
+                            <input id="sysComponentId" class="easyui-combobox" name="sysComponentId" data-options="prompt:'请先选择设备',valueField:'sysComponentId',textField:'componentName'"/>
+                        </div>
+                        <div class="th">总耗时(秒)：</div>
+                        <div class="td">
+                            <input id="totalTimeFrom" class="easyui-numberbox" name="totalTimeFrom" style="width:60px" data-options="prompt:'单位/秒',precision:'2'"/>
+                                                                                             到
+                            <input id="totalTimeTo" class="easyui-numberbox" name="totalTimeTo" style="width:60px" data-options="prompt:'单位/秒',precision:'2'"/>
+                        </div>
+                        <div class="th">过车时间：</div>
+                        <div class="td">
+                            <input id="start" class="easyui-datetimebox" name="passTimeFrom" style="width:150px" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']"/>
+                                                                                              到
+                            <input id="end" class="easyui-datetimebox" name="passTimeTo" style="width:150px" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"/>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div  data-options="region:'center',border:true">
+        <table id="dataPath" cy-datagrid="options" cy-querydata="formData" cy-url="device/deviceDataPath/queryDeviceDataPath">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		$scope.load = function(){
+			//查询卡口设备信息加载
+        	$scope.$ajaxRequest({
+                url:$scope.$restRoot+"device/deviceConfig/queryRelevanceDevice",
+                params:{},
+                method:"post",
+                success:function(data){
+	            	if(data != undefined){
+		               	$scope.$("#kakou").combobox("loadData",data["01"]);//卡口设备
+	            	}
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","初始关联设备失败，请重新打开此页面！");
+                }
+            });
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			$scope.$updateData("formData");
+            $scope.$search("formData");
+		};
+		/**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns:[[
+                {align: "center",title : "卡口名称",field : "deviceName",width:120},
+                {align: "center",title : "相机名称",field : "componentName",width:120},
+                {align: "center",title : "抓拍编号",field : "snapNbr",width:120},
+                {align: "center",title : "过车时间",field : "passTime",width:120},
+                {align: "center",title : "监控服务器处理时间",field : "serverReceivingTime",width:120},
+                {align: "center",title : "ICE2MQ处理时间",field : "ice2mqTime",width:120},
+              //  {align: "center",title : "前置机处理时间",field : "preTime",width:120},
+              //  {align: "center",title : "后置机处理时间",field : "afterTime",width:120},
+                {align: "center",title : "上传开始时间",field : "uploadTime",width:120},
+                {align: "center",title : "上传结束时间",field : "uploadEndTime",width:120},
+                {align: "center",title : "总耗时（秒）",field : "totalTime",width:80,formatter : checkTime}
+            ]],
+            nowrap:false
+        };
+        function checkTime(value,row,index){
+        	if(value > 8){
+        		var span = $("<span style='color:red'>"+ value +"</span>");
+        		return $("<span/>").append(span).html();
+        	}else{
+        		return value;
+        	}
+        }
+        
+        $scope.$('#kakou').combobox({
+			onSelect: function(record){
+				//根据deviceId查询相机
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + 'device/cameraManage/queryCameraInfo',
+					params : {deviceId : record.id},
+					success : function(data){
+						var component = data.result.rows;
+						if(component.length > 0){
+							$scope.$('#sysComponentId').combobox('loadData',component);
+						}else{
+							$.messager.alert('提示','此设备没有相机！');
+						}
+					},
+					fail : function(errMsg){
+							$.messager.alert('提示','加载相机信息失败！');
+					}
+				});
+			}
+		});
+        
+        $scope.searchData = function(){
+        	$scope.$updateData("formData");
+        	var totalTimeFrom = $scope.$("#totalTimeFrom").numberbox("getValue");
+        	var totalTimeTo = $scope.$("#totalTimeTo").numberbox("getValue");
+        	if(totalTimeFrom != '' && totalTimeTo != ''){
+        		if(parseFloat(totalTimeFrom) < parseFloat(totalTimeTo)){
+					$scope.$search("formData");
+        		}else{
+        			$.messager.alert('提示','开始耗时应小于结束耗时！');
+        			return false;
+        		}
+        	}else if(totalTimeFrom == '' && totalTimeTo != ''){
+        		$.messager.alert('提示','请填写开始总耗时！');
+        		return false;
+        	}else if(totalTimeFrom != '' && totalTimeTo == ''){
+        		$.messager.alert('提示','请填写结束总耗时！');
+        		return false;
+        	}else{
+        		$scope.$search("formData");
+        	}
+        	
+				//$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+        };
+	});
+</script>
+<style type="text/css">
+    #dataTransmissionPath .th{
+        width: 80px;
+        text-align: right;
+    }
+    #dataTransmissionPath .easyui-combobox{
+        width: 120px;
+    }
+    #dataTransmissionPath .button-search{
+       margin-left: 10px;
+    }
+</style>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.FaultLogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.FaultLog" >
+    <id column="FAULT_EVENT_ID" property="faultEventId" jdbcType="VARCHAR" />
+    <result column="FAULT_ID" property="faultId" jdbcType="VARCHAR" />
+    <result column="DEVICE_NBR" property="deviceNbr" jdbcType="VARCHAR" />
+    <result column="FAULT_EVENT_TIME" property="faultEventTime" jdbcType="TIMESTAMP" />
+    <result column="FAULT_ALARM" property="faultAlarm" jdbcType="CHAR" />
+    <result column="FAULT_TYPE" property="faultType" jdbcType="VARCHAR" />
+    <result column="FAULT_SUB_TYPE" property="faultSubType" jdbcType="VARCHAR" />
+    <result column="COLLECT_METHOD" property="collectMethod" jdbcType="CHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FAULT_EVENT_ID, FAULT_ID, DEVICE_NBR, FAULT_EVENT_TIME, FAULT_ALARM, FAULT_TYPE, 
+    FAULT_SUB_TYPE, COLLECT_METHOD, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_FAULT_LOG
+    where FAULT_EVENT_ID = #{faultEventId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_FAULT_LOG
+    where FAULT_EVENT_ID = #{faultEventId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.FaultLog" >
+    insert into T_DEVICE_FAULT_LOG (FAULT_EVENT_ID, FAULT_ID, DEVICE_NBR, 
+      FAULT_EVENT_TIME, FAULT_ALARM, FAULT_TYPE, 
+      FAULT_SUB_TYPE, COLLECT_METHOD, REMARK
+      )
+    values (#{faultEventId,jdbcType=VARCHAR}, #{faultId,jdbcType=VARCHAR}, #{deviceNbr,jdbcType=VARCHAR}, 
+      #{faultEventTime,jdbcType=TIMESTAMP}, #{faultAlarm,jdbcType=CHAR}, #{faultType,jdbcType=VARCHAR}, 
+      #{faultSubType,jdbcType=VARCHAR}, #{collectMethod,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.FaultLog" >
+    insert into T_DEVICE_FAULT_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="faultEventId != null" >
+        FAULT_EVENT_ID,
+      </if>
+      <if test="faultId != null" >
+        FAULT_ID,
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR,
+      </if>
+      <if test="faultEventTime != null" >
+        FAULT_EVENT_TIME,
+      </if>
+      <if test="faultAlarm != null" >
+        FAULT_ALARM,
+      </if>
+      <if test="faultType != null" >
+        FAULT_TYPE,
+      </if>
+      <if test="faultSubType != null" >
+        FAULT_SUB_TYPE,
+      </if>
+      <if test="collectMethod != null" >
+        COLLECT_METHOD,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="faultEventId != null" >
+        #{faultEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="faultId != null" >
+        #{faultId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNbr != null" >
+        #{deviceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="faultEventTime != null" >
+        #{faultEventTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="faultAlarm != null" >
+        #{faultAlarm,jdbcType=CHAR},
+      </if>
+      <if test="faultType != null" >
+        #{faultType,jdbcType=VARCHAR},
+      </if>
+      <if test="faultSubType != null" >
+        #{faultSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="collectMethod != null" >
+        #{collectMethod,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.FaultLog" >
+    update T_DEVICE_FAULT_LOG
+    <set >
+      <if test="faultId != null" >
+        FAULT_ID = #{faultId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="faultEventTime != null" >
+        FAULT_EVENT_TIME = #{faultEventTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="faultAlarm != null" >
+        FAULT_ALARM = #{faultAlarm,jdbcType=CHAR},
+      </if>
+      <if test="faultType != null" >
+        FAULT_TYPE = #{faultType,jdbcType=VARCHAR},
+      </if>
+      <if test="faultSubType != null" >
+        FAULT_SUB_TYPE = #{faultSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="collectMethod != null" >
+        COLLECT_METHOD = #{collectMethod,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where FAULT_EVENT_ID = #{faultEventId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.FaultLog" >
+    update T_DEVICE_FAULT_LOG
+    set FAULT_ID = #{faultId,jdbcType=VARCHAR},
+      DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      FAULT_EVENT_TIME = #{faultEventTime,jdbcType=TIMESTAMP},
+      FAULT_ALARM = #{faultAlarm,jdbcType=CHAR},
+      FAULT_TYPE = #{faultType,jdbcType=VARCHAR},
+      FAULT_SUB_TYPE = #{faultSubType,jdbcType=VARCHAR},
+      COLLECT_METHOD = #{collectMethod,jdbcType=CHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where FAULT_EVENT_ID = #{faultEventId,jdbcType=VARCHAR}
+  </update>
+</mapper>

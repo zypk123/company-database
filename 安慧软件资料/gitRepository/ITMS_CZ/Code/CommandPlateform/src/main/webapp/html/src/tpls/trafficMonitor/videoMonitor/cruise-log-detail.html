@@ -1,0 +1,171 @@
+<div class="easyui-layout">
+    <div data-options="region:'center'">
+        <div class="easyui-layout" id="detailLayout">
+            <div data-options="region:'north'" style="height: 100px">
+                <!--巡航信息-->
+                <form cy-form="videoPlanLog">
+                    <!--<div class="panel_title">巡航方案</div>-->
+                    <div class="table" style="width:600px">
+                        <div class="tr">
+                            <div class="td col-2">方案名称：</div>
+                            <div class="td col-4" cy-name="videoPlanLog.videoPlanName">
+                            </div>
+                            <div class="td col-2">网巡人员：</div>
+                            <div class="td col-4" cy-name="videoPlanLog.videoPlanPerson">
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="td col-2">网巡开始时间：</div>
+                            <div class="td col-4" cy-name="videoPlanLog.videoPlanStartTime">
+                            </div>
+
+                            <div class="td col-2">网巡结束时间：</div>
+                            <div class="td col-4" cy-name="videoPlanLog.videoPlanEndTime">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--控件-->
+            <div data-options="region:'center'">
+                <table id="gridVideoEventLog" cy-datagrid="options">
+                </table>
+            </div>
+            <div data-options="region:'south'" style="height:35px;">
+                <div class="td" style="text-align: center;margin: 2px 0px;">
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+                       cy-click="$closeSelf">关闭</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+InitPage(["videoPlanLog"], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+     $.extend($scope, {
+        logDetail:{},
+        load: function () {
+            $scope.logDetail=$scope.videoPlanLog;
+            $scope.$updateDom("videoPlanLog");
+            $scope.loadPlanVideoLogAsync($scope.logDetail);
+        },
+        options: {
+            columns: [
+                [
+                    {title: "序号", field: "sortIndex", formatter: function (value, rowData, rowIndex) {
+                        return rowIndex + 1;
+                    },sorter:function(a,b){
+                        if(a&b){
+                            return a>b;
+                        }
+                        else{
+                            return true;
+                        }
+                    }},//
+                    {title: "视频名称", field: "videoDeviceName", width: 10},//
+                    {title: "发生位置", field: "place", width: 15},//
+                    {title: "发现问题", field: "questionFind", width: 15},//
+                    {title: "处理结果", field: "resultDesc", width: 15},//
+                    {title: "操作", field: "test", width: 10, formatter: function (value, rowData, rowIndex) {
+                        var upBtn = $("<a  title='修改' class='button-modify'></a>");
+                        upBtn.linkbutton({
+                            iconCls: "icon-edit-solid",
+                            plain : true
+                        });
+                        upBtn.attr('cy-click', "modifyVideoEvent('" + rowIndex + "')");
+
+                        var downBtn = $("<a  title='删除' class='button-delete'></a>");
+                        downBtn.linkbutton({
+                            iconCls: "icon-remove-solid",
+                            plain : true
+                        });
+                        downBtn.attr('cy-click', "deleteVideoEvent('" + rowIndex + "')");
+                        return $("<span/>").append(upBtn).append("  ").append(downBtn).html();
+                    }}//
+                ]
+            ],
+            singleSelect: true,
+            method: 'get',
+            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            nowarp: false,
+            pagination: false
+        },
+        //加载网巡日志关联的视频日志
+        loadPlanVideoLogAsync:function(videoPlanLog){
+            $scope.PostAjax(
+                $scope.$restRoot + "/video/cruisePlan/getVideoCruiseEvent",
+                    {planLogID:videoPlanLog.videoPlanLogId},
+                function (result) {
+                    if (result && result.result.length > 0) {
+                        $scope.curCruiseVideoIndex = 1;
+                        $scope.$("#gridVideoEventLog").datagrid('loadData',result.result);
+                    }
+                    else{
+                        $scope.curCruiseVideoIndex = 1;
+                        $scope.$("#gridVideoEventLog").datagrid('loadData',[]);
+                    }
+                }
+            );
+        },
+         /**
+          * 修改事件
+          * @param rowIndex
+          */
+         modifyVideoEvent:function(rowIndex){
+             var rowData=$scope.$("#gridVideoEventLog").datagrid("getRows")[parseInt(rowIndex)];
+             var curUpdateVideoEvent={};
+             $.extend(curUpdateVideoEvent,rowData);
+             $scope.$setParam("videoEventDetail",curUpdateVideoEvent);
+             $scope.$setParam("refresh",$scope.onModifyEventComplete);
+             $scope.$openDialog("modifyVideoEventDialog", {
+                 title : "巡航事件修改",
+                 width: 500,
+                 height: 270,
+                 href : "tpls/trafficMonitor/videoMonitor/cruise-event-edit.html"
+             }, true);
+         },
+         onModifyEventComplete:function(){
+             $scope.loadPlanVideoLogAsync($scope.logDetail);
+         },
+         /**
+          * 删除事件
+          * @param rowIndex
+          */
+         deleteVideoEvent:function(rowIndex){
+             var rowData=$scope.$("#gridVideoEventLog").datagrid("getRows")[parseInt(rowIndex)];
+             $.messager.confirm("提示", "是否确认删除巡航事件？", function(flag) {
+                 if (flag) {
+                         $scope.PostAjax(
+                                         $scope.$restRoot + "/video/cruisePlan/deleteVideoCruiseEvent",
+                                 {param: rowData.videoLogId},
+                                 function (data) {
+                                     if (data.errorMsg && data.errorMsg != '') {
+                                         alert("删除巡航事件失败，原因：" + data.errorMsg);
+                                     }
+                                     else {
+                                         ////console.log("删除巡航视频成功");
+                                         //var rowIndex=$scope.$("#gridPlanVideo").datagrid('getRowIndex',$scope.videoDetail);
+                                         $scope.$("#gridVideoEventLog").datagrid('deleteRow', rowIndex);
+                                         var leftRowNum=$scope.$("#gridVideoEventLog").datagrid('getRows').length;
+                                         if ( leftRowNum> 0) {
+                                             if(leftRowNum-1>=rowIndex){
+                                                 $scope.$("#gridVideoEventLog").datagrid('selectRow', rowIndex);
+                                             }
+                                             else{
+                                                 $scope.$("#gridVideoEventLog").datagrid('selectRow', leftRowNum-1);
+                                             }
+                                         }
+                                     }
+                                 }
+                         );
+                 }
+             });
+         }
+
+    });
+});
+</script>

@@ -1,0 +1,149 @@
+<div class="easyui-layout" id="queryView" style="height:100%">
+    <div data-options="region:'north',height:50">
+        <form cy-form="cyFrmCond" class="searchForm" method="post">
+        	<div class="table">
+        		<div class="tr">
+        			<div class="th" style="margin-left: 40px;">号牌号码：</div>
+                        <div class="td">
+        				<span cy-name="cyFrmCond.plateNbr" id="plateNbr"></span>
+                        </div>
+        			
+        			<div class="th" style="margin-left: 50px;">号牌类型：</div>
+                        <div class="td">
+			        	 <span cy-name="cyFrmCond.plateType" id ="plateType" cy-filter="codeName('002')" ></span>
+                        </div>
+                 </div>
+        	</div>
+        </form>
+    </div>
+
+    <div data-options="region:'center'">
+        <table id="tbVio" cy-datagrid="options" cy-querydata="cyFrmCond" cy-url="/vehTrack/violation/queryViolationDetails">
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(['plateNbr','plateType','startDateTime','endDateTime','violationTypes','isHighway','districtCodes'], function ($scope) {
+        $scope.$getData("vio", "VioInit")($scope);
+        //获得本页面需要的数据字典,依次：车辆外形，号牌颜色，车辆颜色
+		$scope.$getDefaultCode(["002",'301','013']);
+        $.extend($scope, {
+
+            /**
+             * 加载
+             */
+            load: function () {
+                $scope.cyFrmCond.plateNbr = $scope.plateNbr;
+                $scope.cyFrmCond.startDateTime = $scope.startDateTime;
+                $scope.cyFrmCond.endDateTime = $scope.endDateTime;
+                $scope.cyFrmCond.plateType =$scope.plateType;
+                $scope.cyFrmCond.violationTypes =$scope.violationTypes;
+                $scope.cyFrmCond.isHighway =$scope.isHighway;
+                $scope.cyFrmCond.districtCodes =$scope.districtCodes;
+                //更新其他数据
+				$scope.$updateDom("cyFrmCond");
+                $scope.SearchAsync();
+                console.log("load success ");
+            },
+            enter: function () {
+                console.log("enter");
+            },
+            leave: function () {
+                console.log("leave");
+            },
+            close: function () {
+                console.log("close");
+            },
+            //列表绑定选项
+            options: {
+                columns: [
+                    [//注意，此处是二维数组
+                        /*
+                        {title: "鍙风墝鍙风爜", field: "plate_nbr", width: 10},
+                                                {title: "鍙风墝绫诲瀷", field: "plate_type", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.PLATETYPE)},//*/
+                        
+                        {title: "违法时间", field: "violation_time", width: 15,formatter:function(value){
+                        	var date= new Date(value);
+                        	return date.format("yyyy-MM-dd HH:mm:ss");
+                        }},
+                        {title: "违法类型", field: "violation_type", width: 10, formatter:$scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.VIOLATION_TYPE)},//
+                        {title: "违法行为", field: "violation_desc", width: 25,formatter:function(value){
+                        	if (value == null) {
+                				return "<span/>";
+                			}
+                			var nameStr = "";
+                			if (value && value.length > 15) {
+                				nameStr = '' + value.substring(0, 15) + '...';
+                			} else {
+                				nameStr = '' + value + '';
+                			}
+                			return "<span title='" + value + "'>" + nameStr + "</span>";
+                        }},//
+                        {title: "违法地点", field: "address_desc", width: 15},//
+                        {title: "采集机构", field: "org_code", width: 20, formatter:function(value){
+                        	return $scope.subStrColum(value);
+                        }},
+                        {title: "采集方式", field: "collection_type", width: 10,formatter: function(value){
+                        	if(!value){return ;}
+                        	return $scope.$getCodeName("013", value);
+                        }},//
+                        {title: "记录状态", field: "status_flag", width: 15, formatter: function(value){
+                        	if(!value){return ;}
+                        	return $scope.$getCodeName("301", value);
+                        }}
+                    ]
+                ],
+                rownumbers:true,
+                singleSelect: true,
+                method: 'get',
+                fitColumns: true,
+                striped: true,
+                selectOnCheck: false,
+                pagination: true,
+                nowarp: false
+            },
+	        	
+            /**
+             * 查询
+             * @constructor
+             */
+            SearchAsync: function () {
+                $scope.$updateData("cyFrmCond");
+                $scope.$search("cyFrmCond", "", function (data) {
+                    if (data && data != null && data.rows.length > 0) {
+                        $scope.$('#tbVio').datagrid('selectRow', 0);
+                    }
+                    else {
+                        alert("查无数据");
+                    }
+                    ;
+                });
+            }
+        });
+        /**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+		
+		//显示隐藏机构名称
+		$scope.subStrColum = function (value) {
+			var name = $scope.$getOrgName( value);
+			if (name == null) {
+				return "<span/>";
+			}
+			var nameStr = "";
+			if (name && name.length > 10) {
+				nameStr = '' + name.substring(0, 10) + '...';
+			} else {
+				nameStr = '' + name + '';
+			}
+			return "<span title='" + name + "'>" + nameStr + "</span>";
+		}
+    });
+
+</script>

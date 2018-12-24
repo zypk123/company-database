@@ -1,0 +1,196 @@
+<!--路口信息添加页面-->
+<div class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="crossingData">
+            <div id="crossingMessage" class="table">
+                <div class="tr">
+                    <div class="th">
+                        路口编号：
+                    </div>
+                    <div class="td">
+                        <input name="crossCode" class="easyui-textbox"  validType="length[0,12]" data-options="required: true" />
+                    </div>
+                    <div class="th">
+                        路口名称：
+                    </div>
+                    <div class="td">
+                        <input  name="crossName"  class="easyui-textbox" data-options="required: true" />
+                    </div>
+                    <div class="th" style="width: 120px;">
+                        路口所属主干道：
+                    </div>
+                    <div class="td">
+                        <input name="roadId" data-options="required: true " class="cy-road-radio" />
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        行政区划：
+                    </div>
+                    <div class="td">
+                        <input name="districtCode" class="cy-district-radio"/>
+                    </div>
+                    <div class="th">
+                        管理机构：
+                    </div>
+                    <div class="td">
+                        <input name="orgId" class="cy-org-radio"/>
+                    </div>
+                  <div class="th" style="width: 96px;" >
+                                路口类型：
+                            </div>
+                            <div class="td">
+                                <input name="crossType" class="easyui-combobox" cy-code="147" style="width: 160px;"/>
+                            </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="width:450px;">
+                        <div class="tr">
+                            <div class="th" style="width: 103px">
+                                路口断面数：
+                            </div>
+                            <div class="td">
+                                <input name="sectionNum" class="easyui-textbox" style="width : 126px;"/>
+                            </div>
+                            <div class="th" style="width: 70px;"></div>
+                            <div class="td">
+                                <a class="easyui-linkbutton " data-options="iconCls:'icon-site'" cy-click="getLonLat" style="text-align: right">从地图获取经纬度</a>
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="th">
+                                路口经度：
+                            </div>
+                            <div class="td" style="width: 135px">
+                                <input  class="easyui-numberbox" name="crossLongitude" id="lon"
+                                data-options="min:72.004,max:137.8347,precision:6" />
+                            </div>
+                            <div class="th" style="width: 91px;">
+                                路口纬度：
+                            </div>
+                            <div class="td" >
+                                <input  class="easyui-numberbox" name="crossLatitude" id="lat"
+                                data-options="min:0.8293,max:55.8271,precision:6" style="width :115px;" />
+                            </div>
+                        </div>
+                        <!-- div class="tr">
+                            <div class="th"></div>
+                            <div class="td" style="width: 125px;"></div>
+                            <div class="th"></div>
+                            <div class="td">
+                                <a class="easyui-linkbutton " data-options="iconCls:'icon-site'" cy-click="getLonLat" style="text-align: right">从地图获取经纬度</a>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="td">
+                        <div id="map" style="width:260px;height: 150px;"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false" style="height: 50px;">
+    &nbsp;
+        <div class="tr">    
+            <div class="td" style="text-align: center">
+                <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+                cy-click="save">保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                cy-click="$closeSelf">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    InitPage(["saveCross", "editCross", "crossingData"], function($scope) {
+
+        $scope.load = function() {
+            lonlat = "POINT(" + $scope.crossingData.crossLongitude + " " + $scope.crossingData.crossLatitude + ")";
+            init();
+            moveToMap();
+
+        };
+        var lonlat;
+        if ($scope.$params.get("type") == "add") {
+            $scope.save = function() {
+                $scope.$updateData("crossingData");
+                $scope.saveCross($scope.crossingData);
+            };
+        } else {
+            $scope.save = function() {
+                $scope.$updateData("crossingData");
+                $scope.editCross($scope.crossingData);
+            };
+        }
+
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        var centerPoint = new OpenLayers.LonLat(105.70405, 28.58103);
+        var point;
+        var wkt_c = new OpenLayers.Format.WKT();
+        //初始化地图及双击事件
+        function init() {
+            cyMap.map.events.remove("dblclick");
+            cyMap.map.events.registerPriority("dblclick", map, $scope.getLonLat);
+            point = new OpenLayers.Layer.Vector("point");
+            cyMap.map.addLayer(point);
+        }
+
+        //移动地图至执法服务站或者中心点
+        function moveToMap() {
+            if (lonlat) {
+                var style = {
+                    graphicWidth : 18,
+                    graphicHeight : 18,
+                    externalGraphic : "frameworks/Openlayers/img/marker.png"
+                };
+                var geometry = wkt_c.read(lonlat).geometry.clone();
+                geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+                point.addFeatures(feature);
+                cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+            } else {
+                centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                cyMap.map.panTo(centerPoint);
+            }
+        }
+
+        //弹出地图窗口获取经纬度信息
+        $scope.getLonLat = function() {
+
+            $scope.$setParam("lonLat", lonlat);
+            $scope.$setParam("saveLonLat", function(params) {
+
+                point.removeAllFeatures();
+
+                $scope.$("#lon").textbox('setValue', params.lon.toFixed(6));
+                $scope.$("#lat").textbox('setValue', params.lat.toFixed(6));
+                var style = {
+                    graphicWidth : 18,
+                    graphicHeight : 18,
+                    externalGraphic : "frameworks/Openlayers/img/marker.png"
+                };
+                var geometry = (new OpenLayers.Geometry.Point(params.lon, params.lat)).clone();
+                geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+                point.addFeatures(feature);
+                cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+
+            });
+
+            $scope.$openDialog("createInfoDialog", {
+                title : "&nbsp;&nbsp;获取经纬度 ",
+                height : 600,
+                width : 800,
+                href : "tpls/sysManagement/traffic/get-lonlat.html",
+            }, true);
+        };
+
+    }); 
+</script>
+<style type="text/css">
+    #crossingMessage .th {
+        text-align: right;
+        width: 90px;
+    }
+
+</style>

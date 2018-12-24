@@ -1,0 +1,411 @@
+<div class="easyui-layout">
+
+    <!-- <div data-options="region:'north'" style="height: 400px">
+    <form cy-form="vioActionData"></form>
+    </div> -->
+    <div data-options="region:'center'">
+        <form cy-form="vioAssoActionData">
+
+            <div class="searchPanel">
+                <div class="panel_title">
+                    违法代码
+                </div>
+
+                <div id="vioCode" class="table">
+                    <div class="tr">
+                        <div class="th">
+                            违法代码编号：
+                        </div>
+                        <div class="td">
+                            <input name="vioActionCode" class="easyui-textbox" style="width: 90px"/>
+                        </div>
+                        <div class="th">
+                            违法类型：
+                        </div>
+                        <div class="td">
+                            <input name="vioType" class="easyui-combobox" cy-code="011"/>
+                        </div>
+                        <div class="th">
+                            违法大类：
+                        </div>
+                        <div class="td">
+                            <input name="vioPriorType" class="easyui-combobox" cy-code="316"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            违法内容概述：
+                        </div>
+                        <div class="td">
+                            <textarea name="vioSummary" style="width:580px;height: 33px"></textarea>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            违法内容：
+                        </div>
+                        <div class="td">
+                            <textarea name="vioConetent" style="width:580px;height:33px"></textarea>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            引用法律条文：
+                        </div>
+                        <div class="td">
+                            <textarea name="legalReference" style="width: 580px;height: 33px"></textarea>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            处罚依据条款：
+                        </div>
+                        <div class="td">
+                            <textarea name="punishLegalReference" style="width:580px;height: 33px"></textarea>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            违法记分：
+                        </div>
+                        <div class="td" style="width: 70px">
+                            <input name="fineScore" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            最高罚款金额：
+                        </div>
+                        <div class="td" style="width: 64px">
+                            <input name="fineMax" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            最低罚款金额：
+                        </div>
+                        <div class="td" style="width: 70px">
+                            <input name="fineMin" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            默认罚款金额：
+                        </div>
+                        <div class="td">
+                            <input name="fineDefault" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            最高暂扣月份：
+                        </div>
+                        <div class="td" style="width: 70px">
+                            <input name="suspendMonthMax" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            最低暂扣月份：
+                        </div>
+                        <div class="td" style="width: 64px">
+                            <input name="suspendMonthMin" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            最大拘留天数：
+                        </div>
+                        <div class="td" style="width: 70px">
+                            <input name="detainDaysMax" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                        <div class="th">
+                            最小拘留天数：
+                        </div>
+                        <div class="td">
+                            <input name="detainDaysMin" class="easyui-textbox" style="width: 50px"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            警告标记：
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="radio"  name="flagWarn" value="0"/>
+                            是
+                            <input type="radio" name="flagWarn" value="1"/>
+                            否
+                        </div>
+                        <div class="th" style="width: 115px">
+                            罚款标记：
+                        </div>
+                        <div class="td" style="width: 135px">
+                            <input type="radio"  name="flagFine" value="0"/>
+                            是
+                            <input type="radio" name="flagFine" value="1"/>
+                            否
+                        </div>
+                        <div class="th" style="width:125px">
+                            暂扣标记：
+                        </div>
+                        <div class="td" style="width:120px">
+                            <input type="radio"  name="flagSuspend" value="0"/>
+                            是
+                            <input type="radio" name="flagSuspend" value="1"/>
+                            否
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            吊销标记：
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="radio"  name="flagCancel" value="0"/>
+                            是
+                            <input type="radio" name="flagCancel" value="1"/>
+                            否
+                        </div>
+                        <div class="th" style="width: 115px">
+                            拘留标记：
+                        </div>
+                        <div class="td" style="width: 150px">
+                            <input type="radio"  name="flagDetain" value="0"/>
+                            是
+                            <input type="radio" name="flagDetain" value="1"/>
+                            否
+                        </div>
+                        <div class="th">
+                            撤销行驶证标记：
+                        </div>
+                        <div class="td">
+                            <input type="radio"  name="flagRevokeVehicle" value="0"/>
+                            是
+                            <input type="radio" name="flagRevokeVehicle" value="1"/>
+                            否
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            是否国标：
+                        </div>
+                        <div class="td" style="width: 135px">
+                            <input type="radio"  name="isGb" value="0"/>
+                            是
+                            <input type="radio" name="isGb"/ value="1">
+                            否
+                        </div>
+                        <div class="th">
+                            是否常用：
+                        </div>
+                        <div class="td" style="width: 150px">
+                            <input type="radio" name="isCommonUsed" value="0"/>
+                            是
+                            <input type="radio" name="isCommonUsed" value="1"/>
+                            否
+                        </div>
+
+                        <div class="th">
+                            撤销驾驶证标记：
+                        </div>
+                        <div class="td">
+                            <input type="radio"  name="flagRevokeDriver" value="0"/>
+                            是
+                            <input type="radio" name="flagRevokeDriver" value="1"/>
+                            否
+                        </div>
+                    </div>
+                    <div class="tr">
+
+                        <div class="th">
+                            有效期始：
+                        </div>
+                        <div class="td" style="width: 380px">
+                            <input name="issueDay" class="easyui-datebox" />
+                            至：
+                            <input name="issueEndDay" class="easyui-datebox" />
+                        </div>
+                        <div class="th">
+                            强制措施类型：
+                        </div>
+                        <div class="td">
+                            <input name="forceType" class="easyui-combobox" cy-code="326" style="width: 98px"/>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div ></div>
+            <div class="searchPanel">
+                <div class="panel_title">
+                    违法配置代码
+                </div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">
+                            道路类型：
+                        </div>
+                        <div  id="codeTypeId" class="td" >
+                            <input type="checkbox" name="roadType" value="0"/>
+                            高速公路
+                            <input type="checkbox" name="roadType" value="1"/>
+                            国道
+                            <input type="checkbox" name="roadType" value="2"/>
+                            省道
+                            <input type="checkbox" name="roadType" value="3"/>
+                            县道
+                            <input type="checkbox" name="roadType" value="4"/>
+                            乡村道
+                            <input type="checkbox" name="roadType" value="5"/>
+                            城市快车道
+                            <input type="checkbox" name="roadType" value="6"/>
+                            城市主干道
+                            <input type="checkbox" name="roadType" value="7"/>
+                            城市次干道
+                            <input type="checkbox" name="roadType" value="8"/>
+                            城市支路
+                            <input type="checkbox" name="roadType" value="9"/>
+                            其他道路
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            违法类型：
+                        </div>
+                        <div class="td">
+                            <input name="violationType" class="easyui-combobox" cy-code="011" style="width: 90px"/>
+                        </div>
+                        <div class="th">
+                            限速值：
+                        </div>
+                        <div class="td">
+                            <input name="limitSpeed" class="easyui-textbox" style="width: 70px"/>
+                        </div>
+                        <div class="th">
+                            最大超速比：
+                        </div>
+                        <div class="td">
+                            <input name="maxRatio" class="easyui-textbox" style="width: 70px"/>
+                        </div>
+                        <div class="th">
+                            最小超速比：
+                        </div>
+                        <div class="td">
+                            <input name="minRatio" class="easyui-textbox" style="width: 70px"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height: 45px">
+        &nbsp
+        <div class="tr">
+            <div class="td" style="text-align: center">
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-save'"
+                cy-click="save">保存</a>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+                cy-click="$closeSelf">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    InitPage(["saveVioCode", "editVioCode", "vioCodeData", "vioAssoActionData"], function($scope) {
+        $scope.$getDefaultCode(["011"]);
+
+        $scope.$('#codeTypeId').click(function() {
+
+            // var str="";
+            // var obj=$scope.$("input:checkbox[name='roadType']");
+            // for(i=0;i<obj.length;i++){
+            // if(obj[i].checked){
+            // if(obj.checked==1){
+            // str +=obj[i].value;
+            // }else{
+            // str +=obj[i].value+',';
+            // }
+            // }
+            // console.log(str);
+            // }
+
+            // var i = 0;
+            // var values = "";
+            // //var checked=$scope.$("input:checked");
+            // var checked = $scope.$("input:checkbox[name='roadType']:checked");
+            // for (var i = 0; i < checked.length; i++) {
+            // if (i <checked.length - 1)//判断复选框是否选中
+            // values += checked[i].value + ',';
+            // //值的拼凑 .. 具体处理看你的需要,
+            // else
+            // values += checked[i].value;
+            // }
+            // console.log(values);
+
+            //输出你选中的那些复选框的值";
+            // var codeTypeStr="";
+            // $("input[name=roadType]").each(function() {
+            // if ($(this).attr('checked')==true) {
+            // codeTypeStr += $(this).attr("value") + ",";
+
+            // }
+
+            // });
+            // alert(codeTypeStr);
+            // var xuanzhong="";
+            // $scope.$("input:checkbox[name='roadType']").each(function(){
+            // console.log(11);
+            // if ($scope.$(this).attr('checked')==true) {
+
+            // xuanzhong +=$scope.$(this).attr("value")+",";
+            // alert(xuanzhong);
+            // }
+            // alert(xuanzhong);
+            // });
+        });
+
+        $scope.getRoadTypeStr = function() {
+            var i = 0;
+            var values = "";
+            //var checked=$scope.$("input:checked");
+            var checked = $scope.$("input:checkbox[name='roadType']:checked");
+            for (var i = 0; i < checked.length; i++) {
+                if (i < checked.length - 1)//判断复选框是否选中
+                    values += checked[i].value + ',';
+                //值的拼凑 .. 具体处理看你的需要,
+                else
+                    values += checked[i].value;
+            }
+            return values;
+        };
+        
+        $scope.load = function() {
+            $scope.checkboxValue();
+        };
+            $scope.checkboxValue = function() {
+            var roadTypeData = "";
+            if ($scope.vioAssoActionData.roadType !== null) {
+                roadTypeData = $scope.vioAssoActionData.roadType.split(",");
+            }
+            for (var i = 0; i < roadTypeData.length; i++) {
+                var checkboxEl = $scope.$("input:checkbox[name='roadType'][value=" + roadTypeData[i] + "]");
+                checkboxEl.get(0).checked = true;
+            };
+        };
+   
+        
+        //
+        if ($scope.$params.get("type") == "add") {
+            $scope.save = function() {
+                $scope.$updateData("vioAssoActionData");
+                $scope.vioAssoActionData.roadType = $scope.getRoadTypeStr();
+                $scope.saveVioCode($scope.vioAssoActionData);
+            };
+        } else {
+            $scope.save = function() {
+                $scope.$updateData("vioAssoActionData");
+                $scope.vioAssoActionData.roadType = $scope.getRoadTypeStr();
+                $scope.editVioCode($scope.vioAssoActionData);
+            };
+        }
+    }); 
+</script>
+
+<style type="text/css">
+    #vioCode .th {
+        text-align: right;
+        width: 110px;
+    }
+    #vioCode .td {
+
+    }
+</style>

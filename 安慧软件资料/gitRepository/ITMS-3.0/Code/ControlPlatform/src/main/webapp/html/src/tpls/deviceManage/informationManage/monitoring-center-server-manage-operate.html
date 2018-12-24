@@ -1,0 +1,311 @@
+<div id="monitorCenterServerOperate" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<form cy-form="formData" id="form">
+			<div class="table">
+				<div class="tr">
+					<div class="th"  style="width:280px;">
+						监控中心名称：
+					</div>
+					<div class="td">
+						<input id="surveySystemNameCombox" class="easyui-combobox" name="surveySystemId" style="width: 170px;" data-options="valueField:'id',textField:'text',required:true"/>
+						<input id="surveySystemNameTextbox" class="easyui-textbox" name="surveySystemName" style="width: 170px;"/>
+						<input type="hidden" id="surveySystemId" name="surveySystemId" />
+					</div>
+				</div>
+				<div class="searchPanel">
+					<div class="panel_title">
+						服务器信息
+					</div>
+					<div class="tr">
+						<div class="th">
+							服务器IP：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="serverIp" style="width: 170px;" data-options="prompt:'请勿输入相同IP',validType:'ip',required:true"/>
+						</div>
+						<div class="th">
+							磁盘资源总大小：
+						</div>
+						<div class="td">
+							<input class="easyui-numberbox" name="otalDiskResource" style="width: 170px;" data-options="validType:'length[0,32]',prompt:'单位T'"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							用户名：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="connUserName" style="width: 170px;" data-options="validType:'length[0,16]'"/>
+						</div>
+						<div class="th">
+							密码：
+						</div>
+						<div class="td">
+							<input type="password" class="easyui-textbox" name="connPassword" style="width: 170px;" data-options="validType:'length[0,32]'"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="searchPanel" style="height:280px;">
+			<div class="panel_title">
+				服务器组件
+			</div>
+			<a class="easyui-linkbutton button-add button-main" style="margin-left:10px;" data-options="iconCls:'icon-add'" cy-click="addServerModule">新增组件</a>
+			<table id="serverModule" cy-datagrid="options" cy-querydata="formData" cy-url="device/monitorServerManage/queryServerApplicationList">
+
+			</table>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar" style="text-align: center">
+			<a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["clickName", "clickId", "saveData", "formData", "remark"], function($scope) {
+		var appType = [];
+		var appTypeDatagrid = [];//列表已存在的组件类型数组
+		$scope.$getDefaultCode(['436'],function(){
+			appType = $scope.$code["436"]; //缓存的组件类型系统代码数组
+		});
+		//判断是查看、添加、编辑的标识
+		var remark = $scope.remark;
+		if (remark == "look") {
+			$scope.$("input[class^='easyui-']").each(function() {
+				$(this).textbox('readonly', true);
+			});
+			$scope.$("#save").hide();
+		}
+		var surveySystemName = $scope.clickName;
+		var surveySystemId = $scope.clickId;
+		if (remark == "add") {
+			$scope.$("#surveySystemNameCombox").combobox('setValue', surveySystemId);
+			$scope.$("#surveySystemNameTextbox").textbox("destroy");
+			$scope.$("#surveySystemId").remove();
+		} else {
+			$scope.$("#surveySystemNameTextbox").textbox('setValue', surveySystemName).textbox('readonly', true);
+			$scope.$("#surveySystemNameCombox").combobox("destroy");
+			$scope.$("#surveySystemId").val(surveySystemId);
+		}
+		$scope.load = function() {
+			//查询所有监控中心加载监控中心下拉列表
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/monitorServerManage/queryMonitorOnly",
+				params : {},
+				method : "post",
+				success : function(data) {
+					$scope.$("#surveySystemNameCombox").combobox("loadData", data);
+				},
+				fail : function() {
+					$.messager.alert("提示", "查询初始化监控中心列表失败！");
+				}
+			});
+			if(remark != "add"){
+				$scope.$search("formData");
+			}
+		};
+		$scope.options = {
+			columns : [[
+				{align : 'center',field : 'appType',title : '组件类型',width : 100,formatter : getAppTypeName}, 
+				{align : 'center',field : 'serverPort',title : '端口号',width : 50}, 
+				{align : 'center',field : 'contex',title : '上下文',width : 100},
+				{align : 'center',field : 'suffix',title : '后缀',width : 80}, 
+				{align : 'center',field : 'operate',title : '操作',width : 50,formatter : operate}
+			]],
+			pagination : false
+		};
+		/**
+		 *添加操作按钮
+		 * @param row 整形 行
+		 * @param index 整形 行下标
+		 * @returns  html按钮样式标签
+		 */
+		function operate(value, row, index) {
+			var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+			var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+			button1.linkbutton({
+				plain : true,
+				iconCls : "icon-edit-solid"
+			});
+			button2.linkbutton({
+				plain : true,
+				iconCls : "icon-remove-solid"
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		}
+
+		function getAppTypeName(value, row, index) {
+			var appType = $scope.$getCodeName("436",value);
+            return appType;
+		};
+		/**
+		 *新增服务器组件
+		 */
+		$scope.addServerModule = function() {
+			appTypeDatagrid = $scope.$('#serverModule').datagrid('getRows');//列表已有的组件类型数组
+			var appTypeNew = [];
+			for (var i = 0; i < appType.length; i++) {
+			  var flag = 0;//判断组件类型是否已存在的标识，1表示已存在，0表示不存在
+			  for (var j = 0; j < appTypeDatagrid.length; j++) {
+				  if(appType[i].value == appTypeDatagrid[j].appType){
+				  		flag = 1;
+				  		break;
+				  }
+			   };
+			   if(flag == 0){
+			   	 appTypeNew.push(appType[i]);
+			   } 
+			};
+			$scope.$setParam("appTypeNew", appTypeNew);//将新的组件类型数组传到子页面
+			$scope.$openDialog("addServerModule", {
+				title : "新增服务器组件 ",
+				width : "400",
+				height : "380",
+				href : "tpls/deviceManage/informationManage/server-application-operate.html"
+			});
+			$scope.$setParam("saveData", function(data) {
+				if(remark == "add") {
+					//追加一个新行。新行将被添加到最后的位置。 
+					$scope.$('#serverModule').datagrid('appendRow',data);
+					//事件代理
+					$scope.$eventProxy();
+					$scope.$getDialog("addServerModule").dialog("close");
+				} else {
+					data.serverId = $scope.formData.serverId;
+					$scope.$ajaxRequest({
+	                   url: $scope.$restRoot+"device/monitorServerManage/addServerApplication",
+	                   params: data,
+	                   method: "post",
+	                   success: function(data){
+                   	   	   $.messager.alert("提示","添加成功！");
+	                       $scope.$getDialog("addServerModule").dialog("close");
+	                       $scope.$updateData("formData");
+	                       $scope.$search("formData");
+	                   },
+	                   fail: function(errMsg){
+	                       $.messager.alert("提示","添加失败！");
+	                   }
+	               });	
+				}
+			});
+		};
+		/**
+		 *编辑服务器组件信息 
+		 */
+		$scope.editData = function(index){
+			//获取行数据
+            var rowDatas = $scope.$("#serverModule").datagrid("getData").rows[index];
+			appTypeDatagrid = $scope.$('#serverModule').datagrid('getRows');//列表已有的组件类型数组
+			var appTypeNew = [];
+			appTypeNew.push(rowDatas);
+			for (var i = 0; i < appType.length; i++) {
+			  var flag = 0;//判断组件类型是否已存在的标识，1表示已存在，0表示不存在
+			  for (var j = 0; j < appTypeDatagrid.length; j++) {
+				  if(appType[i].value == appTypeDatagrid[j].appType && appTypeDatagrid[j].appType != rowDatas.appType){
+				  		flag = 1;
+				  		break;
+				  }
+			   };
+			   if(flag == 0){
+			   	 appTypeNew.push(appType[i]);
+			   } 
+			};
+			$scope.$setParam("appTypeNew", appTypeNew);//将新的组件类型数组传到子页面
+            $scope.$setParam("formData",rowDatas);
+            //创建编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑服务器组件信息",
+                width : 400,
+                height : 380,
+                href : "tpls/deviceManage/informationManage/server-application-operate.html"
+            },true);
+            //保存
+            $scope.$setParam("saveData",function(data) {
+            	if(remark == "add"){
+            		data.index = index;
+            		//更新一行的数据。
+					$scope.$('#serverModule').datagrid('updateRow',data);
+					//事件代理
+					$scope.$eventProxy();
+					$scope.$getDialog("editDialog").dialog("close");
+            	}else{
+            		$scope.$ajaxRequest({
+	                    url: $scope.$restRoot+"device/monitorServerManage/editServerApplication",
+	                    params: data,
+	                    method: "post",
+	                    success: function(data){
+	                        $.messager.alert("提示","编辑成功！");
+	                        $scope.$getDialog("editDialog").dialog("close");
+	        				$scope.$updateData("formData");
+	                        $scope.$search("formData");
+	                    },
+	                    fail: function(errMsg){
+	                        $.messager.alert("提示","编辑失败！");
+	                    }
+	                });
+            	}
+            });
+		};
+		/**
+		 *删除服务器组件信息 
+		 */
+		$scope.removeData = function(index){
+			if(remark == "add"){
+				//删除一行的数据。
+				$scope.$('#serverModule').datagrid('deleteRow',index);
+			}else{
+				var rowDatas = $scope.$("#serverModule").datagrid("getData").rows[index];//选中的数据
+				var serverAppId = rowDatas.serverAppId;//服务器组件ID
+				$.messager.confirm("提示","是否确认删除？",function(flag){
+	                if(flag){
+						$scope.$ajaxRequest({
+			                url: $scope.$restRoot+"device/monitorServerManage/removeServerApplication",
+			                params: {serverAppId: serverAppId},
+			                method: "post",
+			                success: function(data){
+			                	if(data == 1){
+			                		$scope.$updateData("formData");
+				                    $scope.$search("formData");
+				                    $.messager.alert("提示","删除成功！");
+			                	}else if(data == 0){
+			                		$.messager.alert("提示","该服务器组件已绑定接入平台禁止删除！");
+			                		return false;
+			                	}
+			                },
+			                fail: function(errMsg){
+			                    $.messager.alert("提示","删除失败！");
+			                }
+			            });
+	                }
+				});
+			}
+		};
+		/**
+		 *保存
+		 */
+		$scope.save = function() {
+			if ($scope.$("#form").form("validate")) {
+				//更新获取数据
+				$scope.$updateData("formData");
+				trimObject($scope.formData);
+				//对对象中的每个元素进行trim操作
+				//执行保存方法
+				if(remark == 'add'){
+					$scope.formData.appTypeList = JSON.stringify(appTypeDatagrid);
+				}
+				$scope.saveData($scope.formData);
+			}
+		};
+	}); 
+</script>
+<style type="text/css">
+	#monitorCenterServerOperate .th {
+		width: 120px;
+		text-align: right;
+	}
+</style>

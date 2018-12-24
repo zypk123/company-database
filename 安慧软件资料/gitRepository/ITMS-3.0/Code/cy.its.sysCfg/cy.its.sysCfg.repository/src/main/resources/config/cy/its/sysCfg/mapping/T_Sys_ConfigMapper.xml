@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_ConfigMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    <id column="CONFIG_ID" property="configId" jdbcType="VARCHAR" />
+    <result column="CONFIG_NAME" property="configName" jdbcType="VARCHAR" />
+    <result column="CONFIG_REMARK" property="configRemark" jdbcType="VARCHAR" />
+    <result column="KEY" property="key" jdbcType="VARCHAR" />
+    <result column="VALUE" property="value" jdbcType="VARCHAR" />
+    <result column="VALUE_TYPE" property="valueType" jdbcType="VARCHAR" />
+    <result column="SELECTED_VALUE" property="selectedValue" jdbcType="VARCHAR" />
+    <result column="SELECTED_VALUE_DESC" property="selectedValueDesc" jdbcType="VARCHAR" />
+    <result column="DEFAULT_VALUE" property="defaultValue" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONFIG_ID, CONFIG_NAME, CONFIG_REMARK, KEY, VALUE, VALUE_TYPE, SELECTED_VALUE, SELECTED_VALUE_DESC, 
+    DEFAULT_VALUE, TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_CONFIG
+    where CONFIG_ID = #{configId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_CONFIG
+    where CONFIG_ID = #{configId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    insert into T_SYS_CONFIG (CONFIG_ID, CONFIG_NAME, CONFIG_REMARK, 
+      KEY, VALUE, VALUE_TYPE, 
+      SELECTED_VALUE, SELECTED_VALUE_DESC, DEFAULT_VALUE, TYPE
+      )
+    values (#{configId,jdbcType=VARCHAR}, #{configName,jdbcType=VARCHAR}, #{configRemark,jdbcType=VARCHAR}, 
+      #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{valueType,jdbcType=VARCHAR}, 
+      #{selectedValue,jdbcType=VARCHAR}, #{selectedValueDesc,jdbcType=VARCHAR}, #{defaultValue,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    insert into T_SYS_CONFIG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="configId != null" >
+        CONFIG_ID,
+      </if>
+      <if test="configName != null" >
+        CONFIG_NAME,
+      </if>
+      <if test="configRemark != null" >
+        CONFIG_REMARK,
+      </if>
+      <if test="key != null" >
+        KEY,
+      </if>
+      <if test="value != null" >
+        VALUE,
+      </if>
+      <if test="valueType != null" >
+        VALUE_TYPE,
+      </if>
+      <if test="selectedValue != null" >
+        SELECTED_VALUE,
+      </if>
+      <if test="selectedValueDesc != null" >
+        SELECTED_VALUE_DESC,
+      </if>
+      <if test="defaultValue != null" >
+        DEFAULT_VALUE,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="configId != null" >
+        #{configId,jdbcType=VARCHAR},
+      </if>
+      <if test="configName != null" >
+        #{configName,jdbcType=VARCHAR},
+      </if>
+      <if test="configRemark != null" >
+        #{configRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="key != null" >
+        #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null" >
+        #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="valueType != null" >
+        #{valueType,jdbcType=VARCHAR},
+      </if>
+      <if test="selectedValue != null" >
+        #{selectedValue,jdbcType=VARCHAR},
+      </if>
+      <if test="selectedValueDesc != null" >
+        #{selectedValueDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultValue != null" >
+        #{defaultValue,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    update T_SYS_CONFIG
+    <set >
+      <if test="configName != null" >
+        CONFIG_NAME = #{configName,jdbcType=VARCHAR},
+      </if>
+      <if test="configRemark != null" >
+        CONFIG_REMARK = #{configRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="key != null" >
+        KEY = #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null" >
+        VALUE = #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="valueType != null" >
+        VALUE_TYPE = #{valueType,jdbcType=VARCHAR},
+      </if>
+      <if test="selectedValue != null" >
+        SELECTED_VALUE = #{selectedValue,jdbcType=VARCHAR},
+      </if>
+      <if test="selectedValueDesc != null" >
+        SELECTED_VALUE_DESC = #{selectedValueDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultValue != null" >
+        DEFAULT_VALUE = #{defaultValue,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CONFIG_ID = #{configId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    update T_SYS_CONFIG
+    set CONFIG_NAME = #{configName,jdbcType=VARCHAR},
+      CONFIG_REMARK = #{configRemark,jdbcType=VARCHAR},
+      KEY = #{key,jdbcType=VARCHAR},
+      VALUE = #{value,jdbcType=VARCHAR},
+      VALUE_TYPE = #{valueType,jdbcType=VARCHAR},
+      SELECTED_VALUE = #{selectedValue,jdbcType=VARCHAR},
+      SELECTED_VALUE_DESC = #{selectedValueDesc,jdbcType=VARCHAR},
+      DEFAULT_VALUE = #{defaultValue,jdbcType=VARCHAR},
+      TYPE = #{type,jdbcType=VARCHAR}
+    where CONFIG_ID = #{configId,jdbcType=VARCHAR}
+  </update>
+</mapper>

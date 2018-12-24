@@ -1,0 +1,112 @@
+<div id="trafficEventHistory"  class="easyui-layout">
+    <div data-options="region:'center',split:true" >
+        <div class="easyui-layout">
+            <div data-options="region:'north'" style="height: 120px;">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr" >
+
+                            <div class="th">监测点位：</div>
+                            <div class="td">
+                                <input type="text" name="site_code" class="easyui-textbox" >
+                            </div>
+                            <div class="th" >事件类型：</div>
+                            <div class="td">
+                                <select type="text" id="eventType" class="easyui-combobox" >
+                                    </select>
+                            </div>
+                            <div class="th" >处理状态：</div>
+                            <div class="td">&nbsp;&nbsp;
+                               <input type="radio" name="dealState" value="0" checked="true"/> 未处理
+                                <input type="radio" name="dealState" value="1"/>已处理
+                            </div>
+                        </div>
+                        <div class="tr">
+
+                            <div class="th" >
+                                开始时间：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="startTime"
+                                       data-options="required:true,showSeconds:false" value="9/6/2015 10:01" >
+                            </div>
+                            <div class="th" >
+                                结束时间：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="endTime"
+                                       data-options="required:true,showSeconds:false" value="9/6/2015 10:01" >
+                            </div>
+                            <div class="td" style="width: 70px;">
+                                <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                                   cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div data-options="region:'center'">
+                <table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+                       cy-url="data/trafficMonitor/trafficEvent/traffic-event-history.json"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(["dataDic"],function($scope){
+
+        $scope.load=function(){
+            //查询默认数据
+            $scope.$search("deptQueryDm");
+           $scope.$("#eventType").combobox("loadData",$scope.dataDic.eventTypeDic);
+        };
+        $scope.optionsDm = {
+            columns: [
+                [
+                    {field:'device_name',title:'设备名称',align:'center', width:40},
+                    {field: 'ssjg',title: '所属机构',align: 'center',width: 30},
+                    {field: 'event_type',title: '事件类型',align: 'center',formatter:options_eventType,width: 40},
+                    {field: 'site_code',title: '监测地点',align: 'center',width: 30},
+                    {field: 'event_time',title: '发生时间',align: 'center',width: 70},
+                    {field: 'event_desc',title: '详情',align: 'center',width: 70},
+                    {field: 'valid_flag',title: '处理状态',align: 'center',formatter:options_dealState,width: 30}
+                ]
+            ]/*,
+            toolbar: $scope.$("#dm-toolbar")*/
+        };
+
+        function options_eventType(value,row,index){
+            return getDictTextByValue( value,$scope.dataDic.eventTypeDic);
+        }
+        function options_dealState(value,row,index){
+            return getDictTextByValue( value,$scope.dataDic.dealStateDic);
+        }
+
+        function getDictTextByValue(value,data){
+            for(var i in data){
+                if(value==data[i].value){
+                    return data[i].text;
+                }
+            }
+        }
+
+
+    });
+</script>
+        <style>
+            #trafficEventHistory .th{
+                width: 80px;
+                text-align: center;
+            }
+            #trafficEventHistory .td{
+                width: 130px;
+                text-align: center;
+            }
+            #trafficEventHistory select{
+                width: 135px;
+            }
+        </style>

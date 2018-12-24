@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.CustomMapper">
+	<resultMap id="OrgResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Org">
+		<id column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="PARENT_ORG_ID" property="parentOrgId" jdbcType="VARCHAR" />
+		<result column="PARENT_INSTRUCT_ORG_ID" property="parentInstructOrgId"
+			jdbcType="VARCHAR" />
+		<!-- <result column="ORG_CLASSIFICATION" property="orgClassification"
+			jdbcType="CHAR" /> -->
+		<result column="ORG_TYPE" property="orgType" jdbcType="CHAR" />
+		<result column="IS_DEPARTMENT" property="isDepartment"
+			jdbcType="CHAR" />
+		<result column="IS_HIGHWAY_ORG" property="isHighwayOrg"
+			jdbcType="CHAR" />
+		<result column="ORG_LEVEL" property="orgLevel" jdbcType="CHAR" />
+		<result column="ORG_PHONE_NBR" property="orgPhoneNbr" jdbcType="VARCHAR" />
+		<result column="ORG_HEADER_NAME" property="orgHeaderName"
+			jdbcType="VARCHAR" />
+		<result column="ORG_HEADER_PHONE" property="orgHeaderPhone"
+			jdbcType="VARCHAR" />
+		<result column="TRACK_FLAG" property="trackFlag" jdbcType="CHAR" />
+		<result column="ENFORCEMENT_FLAG" property="enforcementFlag"
+			jdbcType="CHAR" />
+		<result column="SPONSOR_DISTRIBUTES" property="sponsorDistributes"
+			jdbcType="VARCHAR" />
+		<result column="ADDRESS_DESC" property="addressDesc" jdbcType="VARCHAR" />
+		<result column="DISTRICT_CODE" property="districtCode"
+			jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="VARCHAR" />
+		<result column="ORG_LONGITUDE" property="orgLongitude"
+			jdbcType="DECIMAL" />
+		<result column="ORG_LATITUDE" property="orgLatitude" jdbcType="DECIMAL" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="UserResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_User">
+		<id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+		<result column="OTHER_ORG_ID" property="otherOrgId" jdbcType="VARCHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="POLICE_ID" property="policeId" jdbcType="VARCHAR" />
+		<result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR" />
+		<result column="LOGIN_PASSWORD" property="loginPassword"
+			jdbcType="VARCHAR" />
+		<result column="PERMISSION_IP_LIST" property="permissionIpList"
+			jdbcType="VARCHAR" />
+		<result column="IS_ONLINE" property="isOnline" jdbcType="CHAR" />
+		<result column="current_time" property="latestLoginTime"
+			jdbcType="TIMESTAMP" />
+		<result column="login_count" property="totalLoginCounts"
+			jdbcType="DECIMAL" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="VALID_DATE" property="validDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="UserRoleResultMap"
+		type="cy.its.syscfg.mybatis.model.T_Sys_Role_UserKey">
+		<id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+		<id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="RolePermissionResultMap"
+		type="cy.its.syscfg.mybatis.model.T_Sys_Role_Permission">
+		<id column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+		<id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+		<result column="DATA_ACCESS_FORMULA" property="dataAccessFormula"
+			jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="RoleResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Role">
+		<id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+		<result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+		<result column="ROLE_ENABLE_FLAG" property="roleEnableFlag"
+			jdbcType="CHAR" />
+		<result column="ROLE_REMARK" property="roleRemark" jdbcType="VARCHAR" />
+		<result column="DATA_ACCESS_TYPE" property="dataAccessType" jdbcType="CHAR"/>
+	</resultMap>
+	<resultMap id="CodeTypeResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Code_Type">
+		<id column="CODE_TYPE" property="codeType" jdbcType="VARCHAR" />
+		<result column="CODE_TYPE_NAME" property="codeTypeName"
+			jdbcType="VARCHAR" />
+		<result column="EDITABLE" property="editable" jdbcType="CHAR" />
+		<result column="REGEX" property="regex" jdbcType="VARCHAR" />
+		<result column="ENABLE_FLAG" property="enableFlag" jdbcType="CHAR" />
+		<result column="ENGLISH_NAME" property="englishName" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="CodeResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Code">
+		<id column="CODE_ID" property="codeId" jdbcType="VARCHAR" />
+		<result column="CODE_TYPE" property="codeType" jdbcType="VARCHAR" />
+		<result column="CODE_NO" property="codeNo" jdbcType="VARCHAR" />
+		<result column="CODE_NAME" property="codeName" jdbcType="VARCHAR" />
+		<result column="EDITABLE" property="editable" jdbcType="CHAR" />
+		<result column="SORT_INDEX" property="sortIndex" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ENABLE_FLAG" property="enableFlag" jdbcType="CHAR" />
+	</resultMap>
+	<resultMap id="OptLogResultMap"
+		type="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log">
+		<id column="OPE_LOG_ID" property="opeLogId" jdbcType="VARCHAR" />
+		<result column="SYS_FUNCTION_CODE" property="sysFunctionCode"
+			jdbcType="VARCHAR" />
+		<result column="OPE_USER_NAME" property="opeUserName" jdbcType="VARCHAR" />
+		<result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+		<result column="OPERATE_RECORD_COUNTS" property="operateRecordCounts"
+			jdbcType="VARCHAR" />
+		<result column="OPERATE_RESULT" property="operateResult"
+			jdbcType="CHAR" />
+		<result column="CONSUME_SECONDS" property="consumeSeconds"
+			jdbcType="FLOAT" />
+		<result column="ERROR_DESC" property="errorDesc" jdbcType="VARCHAR" />
+		<result column="COMPUTER_IP" property="computerIp" jdbcType="VARCHAR" />
+		<result column="REBACKABLE" property="rebackable" jdbcType="CHAR" />
+	</resultMap>
+
+	<resultMap id="MenuFunctionResultMap" type="cy.its.syscfg.mybatis.model.Sys_Menu_Function">
+		<result column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+		<result column="SYS_CONFIG_ID" property="sysConfigId" jdbcType="VARCHAR" />
+		<result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+		<result column="TARGET_URL" property="targetUrl" jdbcType="VARCHAR" />
+		<result column="PARENT_CODE" property="parentCode" jdbcType="VARCHAR" />
+		<result column="SORT_INDEX" property="sortIndex" jdbcType="VARCHAR" />
+		<result column="MENU_ENABLE_FLAG" property="menuEnableFlag"
+			jdbcType="CHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="MENU_IMAGE_URL" property="menuImageUrl" jdbcType="VARCHAR" />
+		<result column="FUNCTION_CODE" property="functionCode"
+			jdbcType="VARCHAR" />
+		<result column="FUNCTION_NAME" property="functionName"
+			jdbcType="VARCHAR" />
+		<result column="FUNCTION_FLAG" property="functionFlag"
+			jdbcType="CHAR" />
+		<result column="FUNCTION_DEPENDENCY" property="functionDependency"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectAllOrgs" resultMap="OrgResultMap">
+		select
+		ORG_ID, ORG_CODE,
+		ORG_NAME, PARENT_ORG_ID, PARENT_INSTRUCT_ORG_ID,
+		<!-- ORG_CLASSIFICATION, -->
+		ORG_TYPE, IS_DEPARTMENT, IS_HIGHWAY_ORG, ORG_LEVEL, ORG_PHONE_NBR,
+		ORG_HEADER_NAME,
+		ORG_HEADER_PHONE, TRACK_FLAG, ENFORCEMENT_FLAG,
+		SPONSOR_DISTRIBUTES, ADDRESS_DESC,
+		DISTRICT_CODE, CITY, ORG_LONGITUDE,
+		ORG_LATITUDE, CREATE_BY,
+		CREATE_TIME, UPDATE_BY,
+		UPDATE_TIME, REMARK,
+		ORG_PRIVILEGE_CODE
+		from T_SYS_ORG
+	</select>
+
+	<delete id="deleteUserRole" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_UserKey">
+		delete from T_SYS_ROLE_USER
+		<where>
+			<if test="roleId != null and roleId != '' ">
+				ROLE_ID = #{roleId,jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null and userId != '' ">
+				AND USER_ID = #{userId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</delete>
+
+	<select id="selectUsers" resultMap="UserResultMap"
+		parameterType="java.util.Map">
+		SELECT u.USER_ID, u.OTHER_ORG_ID, u.ORG_ID, u.POLICE_ID, u.LOGIN_NAME,
+		u.LOGIN_PASSWORD, u.PERMISSION_IP_LIST,
+		u.IS_ONLINE,NAME, u.VALID_DATE,st.login_count,st.current_time
+		FROM
+		T_SYS_USER U
+		left join t_sys_user_status st on u.user_id = st.user_id
+		left join t_sys_police p on p.police_id = u.police_id
+		<where>
+			
+			<if test="orgId != null and orgId != '' ">
+				AND EXISTS(
+				SELECT O.ORG_ID FROM T_SYS_ORG O WHERE O.ORG_PRIVILEGE_CODE LIKE
+				(SELECT ORG_PRIVILEGE_CODE || '%' FROM T_SYS_ORG WHERE ORG_ID =
+				#{orgId,jdbcType=VARCHAR}) AND O.ORG_ID = U.ORG_ID)
+			</if>
+			<if test="loginName != null and loginName != '' ">
+				AND U.LOGIN_NAME = #{loginName,jdbcType=VARCHAR}
+			</if>
+			<if test="name != null and name != '' ">
+				AND p.police_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="isOnline != null and isOnline != '' ">
+				AND U.IS_ONLINE = #{isOnline,jdbcType=CHAR}
+			</if>
+			<if test="policeCode != null and policeCode != '' ">
+				AND P.POLICE_CODE = #{policeCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="countUsers" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_SYS_USER U
+		<where>
+			<if test="orgId != null and orgId != '' ">
+				AND EXISTS(
+				SELECT O.ORG_ID FROM T_SYS_ORG O WHERE O.ORG_PRIVILEGE_CODE LIKE
+				(SELECT ORG_PRIVILEGE_CODE || '%' FROM T_SYS_ORG WHERE ORG_ID =
+				#{orgId,jdbcType=VARCHAR}) AND O.ORG_ID = U.ORG_ID)
+			</if>
+			<if test="loginName != null and loginName != '' ">
+				AND U.LOGIN_NAME = #{loginName,jdbcType=VARCHAR}
+			</if>
+			<if test="name != null and name != '' ">
+				AND U.NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="isOnline != null and isOnline != '' ">
+				AND U.IS_ONLINE = #{isOnline,jdbcType=CHAR}
+			</if>
+			<if test="policeNbr != null and policeNbr != '' ">
+				AND U.POLICE_ID IN (SELECT P.POLICE_ID FROM T_SYS_POLICE
+				P WHERE P.POLICE_NBR = #{policeNbr,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</select>
+
+	<select id="selectUserRoles" resultMap="UserRoleResultMap"
+		parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_UserKey">
+		select ROLE_ID, USER_ID from T_SYS_ROLE_USER
+		<where>
+			<if test="roleId != null and roleId != '' ">
+				ROLE_ID = #{roleId,jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null and userId != '' ">
+				AND USER_ID = #{userId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectUserRolesByUserIds" resultMap="UserRoleResultMap" parameterType="List">
+		select ROLE_ID, USER_ID from T_SYS_ROLE_USER
+		<where>
+			user_id in 
+			<foreach item="item" index="index" collection="userIds" 
+	  			open="(" separator="," close=")">
+	  			#{item}
+	  		</foreach>
+		</where>
+	</select>
+
+	<select id="selectRolePermissions" resultMap="RolePermissionResultMap"
+		parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_PermissionKey">
+		select
+		FUNCTION_CODE, ROLE_ID, DATA_ACCESS_FORMULA,
+		REMARK
+		from T_SYS_ROLE_PERMISSION
+		<where>
+			<if test="functionCode != null and functionCode != '' ">
+				FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="roleId != null and roleId != '' ">
+				AND ROLE_ID = #{roleId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectAllRoles" resultMap="RoleResultMap">
+		select ROLE_ID, ROLE_NAME,
+		ROLE_ENABLE_FLAG, ROLE_REMARK,DATA_ACCESS_TYPE
+		from T_SYS_ROLE
+		<where>
+			<if test="orgCode != null and orgCode != '' ">
+				org_code = #{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<delete id="deleteRolePermissions"
+		parameterType="cy.its.syscfg.mybatis.model.T_Sys_Role_PermissionKey">
+		delete from T_SYS_ROLE_PERMISSION
+		<where>
+			<if test="functionCode != null and functionCode != '' ">
+				FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="roleId != null and roleId != '' ">
+				AND ROLE_ID = #{roleId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</delete>
+
+	<select id="selectCodeTypes" resultMap="CodeTypeResultMap">
+		select CODE_TYPE,
+		CODE_TYPE_NAME, EDITABLE, REGEX, ENABLE_FLAG,
+		ENGLISH_NAME
+		from
+		T_SYS_CODE_TYPE
+	</select>
+
+	<select id="selectCodes" resultMap="CodeResultMap">
+		select
+		CODE_ID, CODE_TYPE,
+		CODE_NO, CODE_NAME, EDITABLE, SORT_INDEX, REMARK,
+		ENABLE_FLAG
+		from
+		T_SYS_CODE
+	</select>
+
+    <select id="selectOptLogs" resultMap="OptLogResultMap"
+		parameterType="java.util.Map">
+	    SELECT OPE_LOG_ID, SYS_FUNCTION_CODE,U.NAME OPE_USER_NAME, OPERATE_TIME,
+	    OPERATE_RECORD_COUNTS,
+	    OPERATE_RESULT, CONSUME_SECONDS, ERROR_DESC,
+	    COMPUTER_IP, REBACKABLE
+	    FROM T_SYS_OPERATION_LOG T 
+		LEFT JOIN  T_SYS_USER  U  ON  T.OPE_USER_ID = U.USER_ID 
+		<where>
+			<if test="sysFunctionCode != null and sysFunctionCode != ''">
+				AND T.SYS_FUNCTION_CODE = #{sysFunctionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="opeUserName != null and opeUserName != ''">
+				AND U.NAME LIKE '%'||#{opeUserName,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="userId != null and userId != ''">
+			    AND T.OPE_USER_ID = #{userId,jdbcType=VARCHAR}
+			</if>
+			<if test="operateBeginTime != null and operateBeginTime != ''">
+				 <![CDATA[ AND T.OPERATE_TIME  > to_date(#{operateBeginTime},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+			<if test="operateEndTime != null and operateEndTime !=''">
+				 <![CDATA[ AND T.OPERATE_TIME  < to_date(#{operateEndTime},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+			<if test="operateResult != null and operateResult != ''">
+				AND OPERATE_RESULT = #{operateResult,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+				AND T.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+		ORDER BY OPERATE_TIME DESC	
+	</select>
+    
+	<select id="countOptLogs" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT count(1)
+		FROM T_SYS_OPERATION_LOG T 
+		LEFT JOIN  T_SYS_USER  U  ON  T.OPE_USER_ID = U.USER_ID 
+		<where>
+			<if test="sysFunctionCode != null and sysFunctionCode != ''">
+				AND T.SYS_FUNCTION_CODE = #{sysFunctionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="opeUserName != null and opeUserName != ''">
+				AND U.NAME LIKE '%'||#{opeUserName,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="userId != null and userId != ''">
+			    AND T.OPE_USER_ID = #{userId,jdbcType=VARCHAR}
+			</if>
+			<if test="operateBeginTime != null and operateBeginTime != ''">
+				 <![CDATA[ AND T.OPERATE_TIME  > to_date(#{operateBeginTime},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+			<if test="operateEndTime != null and operateEndTime !=''">
+				 <![CDATA[ AND T.OPERATE_TIME  < to_date(#{operateEndTime},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+			<if test="operateResult != null and operateResult != ''">
+				AND OPERATE_RESULT = #{operateResult,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+				AND T.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+	</select>
+	<select id="selectMenus" resultMap="MenuFunctionResultMap">
+		select
+		M.MENU_CODE, SYS_CONFIG_ID, MENU_NAME, TARGET_URL, PARENT_CODE,
+		SORT_INDEX,
+		MENU_ENABLE_FLAG,
+		REMARK,
+		MENU_IMAGE_URL
+		from T_SYS_MENU M where m.menu_enable_flag = '1' order by SORT_INDEX
+	</select>
+	<select id="selectMenuFuntions" resultMap="MenuFunctionResultMap"
+		parameterType="string">
+		select
+		M.MENU_CODE, SYS_CONFIG_ID, MENU_NAME, TARGET_URL, PARENT_CODE,
+		SORT_INDEX,
+		MENU_ENABLE_FLAG,
+		REMARK, FUNCTION_CODE, FUNCTION_NAME,
+		FUNCTION_FLAG, FUNCTION_DEPENDENCY
+		from T_SYS_MENU M, T_SYS_FUNCTION F
+		where
+		M.MENU_CODE = F.MENU_CODE
+		<if test="menuCode != null and menuCode != '' ">
+			AND M.MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<delete id="deleteFunctionsOfMenu" parameterType="java.lang.String">
+		delete from
+		T_SYS_FUNCTION
+		where MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+	</delete>
+</mapper>

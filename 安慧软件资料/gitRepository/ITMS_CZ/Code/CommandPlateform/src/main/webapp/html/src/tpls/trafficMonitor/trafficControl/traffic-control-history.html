@@ -1,0 +1,127 @@
+
+<div id="trafficControlHistory" class="easyui-layout">
+	<div data-options="region:'north',height:'130px'">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="queryHistoryData" id="form">
+				<div class="table">
+					<div class="tr">
+						<div class="th" >
+							开始时间：
+						</div>
+						<div class="td" style="height: 45px">
+							<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:170px"
+							data-options="prompt:'开始时间',validType:'maxDate[\'end\']'"/>
+							至
+							<div>
+							<input class="easyui-datetimebox"  name="endTime" id="end" style="width:170px" 
+							data-options="prompt:'结束时间',validType:'minDate[\'start\']'"/>
+							</div>
+						</div>
+					
+					</div>
+					<div class="tr" >
+						<div class="th">
+							道路名称：
+						</div>
+						<div class="td">
+							<input  class="cy-road-radio" name="roadId" style="width:170px">
+						</div>
+							<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+					
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="historyData" cy-datagrid="optionsHis" cy-querydata="queryHistoryData"
+		cy-url="trafficSituation/trafficControl/search"></table>
+	</div>
+</div>
+<script type="text/javascript">
+    InitPage(["locationSite2"],function($scope){
+		$scope.$getDefaultCode(["515"]);
+        $scope.load=function(){
+        	var now = new Date();
+			var nowStrTo = now.format("yyyy-MM-dd HH:mm:ss");
+			var nowStrFr = now.dateAdd('d', -1).format("yyyy-MM-dd HH:mm:ss");
+			$scope.$("#start").datetimebox('setValue', nowStrFr);
+			$scope.$("#end").datetimebox('setValue', nowStrTo);
+            //查询默认数据
+            //$scope.$search("queryHistoryData");
+        };
+        $scope.optionsHis = {
+            columns: [
+                [
+                    {field: 'roadId',title: '管制道路',align: 'center',formatter:$scope.$getRoadName,width: 25},
+                    {field: 'startSite',title: '起点',align: 'center',width: 20},
+                    {field: 'endSite',title: '终点',align: 'center',width: 20},
+                    {field: 'directionType',title: '方向',align: 'center',formatter:options_direction,width: 15},
+                    {field: 'cz',title: '详情',align: 'center',formatter: optionsDmCz,width: 15} 
+                ]
+            ],
+             onDblClickRow: function (rowIndex, rowData) {
+             	if(rowData.lonLat){
+             		$scope.locationSite2(rowData.lonLat);
+             	}
+             	else{
+             		$.messager.alert("警告","无法获取位置信息！");
+             	}
+             }
+        };       
+		//方向direction的格式化
+		function options_direction(value,row,index){
+			return $scope.$getCodeName("515",value);
+		}				
+		//操作栏按钮
+        function optionsDmCz(value, row, index) {          
+            var button1 = $("<a  cy-click='showInfo(" + index + ")'></a>");//处理按钮          
+            button1.linkbutton({   
+            	iconCls : "icon-detail",
+				plain : true            
+            });
+            return $("<span/>").append(button1).append(" ").html();
+        }        
+        //操作栏中的详情按钮，弹出详情框
+        $scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#historyData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			$scope.$openDialog("showDialog", {
+				title : "交通管制详情",
+				height : 500,
+				width : 550,
+				href : "tpls/trafficMonitor/trafficControl/traffic-control-info.html"
+			});
+		};
+		//根据条件搜索
+		$scope.searchData=function(){		
+			if($scope.$("#form").form("validate")){	
+				$scope.$updateData("queryHistoryData");			
+				$scope.$search("queryHistoryData");	
+			}			
+		};
+    });
+</script>
+<style>
+     #trafficControlHistory .th {
+		width: 60px;
+		text-align: center;
+		height: 18px;
+		line-height: 20px;
+	}
+	#trafficControlHistory .td {
+		height: 18px;
+	}
+	
+	#trafficControlHistory .datagrid-cell {
+		font-size: 11px;
+	}
+</style>

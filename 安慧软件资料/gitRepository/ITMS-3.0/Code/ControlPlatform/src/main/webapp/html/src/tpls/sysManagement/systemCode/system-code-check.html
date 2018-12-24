@@ -1,0 +1,89 @@
+<!--系统代码详情页面-->
+<div  class="easyui-layout">
+	<form cy-form="checkedData">
+		<div  id="code" data-options="region:'center',border:false">
+			<div class="table">
+				<br/>
+				<div class="tr">
+					<div class="th">
+						代码类型：
+					</div>
+					<div class="td">
+						<span  cy-name="codeType.codeTypeText"></span>
+						<input id="CT" type="hidden" name="codeType"/>
+					</div>
+					<div class="th">
+						启用状态：
+					</div>
+					<div class="td" cy-name="checkedData.enableFlag" cy-filter="enableFlag"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						代码编号：
+					</div>
+					<div class="td" cy-name="checkedData.codeNo">
+						<input id="codeId" type="hidden" name="codeId"/>
+					</div>
+					<div class="th">
+						编辑状态：
+					</div>
+					<div class="td" cy-name="checkedData.editable" cy-filter="editable"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						代码名称：
+					</div>
+					<div class="td" cy-name="checkedData.codeName"></div>
+					<div class="tr">
+					  <div class="th" style="width: 78px;" >
+						备注：
+					</div>
+					<div class="td"  cy-name="checkedData.remark"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'south',border:false" style="height: 40px;" >
+			<div class="tr">
+				<div class="td" align="center">
+					<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">关闭</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<script>
+InitPage(["checkedData","codeType","saveData",],function($scope){
+    /**
+     *  启用状态 
+     */
+    $scope.enableFlag=function(value){
+        if(value=="1"){
+            return "是";
+        }else{
+            return "否";
+        }
+    };
+    /**
+     *  编辑状态 
+     */
+    $scope.editable=function(value){
+      if(value=="1"){
+          return "是";
+      }else{
+          return "否";
+      }  
+    };
+});
+</script>
+<style type="text/css">
+	#code .th {
+		width: 100px;
+		text-align: right;
+	}
+	#code .td {
+		width: 120px;
+		text-align: left;
+	}
+
+</style>

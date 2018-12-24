@@ -1,0 +1,315 @@
+<!--道路信息添加页面-->
+<div class="easyui-layout" id="roadPoint">
+    <div data-options="region:'center',border:false" style="overflow :visible">
+	    <form cy-form="formData" id="form">
+	        <div class="searchPanel" style="height:200px;">
+	            <div class="panel_title">基础信息</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">点位编号：</div>
+                        <div class="td">
+                        	<input type="hidden" name="siteType" id="siteType"/>
+                            <input class="easyui-textbox" name="siteCode" data-options="required:true"/>
+                        </div>
+                        <div class="th">点位名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="siteName" data-options="required:true"/>
+                        </div>
+                        <div class="th">点位简称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="siteSimpleName" data-options="validType:['length[0,10]','notBlank'],value:''"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                    	<div class="td" style="width:490px;">
+	                    	<div class="tr">
+	                    		<div class="th">所属机构：</div>
+		                        <div class="td">
+		                            <input class="cy-org-radio" style="width:155px;" name="orgId" id="orgId" data-options="required:true">
+		                        </div>
+		                        <div class="th">行政区划：</div>
+		                        <div class="td">
+		                            <input class="cy-district-radio" iscode="true" style="width:155px;" name="districtCode" data-options="required:true"/>
+		                        </div>
+	                        </div>
+	                        <div class="tr">
+		                        <div class="th">所在道路：</div>
+		                        <div class="td">
+		                            <input class="cy-road-radio" after-change="queryDM" name="roadId"  style="width:125px;" id="roadId" filter="getRoadByOrg" data-options="required:true"/>
+		                            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addRoad"></a>
+		                        </div>
+		                        <div class="th">米数：</div>
+		                        <div class="td">
+		                            <input class="easyui-textbox" name="mileage"/>
+		                        </div>
+		                    </div>
+		                    <div class="tr">
+		                        <div class="th">点位经度：</div>
+		                        <div class="td">
+		                            <input  class="easyui-numberbox" name="siteLongitude" id="lon"
+										data-options="min:72.004,max:137.8347,precision:6" />
+		                        </div>
+		                        <div class="th">点位纬度：</div>
+		                        <div class="td">
+		                            <input  class="easyui-numberbox" name="siteLatitude" id="lat"
+										data-options="min:0.8293,max:55.8271,precision:6" />
+		                        </div>
+		                    </div>
+		                    <div class="tr">
+		                        <div class="th">点位地形：</div>
+		                        <div class="td">
+		                            <input type="radio" name="siteLandscape" value="1"/>平原
+		                            <input type="radio" name="siteLandscape" value="2"/>丘陵
+		                            <input type="radio" name="siteLandscape" value="3"/>山区
+		                        </div>
+		                        <div class="th"> </div>
+		                        <div class="td">
+		                            <a class="easyui-linkbutton " data-options="iconCls:'icon-site'" cy-click="getLonLat" >从地图获取经纬度</a>
+		                        </div>
+		                    </div>
+                    	</div>
+                   		<div class="td">
+                    		<div id="map" style="width:250px;height: 150px;">
+	
+							</div>
+                    	</div>
+                    </div>
+                </div>
+	       	</div>
+	        <div class="searchPanel" id="section">
+	            <div class="panel_title">断面信息</div>
+	            <div class="table" id="section_table" style="overflow : auto;height : 240px;">
+	            
+	            </div>
+	        </div>
+	   	</form>
+    </div>
+    <div data-options="region:'south',border:false">
+    	<div class="linkbutton_toolbar" style="text-align:center">
+    		<a id="save" class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            <a id="cancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >取消</a>
+    	</div>
+    </div>
+</div> 
+<script type="text/javascript">
+    InitPage(["saveData","siteType","siteInfo"], function($scope){
+    	//页面登录时加载
+    	var sections = [];
+		$scope.load = function() {
+			$scope.$("#siteType").val($scope.siteType);
+			if($scope.siteInfo != undefined){
+				$scope.formData = $scope.siteInfo;
+    			sections = $scope.siteInfo.section;
+				$scope.$updateDom("formData");
+			}else{
+				$scope.formData.section = [];
+				var index = 0;
+				var interval = setInterval(function(){
+					//添加断面todo
+	    			var sectionData = {};
+	    			addSection(sectionData);	
+	    			if(++index == 2){
+	    				clearInterval(interval);
+	    			}
+				},100);
+			}
+			init();
+		};
+    	var cyMap = new CYMap($scope.$("#map")[0]);
+		var centerPoint = new OpenLayers.LonLat(105.70405, 28.58103);
+		var point;
+		var wkt_c = new OpenLayers.Format.WKT();
+		//初始化地图及双击事件
+		function init() {
+			cyMap.map.events.remove("dblclick");
+			cyMap.map.events.registerPriority("dblclick", map, $scope.getLonLat);
+			point = new OpenLayers.Layer.Vector("point");
+			cyMap.map.addLayer(point);
+		}
+		//弹出地图窗口获取经纬度信息
+		$scope.getLonLat = function() {
+			//$scope.$setParam("lonLat", $scope.newData.lonLat);
+			$scope.$setParam("saveLonLat", function(params) {
+				point.removeAllFeatures();
+				$scope.$("#lon").textbox('setValue', params.lon.toFixed(6));
+				$scope.$("#lat").textbox('setValue', params.lat.toFixed(6));
+				var style = {
+					graphicWidth : 18,
+					graphicHeight : 18,
+					externalGraphic : "frameworks/Openlayers/img/marker.png"
+				};
+				var geometry = (new OpenLayers.Geometry.Point(params.lon, params.lat)).clone();
+				geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+				point.addFeatures(feature);
+				cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+			});
+			
+			$scope.$openDialog("createInfoDialog", {
+				title : "&nbsp;&nbsp;获取经纬度 ",
+				height : 600,
+				width : 800,
+				href : "tpls/sysManagement/traffic/get-lonlat.html",
+			}, true);
+		};
+		//添加断面信息
+		var panel;//动态添加断面的panel
+		function addSection(sectionData){
+			panel = $("<div class='section'></div>");
+			$scope.$("#section_table").append(panel);
+			panel.panel({
+				href : "tpls/sysManagement/roadNetworkMessage/section.html",
+				height : 118,
+				width : "97%",
+				title : false,
+				border: false
+			});
+			$scope.$setParam("sectionData" + $scope.formData.section.length,sectionData);
+			$scope.$setParam("siteType" + $scope.formData.section.length,"road");
+			$scope.formData.section.push(sectionData);
+		}
+    	//查询该道路下的断面个数,并创建断面
+    	$scope.queryDM = function(){
+	    	var roadId = $scope.$("#roadId").textbox("getValue");
+	    	$scope.$ajaxRequest({
+	    		url: $scope.$restRoot+'road/roadCode/querySectionByRoadId',
+	    		params: {roadId : roadId},
+	    		method: 'post',
+	    		success: function(data){
+	    			if($scope.siteInfo == undefined){
+						//设置断面的个数
+		    			if(data == 2){
+		    				panel.panel("open");
+		    			}else{
+		    				panel.panel("destroy");
+		    				$scope.formData.section.splice(1,1);//删除数组中的一个对象
+		    			}
+					}else{
+						$scope.formData.section = [];
+						var index = 0;
+						var interval = setInterval(function(){
+							//添加断面todo
+			    			var sectionData = {};
+		    				if(sections.length > 0){
+		    					if(sections[index] != undefined){
+		    						var sectionData = sections[index];
+		    					}else{
+		    						var sectionData = {};
+		    					}
+			    			}
+			    			addSection(sectionData);	
+			    			if(++index == data){
+			    				clearInterval(interval);
+			    			}
+						},100);
+					}
+	    		},
+	    		fail: function(errMsg){
+	    			$.messager.alert("提示","该道路下断面查询失败！");
+	    		}
+	    	});
+    	};
+    	
+    	//添加道路信息
+		$scope.addRoad = function(){
+			$scope.$openDialog("addDialog", {
+				title : "添加道路信息",
+				width : 800,
+				height : 380,
+				href : "tpls/sysManagement/roadNetworkMessage/road-message-input.html?type=add"
+			}, true);
+			$scope.$setParam("saveRoad", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/roadCode/saveRoad",
+					method : "post",
+					params : data,
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						$("#roadData").datagrid("getPager").pagination("select", 1);
+						$.messager.alert("提示", "保存成功！");
+
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "保存失败！");
+					}
+				});
+
+			});
+		};
+    	
+    	//保存点位信息
+    	$scope.save = function(){
+    		//编辑时保存
+    		if($scope.siteInfo != undefined){
+    			//判断点位是否已绑定设备
+	            $scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/deviceConfig/queryDeviceBySiteId",
+					params : {siteId:$scope.siteInfo.siteId},
+					success : function(data){
+						if(data == 0){//未绑定设备
+							saveData();
+						}else if(data > 0){//已绑定设备
+							$.messager.confirm("警告","该点位已绑定设备，修改信息后需要重新配置绑定设备关联的断面以及设备相机的车道信息，是否确认修改？",function(flag){
+			    				if(flag){
+			    					saveData();
+			    				}
+			    			});
+						}
+					}
+				});
+    		}else{
+    			//添加信息时保存
+    			saveData();
+    		}
+    	};
+    	function saveData(){
+			for(var index in $scope.formData.section){
+				if($scope.formData.section[index].$scope != undefined){
+					$scope.formData.section[index].$scope.$updateData("sectionData");
+					delete $scope.formData.section[index].$scope;
+				}
+			}
+	        //更新获取form中的数据
+	        $scope.$updateData("formData");
+			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+	        if($scope.formData.siteLatitude != null && $scope.formData.siteLatitude != '' && $scope.formData.siteLongitude != null && $scope.formData.siteLongitude != '' && !checkMap($scope.formData.siteLatitude, $scope.formData.siteLongitude)){
+	        	$.messager.alert("提示","经纬度超出地图范围，请重新输入！");
+	        	return false;
+	        }
+	        $scope.saveData($scope.formData);
+    	}
+    	//联动
+        $scope.getRoadByOrg = function(id,text,attribute){
+        	var orgId = $scope.$("#orgId").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			console.log(orgId);
+			console.log(privCode);
+			if(!orgId || orgId == ''){
+				return true;
+			}
+			if(attribute.nodeType == "road"){
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for(var i in orgPrivCodes){
+					if(orgPrivCodes[i].startWith(privCode)){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return true;
+			}
+		};
+    });
+</script>
+<style type="text/css">
+    #roadPoint .th {
+        text-align: right;
+        width: 70px;
+    }
+    #roadPoint .td{
+        height:auto;
+    }
+    #roadPoint .td>input[class^='easyui-'] {
+        width: 150px;
+    }
+</style>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Operation_LogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log" >
+    <id column="OPE_LOG_ID" property="opeLogId" jdbcType="VARCHAR" />
+    <result column="SYS_FUNCTION_CODE" property="sysFunctionCode" jdbcType="VARCHAR" />
+    <result column="OPE_USER_NAME" property="opeUserName" jdbcType="VARCHAR" />
+    <result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATE_RECORD_COUNTS" property="operateRecordCounts" jdbcType="VARCHAR" />
+    <result column="OPERATE_RESULT" property="operateResult" jdbcType="CHAR" />
+    <result column="CONSUME_SECONDS" property="consumeSeconds" jdbcType="FLOAT" />
+    <result column="ERROR_DESC" property="errorDesc" jdbcType="VARCHAR" />
+    <result column="COMPUTER_IP" property="computerIp" jdbcType="VARCHAR" />
+    <result column="REBACKABLE" property="rebackable" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OPE_LOG_ID, SYS_FUNCTION_CODE, OPE_USER_NAME, OPERATE_TIME, OPERATE_RECORD_COUNTS, 
+    OPERATE_RESULT, CONSUME_SECONDS, ERROR_DESC, COMPUTER_IP, REBACKABLE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_OPERATION_LOG
+    where OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_OPERATION_LOG
+    where OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log" >
+    insert into T_SYS_OPERATION_LOG (OPE_LOG_ID, SYS_FUNCTION_CODE, OPE_USER_NAME, 
+      OPERATE_TIME, OPERATE_RECORD_COUNTS, OPERATE_RESULT, 
+      CONSUME_SECONDS, ERROR_DESC, COMPUTER_IP, 
+      REBACKABLE)
+    values (#{opeLogId,jdbcType=VARCHAR}, #{sysFunctionCode,jdbcType=VARCHAR}, #{opeUserName,jdbcType=VARCHAR}, 
+      #{operateTime,jdbcType=TIMESTAMP}, #{operateRecordCounts,jdbcType=VARCHAR}, #{operateResult,jdbcType=CHAR}, 
+      #{consumeSeconds,jdbcType=FLOAT}, #{errorDesc,jdbcType=VARCHAR}, #{computerIp,jdbcType=VARCHAR}, 
+      #{rebackable,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log" >
+    insert into T_SYS_OPERATION_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="opeLogId != null" >
+        OPE_LOG_ID,
+      </if>
+      <if test="sysFunctionCode != null" >
+        SYS_FUNCTION_CODE,
+      </if>
+      <if test="opeUserName != null" >
+        OPE_USER_NAME,
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME,
+      </if>
+      <if test="operateRecordCounts != null" >
+        OPERATE_RECORD_COUNTS,
+      </if>
+      <if test="operateResult != null" >
+        OPERATE_RESULT,
+      </if>
+      <if test="consumeSeconds != null" >
+        CONSUME_SECONDS,
+      </if>
+      <if test="errorDesc != null" >
+        ERROR_DESC,
+      </if>
+      <if test="computerIp != null" >
+        COMPUTER_IP,
+      </if>
+      <if test="rebackable != null" >
+        REBACKABLE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="opeLogId != null" >
+        #{opeLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysFunctionCode != null" >
+        #{sysFunctionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="opeUserName != null" >
+        #{opeUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateRecordCounts != null" >
+        #{operateRecordCounts,jdbcType=VARCHAR},
+      </if>
+      <if test="operateResult != null" >
+        #{operateResult,jdbcType=CHAR},
+      </if>
+      <if test="consumeSeconds != null" >
+        #{consumeSeconds,jdbcType=FLOAT},
+      </if>
+      <if test="errorDesc != null" >
+        #{errorDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="computerIp != null" >
+        #{computerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="rebackable != null" >
+        #{rebackable,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log" >
+    update T_SYS_OPERATION_LOG
+    <set >
+      <if test="sysFunctionCode != null" >
+        SYS_FUNCTION_CODE = #{sysFunctionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="opeUserName != null" >
+        OPE_USER_NAME = #{opeUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateRecordCounts != null" >
+        OPERATE_RECORD_COUNTS = #{operateRecordCounts,jdbcType=VARCHAR},
+      </if>
+      <if test="operateResult != null" >
+        OPERATE_RESULT = #{operateResult,jdbcType=CHAR},
+      </if>
+      <if test="consumeSeconds != null" >
+        CONSUME_SECONDS = #{consumeSeconds,jdbcType=FLOAT},
+      </if>
+      <if test="errorDesc != null" >
+        ERROR_DESC = #{errorDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="computerIp != null" >
+        COMPUTER_IP = #{computerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="rebackable != null" >
+        REBACKABLE = #{rebackable,jdbcType=CHAR},
+      </if>
+    </set>
+    where OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Log" >
+    update T_SYS_OPERATION_LOG
+    set SYS_FUNCTION_CODE = #{sysFunctionCode,jdbcType=VARCHAR},
+      OPE_USER_NAME = #{opeUserName,jdbcType=VARCHAR},
+      OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
+      OPERATE_RECORD_COUNTS = #{operateRecordCounts,jdbcType=VARCHAR},
+      OPERATE_RESULT = #{operateResult,jdbcType=CHAR},
+      CONSUME_SECONDS = #{consumeSeconds,jdbcType=FLOAT},
+      ERROR_DESC = #{errorDesc,jdbcType=VARCHAR},
+      COMPUTER_IP = #{computerIp,jdbcType=VARCHAR},
+      REBACKABLE = #{rebackable,jdbcType=CHAR}
+    where OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR}
+  </update>
+</mapper>

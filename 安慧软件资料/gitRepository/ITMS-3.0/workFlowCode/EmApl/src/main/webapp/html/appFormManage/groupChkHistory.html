@@ -1,0 +1,75 @@
+<div ng-controller="GroupChkHistoryController">
+    <div style='display: flex; margin-top: 5px;'>
+        <div class="input-group" style='width:200px; margin-left: 10px;'>
+            <span class="input-group-addon">审批单类型</span>
+            <select class="form-control" name="status" ng-model="appType" ng-options="option.key for option in optionsArray" style='width:130px;'>
+            </select>
+        </div>
+        <div style='margin-left: 20px; display: flex;'>
+            <button type="submit" class="btn btn-default" ng-click='getGroupChkAppList()'>查询</button>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div style="height: 75%;width:100%;margin-top:10px;overflow: auto;">
+            <table class="table table-bordered table-show table-striped" style="margin-top:5px">
+                <tbody>
+                    <tr class="active">
+                        <td>申报名称</td>
+                        <td>申报单位</td>
+                        <td>申报日期</td>
+                        <td>审批结果</td>
+                        <!-- <td>备注</td> -->
+                        <td>操作</td>
+                        <!-- <td>状态</td> -->
+                    </tr>
+                    <tr ng-repeat="info in showInfo" ng-click="userDetail(info)">
+                        <td width="20%">{{info.queryValue3}}
+                        </td>
+                        <td width="15%">{{info.queryValue2}}</td>
+                        <td width="15%">{{info.queryValue4}}</td>
+                        <td width="10%">{{info.queryValue6==0?'不通过':'通过'}}</td>
+                        <!-- <td width="25%">{{info.reason}}</td> -->
+                        <td width="10%">
+                            <a ng-click="queryDetail(info)" style="cursor:pointer;">查看详情</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div style="float: left;">
+                <uib-pagination boundary-links="true" total-items="totalItems" max-size="maxSize" items-per-page="pageSize" force-ellipses="true" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+            </div>
+            <div style="float: left; line-height:70px;font-size: 13px">共{{totalItems}}条</div>
+        </div>
+    </div>
+</div>
+<style>
+.table-show > thead > tr > th,
+.table-show > tbody > tr > th,
+.table-show > tfoot > tr > th,
+.table-show > thead > tr > td,
+.table-show > tbody > tr > td,
+.table-show > tfoot > tr > td {
+    font-size: 12px;
+    padding: 5px 12px 5px 12px;
+    /*vertical-align: middle;*/
+    border: 1px solid #EEE;
+}
+
+.table-unite {
+    text-align: center;
+}
+
+.input {
+    width: 200px;
+}
+
+.form-control {
+    height: 30px;
+}
+
+.btn {
+    height: 30px;
+}
+</style>

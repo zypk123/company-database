@@ -1,0 +1,191 @@
+<div id="serverTypeList" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="add">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="serverType" cy-datagrid="options" cy-queryData="formData" cy-url="device/serverTypeManage/queryServerType">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.$getDefaultCode([436]);
+        $scope.load = function(){
+            $scope.$search("formData");
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns:[[
+                {field:'serverTypeId', checkbox:true},
+                {align:'center', field:'serverType', title:'服务器类型', width:100, formatter:getServerTypeName},
+                {align:'center', field:'serverIp', title:'服务器IP', width:100},
+                {align:'center', field:'serverPort', title:'端口号', width:100},
+                {align:'center', field:'contex', title:'上下文', width:100},
+                {align:'center', field:'suffix', title:'后缀', width:80},
+                {align:'center', field:'operate', title:'操作', width:80, formatter:operate}
+            ]],
+            pagination : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain:true,
+                iconCls:"icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain:true,
+                iconCls:"icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        
+        function getServerTypeName(value,row,index){
+            var serverType = $scope.$getCodeName("436",value);
+            return serverType;       
+        }
+        
+        //添加服务器类型信息
+        $scope.add = function(){
+            $scope.$openDialog("addDialog",{
+                title: "添加服务器类型信息",
+                width: "400",
+                height: "420",
+                href: "tpls/deviceManage/informationManage/server-type-operate.html"
+            },true);
+            $scope.$setParam("saveData",function(data){
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"device/serverTypeManage/addServerType",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                        $scope.$getDialog("addDialog").dialog("close");
+                        $scope.$search("formData");
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","添加失败！");
+                    }
+                }); 
+            });
+        };
+        //编辑服务器类型信息
+        $scope.editData = function(index){
+            var rowData = $scope.$("#serverType").datagrid("getData").rows[index];
+            $scope.$setParam("formData",rowData);
+            $scope.$openDialog("editDialog",{
+                title: "编辑服务器类型信息",
+                width: "400",
+                height: "420",
+                href: "tpls/deviceManage/informationManage/server-type-operate.html"
+            },true);
+            //保存修改信息
+            $scope.$setParam("saveData",function(data){
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"device/serverTypeManage/editServerType",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                        $.messager.alert("提示","修改成功！");
+                        $scope.$getDialog("editDialog").dialog("close");
+                        $scope.$search("formData");
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","修改失败！");
+                    }
+                }); 
+            });
+        };
+        //删除服务器类型信息
+        $scope.removeData = function(index){
+            var rowDatas = $scope.$("#serverType").datagrid("getData").rows[index];//选中的数据
+            var serverTypeId = rowDatas.serverTypeId;
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/serverTypeManage/removeServerType",
+                        params: {serverTypeId: serverTypeId},
+                        method: "post",
+                        success: function(data){
+                        	if(data != 0){
+                        		$.messager.alert("提示","服务器已绑定服务器组，禁止删除！");
+                        	}else{
+                            	$scope.$search("formData");
+                            	$.messager.alert("提示","删除成功！");
+                        	}
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+        //批量删除服务器类型信息
+        $scope.removeSomeData = function(){
+            var rows = $("#serverType").datagrid("getChecked");//勾选选中的行数组
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                var serverTypeIdStr = "";
+                for(var i = 0; i < rows.length; i++){
+                    if(i > 0){
+                        serverTypeIdStr = serverTypeIdStr + "," + rows[i].serverTypeId;
+                    }else{
+                        serverTypeIdStr = serverTypeIdStr + rows[i].serverTypeId;
+                    }
+                }
+            }
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/serverTypeManage/removeSomeServerType",
+                        params: {serverTypeIdStr: serverTypeIdStr},
+                        method: "post",
+                        success: function(data){
+                            if(data != 0){
+                        		$.messager.alert("提示","某服务器已绑定服务器组，未能删除！");
+                        		$scope.$search("formData");
+                        	}else{
+                            	$scope.$search("formData");
+                            	$.messager.alert("提示","删除成功！");
+                        	}
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+        /**
+         *查看服务器类型信息 
+         */
+        $scope.$('#serverType').datagrid({
+            onDblClickCell: function(index,field,value){
+                var rowData = $scope.$("#serverType").datagrid("getData").rows[index];
+                $scope.$setParam("formData",rowData);
+                $scope.$setParam("remark","look");
+                $scope.$openDialog("lookDialog",{
+                    title : "查看服务器类型信息",
+                    width : "400",
+                    height : "420",
+                    href : "tpls/deviceManage/informationManage/server-type-operate.html"
+                },true);
+            }
+        });
+    });
+</script>

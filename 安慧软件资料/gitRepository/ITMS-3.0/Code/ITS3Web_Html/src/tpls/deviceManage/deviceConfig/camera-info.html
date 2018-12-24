@@ -1,0 +1,182 @@
+<div id="cameraInfo" class="easyui-layout">
+    <div data-options="region:'north', border:false"  style="padding: 8px">
+        <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addCameraInfo" >新增</a>
+        <a class="easyui-linkbutton button-next" data-options="iconCls:'icon-next'" cy-click="nextStep" >下一步</a>
+    </div>
+    <div id="cameraInfoListDiv" data-options="region:'center', border:false">
+        <table id="cameraInfoList" cy-datagrid="options" cy-querydata="queryData" cy-url=""></table>
+       <!--<div class="tableDiv">
+            <div class="table">
+                <div class="tr">
+                    <div class="th"></div>
+                    <div class="td"><input type="checkbox" name=""/>是否有云台控制</div>
+                </div>
+                <div class="tr">
+                    <div class="th">相机编号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">相机类型：</div>
+                    <div class="td">
+                        <input class="easyui-combobox" name=""/>
+                    </div>
+                    <div class="th">品牌：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">型号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">规格：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">相机IP：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="" cy-onkeyup="T1onkeyup" id="T1" style="width: 40px"/>.
+                        <input class="easyui-textbox" name="" cy-onkeyup="T2onkeyup" id="T2" style="width: 40px"/>.
+                        <input class="easyui-textbox" name="" cy-onkeyup="T3onkeyup" id="T3" style="width: 40px"/>.
+                        <input class="easyui-textbox" name="" id="T4" style="width: 40px"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">端口号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">通信号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">用户名：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">密码：</div>
+                    <div class="td">
+                        <input type="password" class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">软件版本：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th"></div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button-edit" data-options="iconCls:'icon-edit'" cy-click="edit" >编辑</a>
+                        <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="remove" >删除</a>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * tollgateTabs ：检定tab页可用参数
+     */
+    InitPage(["tollgateTabs"],function($scope){
+        $scope.load = function(){
+            //隐藏相机信息列表div
+            $scope.$("#cameraInfoListDiv").hide();
+            $scope.$search("queryData");
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+                {title:"相机编号",field:"CONTRACTOR_NAME",width:100},
+                {title:"相机类型",field:"ADDRESS_DESC",width:100},
+                {title:"型号",field:"CONTRACTOR_PERSON",width:100},
+                {title:"相机IP",field:"CONTRACTOR_PERSON",width:150},
+                {title:"端口号",field:"CONTRACTOR_TEL",width:150},
+                {title:"通道号",field:"CONTRACTOR_TEL",width:150},
+                {title : "操作",field : "OPERATER",width : 100,formatter : operate}
+            ]],
+            pagination : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         *编辑相机信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            alert(index);
+        };
+        /**
+         *删除相机信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            alert(index);
+        };
+        /**
+         * 新增相机信息
+         */
+        $scope.addCameraInfo = function(){
+            $scope.$openDialog("camerInfoDialog",{
+                title:"新增相机信息",
+                width:900,
+                height:250,
+                href:"tpls/deviceManage/deviceConfig/camera-info-operate.html"
+            },true);
+            //关闭新增相机信息弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("camerInfoDialog").dialog("close");
+            });
+            //建立保存方法
+            $scope.$setParam("saveData",function(){
+                $scope.$getDialog("camerInfoDialog").dialog("close");
+                $scope.$("#cameraInfoListDiv").show();
+            });
+        };
+        /**
+         * 进入下一步
+         */
+        $scope.nextStep = function(){
+            //设备基本信息保存到数据库todo
+            $scope.$setParam("tollgateTabs",$scope.tollgateTabs);
+            //检定tab页可用
+            $scope.tollgateTabs.tabs('enableTab', 2);
+            $scope.tollgateTabs.tabs('select', 2);
+        };
+    });
+</script>
+<style type="text/css">
+    #cameraInfoListDiv .tableDiv{
+        height: 170px;
+        border: solid 1px silver;
+    }
+    #cameraInfoListDiv .th{
+        width: 80px;
+        text-align: right;
+    }
+    #cameraInfoListDiv .td{
+        width: 174px;
+    }
+    #cameraInfoListDiv .td>input[class^='easyui-']{
+        width: 174px;
+    }
+</style>

@@ -1,0 +1,60 @@
+<div id="lijiao" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    互通枢纽代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="ljdm">
+                </div>
+                <div class="th">
+                    互通枢纽名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+
+
+            <div class="tr">
+                <div class="th">
+                    相交道路：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="xjdl">
+                </div>
+            </div>
+
+            <div class="tr">
+            </div>
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #lijiao .th{
+        width : 100px;
+        text-align: right;
+    }
+    #lijiao .td{
+        width : 150px;
+    }
+
+</style>

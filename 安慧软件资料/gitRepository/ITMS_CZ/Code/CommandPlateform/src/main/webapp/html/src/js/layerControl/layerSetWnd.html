@@ -1,0 +1,329 @@
+<div id="laySetWnd"  style="width: 100%;height: 100%">
+    <div id="titleDiv">
+        <div>
+            图层列表(<a id="layerItemCount">1</a>)
+        </div>
+        <div>
+            已选择(<a id="hasSelectedItemCount">2</a>)
+        </div>
+    </div>
+    <div id="contentDiv">
+        <div>
+            <div id="leftLayerLst">
+
+            </div>
+        </div>
+        <div>
+            <img id="toRightImg" class="btnImg" src="themes/default/images/arrow_right.png">
+            <img id="toLeftImg" class="btnImg" src="themes/default/images/arrow_left.png" style="margin-top:10px;">
+        </div>
+        <div>
+            <div style="border: solid 1px silver;float: left;width: 240px;height:390px;">
+                <div id="rightLayerLst">
+
+                </div>
+            </div>
+            <div style="float: left;width: 45px;margin-top: 153px;margin-left: 5px;width: 50px;">
+                <a id="toTopBtn" class="easyui-linkbutton">向上</a>
+                <a id="toBottomBtn" class="easyui-linkbutton" style="margin-top:10px;">向下</a>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: center;float: left;width: 100%;margin-top: 8px">
+        <a id="saveBtn" class="easyui-linkbutton button-main" style="width:80px">保存</a>
+        <a id="closeBtn" class="easyui-linkbutton" style="margin-left:10px;width:80px">关闭</a>
+    </div>
+</div>
+<script>
+	var layerContrlSet = {
+		leftLstFormatter : function(value, rowData, rowIndex) {
+			var divRow = $('<div class="lstRow"></div>');
+
+			var divTdImg = $('<div style="float: left"></div>');
+			var img = $('<img  class="lstRowImg"/>');
+			img.attr("src", rowData.iconSelectUrl);//iconDefaultUrl
+			divTdImg.append(img);
+
+			var divTdTxt = $('<div class="lstRowTxt"></div>');
+			var span = $("<span></span>");
+			span.text(rowData.layerName);
+			divTdTxt.append(span);
+
+			divRow.append(divTdImg).append(divTdTxt);
+			return divRow.html();
+		},
+		rightLstFormatter : function(value, rowData, rowIndex) {
+			var divRow = $('<div class="lstRow"></div>');
+
+			var divTdImg = $('<div style="float: left"></div>');
+			var img = $('<img  class="lstRowImg"/>');
+			img.attr("src", rowData.iconSelectUrl);//iconDefaultUrl
+			divTdImg.append(img);
+
+			var divTdTxt = $('<div class="lstRowTxt"></div>');
+			var span = $("<span></span>");
+			span.text(rowData.layerName);
+			divTdTxt.append(span);
+
+			var divTdChk = $('<div class="lstRowTxt"></div>');
+			var chk = $('<input type="checkbox" style="margin-left: 5px">默认显示</input>');
+			if (rowData.isLayerDefaultShow) {
+				chk.attr("checked", true);
+			}
+			divTdChk.append(chk);
+
+			divRow.append(divTdImg).append(divTdTxt).append(divTdChk);
+			return divRow.html();
+		},
+		updateTitleNum : function(context) {
+			var rowCount = context.find("#leftLayerLst").datalist("getRows").length;
+			context.find("#layerItemCount").text(rowCount);
+			var rowCount = context.find("#rightLayerLst").datalist("getRows").length;
+			context.find("#hasSelectedItemCount").text(rowCount);
+		},
+		stepRow:function(context,selectedRow,selectedIndex,otherIndex)
+		{
+		    var rowDom = context.find("#rightLayerLst").datalist("getPanel").find("[datagrid-row-index = " + selectedIndex + "]");
+            var isChecked = false;
+            if ($(rowDom[1]).find(":checkbox").is(":checked")) {
+                isChecked = true;
+            }
+            else
+            {
+                selectedRow.isLayerDefaultShow = false;
+            }
+            context.find("#rightLayerLst").datalist("deleteRow", selectedIndex);
+            context.find("#rightLayerLst").datalist("insertRow", {
+                index : otherIndex,
+                row : selectedRow
+            });
+            context.find("#rightLayerLst").datalist("refreshRow", otherIndex);
+            context.find("#rightLayerLst").datalist("selectRow", otherIndex);
+            if (isChecked) {
+                var panel=context.find("#rightLayerLst").datalist("getPanel");
+                var rowDom = panel.find("[datagrid-row-index = " + otherIndex + "]");
+                $(rowDom[1]).find(":checkbox").attr("checked", "checked");
+            }
+		}
+	};
+	$.parser.onComplete = function(context) {
+		var showItem = $rootScope.$getParam("showItem");
+		var notShowItem = $rootScope.$getParam("notShowItem");
+
+		//注册移到右边按钮事件
+		context.find("#toRightImg").click(function() {
+			//debugger;
+			var chkRows = context.find("#leftLayerLst").datalist("getChecked");
+			for (var i = 0; i < chkRows.length; i++) {
+				context.find("#rightLayerLst").datalist("appendRow", chkRows[i]);
+				//刷新行
+				var index = context.find("#rightLayerLst").datalist("getRowIndex", chkRows[i]);
+				context.find("#rightLayerLst").datalist("refreshRow", index);
+
+				var rowIndex = context.find("#leftLayerLst").datalist("getRowIndex", chkRows[i]);
+				context.find("#leftLayerLst").datalist("deleteRow", rowIndex);
+			};
+			layerContrlSet.updateTitleNum(context);
+		});
+		//注册移到左边按钮事件
+		context.find("#toLeftImg").click(function() {
+			var chkRows = context.find("#rightLayerLst").datalist("getChecked");
+			for (var i = 0; i < chkRows.length; i++) {
+				context.find("#leftLayerLst").datalist("appendRow", chkRows[i]);
+				//刷新行
+				var index = context.find("#leftLayerLst").datalist("getRowIndex", chkRows[i]);
+				context.find("#leftLayerLst").datalist("refreshRow", index);
+
+				var rowIndex = context.find("#rightLayerLst").datalist("getRowIndex", chkRows[i]);
+				context.find("#rightLayerLst").datalist("deleteRow", rowIndex);
+			};
+			layerContrlSet.updateTitleNum(context);
+		});
+		//注册上移按钮事件
+		context.find("#toTopBtn").click(function() {
+			var selectedRow = context.find("#rightLayerLst").datalist("getSelected");
+			if (selectedRow == null) {
+				alert("请选择您要上移的行！");
+				return;
+			}
+			var indexSelectedRow = context.find("#rightLayerLst").datalist("getRowIndex", selectedRow);
+			if (indexSelectedRow == 0) {
+				alert("已经是第一行，不能再上移了！");
+				return;
+			}
+           layerContrlSet.stepRow(context,selectedRow,indexSelectedRow,indexSelectedRow-1);
+			
+			// // var rowDom = context.find("#rightLayerLst").datalist("getPanel").find("[datagrid-row-index = " + indexSelectedRow + "]");
+			// // rowDom.each(function() {
+			// // $(this).prev().attr("datagrid-row-index",indexSelectedRow);
+			// // $(this).attr("datagrid-row-index",indexSelectedRow-1);
+			// // $(this).prev().before($(this));
+			// // });
+
+		});
+		//注册下移按钮事件
+		context.find("#toBottomBtn").click(function() {
+			var selectedRow = context.find("#rightLayerLst").datalist("getSelected");
+			if (selectedRow == null) {
+				alert("请选择您要下移的行！");
+				return;
+			}
+			var indexSelectedRow = context.find("#rightLayerLst").datalist("getRowIndex", selectedRow);
+			var rowCount = context.find("#rightLayerLst").datalist("getRows").length;
+			if (indexSelectedRow == rowCount - 1) {
+				alert("已经是最后一行，不能再下移了！");
+				return;
+			}
+			layerContrlSet.stepRow(context,selectedRow,indexSelectedRow,indexSelectedRow+1);
+			
+			// // var rowDom = context.find("#rightLayerLst").datalist("getPanel").find("[datagrid-row-index = " + indexSelectedRow + "]");
+			// // rowDom.each(function() {
+				// // $(this).next().attr("datagrid-row-index", indexSelectedRow);
+				// // $(this).attr("datagrid-row-index", indexSelectedRow + 1);
+				// // $(this).next().after($(this));
+			// // });
+
+		});
+		var leftLstOption = {
+			data : notShowItem,
+			textFormatter : layerContrlSet.leftLstFormatter,
+			checkbox : true,
+			lines : true,
+			striped : true,
+			singleSelect : false,
+			selectOnCheck : false,
+			singleSelect : true
+		};
+		//加载左边列表
+		context.find("#leftLayerLst").datalist(leftLstOption);
+
+		var rightLstOption = {
+			data : showItem,
+			textFormatter : layerContrlSet.rightLstFormatter,
+			checkbox : true,
+			lines : true,
+			striped : true,
+			singleSelect : false,
+			selectOnCheck : false,
+			singleSelect : true
+		};
+		//加载右边列表
+		context.find("#rightLayerLst").datalist(rightLstOption);
+
+		layerContrlSet.updateTitleNum(context);
+
+		//保存
+		context.find("#saveBtn").click(function() {
+			//获取右边选择的图层
+			var showRows = context.find("#rightLayerLst").datalist("getRows");
+			for (var i = 0; i < showRows.length; i++) {
+				var rowDom = context.find("#rightLayerLst").datalist("getPanel").find("[datagrid-row-index = " + i + "]");
+				if ($(rowDom[1]).find(":checkbox").is(":checked")) {
+					showRows[i].isLayerDefaultShow = true;
+				} else {
+					showRows[i].isLayerDefaultShow = false;
+				}
+			}
+			var notShowRows = context.find("#leftLayerLst").datalist("getRows");
+			$rootScope.$getParam("layerSetDialogClose")(true, showRows, notShowRows);
+		});
+
+		//关闭
+		context.find("#closeBtn").click(function() {
+			$rootScope.$getParam("layerSetDialogClose")(false);
+		});
+		//重置加载完毕事件
+		$.parser.onComplete = function() {
+		};
+
+	};
+
+</script>
+<style>
+	#laySetWnd #titleDiv {
+		float: left;
+		width: 99%;
+		border: solid 1px silver;
+		height: 25px;
+		line-height: 25px;
+	}
+	#laySetWnd #titleDiv > div:nth-child(1) {
+		float: left;
+		width: 45%;
+		margin-left: 10px;
+	}
+	#laySetWnd #titleDiv > div:nth-child(2) {
+		float: left;
+		width: 50%;
+	}
+	#laySetWnd #contentDiv {
+		float: left;
+		width: 100%;
+		height: 390px;
+		margin-top: 3px;
+	}
+
+	#laySetWnd #contentDiv > div:nth-child(1) {
+		float: left;
+		width: 30%;
+		margin-left: 10px;
+		height: 390px;
+		border: solid 1px silver;
+		overflow-y: auto;
+	}
+	#laySetWnd #contentDiv > div:nth-child(2) {
+		float: left;
+		width: 10%;
+		text-align: center;
+		margin-top: 153px;
+		margin-left: 10px;
+	}
+	#laySetWnd #contentDiv > div:nth-child(3) {
+		float: left;
+		width: 55%;
+		height: 390px;
+	}
+	#laySetWnd .btnImg {
+		cursor: pointer;
+		width: 35px;
+		height: 25px;
+		display: block;
+	}
+	#laySetWnd #leftLayerTbl img {
+		height: 25px;
+		width: 30px;
+		margin: 0px 5px;
+	}
+	#laySetWnd .lstRowImg {
+		height: 25px;
+		width: 30px;
+		margin: 0px 5px;
+	}
+	#laySetWnd .lstRowTxt {
+		float: left;
+		line-height: 30px;
+		width: 80px;
+		height: 30px;
+	}
+	#laySetWnd .lstRow {
+		height: 30px;
+	}
+	/*#laySetWnd #leftLayerTbl .tr {
+		border-bottom: solid 1px silver;
+	}
+	#laySetWnd #leftLayerTbl .tr:last-child {
+		border-bottom: solid 0px silver;
+	}
+	#laySetWnd #leftLayerTbl .tr:hover {
+		background: silver;
+	}
+	#laySetWnd #rightLayerTbl .tr {
+		border-bottom: solid 1px silver;
+	}
+	#laySetWnd #rightLayerTbl .tr:last-child {
+		border-bottom: solid 0px silver;
+	}
+	#laySetWnd #rightLayerTbl .tr:hover {
+		background: silver;
+	}*/
+</style>

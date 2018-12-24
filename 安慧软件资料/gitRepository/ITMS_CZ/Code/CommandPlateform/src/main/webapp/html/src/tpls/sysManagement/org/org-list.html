@@ -1,0 +1,320 @@
+<div class="easyui-layout">
+	<!--定义机构导航-->
+	<div data-options="region:'west',title:'机构导航',split : true,border:false" style="width: 200px;">
+		<div id="cy-tree"></div>
+	</div>
+	<div data-options="region:'center',border:false" style="border-left:#ddd 1px solid;">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false">
+				<div class="linkbutton_toolbar">
+					<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addOrg">添加</a>
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'" cy-click="deleteJg">删除</a>
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-download'" cy-click="syncOrg">同步机构用户信息</a>
+				</div>
+			</div>
+			<div data-options="region:'center',split:true,border:false">
+				<table id="jgData" cy-datagrid="optionsOrg" cy-querydata="deptQueryOrg"
+				cy-url="sysCfg/org/findOrgInfo"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(["111","114"]);
+		var currentOrgId;
+		var orgPrivCode;
+		$scope.load = function() {
+			//加载树操作
+			$scope.$('#cy-tree').tree({
+				animate : true,
+				data : $scope.$org,
+				//当用户选择树节点时触发
+				onSelect : function(node) {
+					var orgId = $scope.$('#cy-tree').tree('getSelected').id;//获得机构权限ID
+					orgPrivCode = $scope.$('#cy-tree').tree('getSelected').attribute.orgPrivCode;//获得机构权限code
+					currentOrgId = orgId;
+					$scope.deptQueryOrg.orgId = orgId;
+					$scope.$search("deptQueryOrg");
+					
+				},
+				//默认加载树的第一个节点信息
+				onLoadSuccess : function(node, data) {
+												 	 
+					//获得所有树节点
+					var roots = $scope.$('#cy-tree').tree("getRoots");
+					//默认选中第一个节点信息
+					$scope.$('#cy-tree').tree("select", roots[0].target);
+					//全部折叠
+					$scope.$('#cy-tree').tree('collapseAll');
+					//展开第一个父节点下所有子节点
+					$scope.$('#cy-tree').tree('expand', roots[0].target);
+				}
+			});
+		};
+		//机构信息主页面显示字段
+		$scope.optionsOrg = {
+			columns : [[{
+				field : 'id',
+				checkbox : true,
+				align : 'center',
+				width : 10
+			}, {
+				field : 'orgCode',
+				title : '机构代码',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'orgName',
+				title : '机构名称',
+				formatter:optionsOrgName,
+				align : 'center',
+				width : 70
+			}, {
+				field : 'parentOrgId',
+				title : '父机构名称',
+				formatter:parentOrgName,
+				align : 'center',
+				width : 60
+			}, {
+				field : 'orgType',
+				title : '机构类型',
+				formatter:orgType,
+				align : 'center',
+				width : 50
+			}, {
+				field : 'orgLevel',
+				title : '机构级别',
+				formatter:orgLevel,
+				align : 'center',
+				width : 50
+			},{
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsOrgCz,
+				width : 30
+			}]],
+			pagination : false,
+			//双击事件查看当前机构信息
+			// onDblClickRow : function(rowIndex, rowData) {
+				// //注入当前行信息
+				// $scope.$setParam("InformationData", rowData);
+				// //$scope.$setParam("remark","checked");
+				// //查看详情窗口
+				// $scope.$openDialog("checkDialog", {
+					// title : "机构信息",
+					// height : 600,
+					// width : 800,
+					// href : "tpls/sysManagement/org/org-message-check.html"
+				// });
+			// }
+		};
+		/**
+         *根据机构code获取name 
+         */
+        function orgType(value,row,index){
+            return $scope.$getCodeName("111",value);
+        }
+        function orgLevel(value,row,index){
+        	return $scope.$getCodeName("114",value);
+        }
+        //显示隐藏机构名称
+		function optionsOrgName(value, row, index) {
+			var orgName = value;
+			if (orgName == null) {
+				return "<span/>";
+			}
+			var orgNameStr = "";
+			if (orgName && orgName.length > 15) {
+				orgNameStr = '' + orgName.substring(0, 15) + '...';
+			} else {
+				orgNameStr = '' + orgName + '';
+			}
+			return "<span title='" + orgName + "'>" + orgNameStr + "</span>";
+		}
+		function parentOrgName(value){
+			var parentOrgName=$scope.$getOrgName(value);
+				if(parentOrgName ==null){
+				return "<span/>";
+			}
+			var orgNameStr = "";
+			if (parentOrgName && parentOrgName.length > 13) {
+				orgNameStr = '' + parentOrgName.substring(0, 13) + '...';
+			} else {
+				orgNameStr = '' + parentOrgName + '';
+			}
+			return "<span title='" + parentOrgName + "'>" + orgNameStr + "</span>";
+		}
+		//操作栏信息
+		function optionsOrgCz(value, row, index) {
+			//编辑按钮
+			var button1 = $("<a class='button-edit' title='编辑' cy-click='editOrg(" + index + ")'></a>");
+			//删除按钮
+			var button2 = $("<a class='button-remove' title='删除' cy-click='removeOrg(" + index + ")'></a>");
+			
+			button1.linkbutton({
+				plain : true,
+				iconCls : "icon-edit-solid"
+			});
+			button2.linkbutton({
+				plain : true,
+				iconCls : "icon-remove-solid"
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		}
+
+		//添加机构信息
+		$scope.addOrg = function() {
+			//打开机构信息窗口
+			$scope.$openDialog("addDialog", {
+				title : "新增机构信息",
+				height : 522,
+				width : 800,
+				href : "tpls/sysManagement/org/org-input.html?type=add"
+			}, true);
+			//默认父机构ID和业务指导机构ID
+			$scope.$setParam("orgInfo",{parentOrgId:currentOrgId,parentInstructOrgId:currentOrgId,orgPrivCode:orgPrivCode});
+			//子页面注入值
+			$scope.$setParam("saveData", function(data) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/org/save",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if(data == "1"){
+							$scope.$getDialog("addDialog").dialog("close");
+							$scope.$search("deptQueryOrg");
+						}else{
+							$.messager.alert("提示", "机构编码已存在,请重新输入！");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+
+			});
+		};
+		//删除当前行信息
+		$scope.removeOrg = function(index) {
+			var rowDatas = $scope.$('#jgData').datagrid('getData').rows[index];
+			var orgIdStr = rowDatas.orgId;
+			$.messager.confirm("提示", "您确定要删除么？", function(flag) {
+				if (flag) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/org/deleteOrg",
+						params : {
+							orgIdStr : orgIdStr
+						},
+						success : function(data) {
+							if(data == "success"){
+								$scope.$search("deptQueryOrg");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				};
+			});
+		};
+		//编辑机构信息
+		$scope.editOrg = function(index) {
+			//获取所有行数数据
+			var rowData = $scope.$("#jgData").datagrid("getData").rows[index];
+			
+			//机构信息注入当前行数据
+			$scope.$setParam("orgInfo", rowData);
+			//通过Ajax提交和后台交互
+			$scope.$setParam("editData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/org/update",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if(data == "0"){
+							$.messager.alert("提示", "机构编码已存在,请重新输入！");
+						}else if(data=="1"){
+							$scope.$getDialog("editDialog").dialog("close");
+							$scope.$search("deptQueryOrg");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "更新失败！");
+					}
+				});
+			});
+			//打开修改窗口  
+			$scope.$openDialog("editDialog", {
+				title : "修改机构信息",
+				height : 522,
+				width : 800,
+				href : "tpls/sysManagement/org/org-input.html?type=edit"
+			}, true);
+
+		};
+
+		//机构信息批量删除操作
+		$scope.deleteJg = function() {
+			
+			//获得选中所有的行数
+			var rows = $scope.$("#jgData").datagrid("getChecked");
+			//选择要删除的行
+			if (rows.length == 0) {
+				$.messager.confirm("提示", "请选择你要删除的行?");
+				return false;
+			} else {
+				var orgIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (rows > 0) {
+						orgIdStr = orgIdStr + "," + rows[i].orgIdStr;
+					} else {
+						orgIdStr = orgIdStr + row[i].orgIdStr;
+					};
+				}
+				$.messager.alert("提示", "是否确认删除信息？", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "sysCfg/org/deleteOrg",
+							params : {
+								orgIdStr : orgIdStr
+							},
+							method : "post",
+							success : function(data) {
+								if (data == "success"){
+									$scope.$search("deptQueryOrg");
+								}
+							},
+							fail : function(errMsg) {
+                                $.messager.alert("提示", "保存失败！");
+                            }
+						});
+
+					};
+				});
+			}
+		};
+		
+		
+		$scope.syncOrg = function(){
+			$.messager.progress({
+				title : false,
+				msg : "正在同步，请稍后...",
+				interval : 1000
+			});
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/org/sync",
+				success : function(data){
+					$.messager.progress('close');
+					if(data == 1){
+						$.messager.alert("提示","同步成功");
+					}else{
+						$.messager.alert("提示","同步失败");
+					}
+				}
+			});
+		};
+	}); 
+</script>

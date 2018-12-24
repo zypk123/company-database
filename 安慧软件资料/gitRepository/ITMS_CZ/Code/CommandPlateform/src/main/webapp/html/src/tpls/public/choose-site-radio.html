@@ -1,0 +1,238 @@
+<div class="easyui-layout" id="choose-site-radio">
+	<div data-options="region:'north',height:40,border:false" style="line-height: 30px;">
+		<div class="linkbutton_toolbar" >
+			<input id="search" data-options="prompt:'请输入关键字'" style="width:250px;height:26px"/>
+			<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back" style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false,height:30">
+				<div style="line-height: 20px;">
+					<input type="radio" name="treeType" value="0" cy-change="changeTreeType" checked="checked" />
+					按道路
+					<input type="radio" name="treeType" value="1" cy-change="changeTreeType" />
+					按机构
+				</div>
+			</div>
+			<div data-options="region:'center',border:false">
+				<div id="tree"></div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'east',border:false,width:'100%',closed:true" style="border-top: solid 1px #ddd">
+		<table id="searchGrid" cy-datagrid="options" cy-querydata="searchData" cy-url="/device/site/findSiteByName">
+
+		</table>
+		&nbsp;
+	</div>
+	<div data-options="region:'south',height: 40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-ok'" cy-click="chooseOrg">确定</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage(["choose","filter","isBayonet"], function($scope) {
+		
+		if($scope.isBayonet){
+			$scope.$("#searchGrid").attr("cy-url","/device/site/findByonetSite");
+		}
+		
+        //显示模式，默认是树结构
+        var viewModel = 0;
+        /**
+         * 树默认查询参数
+         */
+        var queryParams = {
+            currentOrgPrivilegeCode : $rootScope.UserInfo.orgPrivCode,
+			id : "", //默认根节点为空，表示查询基础数据
+            type : "0",//默认类型为0
+            isBayonet : $scope.isBayonet ? true : false
+        };
+        //初始化方法
+        $scope.load = function() {
+            //初始化树
+            initTree();
+            //设置查找方法
+            initSearch();
+        };
+
+        /**
+         * 切换树的类型
+         */
+        $scope.changeTreeType = function() {
+            var type = $scope.$("[name=treeType]:checked").val();
+            if (type == "0") {
+                //按道路
+                queryParams.type = "0";
+                queryParams.id = "", 
+                initTree();
+            } else {
+                //按机构
+                queryParams.type = "1";
+                queryParams.id = "", 
+                initTree();
+            }
+        };
+		/**
+		 * 执行过滤器操作 
+		 */
+		function doFilter(node,needToDelete){
+			if(!node || !$scope.filter || typeof $scope.filter != "function"){
+				return;
+			}
+			var result = $scope.filter(node.id,node.text,node.attribute);
+			if(!result && typeof result == "boolean"){
+				//标记需要删除的节点
+				needToDelete.push(node);
+			}else{
+				//下级节点做过滤
+				if(node.children && node.children.length > 0){
+					for(var index in node.children){
+						doFilter(node.children[index],needToDelete);
+					}
+				}
+			}
+		}
+        /**
+         * 初始化树
+         */
+        var initTree = function() {
+            $scope.$("#tree").tree({
+                url : $scope.$restRoot + "/device/site/getSiteTreeByRootId",
+                queryParams : queryParams,
+                onLoadSuccess : function() {
+                    var root = $(this).tree("getRoots")[0];
+                    var needToRemove = [];
+                	doFilter(root,needToRemove);
+                	for(var index in needToRemove){
+                		//删除过滤掉的节点
+                		$scope.$("#tree").tree("remove",$scope.$("#"+needToRemove[index].domId)[0]);
+                	}
+                    if (queryParams.type == 0) {
+                        //树类型为按道路展示时，删除第二级节点中的空节点
+                        for (var index = 0; index < root.children.length; index++) {
+                            var item = root.children[index];
+                            if (!item.children || item.children.length == 0) {
+                                //删除空节点
+                                $(this).tree("pop", document.getElementById(item.domId));
+                                index--;
+                            }
+                        }
+                    } else {
+                        if (queryParams.id == "") {
+                            //按机构显示是，如果id为空，则显示根节点并打开
+                            queryParams.id = $scope.$org[0].id;
+                            $(this).tree("loadData", [{
+                                id : $scope.$org[0].id,
+                                text : $scope.$org[0].text,
+                                attribute : $scope.$org[0].attribute,
+                                state : "closed"
+                            }]);
+                        }
+                    }
+                },
+                onDblClick : function(node) {
+                    if (node.attribute && node.attribute.nodeType == "site") {
+                        $scope.$excute($scope.choose, node.id,node.attribute.code, node.text);
+                        $scope.$closeSelf();
+                    }
+                }
+            });
+        };
+
+        /**
+         * 初始化查找
+         */
+        var initSearch = function() {
+            $scope.$("#search").searchbox({
+                searcher : function() {
+
+                    var searchIndex = $(this).searchbox("getValue").trim();
+                    if (searchIndex == "") {
+                        return;
+                    }
+                    //显示查询结果
+                    showGrid();
+                    //超找查询结果
+                    $scope.searchData.siteName = searchIndex;
+                    $scope.$search("searchData");
+                }
+            });
+        };
+
+        /**
+         * 显示查询结果
+         */
+        var showGrid = function() {
+            $scope.$("#choose-site-radio").layout("panel", "east").panel("open");
+            $scope.$("#choose-site-radio").layout("resize");
+            $scope.$("#back").show();
+            //显示模式切换为列表展示
+            viewModel = 1;
+        };
+
+        /**
+         * 点击确定按钮
+         */
+        $scope.chooseOrg = function() {
+            var current = $scope.$("#tree").tree("getSelected");
+            var currentGrid = $scope.$("#searchGrid").datagrid("getSelected");
+            if (viewModel == 0 && current && current.attribute && current.attribute.nodeType == "site") {
+                //选择的是树节点
+                $scope.$excute($scope.choose, current.id, current.attribute.code, current.text);
+                $scope.$closeSelf();
+            } else if (viewModel == 1 && currentGrid) {
+                //是列表选择模式，且选中了其中一行
+                $scope.$excute($scope.choose, currentGrid.siteId, currentGrid.siteCode, currentGrid.siteName);
+                $scope.$closeSelf();
+            } else {
+                $.messager.alert("提示", "请选择点位!");
+            }
+        };
+
+        /**
+         * 格式化内容，增加title
+         */
+        var initTitle = function(value) {
+
+            return value && value != '' ? '<span title="' + value + '">' + value + "</span>" : "";
+        };
+
+        /**
+         * 查找结果列表参数
+         */
+        $scope.options = {
+            columns : [[{
+                field : 'siteName',
+                title : '点位名称',
+                width : 60,
+                formatter : initTitle
+            }, {
+                field : 'orgId',
+                title : '所属机构',
+                width : 40,
+                formatter : function(value) {
+                    var name = $scope.$getOrgName(value);
+                    return initTitle(name);
+                }
+            }]],
+            pagination : false,
+            rownumbers : true
+        };
+
+        /**
+         * 返回树
+         */
+        $scope.back = function() {
+            $scope.$("#choose-site-radio").layout("panel", "east").panel("close");
+            $scope.$("#choose-site-radio").layout("resize");
+            $scope.$("#back").hide();
+            viewModel = 0;
+            //切换为树行展示形式
+        };
+
+    }); 
+</script>

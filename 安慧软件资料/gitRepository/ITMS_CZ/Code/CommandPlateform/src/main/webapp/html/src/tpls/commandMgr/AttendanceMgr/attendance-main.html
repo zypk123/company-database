@@ -1,0 +1,175 @@
+<div class="easyui-layout" id="attendance-main">
+    <div data-options="region:'north',border:false,height:160">
+        <div class="searchPanel">
+            <div class="panel_title"></div>
+            <form cy-form="queryData">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">
+                                                                            管理部门：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="department" style="width:150px;"/>
+                        </div>
+                        <div class="th">
+                                                                            人员姓名：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="name" style="width:150px;"/>
+                        </div>
+                        <div class="th">
+                                                                             警号：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="Alarm" style="width:150px;"/>
+                        </div>
+                        <div class="th">
+                                                                               请假类型：
+                        </div>
+                        <div class="td">
+                            <select id="cc" class="easyui-combobox" name="dept" style="width:200px;">
+                                <option value="aa">请选择</option>
+                                <option>事假</option>
+                                <option>病假</option>
+                                <option>婚假</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                                                                                 请假日期：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datebox" name="birth" />至
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datebox" name="birth" />
+                        </div>
+                        <div class="th">
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton" cy-click="search" data-options="iconCls:'icon-search'">查询</a>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addUser">人员请假</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-remove'">请假审批</a>
+        </div>
+    </div>
+    
+    <div data-options="region:'center',border:false">
+        <table cy-datagrid="options" cy-querydata="queryData"
+        cy-url="/dsadsa/dasdasdsa"></table>
+    </div>
+</div>
+<script>
+	InitPage([], function($scope) {
+
+		//配置参数
+		$scope.options = {
+			columns : [[{
+				field : 'id',
+				checkbox : true,
+				align : 'center',
+				width : 10
+			}, {
+				field : 'number',
+				title : '请假单序号',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'username',
+				title : '人员姓名',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'Alarm',
+				title : '警号',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'department',
+				title : '管理部门',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'Leavetype',
+				title : '请假类型',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'D',
+				title : '请假开始日期',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'DATE',
+				title : '请假结束日期',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'NUMBER',
+				title : '请假天数',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'CHAR',
+				title : '审批状态',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'VARCHAR2',
+				title : '审批人',
+				align : 'center',
+				width : 10
+			}, {
+				field : 'operate',
+				title : '操作',
+				align : "center",
+				width : 10
+			}]]
+		};
+
+		//查询方法
+		$scope.search = function() {
+			$scope.$search("queryData");
+		};
+
+		//弹出添加界面
+		$scope.addUser = function() {
+			$scope.$setParam("saveData", function(data) {
+				console.log(data);
+				//交互
+				// $.ajax({
+				// ...
+				// success : function(){
+				//关闭窗口
+				$scope.$getDialog("addDialog").dialog("close");
+				//刷新列表
+				$scope.$search('queryData');
+				// }
+				// });
+
+			});
+			$scope.$openDialog("addDialog", {
+				href : "tpls/commandMgr/AttendanceMgr/attendance-main-list.html",
+				height : 300,
+				width : 650,
+				title : "人员请假"
+			});
+		};
+	}); 
+</script>
+<style>
+	#attendance-main .th {
+		width: 100px;
+		text-align: right;
+	}
+	#attendance-main .td {
+		width: 155px;
+	}
+</style>

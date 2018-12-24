@@ -1,0 +1,98 @@
+<div id="cameraInfoOperate" class="easyui-layout">
+    <form cy-form="formData">
+        <div class="table">
+            <div class="tr">
+                <div class="th"></div>
+                <div class="td"><input type="checkbox" name=""/>是否有云台控制</div>
+            </div>
+            <div class="tr">
+                <div class="th">相机编号：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">相机类型：</div>
+                <div class="td">
+                    <input class="easyui-combobox" name=""/>
+                </div>
+                <div class="th">品牌：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">型号：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">规格：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">相机IP：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name="" cy-onkeyup="T1onkeyup" id="T1" style="width: 40px"/>.
+                    <input class="easyui-textbox" name="" cy-onkeyup="T2onkeyup" id="T2" style="width: 40px"/>.
+                    <input class="easyui-textbox" name="" cy-onkeyup="T3onkeyup" id="T3" style="width: 40px"/>.
+                    <input class="easyui-textbox" name="" id="T4" style="width: 40px"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">端口号：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">通信号：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">用户名：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">密码：</div>
+                <div class="td">
+                    <input type="password" class="easyui-textbox" name=""/>
+                </div>
+                <div class="th">软件版本：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name=""/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th"></div>
+                <div class="td"></div>
+                <div class="th"></div>
+                <div class="td">
+                    <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                    <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf" >取消</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    /**
+     * closeSelf ：关闭弹出框的方法
+     * saveData ：保存数据的方法
+     */
+    InitPage(["closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //获取form中的数据
+            $scope.saveData($scope.formData);
+        };
+    });
+</script>
+<style type="text/css">
+    #cameraInfoOperate .th{
+        width: 100px;
+        text-align: right;
+    }
+    #cameraInfoOperate .td{
+          width: 174px;
+      }
+    #cameraInfoOperate .td>input[class^='easyui-']{
+        width: 174px;
+    }
+</style>

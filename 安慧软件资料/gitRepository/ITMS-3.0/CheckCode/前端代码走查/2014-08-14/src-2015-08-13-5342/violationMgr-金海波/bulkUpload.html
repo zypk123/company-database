@@ -1,0 +1,381 @@
+<div id="bulkUpload" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:37" style="border-bottom:solid 1px #ddd">
+		<div class="linkbutton_toolbar">
+			<a id="chooseFile" class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'">选择文件</a>
+			<a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeData">删除</a>
+			<a class="easyui-linkbutton button-edit" data-options="iconCls:'icon-edit'" cy-click="showAdjustArea">批量校正</a>
+			<a class="easyui-linkbutton button" data-options="iconCls:'icon-import'">全部导入</a>
+		</div>
+		<form>
+			<div class="searchPanel" style="display:none;width:750px;" id="adjustDiv">
+            	<div class="panel_title">批量校正</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">违法道路：</div>
+						<div class="td">
+							<input class="easyui-combotree" style="width:120px;">
+						</div>
+						<div class="th">路口路段：</div>
+						<div class="td">
+							<input class="easyui-combobox" style="width:120px;">
+						</div>
+						<div class="th" style="width:50px;">米数：</div>
+						<div class="td" style="width:80px;">
+							<input class="easyui-numberbox" style="width:80px;">
+						</div>
+						<div class="th" style="width:90px;">采集设备：</div>
+						<div class="td">
+							<input class="easyui-combobox" style="width:120px;">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">地点描述：</div>
+						<div class="td">
+							<input class="easyui-textbox" style="width:650px">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">采集方式：</div>
+						<div class="td">
+							<input class="easyui-combobox" style="width:120px;">
+						</div>
+						<div class="th">采集机构：</div>
+						<div class="td">
+							<input class="easyui-combotree" style="width:120px;">
+						</div>
+						<div class="th">行政区划：</div>
+						<div class="td">
+							<input class="easyui-combotree" style="width:120px;">
+						</div>
+						<div class="th" style="width:150px"> 
+							<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'">校正</a>
+							<a cy-click="showAdjustArea" class="easyui-linkbutton button" 
+								data-options="iconCls:'icon-up'">收起</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		<form>
+	</div>
+	<div data-options="region:'center',border:false" style="border-right:solid 1px #ddd">
+		<table id="datagrid" cy-datagrid="options"></table>	
+	</div>
+	<div id="viewImageArea" data-options="href:'tpls/passvehicle/track_query/imageView.html',
+			region:'east',border:false,width:450">
+		
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		var lastSelectedRow ;
+		var exitFileList = "";
+		var checkedRowIndexs = [];
+		$scope.options = {
+			columns : [[//注意，此处是二维数组
+				{field:'id',checkbox:true},
+				{title:"号牌号码",field:"plateNbr",width:100,formatter:fitColor},
+				{title:"违法时间",field:"violationTime",width:160},
+				{title:"速度",field:"speed",width:70},
+				{title:"违法行为",field:"violationDesc",width:120},
+				{title:"地点描述",field:"violationAddressDesc",width:150},
+				{title:"违法道路",field:"roadCode",width:100},
+				{title:"路口路段",field:"junctionCode",width:100},
+				{title:"设备编号",field:"deviceNbr",width:100},
+				{title:"行政区划",field:"districtCode",width:100},
+				{title:"操作",field:"operate",width:100}
+			]],
+			pagination : false,
+			onSelect : function(rowIndex, rowData){
+				if(lastSelectedRow == rowData){
+					return ;
+				}
+				var imgfiles = $scope.imageUrls[rowData.fileName];
+				$scope.$setParam("images",imgfiles);
+				$scope.$("#viewImageArea").panel("refresh","tpls/passvehicle/track_query/imageView.html");
+				lastSelectedRow = rowData;
+			},
+			onCheck : function(index,row){
+				checkedRowIndexs.push(index);
+			},
+			onUncheck : function(index,row){
+				for(var i in checkedRowIndexs){
+					if(checkedRowIndexs[i] == index){
+						checkedRowIndexs.splice(index,1);
+						break;
+					}
+				}
+			},
+			onCheckAll : function(rows){
+				checkedRowIndexs = [];
+				for(var index=0; index<rows.length; index++){
+					checkedRowIndexs.push(index);
+				}
+			},
+			onUncheckAll : function(rows){
+				checkedRowIndexs = [];
+			}
+		}
+
+		var showFlag = false;
+		$scope.showAdjustArea = function(){
+			if(!showFlag){
+				$scope.$("#adjustDiv").slideDown('fast');
+				$scope.$("#bulkUpload").layout("panel","north").panel("resize",{height:180});
+				$scope.$("#bulkUpload").layout("resize");
+				showFlag = true;
+			}else{
+				$scope.$("#adjustDiv").hide();
+				$scope.$("#bulkUpload").layout("panel","north").panel("resize",{height:37});
+				$scope.$("#bulkUpload").layout("resize");
+				showFlag = false;
+			}
+			
+		}
+
+		$scope.load = function(){
+			//初始化文件上传组件
+			$scope.uploader = initUpload();
+			//初始化违法数据模板配置
+			$scope.importTemplate = {};
+			$scope.imageFiles = {};
+			$scope.imageUrls = {};
+			$.ajax({
+				url :"config/VioImportTemplate.xml",
+				dataType : "xml",
+				success : function(data){
+					var data = $(data).find("appConfig").children();
+					data.each(function(){
+						$scope.importTemplate[$(this).attr("name")] = $(this).text()
+					});
+					$scope.uploader.init();
+				},
+				error : function(){
+					$.messager.alert("警告","读取违法文件配置模板失败！");
+				}
+			});
+		}
+
+		/**
+		 * 删除数据
+		 * @return {[type]} [description]
+		 */
+		$scope.removeData = function(){
+			var rows = $scope.$("#datagrid").datagrid("getChecked");
+			if(rows.length == 0){
+				$.messager.alert("警告","请选择要删除的数据！");
+				return;
+			}
+			$.messager.confirm("确认","确定删除这些数据？",function(r){
+				if(r){
+					for(var index=0; index<rows.length; index++){
+						var name = rows[index].fileName;
+						//删除图片文件和图片路径数据
+						delete $scope.imageFiles[name];
+						delete $scope.imageUrls[name];
+					}
+					//给checkedRowIndexs排序,按照序号倒序排列
+					checkedRowIndexs.sort(function(a,b){
+						return b-a;
+					})
+					for(var index in checkedRowIndexs){
+						$scope.$("#datagrid").datagrid("deleteRow",checkedRowIndexs[index]);
+					}
+					checkedRowIndexs = [];
+					//判断正在预览的数据是否已删除，如果是的，则刷新图片预览界面
+					if(!$scope.$("#datagrid").datagrid("getSelected") == undefined ||
+						!$scope.$("#datagrid").datagrid("getSelected")){
+						$scope.$("#viewImageArea").panel("refresh","tpls/passvehicle/track_query/imageView.html");
+					}
+				}
+			});
+		}
+		/**
+		 * 解析dat文件
+		 * @param  {[type]} file 文件对象
+		 * @return {[type]}      返回违法数据
+		 */
+		function parseDatFile(file){
+			var reader = new FileReader();
+			reader.readAsText(file.getSource().getSource(),$scope.importTemplate.encoding);
+			reader.onload = function(e){
+				var xmlData = $(this.result).eq(1).children();
+				var data = {};
+				xmlData.each(function(){
+					data[this.tagName.toLowerCase()] = $(this).text();
+				});
+				var vioData = convertDat(data,file.name);
+				$scope.$("#datagrid").datagrid("appendRow",vioData);
+				//默认选择第一行，前提是没有其他行被选中
+				if(!$scope.$("#datagrid").datagrid("getSelected")){
+					$scope.$("#datagrid").datagrid("selectRow",0);
+				}
+			}
+		}
+
+		/**
+		 * 获得图片文件的路径
+		 * @return {[type]} [description]
+		 */
+		function parseImageFile(file){
+			var name = file.name.substring(0,file.name.lastIndexOf("_"));
+			if(!$scope.imageFiles[name]){
+				$scope.imageFiles[name] = [];
+				$scope.imageUrls[name] = [];
+			}
+			$scope.imageFiles[name].push(file);
+			var reader = new FileReader();
+			reader.readAsDataURL(file.getSource().getSource());
+			reader.onload = function(e){
+				$scope.imageUrls[name].push(this.result);
+			}
+		}
+		/**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload(){
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : "chooseFile", // you can pass in id...
+				container: $scope.$(".linkbutton_toolbar")[0], // ... or DOM Element itself
+				url : 'upload.php',
+				filters : {
+					max_file_size : '10mb',
+					mime_types: [
+						{title : "违法数据文件", extensions : "dat"},
+						{title : "照片文件", extensions : "jpg,png"}
+					]
+				},
+				init: {
+					PostInit: function() {
+						
+					},
+					FilesAdded: function(up, files) {
+						//去重
+						removeExistFiles(files);
+						for(var index=0; index<files.length; index++){
+							var file = files[index];
+							if(file.name.endWith("dat")){
+								//如果文件是dat文件，则解析该dat文件
+								parseDatFile(file);
+								//解析完成后从数组中删除dat文件，dat文件不上传
+								files.splice(index--,1);
+							}else if(file.name.endWith("jpg")){
+								//请按照文件名的形式，存储文件信息到页面变量中
+								parseImageFile(file);
+							}
+						}						
+					},
+					Error: function(up, err) {
+						console.log(err);
+					}
+				}
+			})
+		}
+
+		/**
+		 * 去除重复上传的文件
+		 * @return {[type]} [description]
+		 */
+		function removeExistFiles(files){
+			//判断上传文件是否重复
+			for(var index=0; index<files.length; index++){
+				var file = files[index];
+				if(file.name.endWith("dat")){
+					var name = file.name.substring(0,file.name.lastIndexOf("."));
+					if(isDatExist(name)){
+						//数组中移除重复的
+						files.splice(index--,1);
+					}
+				}else if(file.name.endWith("jpg")){
+					var name = file.name.substring(0,file.name.lastIndexOf("_"));
+					if(isImgExist(name)){
+						//数组中移除重复的
+						files.splice(index--,1);
+					}
+				}
+			}
+		}
+
+		/**
+		 * 判断dat文件名是否存在
+		 * @param  {[type]}  name [description]
+		 * @return {Boolean}      [description]
+		 */
+		function isDatExist(name){
+			var data = $scope.$("#datagrid").datagrid("getData").rows;
+			for(var index=0; index<data.length; index++){
+				if(data[index].fileName == name){
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * 判断img文件名是否存在
+		 * @param  {[type]}  name [description]
+		 * @return {Boolean}      [description]
+		 */
+		function isImgExist(name){
+			if($scope.imageFiles[name] != undefined){
+				return true;
+			}
+			return false;
+		}
+		/**
+		 * 将dat文件数据转化成违法数据
+		 * @param  {[type]} data [description]
+		 * @return {[type]}      [description]
+		 */
+		function convertDat(data,name){
+			var vioData = {};
+			$.extend(vioData,$scope.importTemplate);
+			for(var index in vioData){
+				if(data[vioData[index]] != undefined && data[vioData[index]] != ""){
+					vioData[index] = data[vioData[index]];
+				}
+			}
+			vioData.fileName = name.substring(0,name.lastIndexOf("."));
+			return vioData;
+		}
+
+		/**
+		 * 车辆号牌颜色标识
+		 * @param  {[type]} value [description]
+		 * @param  {[type]} row   [description]
+		 * @param  {[type]} index [description]
+		 * @return {[type]}       [description]
+		 */
+		function fitColor(value,row,index){
+			if(row.plateColor == "H"){
+				return "<div class='plate_blue'>&nbsp;&nbsp;"+value+"</div>"
+			}else if(row.plateColor == "C"){
+				return "<div class='plate_yellow'>&nbsp;&nbsp;"+value+"</div>"
+			}
+			return value
+		}
+	});
+</script>
+<style type="text/css">
+#bulkUpload .plate_yellow{
+	background-color: yellow;
+	width:100%;
+	height: 100%;
+}
+#bulkUpload .plate_blue{
+	background-color: blue;
+	color : #FFFFFF;
+	width:100%;
+	height: 100%;
+}
+#bulkUpload .th{
+	width : 70px;
+	text-align: right;
+}
+#bulkUpload .td{
+	width : 120px;
+	text-align: left;
+
+}
+</style>

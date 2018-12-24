@@ -1,0 +1,138 @@
+<div id="trafficControlInfo" class="easyui-layout" >
+   <div class="table">
+        <div class="tr">
+            <div class="th" >
+                管制名称：
+            </div>
+            <div class="td" >
+                <span cy-name="newData.traffic_control_name"></span>
+            </div>
+        </div>
+        <div class="tr">
+                <div class="th" >
+                    所在道路：
+                </div>
+                <div class="td" >
+                    <span cy-name="newData.road_name"></span>
+                </div>
+                <div class="th">管制方向：</div>
+                <div class="td" >
+                    <span cy-name="newData.direction" cy-filter="filterDirection"></span>
+                </div>
+        </div>
+        <div class="tr">
+            <div class="th">
+                开始地点：
+            </div>
+            <div class="td" >
+                <span cy-name="newData.start_site"></span>
+            </div>
+            <div class="th">
+                结束地点：
+            </div>
+            <div class="td" >
+                <span cy-name="newData.end_site"></span>
+            </div>
+        </div>
+        <div class="tr">
+                <div class="th" style="height:45px; ">
+                    管制原因：
+                </div>
+                <div class="td" cy-name="newData.control_reason" style="height:45px; width: 383px;border:solid 1px #ddd;border-radius:5px;" >
+                </div>
+            </div>
+        <div class="tr">
+                <div class="th" style="height:45px; ">
+                    影响范围：
+                </div>
+                <div class="td" cy-name="newData.influence_range" style="height:45px; width: 383px;border:solid 1px #ddd;border-radius:5px;" >
+
+                </div>
+            </div>
+        <div class="tr">
+                <div class="th">
+                    开始时间：
+                </div>
+                <div class="td" >
+                    <span cy-name="newData.start_time"></span>
+
+                </div>
+                <div class="th">
+                    结束时间：
+                </div>
+                <div class="td" >
+                    <span cy-name="newData.end_time"></span>
+                </div>
+            </div>
+        <div class="tr">
+            <div class="th" style="height:45px;">
+                    管制措施：
+                </div>
+            <div class="td" cy-name="newData.control_measures" style="height:45px; width: 383px;border:solid 1px #ddd;border-radius:5px;">
+                </div>
+        </div>
+        <div class="tr">
+            <div class="th" style="height:55px; ">
+                        绕行路线：
+                    </div>&nbsp;&nbsp;&nbsp;
+            <div class="td" cy-name="newData.bypass_line" style="height:55px; width: 383px;border:solid 1px #ddd;border-radius:5px;">
+            </div>
+
+        </div>
+        <div class="tr">
+                <div class="th">
+                    管制单位：
+                </div>
+                <div class="td" >
+                    <span cy-name="newData.org_name"></span>
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td" >
+                    <span cy-name="newData.tel"></span>
+                </div>
+            </div>
+
+        <div class="tr" style="text-align: center; margin-right: 50px">
+            <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="$destroySelf">关闭</a>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["newData"],function($scope){
+        $scope.load=function(){
+            //radioChange();
+        };
+        function radioChange(){
+                var radio=$scope.$("input[value=" + $scope.newData.direction +"]");
+                radio.attr("checked","checked");
+        }
+         $scope.filterDirection=function(value){
+            if(value=="1"){
+                return "双向";
+            }else if(value=="2"){
+                return "上行";
+            }
+            else if(value=="3"){
+                return "下行";
+            }
+        }
+
+    });
+</script>
+
+<style>
+    #trafficControlInfo .th{
+        width: 100px;
+        text-align: right;
+    }
+    #trafficControlInfo .td{
+        width: 150px;
+        text-align: left;
+    }
+    #trafficControlInfo span[cy-name]{
+        color: #0000ff;
+    }
+</style>

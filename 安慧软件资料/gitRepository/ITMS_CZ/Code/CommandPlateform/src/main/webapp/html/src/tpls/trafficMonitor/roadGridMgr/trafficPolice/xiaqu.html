@@ -1,0 +1,42 @@
+<div id="xiaqu" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">                
+                <div class="th">
+                    交警机构：
+                </div>
+                <div class="td">
+                    <input  class="cy-org-radio"name="orgId" >
+                </div>
+            </div>
+    
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+             $scope.$updateData("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        };
+    });
+</script>
+<style type="text/css">
+    #xiaqu .th{
+        width : 100px;
+        text-align: right;
+    }
+    #xiaqu .td{
+        width : 180px;
+    }
+
+</style>

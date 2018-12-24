@@ -1,0 +1,129 @@
+<div id="commonMap" style="width:100%;height:100%;">
+	<div style="width:100%;height:100%;" id="map"></div>
+</div>
+<script type="text/javascript">
+	InitPage(["parentObjForMap", "sites"], function($scope) {
+		//地图对象
+		$scope.cyMap = null;
+		var lineLayer = null;
+		var textLayer = null;
+		var siteMarkLayer = null;
+
+		$scope.load = function() {
+			$scope.initMap();
+			var sites = $scope.sites;
+			if (sites && sites.length == 2) {				
+				createrMark(sites[0]);
+				createrMark(sites[1]);
+				createLine(sites);
+				createrTextMark(sites);
+				//定位到标注点
+				//定位、放大地图
+				var siteExtent = siteMarkLayer.getDataExtent();
+				$scope.cyMap.map.zoomToExtent(siteExtent, true);
+			}
+
+		};
+
+		$scope.initMap = function() {
+			//加载地图
+			$scope.cyMap = new CYMap($scope.$("#map")[0],{isShowOverview : false});
+			// $scope.cyMap.map.events.register("featureclick", null, $scope.featureClickCallBack);
+			// $scope.cyMap.map.events.register("featureover", null, $scope.featureoverClickCallBack);
+			// $scope.cyMap.map.events.register("featureout", null, $scope.featureoutClickCallBack);
+			//2点之间直线图层
+			lineLayer = new OpenLayers.Layer.Vector("lineLayer");
+			$scope.cyMap.map.addLayer(lineLayer);
+			//文字图层
+			textLayer = new OpenLayers.Layer.Vector("textLayer", {
+				styleMap : new OpenLayers.StyleMap({
+					'default' : {
+						label : "直线距离: ${distance}千米",
+						fontColor : "blue",
+						fontSize : "20",
+						fontFamily: "Courier New, monospace",
+						fontWeight: "bold"
+						// labelAlign: "${align}",
+						// labelXOffset: "${xOffset}",
+						// labelYOffset: "${yOffset}",						
+					}
+				})
+			});
+			$scope.cyMap.map.addLayer(textLayer);
+			//标记2个点图层
+			siteMarkLayer = new OpenLayers.Layer.Markers('siteMark', null);
+			$scope.cyMap.map.addLayer(siteMarkLayer);
+
+		};
+
+		function createrMark(site) {
+			str = '<div title="'+site.siteName+'" style="background:url(\'themes/default/images/site.png\') no-repeat; height:24px; width:24px; text-align:center;cursor:pointer"></div>';
+			var size = new OpenLayers.Size(24, 24);
+			var offset = new OpenLayers.Pixel(-12, -12);
+			var ic = new OpenLayers.Icon(null, size, offset);
+			ic.imageDiv.innerHTML = str;
+
+			var lonlat = new OpenLayers.LonLat(site.lon, site.lat);
+			lonlat.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+
+			var makerFlag = new OpenLayers.Marker(lonlat, ic);
+			// makerFlag.events.register('mousedown', null, function(evt) {
+			// showDetail(vehTrackDataLst[numFlag]);
+			// });
+			siteMarkLayer.addMarker(makerFlag);
+
+		}
+
+		var lineStyle = {
+			strokeColor : 'red',
+			strokeWidth : 3,
+			strokeDashstyle : "solid" //dashdot solid dot
+		};
+		
+		//var lineLength=0;
+		function createLine(sites) {
+			var linePts = [new OpenLayers.Geometry.Point(sites[0].lon, sites[0].lat), new OpenLayers.Geometry.Point(sites[1].lon, sites[1].lat)];
+			var lineGeo = new OpenLayers.Geometry.LineString(linePts);
+			lineGeo.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+			var lineFeature = new OpenLayers.Feature.Vector(lineGeo, null, lineStyle);
+			lineLayer.addFeatures(lineFeature);
+			//openlayers自带的长度接口
+			//lineLength=lineGeo.getGeodesicLength();
+		}
+
+		function createrTextMark(sites) {
+			var siteLon=(sites[0].lon+sites[1].lon)/2;
+			var siteLat=(sites[0].lat+sites[1].lat)/2;
+			var geo = new OpenLayers.Geometry.Point(siteLon, siteLat);
+			var distance=getDistance(sites[0].lat,sites[0].lon,sites[1].lat,sites[1].lon);
+			var txtFeature = new OpenLayers.Feature.Vector(geo, {
+				distance : distance
+			});			
+			textLayer.addFeatures(txtFeature);
+		}
+		
+		var EARTH_RADIUS = 6378.137;//地球半径km 
+		
+		function rad(d)
+        {
+            return d * Math.PI / 180.0;
+        }
+        
+        function getDistance(lat1, lng1, lat2, lng2)
+        {
+            var radLat1 = rad(lat1); 
+            var radLat2 = rad(lat2);
+            var a = radLat1 - radLat2; 
+            var b = rad(lng1) - rad(lng2);
+            var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+            s = s * EARTH_RADIUS;
+            s = Math.round(s * 10000) / 10000; 
+            return s;
+        }
+        function test()
+        {
+        	
+        }
+
+	}); 
+</script>

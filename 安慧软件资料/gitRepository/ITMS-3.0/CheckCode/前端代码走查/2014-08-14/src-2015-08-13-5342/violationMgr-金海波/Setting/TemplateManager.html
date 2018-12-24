@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>违法代码</title>
+
+    <link rel="stylesheet" type="text/css" href="../../assets/css/demo.css">
+
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="application/javascript" src="../../assets/scripts/App.js"></script>
+    <script type="text/css">
+
+    </script>
+
+    <script type="application/javascript">
+
+        function selectView(menuId) {
+            $(".divView").css("display", "none");
+            $("#" + menuId).css("display","");
+        }
+
+        $(document).ready(function () {
+            App.init();
+            $('#gridTemplate').datagrid({
+                data: [
+                    {TemplateType:'违法批量导入模板',EnableFlag:'启用',TemplateDesc:'违法批量导入模板',TemplateName: '违法批量导入模板', DownLoad:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">下载</a>',Upload:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">上传</a>'},
+                    {TemplateType:'违法数据定制导出模板',EnableFlag:'启用',TemplateDesc:'违法数据定制导出模板',TemplateName: '违法数据定制导出模板', DownLoad:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">下载</a>',Upload:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">上传</a>'},
+                    {TemplateType:'违法excel导出模板',EnableFlag:'启用',TemplateDesc:'违法excel导出模板',TemplateName: '违法excel导出模板', DownLoad:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">下载</a>',Upload:' <a id="btn" href="#" class="easyui-linkbutton" style="width: 50px">上传</a>'}
+                ]
+            })
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+<div class="row">
+    <div class="col-6">
+        <table id="gridTemplate" class="easyui-datagrid" data-options="singleSelect:true,url:'datagrid_data1.json',method:'get',fitColumns:true,striped:true,selectOnCheck:false">
+            <thead>
+            <tr>
+                <th data-options="field:'ck',checkbox:true">
+                </th>
+                <th data-options="field:'TemplateType'">
+                    模板类型
+                </th>
+                <th data-options="field:'TemplateName'">
+                    模板名称
+                </th>
+                <th data-options="field:'TemplateDesc'">
+                    格式描述
+                </th>
+                <th data-options="field:'EnableFlag'">
+                    是否启用
+                </th>
+                <th data-options="field:'DownLoad'">
+                    下载
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-6">
+        <div class="row">
+            <label class="control-label col-1" for="">模板名称：</label>
+            <div class="col-5">
+                <input class="form-control" type="text"/>
+            </div>
+            <label class="control-label col-1" for="">启用状态：</label>
+            <div class="col-5">
+                <input type="radio"/>启用
+                <input type="radio"/>不启用
+            </div>
+        </div>
+        <div class="row">
+            <label class="control-label col-1" for="">格式描述：</label>
+            <div class="rol-11">
+                <input class="form-control col-11" type="text"/>
+            </div>
+        </div>
+        <div class="row">
+            <textarea name="" id="" cols="30" rows="30" style="width: 98%" ></textarea>
+        </div>
+        <div class="row" style="text-align: center">
+            <a href="#" class="easyui-linkbutton" style="width: 50px">保存</a>
+
+            <a href="#" class="easyui-linkbutton" style="width: 50px">上传</a>
+
+            <a href="#" class="easyui-linkbutton" style="width: 50px">取消</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<div id="trafficControl" class="easyui-layout" >
+
+    <div data-options="region:'center',split:true" >
+        <div id="win1">
+            <div class="table">
+                <div class="tr">
+                    <div class="td">
+                        <a  class="easyui-linkbutton button-add" iconCls="icon-add"
+                           plain="true"  group="toolbar" cy-click="addFeature">添加</a>
+                    </div>
+                    <div class="td">
+                        <a  class="easyui-linkbutton button-edit" iconCls="icon-edit"
+                           plain="true"group="toolbar"cy-click="modifyFeature" >修改</a>
+                    </div>
+                    <div class="td">
+                        <a  class="easyui-linkbutton button-remove" iconCls="icon-remove"
+                           plain="true"group="toolbar" cy-click="deleteFeature">删除</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="map"style="height:100%;width:100%" >
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope) {
+        //初始化cyMap容器
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        //wkt字符串转换器
+        var wkt_c = new OpenLayers.Format.WKT();
+        //中心点坐标
+        var centerPoint=new OpenLayers.LonLat(105.70045,28.58540);
+        //管制图层
+        var controlLayer;
+        var bypassLayer;
+        var directionDic;
+
+        var activeControl;
+        //事件类型字典
+        var eventTypeDic;
+        var dealStateDic;
+        var ispopup=true;
+
+        $scope.load=function(){
+            moveToCenterPoint();
+            initData();
+            readData();
+            readDict();
+
+        };
+        //地图平移至中心点
+        function moveToCenterPoint() {
+            centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            cyMap.map.panTo(centerPoint);
+        }
+        //初始化地图相关
+        function initData(){
+            //定义feature的监听事件over out click
+            var layerListeners= {
+                featureover: function (e) {
+                        var htmlStr = fieldInfo(e);
+                        var popup = new OpenLayers.Popup.FramedCloud("info",
+                                e.feature.geometry.getBounds().getCenterLonLat(),
+                                null, htmlStr, null, null, null);//new OpenLayers.Size(160,150)
+                        popup.setBackgroundColor("ghostwhite");
+                        popup.setOpacity(5);
+                        popup.setBorder("1px solid gray");
+                        e.feature.popup = popup;
+                        if (ispopup) {
+                            cyMap.map.addPopup(popup);
+                        }
+                },
+                featureout: function (e) {
+                    if(e.feature.popup && e.feature.popup != null){
+                        e.feature.popup.hide();
+                    }
+                },
+                featureclick:function(e){
+                    if(e.feature.popup){
+                        e.feature.popup.hide();
+                    }
+                    if(ispopup){
+                        openDialog_info(e.feature.attributes);
+                    }
+                }
+            };
+            // create a styleMap for eventLayer with a custom default symbolizer
+            var styleMap_control = new OpenLayers.StyleMap({pointRadius: 5,fillColor:"orange",strokeColor:"red",strokeWidth:3});
+            var styleMap_control_b = new OpenLayers.StyleMap({pointRadius: 5,fillColor:"orange",strokeColor:"green",strokeWidth:2});
+            //设置断面图层的option
+            controlLayer=new OpenLayers.Layer.Vector("control",{styleMap: styleMap_control,eventListeners: layerListeners});
+            bypassLayer=new OpenLayers.Layer.Vector("bypass",{styleMap: styleMap_control_b});
+            //添加断面、区间图层到map容器中
+            cyMap.map.addLayers([controlLayer,bypassLayer]);
+
+        }
+        //读取事件数据载入地图
+        function readData(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficControl/traffic-control.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        addLayer(data[index]);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        //添加图元到图层中
+        function addLayer(data){
+            var geometry=wkt_c.read(data.wkt).geometry.clone();
+            geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            var feature = new OpenLayers.Feature.Vector(geometry);
+            feature.attributes = data;
+            controlLayer.addFeatures(feature);
+
+            var geometry_b=wkt_c.read(data.bypass_line_wkt).geometry.clone();
+            geometry_b.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            var feature_b = new OpenLayers.Feature.Vector(geometry_b);
+            feature_b.attributes = data;
+            bypassLayer.addFeatures(feature_b);
+        }
+
+        /**
+         * 获取popup显示信息
+         * @param obj 鼠标点击事件
+         * @returns {string}div字符串
+         */
+        function fieldInfo(obj){
+            var str= "<div style='font-size:1em'> ";
+            str+="管制道路：&nbsp;&nbsp;"+obj.feature.attributes.road_name;
+            str+="<br>方向：&nbsp;&nbsp;"+ getTextByValueForDirection(obj.feature.attributes.direction);
+            str+="<br>起始地点：&nbsp;&nbsp;"+ obj.feature.attributes.start_site;
+            str+="<br>终止地点：&nbsp;&nbsp;"+ obj.feature.attributes.end_site;
+            return str;
+        }
+        //读取事件类型数据字典
+        function readDict(){
+            var str;
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/dict.json",
+                params :{},
+                success :function(data){
+                    eventTypeDic=data.eventType;
+                    dealStateDic=data.dealState;
+                    directionDic=data.direct;
+                    console.log(data);
+                },
+                fail : function(){}
+            });
+        }
+       function getTextByValueForDirection(value){
+
+           return getTextByValue(value,directionDic);
+       }
+        function getTextByValueForEventType(value){
+            return getTextByValue(value,eventTypeDic);
+        }
+        //根据数据字典转换事件类型
+        function getTextByValue(value,dic){
+
+            if(value){
+                for(var i in dic){
+                    if(value==dic[i].value){
+                        return dic[i].text;
+                    }
+                }
+            }
+        }
+
+        //增加图元
+        $scope.addFeature=function(){
+            cyMap.activeLayer=controlLayer;
+            ispopup=addCyFeature("polyline",cyMap, onFeature);
+        };
+        //修改图元
+        $scope.modifyFeature=function(){
+            cyMap.activeLayer=controlLayer;
+           // cyMap.map.eventListeners.removeEvent("featureclick");
+            ispopup=modifyCyFeature(cyMap,onModify);
+        };
+        //删除图元
+        $scope.deleteFeature=function(){
+            cyMap.activeLayer=controlLayer;
+            ispopup=deleteCyFeature(cyMap,onSelect);
+        };
+        //增加图元的回调函数
+        function onFeature(feature){
+
+            cyMap.activeControl.deactivate();
+            openDialog(null);
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+            ispopup=true;
+        }
+        //修改图元的回调函数
+        function onModify(feature){
+            openDialog(feature.attributes);
+            cyMap.activeControl.deactivate();
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+            ispopup=true;
+        }
+        //删除图元的回调函数
+        function onSelect(feature){
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    cyMap.activeLayer.removeFeatures(feature);
+                    for(var index in bypassLayer.features){
+                        if(feature.attributes.traffic_control_id==bypassLayer.features[index].attributes.traffic_control_id){
+                            bypassLayer.removeFeatures(bypassLayer.features[index]);
+                        }
+                    }
+                    cyMap.activeControl.deactivate();
+                    cyMap.map.removeControl(cyMap.activeControl);
+                    cyMap.activeControl=null;
+                }
+            });
+            ispopup=true;
+        }
+        //添加绕行路线
+        function addByPass(){
+            cyMap.activeLayer=bypassLayer;
+            ispopup=addCyFeature("polyline",cyMap, onFeature_bypass);
+        }
+        //绕行路线回调函数
+        function onFeature_bypass(feature){
+            cyMap.activeControl.deactivate();
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+            ispopup=true;
+        }
+        function modifyByPass(){
+            cyMap.activeLayer=bypassLayer;
+            ispopup=modifyCyFeature(cyMap,onModifyByPass);
+        }
+        function onModifyByPass(feature){
+            cyMap.activeControl.deactivate();
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+            ispopup=true;
+        }
+
+        //打开事件详细信息对话框
+        function openDialog(obj){
+            $scope.$setParam("newData",obj);
+            $scope.$setParam("newFunction",{
+                "create_bypass":addByPass,
+                "modify_bypass":modifyByPass,
+                "controlLayer":controlLayer,
+                "bypassLayer":bypassLayer
+            });
+
+            $scope.$openDialog("infoDialog", {
+                title: "交通管制信息",
+                height: 530,
+                width: 550,
+                modal:false,
+                href: "tpls/trafficMonitor/trafficControl/traffic-control-info-edit.html"
+            }, true);
+        }
+        function openDialog_info(obj){
+            $scope.$setParam("newData",obj);
+            $scope.$setParam("create_bypass",addByPass);
+            $scope.$setParam("modify_bypass",modifyByPass);
+            // $scope.$setParam("eventTypeDic",eventTypeDic);
+            $scope.$openDialog("showDialog", {
+                title: "交通管制信息",
+                height: 510,
+                width: 550,
+                modal:false,
+                href: "tpls/trafficMonitor/trafficControl/traffic-control-info.html"
+            }, true);
+        }
+
+    });
+</script>
+
+<style>
+    #win1{
+        width:200px;
+        height:35px;
+        position:absolute;
+        right:10px;
+        top:8px;
+        z-index: 100000;
+        background: darkblue;
+        position:absolute;
+    }
+</style>

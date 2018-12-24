@@ -1,0 +1,106 @@
+<form class="laneForm" id="lane-info" cy-form="laneInfo">
+	<div class="table">
+		<div class="tr">
+			<div class="th">
+				车道类型：
+			</div>
+			<div class="td">
+				<input class="easyui-combobox" name="laneType" id="laneType" data-options="required:true"/>
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				是否限行：
+			</div>
+			<div class="td">
+				<input type="radio" name="isRestrict" value="1" checked="checked"/>
+				是&nbsp;&nbsp;
+				<input type="radio" name="isRestrict" value="0"/>
+				否
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				大车限速：
+			</div>
+			<div class="td">
+				<input class="easyui-numberbox" data-options="max:200" name="limitLarge" style="width:85px;"/>公里/小时
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				小车限速：
+			</div>
+			<div class="td">
+				<input class="easyui-numberbox" data-options="max:200" name="limitSmall" style="width:85px;"/>公里/小时
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				其他车限速：
+			</div>
+			<div class="td">
+				<input class="easyui-numberbox" data-options="max:200" name="limitOthers" style="width:85px;"/>公里/小时
+			</div>
+		</div>
+	</div>
+	<div class="linkbutton_toolbar" style="text-align: center;margin-top: 20px;float:left;">
+		<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-ok'" cy-click="update">确定</a>
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+	</div>
+</form>
+<script type="text/javascript">
+	/**
+	 * removeLane 删除车道panel的方法
+	 */
+	InitPage(["laneInfo","updateLane","roadType"], function($scope) {
+		//获取所在道路的道路类型
+		if($scope.roadType != undefined){
+			//获取默认的车道类型数据字典
+			$scope.$getDefaultCode(["141"],function(data){
+				var laneTypeAll = data["141"];//所有车道类型
+				var laneType = [];//根据道路类型存储新的车道类型
+				if ($scope.roadType == "0" || $scope.roadType == "1" || $scope.roadType == "2" || $scope.roadType == "3" || $scope.roadType == "4") {	//非城市道路				
+					for (var i=0; i < laneTypeAll.length; i++) {
+					  if(laneTypeAll[i].value == "01" || laneTypeAll[i].value == "02" || laneTypeAll[i].value == "03" || laneTypeAll[i].value == "04" || 
+					  		laneTypeAll[i].value == "05" || laneTypeAll[i].value == "06" || laneTypeAll[i].value == "08"){
+					  		laneType.push(laneTypeAll[i]);
+					  }
+					}
+				}else if($scope.roadType == "9"){//其他道路
+					laneType = laneTypeAll;
+				}else{//城市道路
+					for (var i=0; i < laneTypeAll.length; i++) {
+					  if(laneTypeAll[i].value == "07" || laneTypeAll[i].value == "09" || laneTypeAll[i].value == "11" || laneTypeAll[i].value == "12" || 
+					  		laneTypeAll[i].value == "13" || laneTypeAll[i].value == "14" || laneTypeAll[i].value == "15"){
+					  		laneType.push(laneTypeAll[i]);
+					  }
+					}
+				}
+				$scope.$("#laneType").combobox("loadData",laneType);
+			});
+		}
+		/**
+		 * 更新车道 
+		 */
+		$scope.update = function(){
+			if($scope.$("#lane-info").form("validate")){
+				$scope.$updateData("laneInfo");
+				$scope.updateLane($scope.laneInfo);
+				$scope.$destroySelf();
+			}
+		};
+	}); 
+</script>
+<style type="text/css">
+	#lane-info .th {
+		text-align: right;
+		width: 100px;
+	}
+	#lane-info .td {
+		height: auto;
+	}
+	#lane-info .td > input[class^='easyui-'] {
+		width: 130px;
+	}
+</style>

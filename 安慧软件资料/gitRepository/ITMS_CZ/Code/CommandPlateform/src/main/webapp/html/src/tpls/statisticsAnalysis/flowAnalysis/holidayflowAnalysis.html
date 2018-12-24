@@ -1,0 +1,198 @@
+<div id="holidayFlowView" style="height: 100%;">
+	<div class="easyui-layout" id="queryView">
+		<div data-options="region:'north'">
+			<form cy-form="cyFrmCond" class="searchForm" method="post">
+				<div class="searchPanel">
+					<div class="panel_title">查询条件</div>
+					<div class="table">
+						<div class="tr">
+							<div class="th" style="padding-left: 5px">点位名称：</div>
+							<div class="td" style="padding-left: 5px">
+									<input class="cy-site-checkbox" id="cmbSiteQ" bayonet="true" after-change="getStyle" name="cmbSiteQ"
+									data-options="required:true" iscode="true" width="120px;">
+							</div>
+							<div class="th" style="padding-left: 5px">选择年份：</div>
+							<div class="td" style="display: inline">
+									<input class="easyui-combobox" id="year" name="year"
+									data-options="editable:false,valueField:'value',textField:'text'"
+									style="width: 75px;" />
+							</div>
+							<div class="th" style="padding-left: 5px">选择节日：</div>
+							<div class="td" style="display: inline">
+						        <input class="easyui-combobox" id="festivalType" cy-code="020" data-options="valueField:'value',textField:'text',required: true"
+							      name="festivalType" validType="festivalRequired"
+							      style="width: 120px;" />
+							</div>
+							<div class="th th-hide" style="padding-left: 5px;display: none">比较年份：</div>
+							<div class="td td-hide" style="display: none">
+									<input class="easyui-combobox" id="yearCompare" name="yearCompare"
+									data-options="editable:false,valueField:'value',textField:'text'"
+									style="width: 75px;" />
+							</div>
+							<div class="th th-hide" style="padding-left: 5px;display: none">比较节日：</div>
+							<div class="td td-hide" style="display: none">
+								<input class="easyui-combobox" id="festivalTypeCompare" cy-code="020" data-options="valueField:'value',textField:'text',required: true,validType:['compareRequired','NoEqualRequired','DayEqualRequired']"
+							      name="festivalTypeCompare" 
+							      style="width: 120px;" />
+							</div>
+							<div class="td" style="text-align: right; width: 100px">
+								<a class="easyui-linkbutton button" cy-click="searchReport"
+									id="searchButton" data-options="iconCls:'icon-search'">查询</a>
+							</div>
+					</div>
+				</div>
+				</div>
+			</form>
+		</div>
+		<div data-options="region:'center'" style="padding-left: 12px">
+			<iframe id="iframe" src="" align="center" width="100%" height="100%"
+				marginwidth=0 scrolling="yes" frameborder="0"> </iframe>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+InitPage([],function($scope) {
+	$scope.$getDefaultCode(['020']);
+    var festivalList = [];
+    $scope.load = function () {
+        $scope.initPage();
+        //初始化加载 
+        var yearData = [];
+        var currentYear = new Date().getFullYear();
+        //构造年份下拉列表 
+        for (var i = currentYear; i >= 2000; i--) {
+            yearData.push({"value": i, "text": i + "年"});
+        }
+        $scope.$('#year').combobox('loadData', yearData);
+        $scope.$('#yearCompare').combobox('loadData', yearData);
+        if (yearData.length > 0) {
+            $scope.$('#year').combobox('select', yearData[0].value);
+        }
+        if (yearData.length > 1) {
+            $scope.$('#yearCompare').combobox('select', yearData[1].value);
+        }
+    };
+  //根据点位选择一个或多个来决定比较节假日显示与不显示 单点位显示比较节假日 多点位则不显示 
+	$scope.getStyle = function(){
+		var siteCode = $scope.$("#cmbSiteQ").textbox("getValue");
+		if(siteCode.split(",").length>1){
+			$scope.$(".th-hide").hide();
+			$scope.$(".td-hide").hide();
+			$scope.$('#festivalTypeCompare').combobox({ required: false });//取消验证
+		}
+		else{
+			$scope.$(".th-hide").show();
+			$scope.$(".td-hide").show();
+			$scope.$('#festivalTypeCompare').combobox({ required: true });//增加验证
+		}
+	};
+	$.extend($.fn.validatebox.defaults.rules, { 
+		festivalRequired: {   
+	        validator: function(value,param){ 
+	        	var year = $scope.$("#year").combobox("getValue");
+	        	var festivalType = $scope.$('#festivalType').combobox("getValue");
+	             if ($scope.checkFestivalConfig(year, festivalType)=="") {   
+	                return false;  
+	             }else {  
+	                return true;  
+	             }    
+	        },   
+	        message: '节日未配置'   
+	    }, 
+		compareRequired: {   
+	        validator: function(value,param){ 
+	        	var year = $scope.$("#yearCompare").combobox("getValue");
+	        	var festivalType = $scope.$('#festivalTypeCompare').combobox("getValue");
+	        	if ($scope.checkFestivalConfig(year, festivalType)=="") {   
+	                return false;  
+	             }else {  
+	                return true;  
+	             }    
+	        },   
+	        message: '比较节日未配置'   
+	    },
+	    NoEqualRequired: {   
+	        validator: function(value,param){ 
+	        	var year = $scope.$("#year").combobox("getValue");
+	        	var yearCompare = $scope.$("#yearCompare").combobox("getValue");
+	        	var festivalType = $scope.$("#festivalType").combobox("getValue");
+	        	var festivalTypeCompare = $scope.$('#festivalTypeCompare').combobox("getValue");
+	             if (year == yearCompare && festivalType == festivalTypeCompare) {   
+	                return false;  
+	             }else {  
+	                return true;  
+	             }    
+	        },   
+	        message: '节日完全重复'   
+	    },
+	    DayEqualRequired: {   
+	        validator: function(value,param){ 
+	        	var year = $scope.$("#year").combobox("getValue");
+	        	var yearCompare = $scope.$("#yearCompare").combobox("getValue");
+	        	var festivalType = $scope.$("#festivalType").combobox("getValue");
+	        	var festivalTypeCompare = $scope.$('#festivalTypeCompare').combobox("getValue");
+                var validResult = $scope.checkFestivalConfig(year, festivalType);
+                var beginDateStart = validResult.split(',')[0];
+                var beginDateEnd = validResult.split(',')[1]; 
+                var validResult2 = $scope.checkFestivalConfig(yearCompare,festivalTypeCompare);
+                var endDateStart = validResult2.split(',')[0];
+                var endDateEnd = validResult2.split(',')[1];
+                if (new Date(endDateEnd) - new Date(endDateStart) != new Date(beginDateEnd) - new Date(beginDateStart)) {
+	                return false;  
+	             }else {  
+	                return true;  
+	             }    
+	        },   
+	        message: '节日日期天数不一致'   
+	    }
+	});
+    $.extend($scope, {
+        initPage: function () {
+            //初始化时查询所有节假日列表
+            $scope.$ajaxRequest({
+                url: "../../service/sysCfg/sysFestivalAction/selectAllFestivalList",
+                //params : null,
+                success: function (retData) {
+                    festivalList = retData.result.rows;
+                },
+                fail: function (errTxt) {
+                    alert(errTxt);
+                }
+            });
+        },
+        searchReport: function () {
+            if ($scope.$(".searchForm").form('validate')) {
+                var paramString = "";
+                $scope.$updateData("cyFrmCond");
+                var formData = $scope.cyFrmCond;
+                var validResult = $scope.checkFestivalConfig(formData.year, formData.festivalType);
+                var beginDateStart = validResult.split(',')[0];
+                var beginDateEnd = validResult.split(',')[1];
+                paramString += "&SITE_CODE=" + formData.cmbSiteQ + "&BEGIN_DATE_START=" + beginDateStart + "&BEGIN_DATE_END=" + beginDateEnd;
+                if (formData.cmbSiteQ.split(",").length > 1) {
+                    $scope.$("#iframe").attr("src", "../../../Report/run?__report=Holidays_Flow_MultiRoad.rptdesign" + paramString);
+                    console.log("../../frameset?__report=Holidays_Flow_MultiRoad.rptdesign" + paramString);
+                }
+                else if (formData.cmbSiteQ.split(",").length == 1) {
+                    var validResult = $scope.checkFestivalConfig(formData.yearCompare, formData.festivalTypeCompare);
+                    var endDateStart = validResult.split(',')[0];
+                    var endDateEnd = validResult.split(',')[1];
+                    paramString += "&END_DATE_START=" + endDateStart + "&END_DATE_END=" + endDateEnd;
+                    $scope.$("#iframe").attr("src", "../../../Report/run?__report=Holidays_Flow_MultiYear.rptdesign" + paramString);
+                    console.log("../../frameset?__report=Holidays_Flow_MultiRoad.rptdesign" + paramString);
+                }
+            }
+        },
+        checkFestivalConfig: function (year, festivalType) {
+            var result = "";
+            $.each(festivalList, function (n, value) {
+                if (value.year == year && value.festivalType == festivalType) {
+                    result += value.startDate + ',' + value.endDate;
+                    return result;
+                };
+            });
+            return result;
+        }
+    })
+});
+</script>

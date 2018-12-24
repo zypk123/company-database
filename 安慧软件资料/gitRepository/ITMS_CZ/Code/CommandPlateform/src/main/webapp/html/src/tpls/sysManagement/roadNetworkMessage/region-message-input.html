@@ -1,0 +1,468 @@
+<!--路段信息添加页面-->
+<div class="easyui-layout">
+	<form cy-form="regionalData" id="form">
+		<div class="searchPanel" data-options="region:'north',border:false">
+			<div class="panel_title">
+				流量监控段信息
+			</div>
+			<div id="regionalMessage" class="table">
+				<div class="tr">
+					<div class="th">
+						编号：
+					</div>
+					<div class="td">
+						<input name="regionalCode" class="easyui-textbox"
+						validType="length[0,32]" data-options="required: true"/>
+					</div>
+					<div class="th">
+						名称：
+					</div>
+					<div class="td">
+						<input name="regionalName" class="easyui-textbox"
+						data-options="required: true"/>
+					</div>
+					<div class="th">
+						行政区划：
+					</div>
+					<div class="td">
+						<input name="districtCode" class="cy-district-radio"
+						data-options="required: true" />
+					</div>
+					<div class="th">
+						所属机构：
+					</div>
+					<div class="td">
+						<input name="orgId" id="orgId" class="cy-org-radio" after-change="getSiteAndDeviceByOrg" data-options="required: true"/>
+					</div>
+				</div>
+				<div class="tr">
+
+					<div class="th">
+						所在道路：
+					</div>
+					<div class="td">
+						<input name="roadId" id="roadId" class="cy-road-radio"
+						after-change="roadChange()" filter="getRoadByOrg" data-options="required: true" />
+					</div>
+					<div class="th">
+						方向类型：
+					</div>
+					<div class="td">
+						<input id="directionType" class="easyui-combobox"
+						name="directionType" cy-code="070" data-options="required:true" />
+					</div>
+					<div class="th">
+						方向名称：
+					</div>
+					<div class="td">
+						<input name="directionName" class="easyui-textbox" />
+					</div>
+					<div class="th" style="width: 93px;">
+						区间距离：
+					</div>
+					<div class="td">
+						<input name="distance" class="easyui-textbox"
+						data-options="validType:['numOrDecimal','length[0,8]'],required: true" style="width: 108px" />
+						千米
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 90px;">
+						启用标识：
+					</div>
+					<div class="td">
+						<input type="radio" name="enableFlag" value="1" checked="checked"/>
+						启用
+						<input type="radio" name="enableFlag" value="0" />
+						不启用
+					</div>
+					<!-- <div class="th" style="width: 115px;">
+					支持区间测速：
+					</div> -->
+					<!-- <div class="td">
+					<input type="radio"  name="hasSupportSpeed" cy-click="showIntervalInfo()" value="1"/>
+					是
+					<input type="radio" name="hasSupportSpeed" cy-click = "showIntervalInfo()" value="0" checked="checked"/>
+					否
+					</div> -->
+				</div>
+				<div class="tr">
+					<div class="th">
+						起点位置：
+					</div>
+					<div class="td" style="width: 156px;">
+						<input id="entrySiteName" name="entrySiteId"
+						class="easyui-textbox" data-options="required: true"
+						style="width: 120px;" readonly="true">
+						<a class="easyui-linkbutton"
+						cy-click="setStart()">起点</a>
+					</div>
+					<div class="th">
+						终点位置：
+					</div>
+					<div class="td">
+						<input id="exitSiteName" name="exitSiteId" class="easyui-textbox"
+						data-options="required: true" style="width: 120px;" readonly="true">
+						<a
+						class="easyui-linkbutton" cy-click="setEnd()">终点</a>
+					</div>
+					<span style="color: red;line-height: 40px;margin-left: 30px">(请在地图上选取起止点位)</span>
+				</div>
+			</div>
+		</div>
+
+		<div id="divMapPanel" class="searchPanel"
+		data-options="region:'west',border:false"
+		style="width: 100%; height: 400px"></div>
+
+		<!-- <div class="searchPanel"  id="intervalPanel" data-options="region:'east',border:false"
+		style="width: 28%; height: 300px">
+		<div class="panel_title">
+		限速信息
+		</div>
+		<div class="table parameter">
+		<div class="tr">
+		<div class="th">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;大车限高速：
+		</div>
+		<div class="td">
+		<input class="easyui-textbox" name="limitLarge" validType="length[0,3]"/>
+		km/h
+		</div>
+		<div class="th">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;小车限高速：
+		</div>
+		<div class="td">
+		<input class="easyui-textbox" name="limitSmall" validType="length[0,3]"/>
+		km/h
+		</div>
+		</div>
+		<div class="tr">
+		<div class="th">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;限低速：
+		</div>
+		<div class="td">
+		<input class="easyui-textbox" name="limitLower" validType="length[0,3]"/>
+		km/h
+		</div>
+		<div class="th">
+		大车限速容许值：
+		</div>
+		<div class="td">
+		<input class="easyui-textbox" name="limitLargeMargin" validType="length[0,3]"/>
+		km/h
+		</div>
+		<div class="th">
+		小车限速容许值：
+		</div>
+		<div class="td">
+		<input class="easyui-textbox" name="limitSmallMargin" validType="length[0,3]"/>
+		km/h
+		</div>
+		</div>
+		</div>
+		</div> -->
+		<div data-options="region:'south'" style="height: 30px;">
+			<div class="tr">
+				<div class="td" style="text-align: center">
+					<a class="easyui-linkbutton button-main"
+					data-options="iconCls:'icon-save'" cy-click="save">保存</a>&nbsp;&nbsp;&nbsp;
+					<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+					cy-click="$closeSelf">取消</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<script>
+	InitPage(["saveRegional", "regionalData", "editRegional"], function($scope) {
+
+		/**
+		 *定义传递给地图的对象
+		 */
+		var parentObjForMap = {
+			regionType : "ROADREGION", //DEVICEREGION
+			curSelectSiteCharacter : "START", //START表示起点,END表示终点
+			sendSite : function(site) {
+				//alert(site.siteId);
+				if (parentObjForMap.curSelectSiteCharacter == "START") {
+					$scope.startId = site.siteId;
+					$scope.$("#entrySiteName").textbox("setValue", site.siteId);
+					//赋值给控件
+					$scope.$("#entrySiteName").textbox("setText", site.siteName);
+				} else {
+					$scope.endId = site.siteId;
+					$scope.$("#exitSiteName").textbox("setValue", site.siteId);
+					$scope.$("#exitSiteName").textbox("setText", site.siteName);
+				}
+			}
+		};
+
+		//初始化加载
+		$scope.load = function() {
+			$scope.$("#entrySiteName").textbox("setText", $scope.regionalData.entrySiteName);
+			$scope.$("#exitSiteName").textbox("setText", $scope.regionalData.exitSiteName);
+			//设置起始点位不可编辑
+			//$scope.$("#entrySiteName").textbox("disable");
+			//$scope.$("#exitSiteName").textbox("disable");
+
+			//加载地图
+			//loadMap();
+
+			//判断是否是添加页面
+			if ($scope.$params.get("type") == "add") {
+				//隐藏测速面板
+				$scope.$("#intervalPanel").hide();
+				$scope.save = function() {
+					if ($scope.$("#form").form("validate")) {
+						$scope.regionalData.entrySiteId = $scope.startId;
+						$scope.regionalData.exitSiteId = $scope.endId;
+						$scope.$updateData("regionalData");
+						//console.log($scope.regionalData);
+						$scope.saveRegional($scope.regionalData);
+					}
+				};
+				loadMapForAdd();
+			} else {
+				//隐藏或显示测速面板
+				if (!$scope.regionalData.hasSupportSpeed) {
+					$scope.$("#intervalPanel").hide();
+				}
+				$scope.save = function() {
+					if ($scope.$("#form").form("validate")) {
+						$scope.regionalData.entrySiteId = $scope.startId;
+						$scope.regionalData.exitSiteId = $scope.endId;
+						$scope.$updateData("regionalData");
+						$scope.editRegional($scope.regionalData);
+					}
+				};
+				loadMapForEdit();
+			}
+		};
+
+		//测速限制panel展示
+		$scope.showIntervalInfo = function() {
+			var interval = $scope.$("input[name='hasSupportSpeed']:checked").val();
+			if (0 == interval) {
+				$scope.$("#intervalPanel").hide();
+			} else {
+				$scope.$("#intervalPanel").show();
+			}
+		};
+
+		//do something after road change
+		$scope.roadChange = function() {
+			var isOrgId = $scope.$("#orgId").val();
+			if(isOrgId){
+			//道路发生变化，点位置空
+			$scope.$("#entrySiteName").textbox("setText", '');
+			$scope.$("#entrySiteName").textbox("setValue", '');
+			$scope.$("#exitSiteName").textbox("setText", '');
+			$scope.$("#exitSiteName").textbox("setValue", '');
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var roadId = $scope.$('input[type="hidden"][name="roadId"]').val();
+			var directionType = $scope.$("#directionType").combobox("getValue");
+			if (directionType != '') {
+				parentObjForMap.addSiteToMap(roadId, directionType,orgId);
+				//loadMapForEdit();
+				//道路ID，方向类型
+			}
+			}else{
+				var isRoadId = $scope.$("#roadId").textbox("getValue");
+				if(isRoadId){
+					$scope.$("#roadId").textbox("clear");
+					$.messager.alert("提示", "请先选择所属机构！");
+				}
+			}
+		};
+
+		//czy给方向类型注册改变事件，一单方向类型改变需要调地图addSiteToMap方法来更改地图上显示的点位，道路选择的改变也是同样的道路
+
+		$scope.$("#directionType").combobox({
+			onSelect : function(record) {
+				//parentObjForMap.curSelectSiteCharacter="END";
+				//empty starting point & ending point if diretionType have changed
+				$scope.$("#entrySiteName").textbox("setText", '');
+				$scope.$("#entrySiteName").textbox("setValue", '');
+				$scope.$("#exitSiteName").textbox("setText", '');
+				$scope.$("#exitSiteName").textbox("setValue", '');
+				var orgId = $scope.$("#orgId").textbox("getValue");
+				var roadId = $scope.$('input[type="hidden"][name="roadId"]').val();
+				var directionType = $scope.$("#directionType").combobox("getValue");
+				if (parentObjForMap.addSiteToMap) {
+					parentObjForMap.addSiteToMap(roadId, directionType,orgId);
+					//道路ID，方向类型
+				}
+
+				//debugger;
+				/* $scope.$ajaxRequest({
+				 url : $scope.$restRoot + "road/roadCode/queryDirectionNameByRoadId",
+				 params : {
+				 roadId : roadId,
+				 directionType : directionType
+
+				 },
+				 memoth : "post",
+				 success : function(data) {
+				 console.log(data);
+				 $scope.$('#directionName').textbox("setValue",data);
+				 },
+				 fail : function(errMsg) {
+				 $.messager.alert("提示", "空值！");
+				 }
+				 }); */
+			}
+		});
+
+		/**
+		 *加载地图
+		 */
+		function loadMapForAdd() {
+			$scope.$setParam("parentObjForMap", parentObjForMap);
+			var href = 'tpls/public/region-on-map.html';
+			$scope.$('#divMapPanel').panel({
+				href : href
+			});
+		}
+
+		function loadMapForEdit() {
+			//console.log($scope.regionalData.roadId);
+			//console.log($scope.regionalData.directionType);
+			$scope.$setParam("parentObjForMap", parentObjForMap);
+			$scope.$setParam("roadId", $scope.regionalData.roadId);
+			$scope.$setParam("directionType", $scope.regionalData.directionType);
+			var siteStart = {
+				siteId : $scope.regionalData.entrySiteId
+			};
+			var siteEnd = {
+				siteId : $scope.regionalData.exitSiteId
+			};
+			$scope.$setParam("startSite", siteStart);
+			$scope.$setParam("endSite", siteEnd);
+			var href = 'tpls/public/region-on-map.html';
+			$scope.$('#divMapPanel').panel({
+				href : href
+			});
+		}
+		
+		//根据机构加载点位或加载相关设备
+		$scope.getSiteAndDeviceByOrg = function(){
+			//debugger;
+			$scope.$("#roadId").textbox("clear");//清空原来加载的道路
+			$scope.$("#siteId").combobox("clear");//清空原来加载的点位
+			$scope.$("#ydp").combobox("clear");//清空原来加载的诱导屏设备
+			$scope.$("#xsp").combobox("clear");//清空原来加载的限速牌设备
+			var roadId = $scope.$("#roadId").textbox("getValue");
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			if(roadId != "" || orgId != ""){
+				var datas = {};//存机构或道路
+				datas.roadId = roadId;
+				datas.orgId = orgId;
+				$scope.$ajaxRequest({
+	        		url: $scope.$restRoot+'device/site/querySites',
+	        		params: datas,
+	        		success: function(data){
+	        			if(data!= undefined){//如果返回数据，加载数据，并清空之前选择的点位
+		        			$scope.$("#siteId").combobox("loadData",data);
+	            		}
+	        			if(orgId != ""){
+	        				//根据机构ID查询加载关联诱导屏
+	               			var privCode = $scope.$getOrgPrivCode(orgId);//根据机构ID查机构过滤代码
+	       		    		$scope.$ajaxRequest({
+	       			            url:$scope.$restRoot + "device/deviceConfig/queryRelevanceDevice",
+	       			            params:{orgPrivilegeCode : privCode},
+	       			            method:"post",
+	       			            success:function(data){
+	       			            	console.log(data);
+	       			            	if(data != undefined && data["07"]){
+	       			        			$scope.$("#ydp").each(function(){
+	       			               	   		$(this).combobox("loadData",data["07"]);//诱导屏设备
+	       				               	});
+	       			            	}
+	       			            	if(data != undefined && data["06"]){
+	       			        			$scope.$("#xsp").each(function(){
+	       			               	   		$(this).combobox("loadData",data["06"]);//诱导屏设备
+	       				               	});
+	       			            	}
+	       			            },
+	       			            fail:function(errMsg){
+	       			                $.messager.alert("提示","初始关联设备失败，请重新打开此页面！");
+	       			            }
+	       			        });
+	        			}else{
+	        				$scope.$("#ydp").each(function(){
+		               	   		$(this).combobox("loadData",[]);//诱导屏设备
+			               	});
+			               	$scope.$("#xsp").each(function(){
+		               	   		$(this).combobox("loadData",[]);//限速牌设备
+			               	});
+	        			}
+	        		},
+	        		fail: function(errMsg){
+	        			$.messager.alert("提示","点位加载失败！");
+	        		}	
+	        	});	
+			}else{
+				$scope.$("#siteId").combobox("loadData",[]);//点位
+				$scope.$("#ydp").each(function(){
+           	   		$(this).combobox("loadData",[]);//诱导屏设备
+               	});
+               	$scope.$("#xsp").each(function(){
+           	   		$(this).combobox("loadData",[]);//限速牌设备
+               	});
+			}
+		};
+		
+		//机构道路联动
+		$scope.getRoadByOrg = function(id, text, attribute) {
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if (!orgId || orgId == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for (var i in orgPrivCodes) {
+					if (orgPrivCodes[i].startWith(privCode)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+
+		//设置起点位
+		$scope.setStart = function() {
+			parentObjForMap.curSelectSiteCharacter = "START";
+		};
+		//设置终点位
+		$scope.setEnd = function() {
+			parentObjForMap.curSelectSiteCharacter = "END";
+
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#regionalMessage .th {
+		text-align: right;
+		width: 90px;
+	}
+
+	#regionalMessage .td {
+		text-align: left;
+		width: 155px;
+	}
+
+	#road-structure .th {
+		text-align: right;
+		width: 130px;
+	}
+
+	#road-structure .td {
+		text-align: left;
+		width: 100px;
+	}
+</style>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.MapRoadMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.MapRoad" >
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="KIND" property="kind" jdbcType="VARCHAR" />
+    <result column="POPNAME" property="popname" jdbcType="VARCHAR" />
+    <result column="DIRECTION" property="direction" jdbcType="DECIMAL" />
+    <result column="DISTRICT" property="district" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="DECIMAL" />
+    <result column="LENGTH" property="length" jdbcType="DECIMAL" />
+    <result column="LANES" property="lanes" jdbcType="DECIMAL" />
+    <result column="FORMOFWAY" property="formofway" jdbcType="DECIMAL" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DECIMAL" />
+    <result column="CYID" property="cyid" jdbcType="VARCHAR" />
+    <result column="POLICEAREA" property="policearea" jdbcType="VARCHAR" />
+    <result column="WKT" property="wkt" javaType="string" jdbcType="CLOB"/>
+    <result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR"/>
+    <result column="REGIONAL_ID" property="regionalId" jdbcType="VARCHAR"/>
+    <result column="FROADNAME" property="fRoadName" jdbcType="VARCHAR"/>
+    <result column="BROADNAME" property="bRoadName" jdbcType="VARCHAR"/>
+    
+    <result column="REGIONAL_NAME" property="regionalName" jdbcType="VARCHAR"/>
+    <result column="REGIONAL_DESIGN_CAPACITY" property="regionalDesignCapacity" jdbcType="VARCHAR"/>
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR"/>
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    NAME, KIND, POPNAME, DIRECTION, DISTRICT, TYPE, LENGTH, LANES, FORMOFWAY,CYID,POLICEAREA,WKT,
+    ROAD_CODE,REGIONAL_ID,FROADNAME,BROADNAME,ORG_ID
+  </sql>
+  
+  <select id="selectAllRoad"  resultMap="BaseResultMap" parameterType="java.util.HashMap">
+   select rg.WKT,
+       rg.REGIONAL_ID,
+       rg.FROADNAME,
+       rg.BROADNAME,
+       rg.REGIONAL_NAME,
+       rg.regional_code,
+       rg.ORG_PRIVILEGE_CODE,
+       rg.lane_num                 as lanes,
+       rg.REGIONAL_DESIGN_CAPACITY,
+       rg.DIRECTION_TYPE,
+       rg.ORG_ID,
+       rg.DIRECTION_NAME,
+       rd.road_name                as NAME,
+       rd.road_alias_name          as POPNAME,
+       rd.road_code,
+       rd.road_type                as TYPE
+  from (select WKT,
+               t1.REGIONAL_ID,
+               t2.road_id,
+               t2.entry_site_id,
+               t2.exit_site_id,
+               (select st.site_name
+                  from t_sys_site st
+                 where st.site_id = t2.entry_site_id) as FROADNAME,
+               (select st.site_name
+                  from t_sys_site st
+                 where st.site_id = t2.exit_site_id) as BROADNAME,
+               t2.REGIONAL_NAME,
+               t2.regional_code,
+               t2.ORG_PRIVILEGE_CODE,
+               t2.lane_num,
+               t2.REGIONAL_DESIGN_CAPACITY,
+               t2.DIRECTION_TYPE,
+               t2.ORG_ID,
+               t2.DIRECTION_NAME
+          from MAP_ROAD t1, T_SYS_REGION t2
+         where t1.REGIONAL_ID = t2.REGIONAL_ID) rg
+  left join t_sys_road rd
+    on rg.road_id = rd.road_id
+    <where> 1=1 
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND rg.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+    </where>
+    order by regional_code
+  </select>
+  
+   <select id="selectRoadCount" resultType="Integer" parameterType="java.util.HashMap">
+    select count(*)
+    from MAP_ROAD t1
+    left join T_SYS_REGION t2 on t1.REGIONAL_ID=t2.REGIONAL_ID
+    <where> 1=1 
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND t2.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+    </where>
+  </select>
+  
+   <select id="selectByRegionalId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    NAME, KIND, POPNAME, DIRECTION, DISTRICT, TYPE, LENGTH, LANES, FORMOFWAY,CYID,POLICEAREA,WKT,
+    ROAD_CODE,t1.REGIONAL_ID,FROADNAME,BROADNAME,
+    REGIONAL_NAME,REGIONAL_DESIGN_CAPACITY,DIRECTION_TYPE,ORG_ID
+    from MAP_ROAD t1
+    left join T_SYS_REGION t2 on t1.REGIONAL_ID=t2.REGIONAL_ID
+    where t1.REGIONAL_ID = #{regionalId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    NAME, KIND, POPNAME, DIRECTION, DISTRICT, TYPE, LENGTH, LANES, FORMOFWAY,CYID,POLICEAREA,WKT,
+    ROAD_CODE,t1.REGIONAL_ID,FROADNAME,BROADNAME,
+    REGIONAL_NAME,REGIONAL_DESIGN_CAPACITY,DIRECTION_TYPE,ORG_ID
+    from MAP_ROAD t1
+    left join T_SYS_REGION t2 on t1.REGIONAL_ID=t2.REGIONAL_ID
+    where t1.CYID = #{cyid,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

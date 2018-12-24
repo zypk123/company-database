@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceMaintainRegisterMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.DeviceMaintainRegister" >
+    <id column="MAINTENANCE_ID" property="maintenanceId" jdbcType="VARCHAR" />
+    <result column="MAINTENANCE_NBR" property="maintenanceNbr" jdbcType="VARCHAR" />
+    <result column="MAINTENANCE_COMPANY" property="maintenanceCompany" jdbcType="VARCHAR" />
+    <result column="CONTACT_PERSON" property="contactPerson" jdbcType="VARCHAR" />
+    <result column="PHONE_NBR" property="phoneNbr" jdbcType="VARCHAR" />
+    <result column="FINISH_TIME" property="finishTime" jdbcType="VARCHAR" />
+    <result column="ASSIGN_BY" property="assignBy" jdbcType="VARCHAR" />
+    <result column="ASSIGN_TIME" property="assignTime" jdbcType="TIMESTAMP" />
+    <result column="MAINTENDANCE_RESULT" property="maintendanceResult" jdbcType="CHAR" />
+    <result column="SOLUTION" property="solution" jdbcType="VARCHAR" />
+    <result column="SOLUTION_TIME" property="solutionTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="MAINTENANCE_STATUS" property="maintenanceStatus" jdbcType="CHAR" />
+    <result column="MAINTENANCE_PHOTO" property="maintenancePhoto" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+  </resultMap>
+ 	<resultMap type="cy.its.device.domain.model.DeviceMaintainRegister" id="maintainDevFaultMap" extends="BaseResultMap">
+		<collection property="deviceFaults" ofType="cy.its.device.domain.model.DeviceFault">
+			<id column="FAULT_ID" property="faultId" jdbcType="VARCHAR" />
+			<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+			<result column="FAULT_ALARM" property="faultAlarm" jdbcType="CHAR" />
+			<result column="FAULT_TYPE" property="faultType" jdbcType="VARCHAR" />
+			<result column="FAULT_SUB_TYPE" property="faultSubType" jdbcType="VARCHAR" />
+			<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+			<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+			<result column="COLLECT_METHOD" property="collectMethod" jdbcType="CHAR" />
+			<result column="FAULT_REMARK" property="remark" jdbcType="VARCHAR" />
+			<result column="IS_VALIDITY" property="isValidity" jdbcType="CHAR" />
+			<result column="PROCESS_STATE" property="processState" jdbcType="CHAR" />
+			<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+			<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+			<result column="PROCESS_TIME" property="processTime" jdbcType="TIMESTAMP" />
+			<result column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+			<result column="FAULT_ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>  
+  <sql id="Base_Column_List" >
+    MAINTENANCE_ID, MAINTENANCE_NBR, MAINTENANCE_COMPANY, CONTACT_PERSON, PHONE_NBR, 
+    FINISH_TIME, ASSIGN_BY, ASSIGN_TIME, MAINTENDANCE_RESULT, SOLUTION, SOLUTION_TIME, 
+    REMARK, MAINTENANCE_STATUS, MAINTENANCE_PHOTO, ORG_PRIVILEGE_CODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_MAINTAIN_REGISTER
+    where MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_MAINTAIN_REGISTER
+    where MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.DeviceMaintainRegister" >
+    insert into T_DEVICE_MAINTAIN_REGISTER (MAINTENANCE_ID, MAINTENANCE_NBR, MAINTENANCE_COMPANY, 
+      CONTACT_PERSON, PHONE_NBR, FINISH_TIME, 
+      ASSIGN_BY, ASSIGN_TIME, MAINTENDANCE_RESULT, 
+      SOLUTION, SOLUTION_TIME, REMARK, 
+      MAINTENANCE_STATUS, MAINTENANCE_PHOTO, ORG_PRIVILEGE_CODE
+      )
+    values (#{maintenanceId,jdbcType=VARCHAR}, #{maintenanceNbr,jdbcType=VARCHAR}, #{maintenanceCompany,jdbcType=VARCHAR}, 
+      #{contactPerson,jdbcType=VARCHAR}, #{phoneNbr,jdbcType=VARCHAR}, #{finishTime,jdbcType=VARCHAR}, 
+      #{assignBy,jdbcType=VARCHAR}, #{assignTime,jdbcType=TIMESTAMP}, #{maintendanceResult,jdbcType=CHAR}, 
+      #{solution,jdbcType=VARCHAR}, #{solutionTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{maintenanceStatus,jdbcType=CHAR}, #{maintenancePhoto,jdbcType=VARCHAR}, #{orgPrivilegeCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.DeviceMaintainRegister" >
+    insert into T_DEVICE_MAINTAIN_REGISTER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="maintenanceId != null" >
+        MAINTENANCE_ID,
+      </if>
+      <if test="maintenanceNbr != null" >
+        MAINTENANCE_NBR,
+      </if>
+      <if test="maintenanceCompany != null" >
+        MAINTENANCE_COMPANY,
+      </if>
+      <if test="contactPerson != null" >
+        CONTACT_PERSON,
+      </if>
+      <if test="phoneNbr != null" >
+        PHONE_NBR,
+      </if>
+      <if test="finishTime != null" >
+        FINISH_TIME,
+      </if>
+      <if test="assignBy != null" >
+        ASSIGN_BY,
+      </if>
+      <if test="assignTime != null" >
+        ASSIGN_TIME,
+      </if>
+      <if test="maintendanceResult != null" >
+        MAINTENDANCE_RESULT,
+      </if>
+      <if test="solution != null" >
+        SOLUTION,
+      </if>
+      <if test="solutionTime != null" >
+        SOLUTION_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="maintenanceStatus != null" >
+        MAINTENANCE_STATUS,
+      </if>
+      <if test="maintenancePhoto != null" >
+        MAINTENANCE_PHOTO,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="maintenanceId != null" >
+        #{maintenanceId,jdbcType=VARCHAR},
+      </if>
+      <if test="maintenanceNbr != null" >
+        #{maintenanceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="maintenanceCompany != null" >
+        #{maintenanceCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPerson != null" >
+        #{contactPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNbr != null" >
+        #{phoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime != null" >
+        #{finishTime,jdbcType=VARCHAR},
+      </if>
+      <if test="assignBy != null" >
+        #{assignBy,jdbcType=VARCHAR},
+      </if>
+      <if test="assignTime != null" >
+        #{assignTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="maintendanceResult != null" >
+        #{maintendanceResult,jdbcType=CHAR},
+      </if>
+      <if test="solution != null" >
+        #{solution,jdbcType=VARCHAR},
+      </if>
+      <if test="solutionTime != null" >
+        #{solutionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="maintenanceStatus != null" >
+        #{maintenanceStatus,jdbcType=CHAR},
+      </if>
+      <if test="maintenancePhoto != null" >
+        #{maintenancePhoto,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.DeviceMaintainRegister" >
+    update T_DEVICE_MAINTAIN_REGISTER
+    <set >
+      <if test="maintenanceNbr != null" >
+        MAINTENANCE_NBR = #{maintenanceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="maintenanceCompany != null" >
+        MAINTENANCE_COMPANY = #{maintenanceCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPerson != null" >
+        CONTACT_PERSON = #{contactPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNbr != null" >
+        PHONE_NBR = #{phoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime != null" >
+        FINISH_TIME = #{finishTime,jdbcType=VARCHAR},
+      </if>
+      <if test="assignBy != null" >
+        ASSIGN_BY = #{assignBy,jdbcType=VARCHAR},
+      </if>
+      <if test="assignTime != null" >
+        ASSIGN_TIME = #{assignTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="maintendanceResult != null" >
+        MAINTENDANCE_RESULT = #{maintendanceResult,jdbcType=CHAR},
+      </if>
+      <if test="solution != null" >
+        SOLUTION = #{solution,jdbcType=VARCHAR},
+      </if>
+      <if test="solutionTime != null" >
+        SOLUTION_TIME = #{solutionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="maintenanceStatus != null" >
+        MAINTENANCE_STATUS = #{maintenanceStatus,jdbcType=CHAR},
+      </if>
+      <if test="maintenancePhoto != null" >
+        MAINTENANCE_PHOTO = #{maintenancePhoto,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DeviceMaintainRegister" >
+    update T_DEVICE_MAINTAIN_REGISTER
+    set MAINTENANCE_NBR = #{maintenanceNbr,jdbcType=VARCHAR},
+      MAINTENANCE_COMPANY = #{maintenanceCompany,jdbcType=VARCHAR},
+      CONTACT_PERSON = #{contactPerson,jdbcType=VARCHAR},
+      PHONE_NBR = #{phoneNbr,jdbcType=VARCHAR},
+      FINISH_TIME = #{finishTime,jdbcType=VARCHAR},
+      ASSIGN_BY = #{assignBy,jdbcType=VARCHAR},
+      ASSIGN_TIME = #{assignTime,jdbcType=TIMESTAMP},
+      MAINTENDANCE_RESULT = #{maintendanceResult,jdbcType=CHAR},
+      SOLUTION = #{solution,jdbcType=VARCHAR},
+      SOLUTION_TIME = #{solutionTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      MAINTENANCE_STATUS = #{maintenanceStatus,jdbcType=CHAR},
+      MAINTENANCE_PHOTO = #{maintenancePhoto,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+    where MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+  </update>
+  <select id="findMaintain" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select A.*,o.org_name from(
+    	select 
+    	<include refid="Base_Column_List" />
+		from T_DEVICE_MAINTAIN_REGISTER t
+  		<where>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != '' " >
+				and  t.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="maintenanceCompanyId != null and maintenanceCompanyId != '' " >
+				and  t.maintenance_company = #{maintenanceCompanyId,jdbcType=VARCHAR}
+			</if>
+			<if test="createTimeFrom != null and createTimeFrom != '' ">
+				<![CDATA[    AND t.assign_time >= #{createTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTimeTo != null and createTimeTo != '' ">
+				<![CDATA[    AND t.assign_time <= #{createTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="maintendanceResult != null and maintendanceResult != '' " >
+				and  t.maintendance_result = #{maintendanceResult,jdbcType=VARCHAR}
+			</if>
+			<if test="maintenanceStatus != null and maintenanceStatus != '' " >
+				and  t.maintenance_status = #{maintenanceStatus,jdbcType=VARCHAR}
+			</if>
+		</where> )A	
+		left join t_sys_org o 
+		on A.org_privilege_code = o.org_privilege_code
+  </select>
+  <select id="countMaintain" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(t.maintenance_id)
+		FROM T_DEVICE_MAINTAIN_REGISTER t
+		<where>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != '' " >
+				and  t.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="maintenanceCompanyId != null and maintenanceCompanyId != '' " >
+				and  t.maintenance_company = #{maintenanceCompanyId,jdbcType=VARCHAR}
+			</if>
+			<if test="createTimeFrom != null and createTimeFrom != '' ">
+				<![CDATA[    AND t.assign_time >= #{createTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTimeTo != null and createTimeTo != '' ">
+				<![CDATA[    AND t.assign_time <= #{createTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="maintendanceResult != null and maintendanceResult != '' " >
+				and  t.maintendance_result = #{maintendanceResult,jdbcType=VARCHAR}
+			</if>
+			<if test="maintenanceStatus != null and maintenanceStatus != '' " >
+				and  t.maintenance_status = #{maintenanceStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+  </select>	
+   <select id="selectMaintainAndFaultByKey" resultMap="maintainDevFaultMap" parameterType="java.lang.String" >
+    select m.*,
+       f.fault_id,
+       device_id,
+       fault_alarm,
+       fault_type,
+       fault_sub_type,
+       start_time,
+       end_time,
+       collect_method,
+       f.remark as FAULT_REMARK,
+       is_validity,
+       process_state,
+       create_by,
+       create_time,
+       process_time,
+       sys_component_id,
+       f.Org_Privilege_Code AS FAULT_ORG_PRIVILEGE_CODE
+  from T_DEVICE_MAINTAIN_REGISTER m
+  left join t_device_fault_maintain fm
+    on m.maintenance_id = fm.maintenance_id
+  left join t_device_fault f
+    on fm.fault_id = f.fault_id 
+    where m.MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+  </select>
+  <insert id="createMainFaultAsso" parameterType="cy.its.device.domain.model.FalutMaintainAsso" >
+    insert into t_device_fault_maintain
+         (fault_maintenance_id, maintenance_id, fault_id)
+    values (#{id,jdbcType=VARCHAR},  #{maintainId,jdbcType=VARCHAR}, #{faultId,jdbcType=VARCHAR}
+      )
+  </insert>
+   <delete id="deleteMainFaultAsso" parameterType="cy.its.device.domain.model.FalutMaintainAsso" >
+    delete from t_device_fault_maintain
+    <where>
+    	<if test="id!=null and id!='' ">
+    		and fault_maintenance_id=#{id,jdbcType=VARCHAR}
+    	</if>
+    	<if test="maintainId!=null and maintainId!='' ">
+    		and maintenance_id=#{maintainId,jdbcType=VARCHAR}
+    	</if>
+    	<if test="faultId!=null and faultId!='' ">
+    		and fault_id=#{faultId,jdbcType=VARCHAR}
+    	</if>
+    </where>
+  </delete>
+  <select id="selectWithOpenFault" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT DISTINCT
+			 M.MAINTENANCE_ID, M.MAINTENANCE_NBR, M.MAINTENANCE_COMPANY, M.CONTACT_PERSON,
+			 M.PHONE_NBR,
+			 M.FINISH_TIME, M.ASSIGN_BY, M.ASSIGN_TIME, M.MAINTENDANCE_RESULT, M.SOLUTION,
+			 M.SOLUTION_TIME,
+			 M.REMARK, M.MAINTENANCE_STATUS, M.MAINTENANCE_PHOTO, M.ORG_PRIVILEGE_CODE
+		FROM T_DEVICE_MAINTAIN_REGISTER M,
+		     T_DEVICE_FAULT F,
+		     T_DEVICE_FAULT_MAINTAIN FM
+		<where>
+			<if test="deviceId != null and deviceId !='' ">
+				AND F.DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			AND F.PROCESS_STATE = '2'
+			AND F.FAULT_ID = FM.FAULT_ID
+			AND FM.MAINTENANCE_ID = M.MAINTENANCE_ID
+		</where>
+		ORDER BY M.ASSIGN_TIME DESC		
+  </select>
+</mapper>

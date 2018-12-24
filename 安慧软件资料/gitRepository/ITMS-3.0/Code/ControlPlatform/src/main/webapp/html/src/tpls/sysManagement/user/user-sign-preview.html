@@ -1,0 +1,101 @@
+<!-- 用户签章预览 -->
+<div class="easyui-layout" id="user-sign-preview">
+	<div id="imageArea" data-options="region:'center',border:false">
+		
+	</div>
+	<div data-options="region:'south',height:40,border:false">
+		<div class="linkbutton_toolbar" id="buttonArea" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" id="replaceImage" data-options="iconCls:'icon-reload'"
+			cy-click="">替换</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+			cy-click="removeSign">删除</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">关闭</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["image","saveSign","clearSign"],function($scope){
+		
+		$scope.load = function(){
+			initImageArea($scope.image);
+			//初始化文件上传组件
+			$scope.uploader = initUpload();
+			$scope.uploader.init();
+		};
+		
+		
+		/**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload() {
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : $scope.$("#replaceImage")[0], // you can pass in id...
+				container : $scope.$("#buttonArea")[0], // ... or DOM Element itself
+				url : 'cosUploadServlet',
+				filters : {
+					max_file_size : '10mb',
+					prevent_duplicates : true, //不允许选取重复文件
+					mime_types : [{
+						title : "照片文件",
+						extensions : "jpg,png,jpeg,bmp,gif"
+					}]
+				},
+				init : {
+					PostInit : function() {
+
+					},
+					/**
+					 *添加文件
+					 */
+					FilesAdded: function(up, files) {
+						//上传照片
+						$scope.uploader.start();
+                    },
+					Error : function(up, err) {
+						$.messager.alert("提示",err.message);
+					},
+					//当队列中的某一个文件上传完成后触发
+					FileUploaded : function(up, file, responseObject) {
+						 var response = $.parseJSON(responseObject.response);
+						 //保存图片
+						 $scope.saveSign(response[0].url);
+						 //预览图片
+						 initImageArea("http://" + response[0].url);
+						 //清空文件列表
+						$scope.uploader.removeFile(file);
+					}
+				}
+			});
+		}
+		
+		/**
+		 * 展示图片 
+		 */
+		function initImageArea(img){
+			//初始化图片
+			$scope.$setParam("images",[img]);
+			$scope.$("#imageArea").panel("refresh","tpls/public/image-view.html");
+		}
+		
+		/**
+		 * 删除签章信息 
+		 */
+		$scope.removeSign = function(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/userAction/removeUserSign",
+				success : function(data){
+					if(data == "success"){
+						//删除成功，删除预览图片
+						$scope.$("#imageArea").panel("refresh","tpls/public/image-view.html");
+						//父页面调用删除
+						$scope.clearSign();
+					}
+				}
+			});
+		};
+	});
+	
+</script>

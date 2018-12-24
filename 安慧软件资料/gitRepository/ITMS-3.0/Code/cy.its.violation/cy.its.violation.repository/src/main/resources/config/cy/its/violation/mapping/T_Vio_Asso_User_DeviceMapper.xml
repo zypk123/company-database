@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_Asso_User_DeviceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_Asso_User_Device" >
+    <id column="ASSO_USER_DEVICE_ID" property="assoUserDeviceId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ASSO_USER_DEVICE_ID, USER_ID, DEVICE_SYS_NBR
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_ASSO_USER_DEVICE
+    where ASSO_USER_DEVICE_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_ASSO_USER_DEVICE
+    where ASSO_USER_DEVICE_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByUserID" parameterType="java.lang.String" >
+    delete from T_VIO_ASSO_USER_DEVICE
+    where USER_ID = #{userID,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_User_Device" >
+    insert into T_VIO_ASSO_USER_DEVICE (ASSO_USER_DEVICE_ID, USER_ID, DEVICE_SYS_NBR
+      )
+    values (#{assoUserDeviceId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{deviceSysNbr,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_User_Device" >
+    insert into T_VIO_ASSO_USER_DEVICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="assoUserDeviceId != null" >
+        ASSO_USER_DEVICE_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="assoUserDeviceId != null" >
+        #{assoUserDeviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_User_Device" >
+    update T_VIO_ASSO_USER_DEVICE
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ASSO_USER_DEVICE_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_User_Device" >
+    update T_VIO_ASSO_USER_DEVICE
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+    where ASSO_USER_DEVICE_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+  </update>
+  
+	<select id="selectAssoUserDevices" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+	    <include refid="Base_Column_List" />
+		FROM 
+		T_VIO_ASSO_USER_DEVICE
+		<where> 
+
+			<if test="assoUserDeviceId != null and assoUserDeviceId != '' ">
+				AND ASSO_USER_DEVICE_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+			</if>   
+			<if test="assoUserDeviceId != null and assoUserDeviceId !='' ">
+				AND USER_ID = #{assoUserDeviceId,jdbcType=VARCHAR}
+			</if> 
+
+			<if test="deviceSysNbr != null and deviceSysNbr != '' ">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>      
+		</where> 
+	</select> 	
+</mapper>

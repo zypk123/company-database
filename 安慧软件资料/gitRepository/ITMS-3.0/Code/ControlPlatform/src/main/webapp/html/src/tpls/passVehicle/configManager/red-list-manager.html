@@ -1,0 +1,100 @@
+<!--红名单主页面 -->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+	<form cy-form="redList">
+		<div class="searchPanel">
+			<div class="panel_title">查询条件</div>
+			<div id="redLt" class="table">
+				<div class="tr">
+					<div class="th">号牌号码：</div>
+					<div class="td">
+						<input type="title" name="flapperCode"  class="easyui-textbox"/>
+					</div>
+					<div class="th">号牌种类：</div>
+					<div class="td">
+						<select name="flapperType" class="easyui-combobox" style="width: 100px;"></select>
+					</div>
+					<div class="td" style="width: 100px;">
+						  <a class="easyui-linkbutton " data-options="iconCls:'icon-search'"
+                                  cy-click="searchData" style="width: 60px;float: right;">查询</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			 <a class="easyui-linkbutton " data-options="iconCls:'icon-add'"
+                       cy-click="addRedList">添加</a>
+             <a class="easyui-linkbutton " data-options="iconCls:'icon-remove'"
+                       cy-click="deleteRedList">删除</a>
+             <a class="easyui-linkbutton " data-options="iconCls:'icon-import'"
+                       cy-click="importRedList">导入</a>
+		</div>
+	</div>
+	<div data-options="region: 'center'">
+	  <table cy-datagrid="optionsRedList" cy-querydata="deptRedList"
+              cy-url="../html/src/data/passvehicle/red-list.json"></table>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		//注入列表信息
+		$scope.load=function(){
+			$scope.$search("deptRedList");
+		};
+		//展示列表主字段
+		$scope.optionsRedList = {
+				 columns: [
+					[
+						{field: 'id', checkbox: true, align: 'center', width: 100},
+                    	{field: 'hphm', title: '号牌号码', align: 'center', width: 15},
+                    	{field: 'hpzl', title: '号牌种类', align: 'center', width: 20},
+                    	{field: 'hpys', title: '号牌颜色', align: 'center', width: 40},
+                    	{field: 'clpp', title: '车辆品牌', align: 'center', width: 30},
+                    	{field: 'clxh', title: '车辆型号', align: 'center', width: 40},
+                    	{field: 'clys', title: '车辆颜色', align: 'center', width: 30},
+                    	{field: 'czxm', title: '车主姓名', align: 'center', width: 20},
+                    	{field: 'lxdh', title: '联系电话', align: 'center', width: 20},
+                    	{field: 'cz', title: '操作', align: 'center', formatter: operateRedList, width: 40}
+					]
+				]
+			};
+			//增加操作按钮
+			function operateRedList (value,row,index) {
+		    	var button1 = $("<a class='button-edit' cy-click='editRedList(" + index + ")'></a>");//编辑按钮
+            	var button2 = $("<a class='button-remove' cy-click='removeRedList(" + index + ")'></a>");//删除按钮
+
+            	button1.linkbutton({
+                	iconCls: "icon-edit"
+           		});
+            	button2.linkbutton({
+                	iconCls: "icon-remove"
+            	});
+            	return $("<span/>").append(button1).append(" ").append(button2).html();
+			};
+			//增加红名单信息窗口
+			$scope.addRedList=function(){
+				$scope.$openDialog("redListDialog",{
+					title:'车辆详情',
+					width: 800,
+					height: 350,
+					href:'tpls/passVehicle/configManager/red-list-manager-add.html'
+				});
+			};
+			//增加红名单导入信息窗口
+			$scope.importRedList=function(){
+				$scope.$openDialog("importDialog",{
+					title:'导入信息',
+					width: 800,
+					height: 350,
+					href:'tpls/passVehicle/configManager/red-list-manager-import.html'
+				});
+			};
+	});
+</script>
+<style type="text/css">
+	#redLt .th{
+		text-align: right;
+		width: 100px;
+	}
+</style>

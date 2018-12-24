@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.LedMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.led.Led" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="SPEC_ID" property="specId" jdbcType="VARCHAR" />
+    <result column="RELATED_VIDEO_ID" property="relatedVideoId" jdbcType="VARCHAR" />
+    <result column="LED_LEVEL" property="ledLevel" jdbcType="VARCHAR" />
+    <result column="TIME_ONOFF_PLAN" property="timeOnoffPlan" jdbcType="VARCHAR" />
+    <result column="OUT_DOORS" property="outDoors" jdbcType="VARCHAR" />
+    <result column="MAX_VIEW_RANGE" property="maxViewRange" jdbcType="DECIMAL" />
+    <result column="MIN_VIEW_PIXEL" property="minViewPixel" jdbcType="DECIMAL" />
+    <result column="SCREED_CONTRACTOR" property="screedContractor" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_ID, SPEC_ID, RELATED_VIDEO_ID, LED_LEVEL, TIME_ONOFF_PLAN, OUT_DOORS, MAX_VIEW_RANGE, 
+    MIN_VIEW_PIXEL, SCREED_CONTRACTOR
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.led.Led" >
+    insert into T_DEVICE_LED (DEVICE_ID, SPEC_ID, RELATED_VIDEO_ID, 
+      LED_LEVEL, TIME_ONOFF_PLAN, OUT_DOORS, 
+      MAX_VIEW_RANGE, MIN_VIEW_PIXEL, SCREED_CONTRACTOR
+      )
+    values (#{deviceId,jdbcType=VARCHAR}, #{specId,jdbcType=VARCHAR}, #{relatedVideoId,jdbcType=VARCHAR}, 
+      #{ledLevel,jdbcType=VARCHAR}, #{timeOnoffPlan,jdbcType=VARCHAR}, #{outDoors,jdbcType=VARCHAR}, 
+      #{maxViewRange,jdbcType=DECIMAL}, #{minViewPixel,jdbcType=DECIMAL}, #{screedContractor,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.led.Led" >
+    insert into T_DEVICE_LED
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="specId != null" >
+        SPEC_ID,
+      </if>
+      <if test="relatedVideoId != null" >
+        RELATED_VIDEO_ID,
+      </if>
+      <if test="ledLevel != null" >
+        LED_LEVEL,
+      </if>
+      <if test="timeOnoffPlan != null" >
+        TIME_ONOFF_PLAN,
+      </if>
+      <if test="outDoors != null" >
+        OUT_DOORS,
+      </if>
+      <if test="maxViewRange != null" >
+        MAX_VIEW_RANGE,
+      </if>
+      <if test="minViewPixel != null" >
+        MIN_VIEW_PIXEL,
+      </if>
+      <if test="screedContractor != null" >
+        SCREED_CONTRACTOR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="specId != null" >
+        #{specId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedVideoId != null" >
+        #{relatedVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="ledLevel != null" >
+        #{ledLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="timeOnoffPlan != null" >
+        #{timeOnoffPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="outDoors != null" >
+        #{outDoors,jdbcType=VARCHAR},
+      </if>
+      <if test="maxViewRange != null" >
+        #{maxViewRange,jdbcType=DECIMAL},
+      </if>
+      <if test="minViewPixel != null" >
+        #{minViewPixel,jdbcType=DECIMAL},
+      </if>
+      <if test="screedContractor != null" >
+        #{screedContractor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.led.Led" >
+    update T_DEVICE_LED
+    <set >
+      <if test="specId != null" >
+        SPEC_ID = #{specId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedVideoId != null" >
+        RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="ledLevel != null" >
+        LED_LEVEL = #{ledLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="timeOnoffPlan != null" >
+        TIME_ONOFF_PLAN = #{timeOnoffPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="outDoors != null" >
+        OUT_DOORS = #{outDoors,jdbcType=VARCHAR},
+      </if>
+      <if test="maxViewRange != null" >
+        MAX_VIEW_RANGE = #{maxViewRange,jdbcType=DECIMAL},
+      </if>
+      <if test="minViewPixel != null" >
+        MIN_VIEW_PIXEL = #{minViewPixel,jdbcType=DECIMAL},
+      </if>
+      <if test="screedContractor != null" >
+        SCREED_CONTRACTOR = #{screedContractor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.led.Led" >
+    update T_DEVICE_LED
+    set SPEC_ID = #{specId,jdbcType=VARCHAR},
+      RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR},
+      LED_LEVEL = #{ledLevel,jdbcType=VARCHAR},
+      TIME_ONOFF_PLAN = #{timeOnoffPlan,jdbcType=VARCHAR},
+      OUT_DOORS = #{outDoors,jdbcType=VARCHAR},
+      MAX_VIEW_RANGE = #{maxViewRange,jdbcType=DECIMAL},
+      MIN_VIEW_PIXEL = #{minViewPixel,jdbcType=DECIMAL},
+      SCREED_CONTRACTOR = #{screedContractor,jdbcType=VARCHAR}
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+
+	<select id="selectLeds" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select m.*
+		from T_DEVICE_LED m, t_device_sys s
+		where m.device_id = s.device_id
+		<!-- <if test="orgPrivCode != null and orgPrivCode != ''">
+			and s.org_id in (select o.org_id
+			from t_sys_org o
+			where o.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%')
+		</if> -->
+		<if test="orgId != null and orgId != ''">
+			and s.org_id in (select o.org_id
+			from t_sys_org o
+			where o.org_privilege_code like 
+			(select org_privilege_code || '%' from t_sys_org where org_id=#{orgId,jdbcType=VARCHAR}||'%')
+			)
+		</if>
+		<if test="ledSpecId != null and ledSpecId != ''">
+			and m.SPEC_ID = #{ledSpecId,jdbcType=VARCHAR}
+		</if>		
+		 <if test="useStatusFlagArr != null and useStatusFlagArr.length > 0" >
+	        AND s.use_status_flag in 
+			<foreach collection="useStatusFlagArr" index="index" item="st"
+				open="(" separator="," close=")">
+				#{st,jdbcType=VARCHAR}
+			</foreach>
+	    </if>
+	</select>
+
+
+<resultMap id="LedSysResultMap" type="cy.its.device.domain.model.led.LedSys" >
+   <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+   <association property="led" javaType="cy.its.device.domain.model.led.Led">            
+        <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+	    <result column="SPEC_ID" property="specId" jdbcType="VARCHAR" />
+	    <result column="RELATED_VIDEO_ID" property="relatedVideoId" jdbcType="VARCHAR" />
+	    <result column="LED_LEVEL" property="ledLevel" jdbcType="VARCHAR" />
+	    <result column="TIME_ONOFF_PLAN" property="timeOnoffPlan" jdbcType="VARCHAR" />
+	    <result column="OUT_DOORS" property="outDoors" jdbcType="VARCHAR" />
+	    <result column="MAX_VIEW_RANGE" property="maxViewRange" jdbcType="DECIMAL" />
+	    <result column="MIN_VIEW_PIXEL" property="minViewPixel" jdbcType="DECIMAL" />
+	    <result column="SCREED_CONTRACTOR" property="screedContractor" jdbcType="VARCHAR" />                
+   </association>
+	  
+	<association property="sys" javaType="cy.its.device.domain.model.Sys">            
+        <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+	    <result column="DEVICE_SYS_MODEL_ID" property="deviceSysModelId" jdbcType="VARCHAR" />
+	    <result column="CONTRACT_ID" property="contractId" jdbcType="VARCHAR" />
+	    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+	    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" />
+	    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+	    <result column="DEVICE_TYPE" property="deviceType" jdbcType="VARCHAR" />
+	    <result column="DEVICE_BRAND" property="deviceBrand" jdbcType="VARCHAR" />
+	    <result column="MANUFACTURE_SN" property="manufactureSn" jdbcType="VARCHAR" />
+	    <result column="SOFTWARE_VERSION" property="softwareVersion" jdbcType="VARCHAR" />
+	    <result column="NETWORK_TYPE" property="networkType" jdbcType="CHAR" />
+	    <result column="SAFE_CONNECT_MEANS" property="safeConnectMeans" jdbcType="CHAR" />
+	    <result column="DEVICE_IP" property="deviceIp" jdbcType="VARCHAR" />
+	    <result column="DEVICE_PORT" property="devicePort" jdbcType="DECIMAL" />
+	    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+	    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+	    <result column="SIM_NBR" property="simNbr" jdbcType="VARCHAR" />
+	    <result column="INSTALL_DATE" property="installDate" jdbcType="TIMESTAMP" />
+	    <result column="INSTALL_BY" property="installBy" jdbcType="VARCHAR" />
+	    <result column="MOUNTING_FACILITY_TYPE" property="mountingFacilityType" jdbcType="CHAR" />
+	    <result column="ENABLE_UPDATE_DATE" property="enableUpdateDate" jdbcType="TIMESTAMP" />
+	    <result column="USE_STATUS_FLAG" property="useStatusFlag" jdbcType="CHAR" />
+	    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+	    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+	    <result column="STATUS_TYPE" property="statusType" jdbcType="VARCHAR" />
+	    <result column="STATUS_UPDATE_TIME" property="statusUpdateTime" jdbcType="TIMESTAMP" />
+	    <result column="SYNC_STATUS" property="syncStatus" jdbcType="CHAR" />
+	    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+	    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+	    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+	    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="POWER_TYPE" property="powerType" jdbcType="CHAR" />
+	    <result column="TRANSMISSION_MODE" property="transmissionMode" jdbcType="CHAR" />
+	    <result column="BANDWIDTH" property="bandwidth" jdbcType="VARCHAR" />
+	    <result column="OWNERSHIP" property="ownership" jdbcType="CHAR" />    
+	    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+	    <result column="SECTION_ID_LIST" property="sectionIdList" jdbcType="VARCHAR" />
+	    <result column="COLLECTION_TYPE" property="collectionType" jdbcType="CHAR" />
+	    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+	    <result column="CONTRACTOR_ID" property="contractorId" jdbcType="VARCHAR" />
+	    <result column="ARCHITECTURE" property="architecture" jdbcType="CHAR" />
+	    <result column="SERVER_PLAT_ID" property="serverPlatId" jdbcType="VARCHAR" />
+	    <result column="VERIFICATION_MARK" property="verificationMark" jdbcType="VARCHAR" />                
+     </association>
+	  
+ </resultMap>
+
+<select id="selectLedSys" resultMap="LedSysResultMap" parameterType="java.util.Map">
+		select
+		 spec_id, related_video_id, led_level, time_onoff_plan, out_doors, max_view_range, min_view_pixel, screed_contractor,
+		 s.*
+		from T_DEVICE_LED m, t_device_sys s
+		where m.device_id = s.device_id		
+		<if test="orgId != null and orgId != ''">
+			and s.org_id in (
+			select o.org_id
+			  from t_sys_org o
+			 where o.org_privilege_code like 
+			 (select org_privilege_code || '%' from t_sys_org where org_id=#{orgId,jdbcType=VARCHAR})
+			 )
+		</if>
+		<if test="ledSpecId != null and ledSpecId != ''">
+			and m.SPEC_ID = #{ledSpecId,jdbcType=VARCHAR}
+		</if>		
+		 <if test="useStatusFlagArr != null and useStatusFlagArr.length > 0" >
+	        AND s.use_status_flag in 
+			<foreach collection="useStatusFlagArr" index="index" item="st"
+				open="(" separator="," close=")">
+				#{st,jdbcType=VARCHAR}
+			</foreach>
+	    </if>
+	</select>
+</mapper>

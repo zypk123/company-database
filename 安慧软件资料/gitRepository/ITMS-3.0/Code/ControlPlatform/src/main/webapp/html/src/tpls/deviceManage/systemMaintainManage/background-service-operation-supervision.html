@@ -1,0 +1,75 @@
+<div class="easyui-layout" id="backgroundService">
+	<div data-options="region:'center',border:false">
+		<table id="datagridService" cy-datagrid="options" cy-querydata="formData">
+			
+		</table>
+	</div>
+	<div data-options="region:'south',border:true" style="height:35px;">
+		<div class="linkbutton_toolbar" style="text-align: center">
+            <a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+        </div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["sonCallBack","serviceInfo"],function($scope){
+		$scope.$getDefaultCode(["486"]);
+		$scope.load = function(){
+			if($scope.serviceInfo != null){
+				$scope.$('#datagridService').datagrid('loadData', $scope.serviceInfo.lstServiceStatus);
+			}
+		};
+		/**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns:[[
+                {align: "center",title : "服务名称",field : "processName",width:130},
+                {align: "center",title : "服务描述",field : "processDesc",width:120},
+                {align: "center",title : "服务启动时间",field : "processStartTime",width:160,formatter : formatDateTimeStamp},
+                {align: "center",title : "上报周期(秒)",field : "reportCycle",width:90},
+                {align: "center",title : "服务状态",field : "processStatus",width:80,formatter : queryNameByCode},
+                {align: "center",title : "状态产生时间",field : "statusGenTime",width:160,formatter : formatDateTimeStamp},
+                {align: "center",title : "占用内存K",field : "processMemory",width:80},
+                {align: "center",title : "占用CPU%",field : "processCpu",width:90},
+                {align: "center",title : "占用句柄数",field : "handleNum",width:80},
+                {align: "center",title : "处理总数",field : "doRecordNum",width:80}
+            ]],
+            pagination : false,
+            nowrap:false	
+        };
+          /**
+         *把时间戳转化为yyyy-MM-dd HH:mm:ss格式
+         */
+        function formatDateTimeStamp(value, rowData, rowIndex) {
+            if (value == undefined) {
+                return "--";
+                return false;
+            }
+            var newDate = new Date();
+            newDate.setTime(value);
+            return newDate.format('yyyy-MM-dd HH:mm:ss');
+        }
+        
+        function queryNameByCode(value, rowData, rowIndex){
+        	var processStatus = $scope.$getCodeName("486",value);
+            return processStatus;
+        }
+        
+        //回调函数获取服务信息
+        var parentCallBack = $scope.sonCallBack; 
+        parentCallBack.length=0;
+        parentCallBack.push(function(data){
+        	return upLoadGrd(data);
+        });
+        function upLoadGrd(data) {	
+			var tem=$.parseJSON(data);
+			if($scope.serviceInfo != null && $scope.serviceInfo.serverId == tem.serverId){
+				$scope.$('#datagridService').datagrid('loadData', tem.lstServiceStatus);
+			}
+			
+ 		}
+	});
+</script>
+<style type="text/css">
+</style>

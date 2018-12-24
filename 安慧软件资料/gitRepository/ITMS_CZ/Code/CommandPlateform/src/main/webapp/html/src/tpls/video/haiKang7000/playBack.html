@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="0">
+    <title>超远控件回放</title>
+    <!--系统基本框架，jQuery，easyui等-->
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/icon.css">
+    <script src="../../../frameworks/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 验证配置 -->
+    <script type="text/javascript" src="../../../js/validation.js"></script>
+    <!-- 自定义框架文件 -->
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/its3.css">
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/violationMgr.css">
+    <script type="text/javascript" src="../../../js/rootScope.js"></script>
+    <script type="text/javascript" src="../../../js/templateInit.js"></script>
+    <script type="text/javascript" src="../../../js/date-util.js"></script>
+    <script type="text/javascript" src="../../../js/violationMgr.js"></script>
+
+    <title>实时预览Demo</title>
+    <style type="text/css">
+        div, td, input {
+            font-size: 12px;
+        }
+
+        .ptzBtn {
+            width: 32px;
+        }
+
+        #Select1 {
+            width: 67px;
+        }
+
+        #SelectWnd {
+            width: 70px;
+        }
+    </style>
+</head>
+<body>
+<div class="easyui-layout" data-options='fit:true'>
+    <div data-options="region:'center'">
+        <object clsid="{61978326-6772-4595-9EC3-D23C5CD5E61F}" type="application/x-itst-activex"
+                id="PlayBackOCX" width="100%" height="100%" name="ocx"></object>
+    </div>
+    <!--回放搜索条件-->
+    <div data-options="region:'east',title:'搜索设置'" style="width:200px">
+        <div class="table">
+            <div class="tr" style="text-align: center">
+                <div class="td">开始时间：</div>
+                <div class="td">
+                    <input class="easyui-datetimebox" data-options="showSeconds:true" type="text"
+                           name="videoBeginTime" id="dateboxVideoBeginTime" style="width: 140px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td">结束时间：</div>
+                <div class="td">
+                    <input class="easyui-datetimebox" data-options="showSeconds:true" type="text"
+                           name="videoEndTime" id="dateboxVideoEndTime" style="width: 140px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <a class="easyui-linkbutton button " cy-click="searchBack()"
+                   data-options="iconCls:'icon-search'"
+                   style="float:left;">搜索回放</a>
+            </div>
+            <div class="tr divPanel">
+                <div class="td title">本地配置</div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td">抓图路径：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name="capturePath" id="txtCapturePath" style="width:160px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td">下载路径：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name="downLoadPath" id="txtDownLoadPath" style="width:160px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: right;">
+                <a class="easyui-linkbutton button" onclick="setLocalParam()" style="float:left;"
+                   data-options="iconCls:'icon-handle'">设置本地参数</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script language="javascript" type="text/javascript">
+    //播放的控件
+    var Ocx = document.getElementById("PlayBackOCX");
+    var curVideoDevice={};
+    //加载初始化
+    function loaded() {
+        changeSize();
+    }
+
+    //动态改变控件大小
+    function changeSize() {
+        Ocx.height = document.body.offsetHeight;
+    }
+    //搜索历史视频
+    function GetBackParams(startTime, EndTime) {
+        var PBXml = "<?xml version='1.0'?><Parament><BeginTime>" + startTime + "</BeginTime><EndTime>" + EndTime + "</EndTime><RecordType>23</RecordType></Parament>";
+
+        try {
+            var res = Ocx.StartQueryRecord(PBXml);
+            //document.getElementById('lbl').innerText =res+"&"+PBXml;
+        } catch (error) {
+            alert("搜索录像失败!");
+        }
+    }
+    //设置本地参数
+    function SetlocalParam(pictype, picpath, recordpath, downloadPath) {
+        var LoacalXml = "<?xml version='1.0'?><Parament><CappicMode>" + pictype + "</CappicMode><CappicPath>" +
+                picpath + "</CappicPath><CutPath>" + recordpath + "</CutPath><CutFileSize>2</CutFileSize><DownloadPath>"
+                + downloadPath + "</DownloadPath></Parament>";
+        var res = Ocx.SetLocalParam(LoacalXml);
+        //document.getElementById("lbl").innerText = res;
+        if (res == 0) {
+            return "设置本地参数成功！";
+        }
+        else {
+            return "设置本地参数失败！";
+        }
+    }
+
+    var cagServerIp = "";
+    var currentCameraId = "";
+    function StartPlaybackVideo(playBackContentStr, serverIp, port, userName, password) {
+        try {
+
+            var strXml = "<?xml version='1.0'?><Parament><PlayWndIndex>" + Ocx.GetFocusWndIndex() + "</PlayWndIndex>" + playBackContentStr;
+            //document.getElementById("lbl").innerText = strXml + "|" + serverIp+"|"+ port+"|"+ userName+"|" +password;
+            currentCameraId = getCameraId(playBackContentStr);
+            if (serverIp == cagServerIp) { //回放的视频都是同一个海康平台下的
+                var res = Ocx.SetPlayBackParam(strXml);
+            }
+            else {
+                if (serverIp != null && port != null && userName != null && password != null) {
+                    var res = Ocx.Register_CagByUserInfo(serverIp, port, userName, password);
+                    if (res == 0) { //注册成功
+                        Ocx.SetPlayBackParam(strXml);
+                        cagSvcIp = serverIp;
+                        //document.getElementById("lbl").innerText = res;
+                    }
+                    else {
+                        alert("注册CAG服务器失败，IP：" + serverIp);
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            alert(e.message);
+        }
+
+    }
+
+    function StartPlaybackVideoFor8200(ele) {
+        try {
+            var strXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>><Parament><PlayWndIndex>" + Ocx.GetFocusWndIndex() + "</PlayWndIndex>" + ele;
+            var res = Ocx.SetPlayBackParam(strXml);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function getCameraId(xmlString) {
+        var re = new RegExp("<CameraID>(.*)</CameraID>", "ig");
+        var arr = re.exec(xmlString);
+        return RegExp.$1;
+
+    }
+    //回放场景播放
+    function StartPlayBackGroup(ele, StartTime, EndTime) {
+//        document.getElementById('lbl').innerText = ele + StartTime + EndTime;
+        var GroupParams = ele.split('@');
+        if (GroupParams.length < 1)
+            return;
+        if (GroupParams.length > Ocx.GetCurWndNum()) {
+            window.external.notify("请将回放窗口数设置为大于等于" + GroupParams.length); //消息通知
+            return;
+        }
+        for (var i = 0; i < GroupParams.length; i++) {
+            var PlayBackArr = GroupParams[i].split('|');
+            StartPlaybackVideo(PlayBackArr[0], PlayBackArr[1], PlayBackArr[2], PlayBackArr[3], PlayBackArr[4]);
+            GetBackParams(StartTime, EndTime);
+        }
+    }
+    //停止场景
+    function StopGroup() {
+        Ocx.StopAllPlayBack();
+    }
+
+
+
+</script>
+</html>
+
+

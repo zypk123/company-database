@@ -1,0 +1,151 @@
+<div class="easyui-layout" id="choose-video-device">
+    <div data-options="region:'center',border:false">
+        <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+            <div title="按机构">
+                <ul id="orgTree"></ul>
+            </div>
+            <div title="按道路">
+                <ul id="roadTree"></ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'east',border:false,width:'200px'" style="border-top: solid 1px #ddd">
+            <div class="linkbutton_toolbar" style="text-align: center;">
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" cy-click="confirm">确定</a>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+            </div>
+    </div>
+    <!--<div data-options="region:'south',height: 40,border:false">-->
+    <!--</div>-->
+</div>
+<script type="text/javascript">
+    InitPage(["choose"], function ($scope) {
+        $scope.$getData("vio", "VioInit")($scope);
+        //初始化方法
+        $scope.load = function () {
+            //初始化树
+            $scope.loadOrgTree();
+            $scope.loadRoadTree(); 
+            $scope.$("#combVideoPreset").combo({'editable':false});
+        };
+        $.extend($scope, {
+            videoDetail: {},
+            //加载机构树菜单
+            loadOrgTree: function () {
+                var queryParams = {
+                    id: "", //默认根节点为空，表示查询基础数据
+                    type: "getOrgDeviceTree"//默认类型为0
+                };
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/videoPlay/getVideoDeviceTrees",
+                    params: queryParams,
+                    method: "post",
+                    success: function (result) {
+                        $scope.$("#orgTree").tree({
+                            data: result,
+                            onDblClick: function (node) {
+                                $(this).tree("expand", node.target);
+                            },
+                            onClick: function (node) {
+                                var nodeType = node.attribute.nodeType;
+                                if (nodeType && nodeType == "device") {
+                                    $scope.loadPreset(node.attribute.id);
+                                    $.extend($scope.videoDetail, {
+                                        deviceSysNbr: node.id,
+                                        videoDeviceName: node.text,
+                                        deviceId: node.attribute.id
+                                    });
+                                    $scope.$updateDom("videoDetail");
+                                }
+                            },
+                            onLoadSuccess: function () {
+                                var root = $(this).tree("getRoots")[0];
+                                //收起全部节点
+                                $(this).tree("collapseAll");
+                                //展开根节点
+                                $(this).tree("expand", root.target);
+                                //默认选中根节点
+                                $(this).tree("select", root.target);
+                            }
+                        });
+                    },
+                    fail: function (errMsg) {
+                        alert('加载机构树失败，原因：' + errMsg);
+                    }
+                });
+            },
+            //加载道路树点位
+            loadRoadTree: function () {
+                var queryParams = {
+                    id: "", //默认根节点为空，表示查询基础数据
+                    type: "getRoadDeviceTree"//默认类型为0
+                };
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/videoPlay/getVideoDeviceTrees",
+                    params: queryParams,
+                    method: "post",
+                    success: function (result) {
+                        $scope.$("#roadTree").tree({
+                            data: result,
+                            onDblClick: function (node) {
+                                $(this).tree("expand", node.target);
+                            },
+                            onClick: function (node) {
+                                var nodeType = node.attribute.nodeType;
+                                if (nodeType && nodeType == "device") {
+                                    $scope.loadPreset(node.attribute.id);
+                                    $.extend($scope.videoDetail, {
+                                        deviceSysNbr: node.id,
+                                        videoDeviceName: node.text,
+                                        deviceId: node.attribute.id
+                                    });
+                                    $scope.$updateDom("videoDetail");
+                                }
+                            },
+                            //onContextMenu: $scope.showTreeContextMenu,
+                            onLoadSuccess: function () {
+                                var root = $(this).tree("getRoots")[0];
+                                //收起全部节点
+                                $(this).tree("collapseAll");
+                                //展开根节点
+                                $(this).tree("expand", root.target);
+                                //默认选中根节点
+                                $(this).tree("select", root.target);
+                            }
+                        });
+                    },
+                    fail: function (errMsg) {
+                        alert('加载道路设备树失败，原因：' + errMsg);
+                    }
+                });
+            },
+            //加载视频预置位
+            loadPreset: function (deviceID) {
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/cruisePlan/getVideoPresetList",
+                    params: {param: deviceID},
+                    method: "post",
+                    success: function (result) {
+                        if (result && result.result.length > 0) {
+                            $scope.$("#combVideoPreset").combobox('loadData', result.result);
+                        }
+                    },
+                    fail: function (errMsg) {
+                        alert('加载预置位失败，原因：' + errMsg);
+                    }
+                });
+            },
+            /**
+             * 点击确定按钮
+             */
+            confirm: function () {
+                $scope.$updateData("videoDetail");
+
+                if ($scope.videoDetail) {
+                    $scope.$excute($scope.choose,$scope.videoDetail);
+                    $scope.$closeSelf();
+                }
+            }
+        });
+    });
+</script>

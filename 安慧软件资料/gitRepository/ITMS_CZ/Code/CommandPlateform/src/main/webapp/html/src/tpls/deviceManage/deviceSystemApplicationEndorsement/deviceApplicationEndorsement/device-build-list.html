@@ -1,0 +1,182 @@
+<div id="deviceBuild" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">申报单位：</div>
+                        <div class="td">
+                            <input id="department" class="easyui-combotree" name="department"/>
+                        </div>
+                        <div class="th">申报日期：</div>
+                        <div class="td">
+                            <input id="startTime" class="easyui-datebox" name=""/>
+                            到
+                            <input id="endTime" class="easyui-datebox" name=""/>
+                        </div>
+                        <div class="th">注册标记：</div>
+                        <div class="td">
+                            <input type="checkbox" name=""/>注册
+                            <input type="checkbox" name=""/>未注册
+                        </div>
+                        <div class="th">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="add">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeAll">批量删除</a>
+            <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-add'" cy-click="register">注册</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table  id="datagrid" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/deviceApplicationEndorsement/deviceBuild.json">
+
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //保存本页面数据字典，object类型，key：code，value：字典项数组
+        var dicts;
+        //保存申报单位，easyui树类型（数组）
+        var department;
+        $scope.options = {
+          columns:[[
+              {halign:'center',field:"id",checkbox:true},
+              {halign:'center',field:"status",title:"审核状态",width:100},
+              {halign:'center',field:"device_num",title:"设备档案标号",width:100},
+              {halign:'center',field:"department",title:"申报单位",width:100},
+              {halign:'center',field:"people",title:"联系人",width:100},
+              {halign:'center',field:"phone",title:"联系电话",width:100},
+              {halign:'center',field:"content",title:"申报内容",width:150},
+              {halign:'center',field:"time",title:"申报时间",width:100},
+              {halign:'center',field:"mark",title:"注册标记",width:100},
+              {halign:'center',field:"operate",title:"操作",width:100,formatter:operate}
+          ]]
+        };
+        //加载完毕后执行的方法
+        $scope.load = function(){
+            //查询数据字典
+            $scope.$ajaxRequest({
+                url : "data/deviceManage/deviceApplicationEndorsement/dict.json",
+                success : function(data){
+                    dicts = data.dicts;
+                    department = data.department;
+                    $scope.$("#department").combotree("loadData",department);
+                },
+                fail : function(errTxt){
+                   alert(errTxt);
+                }
+            });
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            var button3 = $("<a title='查看审核状态' class='button-save' cy-click='onDblClickRow(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            button3.linkbutton({
+                iconCls:"icon-save"
+            });
+            //采用以下的方式添加按钮到页面中，按照从左到右的顺序，按钮键要增加一个空格
+            return  $("<span/>").append(button1).append(" ").append(button2).append(" ").append(button3).html();
+        }
+        /**
+         * 编辑设备申报审批信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            alert(index);
+        };
+        /**
+         * 删除设备申报审批信息
+         * @param index  整数类型 删除行下标
+         */
+        $scope.removeData = function(index){
+            $.messager.confirm("提示","是否确认删除？",function(flag){
+                if(flag){
+                    $.messager.alert("提示","删除成功！");
+                }
+            });
+        };
+        /**
+         * 查看审核状态
+         */
+        $scope.onDblClickRow = function(){
+            $scope.$openDialog("auditStateDialog",{
+                title : "审核状态信息",
+                width : 700,
+                height : 550,
+                href : "tpls/deviceManage/deviceSystemApplicationEndorsement/deviceApplicationEndorsement/audit-state.html"
+            });
+        };
+        /**
+         * 设备注册
+         */
+        $scope.register = function(){
+            $scope.$openDialog("deviceRegisterDialog",{
+                title : "设备注册",
+                width : 700,
+                height : 500,
+                href : "tpls/deviceManage/deviceSystemApplicationEndorsement/deviceApplicationEndorsement/device-register.html"
+            });
+        };
+        /**
+         * 条件查询
+         */
+        $scope.search = function(){
+            $scope.$search("queryData");
+        };
+        /**
+         * 新增设备建设申报审批信息
+         */
+        $scope.add = function(){
+            //传递本页面的数据字典
+            $scope.$setParam("dicts",dicts);
+            //传递申报单位参数
+            $scope.$setParam("department",department);
+            $scope.$openDialog("deviceBuildDialog",{
+                title : "设备建设申报审批信息",
+                width : 700,
+                height : 650,
+                href : "tpls/deviceManage/deviceSystemApplicationEndorsement/deviceApplicationEndorsement/device-build-config.html"
+            });
+        };
+        /**
+         * 批量删除设备申报审批信息
+         */
+        $scope.removeAll = function(){
+            var rows = $scope.$("#datagrid").datagrid("getChecked");
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息!");
+            }else{
+                $.messager.confirm("提示","确认删除？",function(flag){
+                    if(flag){
+                        $.messager.alert("提示","删除成功!");
+                    }
+                });
+            }
+        };
+    });
+</script>
+<style type="text/css">
+    #deviceBuild .th{
+        width: 80px;
+        text-align: right;
+    }
+</style>

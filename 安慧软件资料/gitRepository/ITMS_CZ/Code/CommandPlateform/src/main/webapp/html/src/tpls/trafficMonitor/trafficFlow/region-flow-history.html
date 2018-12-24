@@ -1,0 +1,142 @@
+<div id="regionHistory" class="easyui-layout">
+	<div data-options="region:'north'" style="height: 130px;">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="deptQueryDm" id="form">
+				<div class="table">
+					<div class="tr">
+						<div class="th" >
+							更新时间：
+						</div>
+						<div class="td" style="height:45px">
+							<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:170px"
+							data-options="prompt:'开始时间',validType:['maxDate[\'end\']','date']" />
+							至
+							<div>
+							<input class="easyui-datetimebox"  name="endTime" id="end"  style="width:170px"
+							data-options="prompt:'结束时间',validType:['minDate[\'start\']','date']" />
+							</div>
+						</div>
+
+					</div>
+					<div class="tr" >
+						<div class="th">
+							所在道路：
+						</div>
+						<div class="td">
+							<input  class="cy-road-radio" iscode="false"  name="roadId" style="width:170px">
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+		cy-url="trafficSituation/trafficState/multiple/searchRegions"></table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["locationSite2"], function($scope) {
+		//$scope.$getDefaultCode(["070"]);
+		$scope.load = function() {
+			var now = new Date();
+			var nowStrTo = now.format("yyyy-MM-dd HH:mm:ss");
+			var nowStrFr = now.dateAdd('d', -1).format("yyyy-MM-dd HH:mm:ss");
+			$scope.$("#start").datetimebox('setValue', nowStrFr);
+			$scope.$("#end").datetimebox('setValue', nowStrTo);
+			//查询默认数据
+			// $scope.$search("deptQueryDm");
+		};
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'regionalName',
+				title : '区间名称',
+				align : 'left',
+				width : 50
+			}, {
+				field : 'directionName',
+				title : '方向',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'avgSpeed',
+				title : '平均速度',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'cz',
+				title : '详情',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 15
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if (rowData.lonlatStart != null && rowData.lonlatEnd != null) {
+					$scope.locationSite2(rowData.lonlatStart, rowData.lonlatEnd);
+				} else {
+					$.messager.alert("警告", "无法获取位置信息！");
+				}
+			},
+			nowrap : false
+		};
+		//操作栏信息三到四
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='showInfo(" + index + ")'></a>");
+			//定位按钮
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			return $("<span/>").append(button1).html();
+		}
+
+
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			$scope.$openDialog("showDialog", {
+				title : "区间详情",
+				height : 200,
+				width : 490,
+				href : "tpls/trafficMonitor/trafficFlow/region-flow-info.html"
+			});
+		};
+		// //方向direction的格式化
+		// function options_direction(value, row, index) {
+			// return $scope.$getCodeName("070", value);
+		// }
+
+		//根据条件搜索
+		$scope.searchData = function() {
+			if ($scope.$("#form").form("validate")) {
+				$scope.$updateData("deptQueryDm");
+				$scope.$search("deptQueryDm");
+			}
+		};
+
+	}); 
+</script>
+<style>
+	#regionHistory .th {
+		width: 60px;
+		text-align: center;
+		height: 18px;
+		line-height: 20px;
+	}
+	#regionHistory .td {
+		height: 18px;
+		/*line-height: 20px;*/
+	}
+
+</style>

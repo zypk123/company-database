@@ -1,0 +1,327 @@
+<div id="regionOnMap" style="width: 100%; height: 100%;">
+	<div style="width: 100%; height: 100%;" id="map"></div>
+</div>
+<script type="text/javascript">
+	/*
+	 * parentObjForMap对象需要增加下列属性与方法
+	 *
+	 * var parentObjForMap={
+	 * 	regionType:"ROADREGION",//或者DEVICEREGION
+	 *  sendSite：function(site)//site格式为{siteiId : siteiId,siteName : siteName}
+	 *  {},
+	 *
+	 * }
+	 */
+	InitPage(["parentObjForMap", "roadId", "directionType", "startSite", "endSite"], function($scope) {
+
+		//地图对象
+		$scope.cyMap = null;
+		var siteLayer = null;
+		var isFirst = true;
+		$scope.load = function() {
+			$scope.initMap();
+			if ($scope.roadId && $scope.directionType) {
+				$scope.parentObjForMap.addSiteToMap($scope.roadId, $scope.directionType);
+			}
+		};
+
+		$scope.initMap = function() {
+			//加载地图
+			$scope.cyMap = new CYMap($scope.$("#map")[0],{isShowOverview : false});
+			$scope.cyMap.map.events.register("featureclick", null, $scope.featureClickCallBack);
+			$scope.cyMap.map.events.register("featureover", null, $scope.featureoverClickCallBack);
+			$scope.cyMap.map.events.register("featureout", null, $scope.featureoutClickCallBack);
+			siteLayer = new OpenLayers.Layer.Vector("siteLayer", {
+				style : siteMarkStyle
+			});
+			$scope.cyMap.map.addLayer(siteLayer);
+		};
+
+		$scope.featureoverClickCallBack = function(event) {
+			removeMapPop();
+			var orgLon = event.feature.geometry.x;
+			var orgLat = event.feature.geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(orgLon, orgLat);
+			var tip = "";
+			tip = event.feature.attributes["siteName"];
+			var pop = new OpenLayers.Popup.Anchored("chicken", centerLonLat, new OpenLayers.Size(160, 30), tip, {
+				size : new OpenLayers.Size(5, -10),
+				offset : new OpenLayers.Pixel(5, -10)
+			}, true);
+			pop.setOpacity(0.7);
+			pop.setBorder("1px solid gray");
+			$scope.cyMap.map.addPopup(pop);
+			//event.feature.attributes["pop"] = pop;
+		};
+		$scope.featureoutClickCallBack = function(event) {
+			//event.feature.style.cursor = "";
+			// var pop = event.feature.attributes["pop"];
+			// $scope.cyMap.map.removePopup(pop);
+			removeMapPop();
+		};
+		function removeMapPop() {
+			var pops = $scope.cyMap.map.popups;
+			if (pops) {
+				for (var p = 0; p < pops.length; p++) {
+					$scope.cyMap.map.removePopup(pops[p]);
+				}
+			}
+		}
+
+		/**
+		 *地图上图标点击事件
+		 */
+		$scope.featureClickCallBack = function(event) {
+			//当前点击的地物对象
+			var clickFt = event.feature;
+			var siteId = clickFt.attributes["siteId"];
+			var siteName = clickFt.attributes["siteName"];
+			//获取当前要选择的是哪种特性的点：起点or终点
+			var curSelectSiteCharacter = $scope.parentObjForMap.curSelectSiteCharacter;
+			
+			//判断当前点击的点是否是与其对立的点
+			var clickCharacter = clickFt.attributes["siteCharacter"];
+			if(clickCharacter)
+			{
+				if(clickCharacter!=""&&clickCharacter!=curSelectSiteCharacter)
+				{
+					$.messager.alert("提示","起点和终点不能选中同一个点！");
+					return;
+				}
+			}
+			
+			//查询是否已经选过这种特性的点，如果有选择过了，则去除掉
+			var resFs = siteLayer.getFeaturesByAttribute("siteCharacter", curSelectSiteCharacter);
+			if (resFs != null && resFs.length > 0) {
+				var oldFs = resFs[0];
+				var oldFsSiteId = oldFs.attributes["siteId"];
+				if (siteId == oldFsSiteId)//如果当前点击的地物点和原先已经选择的地物点是同一个，则不需要在进行切换了
+				{
+					return;
+				}
+				//否则，更新图标
+				oldFs.style = siteMarkStyle;
+				oldFs.attributes["siteCharacter"] = "";
+				//siteLayer.addFeatures(oldFs.clone());
+				//还原该点为默认状态
+				//siteLayer.removeFeatures(oldFs);
+				//移除选中的状态
+				siteLayer.drawFeature(oldFs);	
+			}
+			if (curSelectSiteCharacter == "START") {
+				clickFt.style = siteMarkStyleStart;
+			} else if (curSelectSiteCharacter == "END") {
+				clickFt.style = siteMarkStyleEnd;
+			}			
+			clickFt.attributes["siteCharacter"] = curSelectSiteCharacter;
+			//siteLayer.addFeatures(clickFt.clone());
+			//siteLayer.removeFeatures(clickFt);
+			siteLayer.drawFeature(clickFt);	
+			$scope.parentObjForMap.sendSite({
+				siteId : siteId,
+				siteName : siteName
+			});
+		};
+
+		$scope.parentObjForMap.addSiteToMap = function(roadId, directionType) {
+			var regionType = $scope.parentObjForMap.regionType;
+			//我的想法是道路区间与设备区间能够组成的点的性质是不一样的，但是李军非说这2种类型的区间都只要具有过车功能的点就行了
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/site/findPassSites",
+				params : {
+					roadId : roadId,
+					directionType : directionType
+				},
+				success : function(result) {
+					//debugger;
+					//清理上次地图上查询处理的点位
+					siteLayer.removeAllFeatures();
+					if (result && result.length > 0) {						
+						var sitesForRegion = [];
+						for (var i = 0; i < result.length; i++) {
+							var resSite = result[i];
+							//只有经纬度都存在的情况下，才在地图上显示
+							if (resSite.siteLongitude != null && resSite.siteLatitude != null) {
+								sitesForRegion.push({
+									siteId : resSite.siteId,
+									siteName : resSite.siteName,
+									lon : resSite.siteLongitude,
+									lat : resSite.siteLatitude
+								});
+							}
+						}
+						if (sitesForRegion.length > 0) {
+							loadSite(sitesForRegion);
+							//编辑状态下，显示起点和终点
+							if (isFirst == true) {
+								showDefaultSite();
+								isFirst = false;
+							}
+
+							//定位、放大地图
+							var siteExtent = siteLayer.getDataExtent();
+							$scope.cyMap.map.zoomToExtent(siteExtent, true);
+
+						}
+
+					} else {
+						alert("没有符合条件的点位，可供您配置区间！");
+					}
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+			//以下是测试代码，李军领域接口没有做好，暂且用自造的测试数据
+			// if (regionType == "ROADREGION")//道路区间段，用于流量渲染，要加载卡口、流量检测设备的点位
+			// {
+			// var sitesForRoadRegion = [{
+			// siteId : "1",
+			// siteName : "测试点位1",
+			// lon : "102.103500",
+			// lat : "24.958600"
+			// }, {
+			// siteId : "2",
+			// siteName : "测试点位2",
+			// lon : "101.43729",
+			// lat : "25.11789"
+			// }, {
+			// siteId : "3",
+			// siteName : "测试点位3",
+			// lon : "101.31118",
+			// lat : "25.17856"
+			// }, {
+			// siteId : "4",
+			// siteName : "测试点位4",
+			// lon : "101.17377",
+			// lat : "25.25233"
+			// }];
+			// loadSite(sitesForRoadRegion);
+			// } else if (regionType == "DEVICEREGION")//设备区间，用户区间测速抓超速，要加载卡口、区间测速终端的点位
+			// {
+			// console.log("regionType:" + regionType);
+			// var sites = [{
+			// siteId : "1",
+			// siteName : "测试点位1",
+			// lon : "102.103500",
+			// lat : "24.958600"
+			// }, {
+			// siteId : "2",
+			// siteName : "测试点位2",
+			// lon : "101.43718",
+			// lat : "25.11831"
+			// }, {
+			// siteId : "3",
+			// siteName : "测试点位3",
+			// lon : "101.31118",
+			// lat : "25.17856"
+			// }, {
+			// siteId : "4",
+			// siteName : "测试点位4",
+			// lon : "101.17377",
+			// lat : "25.25233"
+			// }];
+			// loadSite(sites);
+			// }
+			// //定位、放大地图
+			// var siteExtent = siteLayer.getDataExtent();
+			// $scope.cyMap.map.zoomToExtent(siteExtent, true);
+
+		};
+
+		function showDefaultSite() {
+			if ($scope.startSite && $scope.endSite) {
+				//更新起点图标
+				updateFeatureImg("START", $scope.startSite.siteId);
+				//更新终点图标
+				updateFeatureImg("END", $scope.endSite.siteId);
+
+			}
+		}
+
+		function updateFeatureImg(type, siteId, imgUrl) {
+			var siteFeatures = siteLayer.getFeaturesByAttribute("siteId", siteId);
+			if (siteFeatures != null && siteFeatures.length > 0) {
+				var siteFeature = siteFeatures[0];
+				if(type=="START")
+				{
+					siteFeature.style = siteMarkStyleStart;
+				}
+				else if(type=="END")
+				{
+					siteFeature.style = siteMarkStyleEnd;
+				}				
+				siteFeature.attributes["siteCharacter"] = type;
+				//siteLayer.addFeatures(siteFeature.clone());
+				//siteLayer.removeFeatures(siteFeature);
+				siteLayer.drawFeature(siteFeature);	
+			}
+		}
+
+		function loadSite(sites) {
+			if (!sites)
+				return;
+			for (var i = 0; i < sites.length; i++) {
+				addFeature(sites[i]);
+			}
+		}
+
+		var siteMarkStyle = {
+			cursor : "pointer",
+			graphicWidth : 24,
+			graphicHeight : 24,
+			// graphicXOffset : -12,
+			// graphicYOffset : 12,
+			externalGraphic : 'themes/default/images/site.png'
+		};
+		var siteMarkStyleStart = {
+			cursor : "pointer",
+			graphicWidth : 32,
+			graphicHeight : 32,
+			// graphicXOffset : 16,
+			// graphicYOffset : 16,
+			externalGraphic : 'themes/default/images/site_start.png'
+		};
+		var siteMarkStyleEnd = {
+			cursor : "pointer",
+			graphicWidth : 32,
+			graphicHeight : 32,
+			externalGraphic : 'themes/default/images/site_end.png'
+		};
+		var regionLineStyle = {
+			strokeColor : 'red',
+			strokeWidth : 3,
+			strokeDashstyle : "solid", //dashdot solid dot
+			pointRadius : 5,
+			pointerEvents : "visiblePainted",
+			startarrow : "", //Oval
+			endarrow : "Oval",
+			title : ""
+		};
+
+		function addFeature(site) {
+			var p = new OpenLayers.Geometry.Point(site.lon, site.lat);
+			p.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+			var f = new OpenLayers.Feature.Vector(p, {
+				siteId : site.siteId,
+				siteName : site.siteName
+			}, siteMarkStyle);
+			siteLayer.addFeatures(f);
+			//addPop(f);
+		}
+
+		function addPop(ft) {
+			var lon = ft.geometry.x;
+			var lat = ft.geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(lon, lat);
+			var tip = "";
+			tip = ft.attributes["siteName"];
+			var pop = new OpenLayers.Popup.Anchored("chicken", centerLonLat, new OpenLayers.Size(160, 30), tip, null, true);
+			pop.setOpacity(0.7);
+			pop.setBorder("1px solid gray");
+			$scope.cyMap.map.addPopup(pop);
+			//ft.attributes["pop"] = pop;
+		}
+
+	}); 
+</script>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficManualStateMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficManualState" >
+    <id column="STATE_CONTROL_ID" property="stateControlId" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="REGIONAL_ID" property="regionalId" jdbcType="VARCHAR" />
+    <result column="CONTROLLED_STATE" property="controlledState" jdbcType="CHAR" />
+    <result column="CONTROLLED_BY" property="controlledBy" jdbcType="VARCHAR" />
+    <result column="CONTROL_TIME" property="controlTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    STATE_CONTROL_ID, ROAD_ID, REGIONAL_ID,CONTROLLED_STATE, CONTROLLED_BY, CONTROL_TIME, ORG_PRIVILEGE_CODE, 
+    START_TIME, END_TIME, REASON
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_MANUAL_STATE
+    where STATE_CONTROL_ID = #{stateControlId,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="selectByRoadId" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_MANUAL_STATE
+    where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+    <if test="sysTime!=null and sysTime != ''" >
+	    <![CDATA[AND START_TIME < #{sysTime,jdbcType=TIMESTAMP}]]> 
+	    <![CDATA[AND END_TIME > #{sysTime,jdbcType=TIMESTAMP}]]>   
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_MANUAL_STATE
+    where STATE_CONTROL_ID = #{stateControlId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficManualState" >
+    insert into T_TRAFFIC_MANUAL_STATE (STATE_CONTROL_ID, ROAD_ID, REGIONAL_ID,CONTROLLED_STATE, 
+      CONTROLLED_BY, CONTROL_TIME, ORG_PRIVILEGE_CODE, 
+      START_TIME, END_TIME, REASON
+      )
+    values (#{stateControlId,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR},#{regionalId,jdbcType=VARCHAR}, #{controlledState,jdbcType=CHAR}, 
+      #{controlledBy,jdbcType=VARCHAR}, #{controlTime,jdbcType=TIMESTAMP}, #{orgPrivilegeCode,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualState" >
+    insert into T_TRAFFIC_MANUAL_STATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stateControlId != null" >
+        STATE_CONTROL_ID,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="regionalId != null" >
+        REGIONAL_ID,
+      </if>
+      <if test="controlledState != null" >
+        CONTROLLED_STATE,
+      </if>
+      <if test="controlledBy != null" >
+        CONTROLLED_BY,
+      </if>
+      <if test="controlTime != null" >
+        CONTROL_TIME,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="reason != null" >
+        REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stateControlId != null" >
+        #{stateControlId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionalId != null" >
+        #{regionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="controlledState != null" >
+        #{controlledState,jdbcType=CHAR},
+      </if>
+      <if test="controlledBy != null" >
+        #{controlledBy,jdbcType=VARCHAR},
+      </if>
+      <if test="controlTime != null" >
+        #{controlTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualState" >
+    update T_TRAFFIC_MANUAL_STATE
+    <set >
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionalId != null" >
+        REGIONAL_ID = #{regionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="controlledState != null" >
+        CONTROLLED_STATE = #{controlledState,jdbcType=CHAR},
+      </if>
+      <if test="controlledBy != null" >
+        CONTROLLED_BY = #{controlledBy,jdbcType=VARCHAR},
+      </if>
+      <if test="controlTime != null" >
+        CONTROL_TIME = #{controlTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        REASON = #{reason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where STATE_CONTROL_ID = #{stateControlId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficManualState" >
+    update T_TRAFFIC_MANUAL_STATE
+    set ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      REGIONAL_ID= #{regionalId,jdbcType=VARCHAR},
+      CONTROLLED_STATE = #{controlledState,jdbcType=CHAR},
+      CONTROLLED_BY = #{controlledBy,jdbcType=VARCHAR},
+      CONTROL_TIME = #{controlTime,jdbcType=TIMESTAMP},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      REASON = #{reason,jdbcType=VARCHAR}
+    where STATE_CONTROL_ID = #{stateControlId,jdbcType=VARCHAR}
+  </update>
+</mapper>

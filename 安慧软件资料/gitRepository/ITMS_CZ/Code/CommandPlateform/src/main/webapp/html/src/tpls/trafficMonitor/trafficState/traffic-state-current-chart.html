@@ -1,0 +1,168 @@
+<div id="tableTitle1" class="table">
+	<div class="tr" >
+		<div class="th" style="width: 90px;">
+			&nbsp;&nbsp;实时路况
+		</div>
+	</div>
+</div>
+<div id="stateCurrentChart" class="easyui-panel" data-options="fit:true" >  
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="circleChart"  style="height:183px;width:175px; ">
+    </div>      
+</div>
+
+<script type="text/javascript">
+    InitPage(["dataArr"],function($scope){       
+        //页面登录时调用初始化方法
+        $scope.load = function(){
+            initData();  
+        };
+        //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/pie',
+                        'echarts/chart/funnel'
+                    ],
+                    function (ec) {
+                    	 var myChart = ec.init($scope.$("#circleChart").get(0));
+                    	 option={	 
+						    tooltip : {
+						        trigger:  'axis' ,
+						        formatter: "({d}%)"//, //"{a} <br/>{b} : {c} ({d}%)",
+						        //showDelay:1000 
+						    },
+						    color:['red','orange','green'],				   
+						    calculable : true,
+						    series : [
+						        {
+						            name:'路况',
+						            type:'pie',
+						            radius : '55%',
+						            center: ['50%', '60%'],
+						            data:[
+						                {value:335, name:'拥堵'},
+						                {value:310, name:'缓行'},
+						                {value:234, name:'畅通'}						               
+						            ]
+						        }
+						    ]                    
+                		};
+                 		 option1 = {
+                 		 	 title : {
+	        					text: '实时路况',
+	        					textStyle:{
+	        						 fontSize: 11
+	        					}
+        					},
+						    tooltip : {
+						        trigger: 'item',
+						        formatter: "{b}:{c} ({d}%)",
+						         textStyle:{
+	        						 fontSize: 11
+	        					}
+						    },	
+						    calculable : true,
+						    color:['red','orange','green'],	
+						    series : [
+						        {
+						            name:'路况',
+						            type:'pie',
+						            radius : ['40%', '70%'],
+						            itemStyle : {
+						                normal : {
+						                    label : {
+						                        show : false
+						                    },
+						                    labelLine : {
+						                        show : false
+						                    }
+						                },
+						                emphasis : {
+						                    label : {
+						                        show : true,
+						                        position : 'center',
+						                        textStyle : {
+						                            fontSize : '14',
+						                            fontWeight : 'bold'
+						                        }
+						                    }
+						                }
+						            },
+						            data:$scope.dataArr
+						        }
+						    ]
+						};
+						
+						 option2 = {                 		 	
+						    tooltip : {
+						        trigger: 'item',
+						        formatter: "{c}条 ({d}%)",//"{b}:{c} ({d}%)",
+						         textStyle:{
+	        						 fontSize: 11
+	        					},
+	        					showDelay:200 
+						    },	
+						      legend: {
+						        orient : 'vertical',
+						        x : 'left',
+						        y:'top',
+						        data:["无状态",'拥堵','缓行','畅通'],
+						        textStyle:{
+	        						 fontSize: 11
+	        					},
+						        itemGap:1
+						    },
+						    calculable : true,
+						    color:['gray','red','orange','green'],	
+						    series : [
+						        {
+						            name:'路况',
+						            type:'pie',
+						            radius : '45%',
+						            center:['50%', '60%'],
+						            itemStyle : {
+						                normal : {
+						                    label : {
+						                        show : false
+						                    },
+						                    labelLine : {
+						                        show : false
+						                    }
+						                }
+						            },
+						            data:$scope.dataArr
+						        }
+						    ]
+						};
+                 	myChart.setOption(option2);                       
+                }
+            );
+        }
+    });
+</script>
+
+<style type="text/css">
+ #tableTitle1 .tr {
+	 	background: #005AB5;
+	 	color: white;
+	 	font-size: 12px;
+		opacity: 0.6;
+		line-height: 15px;
+		height:24px;
+		
+	}
+	#tableTitle1 .th {
+		width: 85px;
+		height: 13px;
+		line-height: 15px;
+		font-size: 12px;
+	}
+
+</style>

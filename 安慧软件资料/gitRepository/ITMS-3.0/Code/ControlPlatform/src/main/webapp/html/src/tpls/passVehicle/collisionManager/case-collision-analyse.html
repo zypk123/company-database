@@ -1,0 +1,384 @@
+<!--
+ ********************************************************************************
+ * 用户             云南交警总队
+ * 系统名         大数据平台
+ * 子系统名    区域碰撞分析
+ *
+ * 当前页面名   区域碰撞分析条件页面() 
+ *
+ * 考虑使用Spring大数据框架将impala连接线程池化
+ *
+ * 版本号       Version 1.0
+ * 作者         wangyunqi
+ *
+ * 更新履历     2016-1-11：创建
+ ********************************************************************************
+-->
+<div id="case-collision-analyse" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:158"
+		style="border-bottom: solid 1px #ddd">
+		<form cy-form="formData" id="form1">	
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table" id ="queryDataTable">
+				 <input type="hidden" name ="qryFields" id="qryFields" value="plate_nbr,plate_color,plate_type,vehicle_type,vehicle_color,vehicle_brand,vehicle_sub_brand"/>
+					<div class="tr hide">
+						<div class="th" style="height: 25px; line-height: 25px;">
+						案件1：目标区域：
+							</div>
+						<div class="td" style="width: 255px;">
+							<!--点位多选 -->
+							<input class="cy-site-checkbox" style="width: 250px;"  name="siteCode1" iscode="true" required="required,showSeconds:true">
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 20px">
+							开始时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="beginTime1" id="startDateTime"
+							data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date'],required:true,showSeconds:true" 
+								 class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 30px;" >
+							结束时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="endTime1" id="endDateTime"
+								data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date'],required:true" class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+
+					</div>
+					<div class="tr hide">
+						<div class="th" style="height: 25px; line-height: 25px;">
+						案件2：目标区域：
+							</div>
+						<div class="td" style="width: 255px;">
+							<!--点位多选 -->
+							<input class="cy-site-checkbox" style="width: 250px;"  name="siteCode2" iscode="true" required="required">
+						</div>
+						
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 20px">
+							开始时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="beginTime2" id="startDateTime2"
+								data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime2\']','date'],required:true" 
+								 class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 30px;"">
+							结束时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="endTime2" id="endDateTime2"
+								data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime2\']','date'],required:true" class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<!-- 
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-search" cy-click="searchForm"  id="searchButton2" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addTr(2)"  id="addButton2" >&nbsp;添加&nbsp;</a>
+						</div> -->
+					</div>
+					<div class="tr">
+                        <div class="th hide" >车辆类型：</div>
+                        <div class="td hide">
+                            <input name="vehicleType" class="easyui-combobox" cy-code="001">
+                        </div>
+                        <div class="th hide" style="padding-left: 20px">
+							车辆品牌：
+						</div>
+						<div class="td hide" style="padding-left: 20px">
+							<input class="cy-brandbox" name="vehBrand" style="width:120px;" />
+						</div>
+						<div class="th hide" style="padding-left: 20px">
+							子品牌：
+						</div>
+						<div class="td hide">
+							<input class="easyui-textbox" name="vehBrand" style="width:120px;" />
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown" style="display:none"
+							cy-click="searchSlideDown">更多</a>
+						<a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"
+							cy-click="searchSlideUp">收起</a>&nbsp;
+						<a class="easyui-linkbutton button-search" cy-click="searchForm('plateNbr')"  id="searchButton" data-options="iconCls:'icon-search'">&nbsp;有号牌碰撞&nbsp;</a>
+						<a class="easyui-linkbutton button-search" cy-click="searchForm('nullPlateNbr')"   data-options="iconCls:'icon-search'">&nbsp;无号牌碰撞&nbsp;</a>
+						<!-- <a class="easyui-linkbutton button-search" cy-click="searchForm"   data-options="iconCls:'icon-search'">&nbsp;假套牌碰撞&nbsp;</a> -->
+						</div>
+					 </div>
+					 
+					<!-- <div class="tr" style="display: none;">
+						<div class="th" style="height: 25px; line-height: 25px;">
+							点位：
+							</div>
+						<div class="td" tyle="width: 255px;">
+							点位多选
+							<input class="cy-site-checkbox" style="width: 250px;" name="siteCode3" iscode="true">
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 24px">
+							开始时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="beginTime3" id="startDateTime3"
+								data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime3\']','date'],required:true" 
+								 class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 30px;"">
+							结束时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="endTime3" id="endDateTime3"
+								data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime3\']','date'],required:true" class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-search" cy-click="searchForm"  id="searchButton3" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addTr(3)"  id="addButton3">&nbsp;添加&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'" cy-click="deleteTr(3)"  id="deleteButton3" >&nbsp;删除&nbsp;</a>
+						</div>
+
+					</div>
+					
+					<div class="tr" style="display: none;">
+						<div class="th" style="height: 25px; line-height: 25px;">
+							点位：
+							</div>
+						<div class="td" tyle="width: 255px;">
+							点位多选
+							<input class="cy-site-checkbox" style="width: 250px;" name="siteCode4" iscode="true">
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 24px">
+							开始时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="beginTime4" id="startDateTime4"
+								data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime4\']','date'],required:true"  class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 30px;"">
+							结束时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="endTime4" id="endDateTime4"
+								data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime4\']','date'],required:true" class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-search" cy-click="searchForm"  id="searchButton4" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addTr(4)"  id="addButton4" >&nbsp;添加&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'" cy-click="deleteTr(4)"  id="deleteButton4" >&nbsp;删除&nbsp;</a>
+						</div>
+
+					</div> 
+					
+					<div class="tr" style="display: none;">
+						<div class="th" style="height: 25px; line-height: 25px;">
+							点位：
+							</div>
+						<div class="td" tyle="width: 255px;">
+							<!--点位多选 -->
+						<!--	<input class="cy-site-checkbox" style="width: 250px;" name="siteCode5" iscode="true">
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 24px">
+							开始时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="beginTime5" id="startDateTime5"
+								data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime5\']','date'],required:true"  class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="th" style="height: 25px; line-height: 25px;padding-left: 30px;"">
+							结束时间：</div>
+						<div class="td" style="width: 145px;">
+							<input name="endTime5" id="endDateTime5"
+								data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime5\']','date'],required:true" class="easyui-datetimebox"
+								style="width: 145px;" autocomplete="on" />
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton button-search" cy-click="searchForm"  id="searchButton5" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						<div class="td" style="padding-left: 30px;">
+						<a class="easyui-linkbutton" cy-click="deleteTr(5)"  data-options="iconCls:'icon-remove'" id="deleteButton5" >&nbsp;删除&nbsp;</a>
+						</div>
+					</div>-->
+				</div>
+				</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false" id="centerDiv">
+		
+	</div>
+</div>
+<script type="text/javascript">
+ // 绑定DataGrid
+InitPage([], function($scope) {
+	$scope.$getDefaultCode(["002"]);
+    var trs = $scope.$("#queryDataTable").find(".tr");
+    var qryConditionNum = 2;
+    /**
+	 * 显示查询进度条
+	 */
+	var searchProgress = function() {
+		$.messager.progress({
+			title : false,
+			msg : "正在查询，请稍后...",
+			interval : 1000,
+			text : "查询中..."
+		});
+	};
+
+	$.extend($scope, {
+        /**
+         * 初始化参数
+         * @type {Object}
+         */
+        formData : {
+        	beginTime1 : $scope.$dateAdd("h",-1).format("yyyy-MM-dd hh:mm:ss"),
+        	endTime1 : new Date().format("yyyy-MM-dd hh:mm:ss"),
+        	
+        	beginTime2 : $scope.$dateAdd("h",-1).format("yyyy-MM-dd hh:mm:ss"),
+        	endTime2 : new Date().format("yyyy-MM-dd hh:mm:ss"),
+        },
+
+        searchForm : function(searchType) {
+	        	if(!$scope.$("#form1").form("validate")){
+					return;
+				}
+        		//验证通过进行查询
+           	    $scope.$updateData("formData");
+           		//收起查询条件
+    			$scope.searchSlideUp();
+    			//显示查询进度条
+           	 	$scope.formData.qryConditionNum=2;
+           	 	//totalCount
+           	 	$scope.formData.totalCount=0; 
+	           	 if("plateNbr"==searchType){
+	           	 $scope.formData.havePlate='true';
+	             }else {
+	            	 $scope.formData.havePlate='false';
+	             }
+	           	//设置显示进度条方法
+	           	//查询数据
+	 			$scope.$setParam("searchProgress", searchProgress);
+                $scope.$setParam("data", $scope.formData);
+                if("plateNbr"==searchType){
+                $scope.formData.havePlate='true';
+                $scope.$("#centerDiv").panel("refresh","tpls/passVehicle/collisionManager/case-collison-plateNbr.html");
+                }else {
+                $scope.$("#centerDiv").panel("refresh","tpls/passVehicle/collisionManager/case-collison-nullplateNbr.html");                	
+                }
+		},
+		/**
+		 * 收起剩余搜索项
+		 * @return {[type]} [description]
+		 */
+		searchSlideUp : function() {
+			$scope.$(".hide").hide();
+			$scope.$("#case-collision-analyse").layout("panel", "north").panel("resize", {
+				height : 85
+			});
+			$scope.$("#case-collision-analyse").layout("resize");
+			$scope.$("#searchSlideUp").hide();
+			$scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" ");
+		},
+		/**
+		 * 展开剩余搜索项
+		 * @return {[type]} [description]
+		 */
+		searchSlideDown : function() {
+			$scope.$(".hide").show();
+			$scope.$("#case-collision-analyse").layout("panel", "north").panel("resize", {
+				height : 158
+			});
+			$scope.$("#case-collision-analyse").layout("resize");
+			$scope.$("#searchSlideDown").hide();
+			$scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+		}
+/* 		addTr : function(index) {
+			nextTr = index+1;
+			if (nextTr > 5){
+				return;
+			}
+			 $scope.$("#case-collision-analyse").layout("panel", "north").panel("resize", {
+                 height : 128+22*index
+             });
+             $scope.$("#case-collision-analyse").layout("resize");
+			$(trs[index]).css("display","block");
+			$scope.$("#searchButton"+index).css("display","none");
+			$scope.$("#addButton"+index).css("display","none");
+			$scope.$("#deleteButton"+index).css("display","none");
+			qryConditionNum++;
+			
+		},
+		deleteTr:function(index){
+			var preTr = index -1;
+			 $scope.$("#case-collision-analyse").layout("panel", "north").panel("resize", {
+                 height : 200-25*(6-index)
+             });
+            $scope.$("#case-collision-analyse").layout("resize");
+			$(trs[preTr]).css("display","none");
+			$scope.$("#searchButton"+preTr).css("display","block");
+			$scope.$("#addButton"+preTr).css("display","block");
+			$scope.$("#deleteButton"+preTr).css("display","block");
+			qryConditionNum--;
+		},
+		
+		$getPlateType : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("002",value);
+		},
+		
+		/**
+		 * 号牌颜色过滤器
+		 */
+		/*plateColorFilter : function(row) {
+			if (row) {
+				var colorCode = row.plate_color;
+				var style;
+				switch (colorCode) {
+				case "0":
+					style = "background-color: white;color: red;";
+					break;
+				case "1":
+					style = "background-color: yellow;color: #00000;";
+					break;
+				case "2":
+					style = "background-color: blue;color: #FFFFFF;";
+					break;
+				case "3":
+					style = "background-color: black;color: #FFFFFF;";
+					break;
+				case "4":
+					style = "background-color: #888888;color: #FFFFFF;";
+					break;
+				}
+				return style;
+			}
+		}, */
+		
+	});
+}); 
+</script>
+<style>
+#case-collision-analyse .th {
+	width: 100px;
+	text-align: right;
+}
+
+#case-collision-analyse .td {
+	width: 120px;
+}
+
+#case-collision-analyse p {
+	margin: 0;
+	height: 30px;
+	line-height: 30px;
+	font-size: 14px;
+	width: 120px;
+	text-align: left;
+}
+</style>

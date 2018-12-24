@@ -1,0 +1,197 @@
+<div id="trafficAlarmHistory" class="easyui-layout">
+	<div data-options="region:'north',height:'100px'">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="queryHistoryData" id="form">
+				<div class="table">
+					<div class="tr">
+						<div class="th" >
+							开始时间：
+						</div>
+						<div class="td">
+							<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:98px" 
+							data-options="prompt:'开始时间',validType:'maxDate[\'end\']'"/>
+							至
+							<input class="easyui-datetimebox"  name="endTime" id="end" style="width:98px" 
+							data-options="prompt:'结束时间',validType:'minDate[\'start\']'"/>
+						</div>
+
+					</div>
+					<div class="tr" >
+						<div class="th">
+							预警类型：
+						</div>
+						<div class="td">
+							<input  class="easyui-combobox" name="alarmEventType"cy-code="511" style="width:95px">
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="historyData" cy-datagrid="optionsHis" cy-querydata="queryHistoryData"
+		cy-url="trafficSituation/alarmEvent/search"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["locationSite"], function($scope) {
+		//路况预警事件类别。506流量预警502气象预警434 交通事件500 人工记录
+		$scope.$getDefaultCode(["502", "511","506","434"]);
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$search("queryHistoryData");
+		};
+		$scope.optionsHis = {
+			columns : [[{
+				field : 'siteName',
+				title : '名称',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'subAlarmEvent',
+				title : '预警类型',
+				align : 'center',
+				formatter : options_type,
+				width : 20
+			}, {
+				field : 'startAlarmTime',
+				title : '时间',
+				align : 'center',
+				width : 25
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 15
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if(rowData.siteLongitude!=null && rowData.siteLatitude!=null){
+					var lonLat = "POINT(" + rowData.siteLongitude + " " + rowData.siteLatitude + ")";
+					$scope.locationSite(lonLat);
+				}
+				else{
+					$.messager.alert("警告","无法获取位置信息！");
+				}	
+			
+			},
+			nowrap : false
+		};
+		//方向direction的格式化
+		function options_type(value, row, index) {
+			return $scope.$getCodeName(row.alarmEventType, value);
+			
+		}
+
+		//操作栏按钮
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a  cy-click='showInfo(" + index + ")'></a>");
+			//处理按钮
+			button1.linkbutton({
+				iconCls : "icon-handle-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").html();
+		}
+
+		//操作栏中的详情按钮，弹出详情框
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#historyData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			//保存按钮、通过Ajax提交和后台交互
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/alarmEvent/update",
+					params : params,
+					success : function(data) {
+						if (data > 0) {
+							//刷新列表
+							$scope.$("#panel-right").panel('refresh', "tpls/trafficMonitor/trafficState/traffic-alarm-history.html");
+							//修改成功关闭dialog
+							$scope.$getDialog("showDialog").dialog("close");
+							$scope.$search("queryHistoryData");
+						} else {
+							$.messager.alert("提示", "修改失败！");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "修改失败！");
+					}
+				});
+			});
+
+			var type = rowDatas[index].alarmEventType;
+			//路况预警事件类别。506流量预警502气象预警434 交通事件500 人工记录
+			if (type == "506") {
+				if (rowDatas[index].subAlarmEvent == "01" || rowDatas[index].subAlarmEvent == "02") {//流量突变、断面断流
+					$scope.$openDialog("showDialog", {
+						title : "断面预警",
+						height : 400,
+						width : 490,
+						href : "tpls/trafficMonitor/trafficState/alarm/section-alarm.html"
+					});
+				} else if (rowDatas[index].subAlarmEvent == "04") {//区间旅行时间超长预警
+					$scope.$openDialog("showDialog", {
+						title : "区间预警",
+						height : 410,
+						width : 490,
+						href : "tpls/trafficMonitor/trafficState/alarm/region-alarm.html"
+					});
+				}
+			} else if (type == "502") {
+				$scope.$openDialog("showDialog", {
+					title : "气象预警",
+					height : 450,
+					width : 490,
+					href : "tpls/trafficMonitor/trafficState/alarm/weather-alarm.html"
+				});
+			} else if (type == "434") {
+				$scope.$openDialog("showDialog", {
+					title : "事件检测",
+					height : 430,
+					width : 700,
+					href : "tpls/trafficMonitor/trafficState/alarm/event-alarm.html"
+				});
+
+			} else if (type == "500") {
+
+			}
+		};
+		//根据条件搜索
+		$scope.searchData = function() {
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("queryHistoryData");
+				$scope.$search("queryHistoryData");
+			}
+		};
+	}); 
+</script>
+<style>
+	#trafficAlarmHistory .th {
+		width: 60px;
+		text-align: center;
+		height: 18px;
+		line-height: 20px;
+	}
+	#trafficAlarmHistory .td {
+		width: 95px;
+		text-align: center;
+		height: 18px;
+		line-height: 20px;
+	}
+
+	#trafficAlarmHistory .datagrid-cell {
+		font-size: 11px;
+	}
+</style>

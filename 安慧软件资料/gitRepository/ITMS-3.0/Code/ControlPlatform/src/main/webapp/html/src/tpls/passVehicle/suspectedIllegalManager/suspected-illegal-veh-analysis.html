@@ -1,0 +1,528 @@
+<!--
+ ********************************************************************************
+ * 用户           云南交警总队
+ *
+ * 当前页面名   违法嫌疑车辆分析(suspected-illegal-veh-analysis.html) 
+ *
+ * 版本号        Version 1.0
+ * 作者           wangyunqi
+ *
+ * 更新履历     2016-05-09：创建
+ ********************************************************************************
+-->
+<div id="suspected-illegal-veh" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:120">
+		<form cy-form="formData" id='searchForm'>
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">嫌疑类型：</div>
+						<div class="td" >
+						<select  class="easyui-combobox"
+							name="identifyType" id = "identifyType" style="width: 120px;">
+							<option value="">请选择</option>
+							<option value="0">大车占道</option>
+							<option value="i">疲劳驾驶</option>
+							<option value="7">区间超速</option>
+						</select>
+						</div>
+						<div class="th" id="highSpeedTh" style="display: none">超速比：</div>
+						<div class="td" id="highSpeedTd" style="display: none;width: 270px;">
+						<input type="radio" value="7" checked name="highSpeed">全部
+						<input type="radio" value="710a"  name="highSpeed">20%以下
+						<input type="radio" value="710b" name="highSpeed">20%至50%
+						<input type="radio" value="710c" name="highSpeed">50%以上
+						</div>
+						<div class="th hide" >
+						行政区划：
+						</div>
+						<div class="td hide" style="width:120px;height: 25px;">
+						<input class="cy-district-checkbox" iscode="true" name="distritCodes" id="distritCodes" style="width:120px;height:25px"/>
+						</div>
+						<div class="th hide">
+							道路：
+						</div>
+						<div class="td hide" style="width:120px;height: 25px;">
+							<input class="cy-road-checkbox"  filter="getRoadByDistrict" iscode="true" name="roadCodes" style="width:120px;height:25px"/>
+						</div>
+						
+						<div class="th" >
+							归属地：
+						</div>
+						<div class="td" style="width:70px;">
+							<!-- <input class="easyui-combobox" id="vehLocalization" name="vehLocalization" cy-code="228" style="width:70px"/> -->
+							<select id="vehLocalization" class="easyui-combobox"
+								name="vehLocalization" style="width: 100px;">
+								<option value="">请选择</option>
+								<option value="1">本市</option>
+								<option value="2">本市以外</option>
+								<option value="3">本省</option>
+								<option value="4">外省</option>
+							</select>
+						</div>
+						
+						
+					</div>
+					
+					<div class="tr">
+						<div class="th" >确认标识：</div>
+						<div class="td" style="width: 160px">
+							<input type="checkbox" name="confirmFlags" value="1" checked/>确认有效 
+							<input type="checkbox" name="confirmFlags" value="2" checked/>确认无效
+							<input type="checkbox" name="confirmFlags" value="3" checked/>未确认
+						</div>
+						
+						<div class="th" style="height:25px;padding-left: 80px;">
+							分析周期：
+						</div>
+						<div class="td" style="width:145px;">
+                          <input name="startDateTime" id="startDateTime" data-options="editable:false,required:true,prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date']" class="easyui-datebox dispatchTime" style="width:148px;" autocomplete="on" />
+							至	
+                          <input name="endDateTime" id="endDateTime" data-options="editable:false,required:true,prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date']" class="easyui-datebox dispatchTime" style="width:148px;" autocomplete="on" />
+						</div>
+						
+					    <div class="th" style="margin-left: 200px;">
+							<a class="easyui-linkbutton button-search" cy-click="searchForm"   id="searchButton" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						<a class="easyui-linkbutton button-export button-main" cy-click="exportExcel"   id="exportButton" data-options="iconCls:'icon-export'">&nbsp;导出&nbsp;</a>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!--数据展示区 -->
+	<div id="dataGridDiv" data-options="region:'center',border:false" style="display:block;z-index:1">
+		<table cy-datagrid="Options" cy-querydata="formData" cy-url="vehTrack/vehtrackPassVio/queryVehTrackVios" id="datagrid">
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+// 绑定DataGrid
+InitPage([], function($scope) {
+	$scope.$getDefaultCode(['001','006','241','011']);
+	var date= $scope.$dateAdd("d",-7);
+    //提供给过车查询和轨迹查询的时间
+    var passTime1;
+    var passTime2;
+
+	$.extend($scope, {
+        /**
+         * 初始化参数
+         * @type {Object}
+         */
+        formData : {
+        	startDateTime : date.format("yyyy-MM-dd 00:00:00"),
+        	endDateTime : new Date().format("yyyy-MM-dd 00:00:00"),
+        },
+        
+        /**
+         * datagrid配置
+         */
+        Options : {
+ 			showHeader: true,
+        	remoteSort: false,
+    		emptyMsg: '没有查询到记录',
+    		sortName:'vioSuspectedDesc',
+    		data:[],
+            columns:[[
+            	{title : "",field : "vioSuspectedId",width : 35,align:"center",checkbox:false,hidden:true},
+            	{title : "确认标识",field : "confirmFlag",width : 40,align:"center",formatter:function(value){
+            	return $scope.confirmFlag(value);	
+            	}},
+                {title : "号牌号码",field : "plateNbr",width : 40,align:"center"},
+                {field:"vehicleType",title:"车辆类型",width:40,align:"center",formatter:function(value){
+                	return $scope.$getVehType(value);
+                }},
+                {title : "嫌疑类型",field : "identifyType",width : 40,align:"center",formatter:function(value){
+                	return $scope.$getVioType(value);
+                }},
+                {title : "所在道路",field : "roadCode",width : 65,align:"center",formatter:function(value){
+                	if (value){
+                	return $scope.$getRoadName(value);
+                	}
+                }},
+                {field:"vioSiteName",title:"违法点位",width:50,align:"center"},
+                {field:"detectionTime",title:"违法时间",width:80,halign:'center',align:"center",formatter:function(value){
+                	if (value){
+                		return new Date(value).format("yyyy-MM-dd hh:mm:ss");
+                	}
+                }},
+                {field:"vioSuspectedDesc",title:"分析描述",width:170,halign:'center',align:"center",sortable:true,
+                	sorter:function(a,b){
+                		if(!a || !b){
+                			return;
+                		}
+                		var num1=a.match(/\d+(\.\d+)?/g);
+                		var num2=b.match(/\d+(\.\d+)?/g);
+                		if(parseInt(num1[0]) == parseInt(num2[0])){
+                			if(parseInt(num1[1])==parseInt(num2[1])){
+                				if(parseInt(num1[2])==parseInt(num2[2])){
+                					if(parseInt(num1[3])==parseInt(num2[3])){
+                						if(parseInt(num1[4])==parseInt(num2[4])){
+                						}else{
+                						return (parseInt(num1[4])>parseInt(num2[4])?1:-1);  
+                						}
+                					}else{
+                						return (parseInt(num1[3])>parseInt(num2[3])?1:-1);  
+                					}
+                				}else{
+                					return (parseInt(num1[2])>parseInt(num2[2])?1:-1);  
+                				}
+                			}else{
+                				return (parseInt(num1[1])>parseInt(num2[1])?1:-1);  
+                			}
+                		 }
+                		  return (parseInt(num1[0])>parseInt(num2[0])?1:-1);  
+							}
+                },
+                {field : 'cz',title : '操作',width:30,align : 'center',formatter : 
+					function(value,rowData,rowIndex) {
+                	  if (value == undefined) {
+                		  return $scope.operateUserCz(value,rowData,rowIndex);
+                	  }
+    				},
+    				width : 80
+    			}
+            ]]
+        },
+        
+      		//用户操作栏
+		  operateUserCz : function(value, row, index) {
+		  	//分析确认
+			var button1 = $('<a  title="分析确认" style="color:blue;font-size=14px;" cy-click="anaylsisConfirm3(\'' + index + '\')">分析确认</a>');
+			//大车占道
+		  	if("0" == row.identifyType){
+				button1 = $('<a  title="分析确认" style="color:blue;font-size=14px;" cy-click="anaylsisConfirm2(\'' + index + '\')">分析确认</a>');
+			}else if("7" == row.identifyType){
+				button1 = $('<a  title="分析确认" style="color:blue;font-size=14px;" cy-click="anaylsisConfirm3(\'' + index + '\')">分析确认</a>');
+			}
+			
+			button1.linkbutton({
+				//iconCls : "icon-edit-solid",
+				plain : true
+			});
+			
+			return $("<span/>").append(button1).append(" ").html();
+		},
+		
+		
+
+        searchForm : function() {
+        	//验证通过进行查询
+        	if(!$scope.$("#searchForm").form("validate")){
+				return;
+			}
+           	$scope.$updateData("formData");
+           	var confirmFlags;
+			$scope.$("input[name='confirmFlags']:checked").each(
+				function(i) {
+					if (0 == i) {
+						confirmFlags = $(this).val();
+					} else {
+						confirmFlags += ("," + $(this).val());
+					}
+				});
+			$scope.formData.confirmFlags = confirmFlags;
+			$scope.formData.startDateTime = $scope.formData.startDateTime +" 00:00:00"
+			$scope.formData.endDateTime = $scope.formData.endDateTime +" 23:59:59"
+			passTime1 = $scope.formData.startDateTime;
+			passTime2 = $scope.formData.endDateTime;
+			var vehLocal = $scope.formData.vehLocalization;
+			//根据机构前四位然后补足0.组成12的组织机构代码
+			var orgCode = ($scope.UserInfo.orgCode).substr(0,4)+"00000000";
+			var platePrefix = $scope.$getPlatePrefix(orgCode);
+			if (!platePrefix) {
+				platePrefix = "云";
+			}
+			$scope.formData.justNonlocalVeh='';
+			//昆明市用户云A和云B
+			if("云B"==platePrefix ){
+				platePrefix = platePrefix+",云A"
+			}
+			//本市
+			if("1" == vehLocal){
+				$scope.formData.plateNbr = platePrefix;
+			}else if("2" == vehLocal){//本市以外
+				$scope.formData.plateNbr = platePrefix;
+				$scope.formData.justNonlocalVeh='true';
+			}else if("3" ==vehLocal){//本省
+				$scope.formData.plateNbr = "云";
+			}else if("4" ==vehLocal){//本省以外
+				$scope.formData.plateNbr = "云";
+				$scope.formData.justNonlocalVeh='true';
+			}else {
+				$scope.formData.plateNbr = "";
+			}
+			//区间超速
+			if($scope.formData.identifyType=='7'){
+				$scope.formData.identifyType = $scope.formData.highSpeed;
+			}
+        	//if (validator()) {
+                var pager = $scope.$("#datagrid").datagrid("getPager");
+                if (pager.length > 0) {
+                    var paginationOptions = pager.pagination("options");
+                    $scope.formData.pageSize = paginationOptions.pageSize;
+                    $scope.formData.pageNumber = 1;
+                    $scope.formData.totalCount = 0;
+                }
+                //排序方式
+                $scope.formData.orderType = 'desc';
+        		$scope.$search("formData", "", function(data) {
+	    			
+	    			if (data && data != null && data.rows.length > 0) {
+	    				
+	    			}else{
+	    				$.messager.alert('提示','查无数据!',"info");
+	    			}
+	    			
+	    		})
+        	/* } else {
+        		return;
+        	} */
+		},
+		
+		exportExcel : function() {
+        	//验证通过进行查询
+        	if(!$scope.$("#searchForm").form("validate")){
+				return;
+			}
+           	$scope.$updateData("formData");
+           	var confirmFlags;
+			$scope.$("input[name='confirmFlags']:checked").each(
+				function(i) {
+					if (0 == i) {
+						confirmFlags = $(this).val();
+					} else {
+						confirmFlags += ("," + $(this).val());
+					}
+				});
+			$scope.formData.confirmFlags = confirmFlags;
+			$scope.formData.startDateTime = $scope.formData.startDateTime +" 00:00:00"
+			$scope.formData.endDateTime = $scope.formData.endDateTime +" 23:59:59"
+			passTime1 = $scope.formData.startDateTime;
+			passTime2 = $scope.formData.endDateTime;
+			if($scope.formData.identifyType=='7'){
+				$scope.formData.identifyType
+			}
+        	//if (validator()) {
+                var pager = $scope.$("#datagrid").datagrid("getPager");
+                if (pager.length > 0) {
+                    var paginationOptions = pager.pagination("options");
+                    $scope.formData.pageSize = paginationOptions.pageSize;
+                    $scope.formData.pageNumber = 1;
+                    $scope.formData.totalCount = 0;
+                }
+                //排序方式
+                $scope.formData.orderType = 'desc';
+                //后台保存数据
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"vehTrack/vehtrackPassVio/exportVioRecordExcel",
+                    params: $scope.formData,
+                    method: "post",
+                    success: function(data){
+                    	if(data.url != undefined){
+                    	 $scope.download(data);
+                    	}else{
+                    		$.messager.alert("提示","请确认该查询结果列表是否为空！");
+                    	}
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","导出失败！");
+                    }
+                });
+		},
+		
+		
+		
+		$getVehType : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("001",value);
+		},
+		
+		$getCarColor : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("006",value);
+		},
+		
+		$getVioType : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("011",value);
+		},
+		
+	});
+
+    $scope.load = function() {
+    	$scope.$(".hide").css("display","none");
+    	$scope.$("#identifyType").combobox({
+    		onSelect:function(record){
+    			if(record.value == "0"  ){
+    				$scope.$(".hide").css("display","block");
+    				$scope.$("#highSpeedTh").css("display","none");
+    				$scope.$("#highSpeedTd").css("display","none");
+    			}else if (record.value == "7"){
+    				$scope.$(".hide").css("display","block");
+    				$scope.$("#highSpeedTh").css("display","block");
+    				$scope.$("#highSpeedTd").css("display","block");
+    			}else{
+    				$scope.$(".hide").css("display","none");
+    				$scope.$("#highSpeedTh").css("display","none");
+    				$scope.$("#highSpeedTd").css("display","none");
+    			}
+    		},
+    		/* onChange:function(newValue, oldValue){
+    			$scope.$(".hide").css("display","none");
+    		} */
+    	});
+    	 
+    	//查询时间不能大于当前时间
+		$scope.$('.dispatchTime').each(function(){
+			$(this).datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+		});
+    };
+    
+	 // Ajax 文件下载
+	     $scope.download = function(data){    // 获得url
+	        if(data){
+	            // request发送请求
+	            $('<form action="' + data.url + '" method="post"></form>')
+	            .appendTo('body').submit().remove();
+	        };
+	    };
+    
+   /**
+    *分析确认 
+    */
+    $scope.anaylsisConfirm = function(index){
+    	var row = $scope.$("#datagrid").datagrid("getData").rows[index];
+    	$scope.$setParam("data", row);
+    	$scope.$setParam("searchForm", $scope.searchForm);
+    	$scope.$setParam("closeDialog", $scope.closeDialog);
+    	$scope.$openDialog("editPLDialog",{
+						title : "疲劳驾驶详情页面",
+						width : 900,
+						height : 550,
+						href : 'tpls/passVehicle/suspectedIllegalManager/suspected-illegal-veh-confirm.html'
+		}, true);
+	},
+	 
+   /**
+    *分析确认 (大车占道)
+    */
+    $scope.anaylsisConfirm2 = function(index){
+    	var row = $scope.$("#datagrid").datagrid("getData").rows[index];
+    	$scope.$setParam("data", row);
+    	$scope.$setParam("searchForm", $scope.searchForm);
+    	$scope.$setParam("closeDialog", $scope.closeDialog);
+    	$scope.$openDialog("editDCDialog",{
+						title : "大车占道详情页面",
+						width : 900,
+						height : 750,
+						href : 'tpls/passVehicle/suspectedIllegalManager/suspected-carts-veh-confirm.html'
+		}, true);
+	},
+	
+	/**
+    *分析确认 (区间超速)
+    */
+    $scope.anaylsisConfirm3 = function(index){
+    	var row = $scope.$("#datagrid").datagrid("getData").rows[index];
+    	$scope.$setParam("data", row);
+    	$scope.$setParam("searchForm", $scope.searchForm);
+    	$scope.$setParam("closeDialog", $scope.closeDialog);
+    	$scope.$openDialog("editQJDialog",{
+						title : "区间超速详情页面",
+						width : 900,
+						height : 750,
+						href : 'tpls/passVehicle/suspectedIllegalManager/suspected-region-veh-confirm.html'
+		}, true);
+	},
+	
+	/**
+	   *关闭窗口
+	  */
+	$scope.closeDialog = function(title){
+		$scope.$getDialog(title).dialog("close");
+	},
+	
+	/*
+	 * 查看车辆过车图片
+	 */
+	$scope.vehPass = function(plateNbr){
+		//过车查询
+		$scope.$goto("030201",
+                {
+		    		plateNbr: plateNbr,
+		    		passTimeStart:passTime1,
+		    		passTimeEnd:passTime2,
+		    		model:'image'
+                });
+	},
+	/**
+	 * 确认标识
+	 */
+	$scope.confirmFlag = function(value) {
+		if (value) {
+			return $scope.$getCodeName("241", value);
+		}
+		/* else{
+			return "未确认";
+		} */
+	};
+	/**
+	 *联动
+	 */
+	//行政区划和道路的联动
+	$scope.getRoadByDistrict = function(id, text, attribute) {
+		var distritCodes = $scope.$("#distritCodes").textbox("getValue").split(",");
+		if (!distritCodes || distritCodes == '' || "530000" == distritCodes) {
+			return true;
+		}
+		if (attribute.nodeType == "road") {
+			if(!attribute.districtCode || attribute.districtCode == ''){
+				return true;
+			}
+			var dCodes = attribute.districtCode.split(",");
+			for (var i in dCodes) {
+				for(var j in distritCodes){
+					if (dCodes[i]==distritCodes[j]) {
+						return true;
+					}
+				}
+			}
+			return false;
+		} else {
+			return true;
+		}
+	};
+}); 
+</script>
+<style>
+    #suspected-illegal-veh .th {
+        width: 80px;
+        text-align: right;
+    }
+    #suspected-illegal-veh .td {
+        width: 120px;
+    }
+    #suspected-illegal-veh p {
+        margin: 0;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        width: 120px;
+        text-align: left;
+    }
+
+</style>

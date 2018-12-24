@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.TollgateSysMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.TollgateSys">
+		<id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="TRACK_SYS_TOLLGATE_NBR" property="trackSysTollgateNbr"
+			jdbcType="VARCHAR" />
+		<result column="TOLLGATE_TYPE" property="tollgateType"
+			jdbcType="CHAR" />
+		<result column="IS_CONNECT_TRACK_SYS" property="isConnectTrackSys"
+			jdbcType="CHAR" />
+		<result column="INTERCEPT_CONDITIONS" property="interceptConditions"
+			jdbcType="CHAR" />
+		<result column="LAW_ENFORCE_STATION_CODE" property="lawEnforceStationCode"
+			jdbcType="VARCHAR" />
+		<result column="UP_RELATED_VIDEO_LIST" property="upRelatedVideoList"
+			jdbcType="VARCHAR" />
+		<result column="DOWN_RELATED_VIDEO_LIST" property="downRelatedVideoList"
+			jdbcType="VARCHAR" />
+		<result column="MATCH_TYPE_LIST" property="matchTypeList"
+			jdbcType="VARCHAR" />
+		<result column="HIGHWAY_ENTRANCE_EXIT" property="highwayEntranceExit"
+			jdbcType="CHAR" />
+		<result column="SERVICE_ENTRANCE_EXIT" property="serviceEntranceExit"
+			jdbcType="CHAR" />
+		<result column="PHOTO_MODEL" property="photoModel" jdbcType="CHAR" />
+		<result column="LARGE_CAR_SNAP_IMAGES" property="largeCarSnapImages"
+			jdbcType="DECIMAL" />
+		<result column="DETECTION_MODE" property="detectionMode"
+			jdbcType="CHAR" />
+		<result column="IS_VIO_SUPPORT" property="isVioSupport"
+			jdbcType="CHAR" />
+		<result column="INTEGRATE_PLATFORM_NBR" property="integratePlatformNbr"
+			jdbcType="VARCHAR" />
+		<result column="IS_FLOW_SUPPORT" property="isFlowSupport"
+			jdbcType="CHAR" />			
+	</resultMap>
+	<sql id="Base_Column_List">
+		DEVICE_ID, TRACK_SYS_TOLLGATE_NBR, TOLLGATE_TYPE, IS_CONNECT_TRACK_SYS,
+		INTERCEPT_CONDITIONS,
+		LAW_ENFORCE_STATION_CODE, UP_RELATED_VIDEO_LIST, DOWN_RELATED_VIDEO_LIST, MATCH_TYPE_LIST,
+		HIGHWAY_ENTRANCE_EXIT, SERVICE_ENTRANCE_EXIT, PHOTO_MODEL,
+		LARGE_CAR_SNAP_IMAGES,
+		DETECTION_MODE, IS_VIO_SUPPORT, INTEGRATE_PLATFORM_NBR,IS_FLOW_SUPPORT
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_TOLLGATE_SYS
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_DEVICE_TOLLGATE_SYS
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.TollgateSys">
+		insert into T_DEVICE_TOLLGATE_SYS (DEVICE_ID, TRACK_SYS_TOLLGATE_NBR,
+		TOLLGATE_TYPE,
+		IS_CONNECT_TRACK_SYS, INTERCEPT_CONDITIONS, LAW_ENFORCE_STATION_CODE,
+		UP_RELATED_VIDEO_LIST, DOWN_RELATED_VIDEO_LIST,
+		MATCH_TYPE_LIST, HIGHWAY_ENTRANCE_EXIT, SERVICE_ENTRANCE_EXIT,
+		PHOTO_MODEL, LARGE_CAR_SNAP_IMAGES, DETECTION_MODE,
+		IS_VIO_SUPPORT, INTEGRATE_PLATFORM_NBR,IS_FLOW_SUPPORT)
+		values (#{deviceId,jdbcType=VARCHAR},
+		#{trackSysTollgateNbr,jdbcType=VARCHAR},
+		#{tollgateType,jdbcType=CHAR},
+		#{isConnectTrackSys,jdbcType=CHAR}, #{interceptConditions,jdbcType=CHAR},
+		#{lawEnforceStationCode,jdbcType=VARCHAR},
+		#{upRelatedVideoList,jdbcType=VARCHAR},
+		#{downRelatedVideoList,jdbcType=VARCHAR},
+		#{matchTypeList,jdbcType=VARCHAR},
+		#{highwayEntranceExit,jdbcType=CHAR},
+		#{serviceEntranceExit,jdbcType=CHAR},
+		#{photoModel,jdbcType=CHAR}, #{largeCarSnapImages,jdbcType=DECIMAL},
+		#{detectionMode,jdbcType=CHAR},
+		#{isVioSupport,jdbcType=CHAR}, #{integratePlatformNbr,jdbcType=VARCHAR},
+		#{isFlowSupport,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.TollgateSys">
+		insert into T_DEVICE_TOLLGATE_SYS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				DEVICE_ID,
+			</if>
+			<if test="trackSysTollgateNbr != null">
+				TRACK_SYS_TOLLGATE_NBR,
+			</if>
+			<if test="tollgateType != null">
+				TOLLGATE_TYPE,
+			</if>
+			<if test="isConnectTrackSys != null">
+				IS_CONNECT_TRACK_SYS,
+			</if>
+			<if test="interceptConditions != null">
+				INTERCEPT_CONDITIONS,
+			</if>
+			<if test="lawEnforceStationCode != null">
+				LAW_ENFORCE_STATION_CODE,
+			</if>
+			<if test="upRelatedVideoList != null">
+				UP_RELATED_VIDEO_LIST,
+			</if>
+			<if test="downRelatedVideoList != null">
+				DOWN_RELATED_VIDEO_LIST,
+			</if>
+			<if test="matchTypeList != null">
+				MATCH_TYPE_LIST,
+			</if>
+			<if test="highwayEntranceExit != null">
+				HIGHWAY_ENTRANCE_EXIT,
+			</if>
+			<if test="serviceEntranceExit != null">
+				SERVICE_ENTRANCE_EXIT,
+			</if>
+			<if test="photoModel != null">
+				PHOTO_MODEL,
+			</if>
+			<if test="largeCarSnapImages != null">
+				LARGE_CAR_SNAP_IMAGES,
+			</if>
+			<if test="detectionMode != null">
+				DETECTION_MODE,
+			</if>
+			<if test="isVioSupport != null">
+				IS_VIO_SUPPORT,
+			</if>
+			<if test="integratePlatformNbr != null">
+				INTEGRATE_PLATFORM_NBR,
+			</if>
+			<if test="isFlowSupport != null">
+				IS_FLOW_SUPPORT
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="trackSysTollgateNbr != null">
+				#{trackSysTollgateNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="tollgateType != null">
+				#{tollgateType,jdbcType=CHAR},
+			</if>
+			<if test="isConnectTrackSys != null">
+				#{isConnectTrackSys,jdbcType=CHAR},
+			</if>
+			<if test="interceptConditions != null">
+				#{interceptConditions,jdbcType=CHAR},
+			</if>
+			<if test="lawEnforceStationCode != null">
+				#{lawEnforceStationCode,jdbcType=VARCHAR},
+			</if>
+			<if test="upRelatedVideoList != null">
+				#{upRelatedVideoList,jdbcType=VARCHAR},
+			</if>
+			<if test="downRelatedVideoList != null">
+				#{downRelatedVideoList,jdbcType=VARCHAR},
+			</if>
+			<if test="matchTypeList != null">
+				#{matchTypeList,jdbcType=VARCHAR},
+			</if>
+			<if test="highwayEntranceExit != null">
+				#{highwayEntranceExit,jdbcType=CHAR},
+			</if>
+			<if test="serviceEntranceExit != null">
+				#{serviceEntranceExit,jdbcType=CHAR},
+			</if>
+			<if test="photoModel != null">
+				#{photoModel,jdbcType=CHAR},
+			</if>
+			<if test="largeCarSnapImages != null">
+				#{largeCarSnapImages,jdbcType=DECIMAL},
+			</if>
+			<if test="detectionMode != null">
+				#{detectionMode,jdbcType=CHAR},
+			</if>
+			<if test="isVioSupport != null">
+				#{isVioSupport,jdbcType=CHAR},
+			</if>
+			<if test="integratePlatformNbr != null">
+				#{integratePlatformNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="isFlowSupport != null">
+			    #{isFlowSupport,jdbcType=CHAR}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.TollgateSys">
+		update T_DEVICE_TOLLGATE_SYS
+		<set>
+			<if test="trackSysTollgateNbr != null">
+				TRACK_SYS_TOLLGATE_NBR = #{trackSysTollgateNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="tollgateType != null">
+				TOLLGATE_TYPE = #{tollgateType,jdbcType=CHAR},
+			</if>
+			<if test="isConnectTrackSys != null">
+				IS_CONNECT_TRACK_SYS = #{isConnectTrackSys,jdbcType=CHAR},
+			</if>
+			<if test="interceptConditions != null">
+				INTERCEPT_CONDITIONS = #{interceptConditions,jdbcType=CHAR},
+			</if>
+			<if test="lawEnforceStationCode != null">
+				LAW_ENFORCE_STATION_CODE = #{lawEnforceStationCode,jdbcType=VARCHAR},
+			</if>
+			<if test="upRelatedVideoList != null">
+				UP_RELATED_VIDEO_LIST = #{upRelatedVideoList,jdbcType=VARCHAR},
+			</if>
+			<if test="downRelatedVideoList != null">
+				DOWN_RELATED_VIDEO_LIST = #{downRelatedVideoList,jdbcType=VARCHAR},
+			</if>
+			<if test="matchTypeList != null">
+				MATCH_TYPE_LIST = #{matchTypeList,jdbcType=VARCHAR},
+			</if>
+			<if test="highwayEntranceExit != null">
+				HIGHWAY_ENTRANCE_EXIT = #{highwayEntranceExit,jdbcType=CHAR},
+			</if>
+			<if test="serviceEntranceExit != null">
+				SERVICE_ENTRANCE_EXIT = #{serviceEntranceExit,jdbcType=CHAR},
+			</if>
+			<if test="photoModel != null">
+				PHOTO_MODEL = #{photoModel,jdbcType=CHAR},
+			</if>
+			<if test="largeCarSnapImages != null">
+				LARGE_CAR_SNAP_IMAGES = #{largeCarSnapImages,jdbcType=DECIMAL},
+			</if>
+			<if test="detectionMode != null">
+				DETECTION_MODE = #{detectionMode,jdbcType=CHAR},
+			</if>
+			<if test="isVioSupport != null">
+				IS_VIO_SUPPORT = #{isVioSupport,jdbcType=CHAR},
+			</if>
+			<if test="integratePlatformNbr != null">
+				INTEGRATE_PLATFORM_NBR = #{integratePlatformNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="isFlowSupport != null">
+				IS_FLOW_SUPPORT = #{isFlowSupport,jdbcType=CHAR},
+			</if>
+		</set>
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.TollgateSys">
+		update T_DEVICE_TOLLGATE_SYS
+		set TRACK_SYS_TOLLGATE_NBR = #{trackSysTollgateNbr,jdbcType=VARCHAR},
+		TOLLGATE_TYPE = #{tollgateType,jdbcType=CHAR},
+		IS_CONNECT_TRACK_SYS = #{isConnectTrackSys,jdbcType=CHAR},
+		INTERCEPT_CONDITIONS = #{interceptConditions,jdbcType=CHAR},
+		LAW_ENFORCE_STATION_CODE = #{lawEnforceStationCode,jdbcType=VARCHAR},
+		UP_RELATED_VIDEO_LIST = #{upRelatedVideoList,jdbcType=VARCHAR},
+		DOWN_RELATED_VIDEO_LIST = #{downRelatedVideoList,jdbcType=VARCHAR},
+		MATCH_TYPE_LIST = #{matchTypeList,jdbcType=VARCHAR},
+		HIGHWAY_ENTRANCE_EXIT = #{highwayEntranceExit,jdbcType=CHAR},
+		SERVICE_ENTRANCE_EXIT = #{serviceEntranceExit,jdbcType=CHAR},
+		PHOTO_MODEL = #{photoModel,jdbcType=CHAR},
+		LARGE_CAR_SNAP_IMAGES = #{largeCarSnapImages,jdbcType=DECIMAL},
+		DETECTION_MODE = #{detectionMode,jdbcType=CHAR},
+		IS_VIO_SUPPORT = #{isVioSupport,jdbcType=CHAR},
+		INTEGRATE_PLATFORM_NBR = #{integratePlatformNbr,jdbcType=VARCHAR},
+		IS_FLOW_SUPPORT = #{isFlowSupport,jdbcType=CHAR}
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</update>
+
+	<resultMap id="VResultMap" type="cy.its.device.domain.model.VTollgate">
+		<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="DEVICE_SYS_NBR" property="deviceSysNbr"
+			jdbcType="VARCHAR" />
+		<result column="TOLLGATE_TYPE" property="tollgateType"
+			jdbcType="CHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="OWNERSHIP" property="ownership" jdbcType="CHAR" />
+		<result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+		<result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+		<result column="MOUNTING_FACILITY_TYPE" property="mountingFacilityType"
+			jdbcType="CHAR" />
+		<result column="SECTION_ID_LIST" property="sectionIdList"
+			jdbcType="VARCHAR" />
+		<result column="IS_CONNECT_TRACK_SYS" property="isConnectTrackSys"
+			jdbcType="CHAR" />
+		<result column="IS_VIO_SUPPORT" property="isVioSupport"
+			jdbcType="CHAR" />
+		<result column="ENABLE_UPDATE_DATE" property="enableUpdateDate"
+			jdbcType="TIMESTAMP" />
+		<result column="USE_STATUS_FLAG" property="useStatusFlag"
+			jdbcType="VARCHAR" />
+		<result column="TRACK_SYS_TOLLGATE_NBR" property="trackSysTollgateNbr"
+			jdbcType="VARCHAR" />
+		<result column="INTEGRATE_PLATFORM_NBR" property="integratePlatformNbr"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="VTollgateWhere">
+		<where>
+			<if test="tollgateTypeArray != null and tollgateTypeArray.size() > 0">
+				AND T.TOLLGATE_TYPE in
+				<foreach collection="tollgateTypeArray" index="index"
+					item="tollgateType" open="(" separator="," close=")">
+					#{tollgateType,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="deviceName != null and deviceName != ''">
+				AND S.DEVICE_NAME LIKE '%' || #{deviceName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="contractorId != null and contractorId != ''">
+				AND S.CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+			</if>
+			<if test="useStatusFlagArray != null and useStatusFlagArray.size() > 0 ">
+				AND S.USE_STATUS_FLAG in
+				<foreach collection="useStatusFlagArray" index="index"
+					item="useStatusFlag" open="(" separator="," close=")">
+					#{useStatusFlag,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="orgPrivilageCode != null and orgPrivilageCode != ''">
+				AND S.ORG_PRIVILEGE_CODE LIKE #{orgPrivilageCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="siteId != null and siteId != ''">
+			    AND S.SITE_ID = #{siteId,jdbcType=VARCHAR}
+			</if>	
+			<if test="roadId != null and roadId != ''">
+			    AND ST.ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="roadType != null and roadType != ''">
+			    AND ST.ROAD_ID IN
+               (SELECT R.ROAD_ID FROM T_SYS_ROAD R WHERE R.ROAD_TYPE = #{roadType,jdbcType=VARCHAR})
+			</if>	
+		</where>
+	</sql>
+
+	<select id="selectVTollgate" resultMap="VResultMap"
+		parameterType="java.util.Map">
+		select *
+		from (
+		SELECT T.DEVICE_ID,
+			S.DEVICE_SYS_NBR,
+			T.TOLLGATE_TYPE,
+			S.ORG_ID,
+			S.OWNERSHIP,
+			ST.ROAD_ID,
+			S.SITE_ID,
+			S.MOUNTING_FACILITY_TYPE,
+			S.SECTION_ID_LIST,
+			T.IS_CONNECT_TRACK_SYS,
+			T.IS_VIO_SUPPORT,
+			S.ENABLE_UPDATE_DATE,
+            S.USE_STATUS_FLAG,
+            T.TRACK_SYS_TOLLGATE_NBR,
+            T.INTEGRATE_PLATFORM_NBR,
+			ROWNUM RN
+		FROM T_DEVICE_TOLLGATE_SYS T
+			LEFT JOIN T_DEVICE_SYS S
+			ON T.DEVICE_ID = S.DEVICE_ID
+			LEFT JOIN T_SYS_SITE ST
+			ON S.SITE_ID = ST.SITE_ID
+		    <include refid="VTollgateWhere" />
+		)
+	</select>
+
+	<select id="countVTollgate" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT count(1)
+		FROM T_DEVICE_TOLLGATE_SYS T
+		LEFT JOIN T_DEVICE_SYS S
+			ON T.DEVICE_ID = S.DEVICE_ID
+			LEFT JOIN T_SYS_SITE ST
+			ON S.SITE_ID = ST.SITE_ID
+		<include refid="VTollgateWhere" />
+	</select>
+</mapper>

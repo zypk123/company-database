@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficPlanVideoMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficPlanVideo" >
+    <id column="RELATED_VIDEO_ID" property="relatedVideoId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_ID" property="videoPlanId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="SORT_INDEX" property="sortIndex" jdbcType="DECIMAL" />
+    <result column="PRESET_LIST" property="presetList" jdbcType="VARCHAR" />
+    <result column="CRUISE_TIME" property="cruiseTime" jdbcType="DECIMAL" />
+    <result column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RELATED_VIDEO_ID, VIDEO_PLAN_ID, DEVICE_ID, SORT_INDEX, PRESET_LIST, CRUISE_TIME,SYS_COMPONENT_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PLAN_VIDEO
+    where RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getDataByVideoPlanID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PLAN_VIDEO
+    where VIDEO_PLAN_ID = #{videoPlanID,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_PLAN_VIDEO
+    where RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficPlanVideo" >
+    insert into T_TRAFFIC_PLAN_VIDEO (RELATED_VIDEO_ID, VIDEO_PLAN_ID, DEVICE_ID, 
+      SORT_INDEX, PRESET_LIST, CRUISE_TIME,SYS_COMPONENT_ID
+      )
+    values (#{relatedVideoId,jdbcType=VARCHAR}, #{videoPlanId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, 
+      #{sortIndex,jdbcType=DECIMAL}, #{presetList,jdbcType=VARCHAR}, #{cruiseTime,jdbcType=DECIMAL}, 
+      #{sysComponentId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficPlanVideo" >
+    insert into T_TRAFFIC_PLAN_VIDEO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="relatedVideoId != null" >
+        RELATED_VIDEO_ID,
+      </if>
+      <if test="videoPlanId != null" >
+        VIDEO_PLAN_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX,
+      </if>
+      <if test="presetList != null" >
+        PRESET_LIST,
+      </if>
+      <if test="cruiseTime != null" >
+        CRUISE_TIME,
+      </if>
+      <if test="sysComponentId != null" >
+        SYS_COMPONENT_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="relatedVideoId != null" >
+        #{relatedVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanId != null" >
+        #{videoPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sortIndex != null" >
+        #{sortIndex,jdbcType=DECIMAL},
+      </if>
+      <if test="presetList != null" >
+        #{presetList,jdbcType=VARCHAR},
+      </if>
+      <if test="cruiseTime != null" >
+        #{cruiseTime,jdbcType=DECIMAL},
+      </if>
+      <if test="sysComponentId != null" >
+        #{sysComponentId,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficPlanVideo" >
+    update T_TRAFFIC_PLAN_VIDEO
+    <set >
+      <if test="videoPlanId != null" >
+        VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX = #{sortIndex,jdbcType=DECIMAL},
+      </if>
+      <if test="presetList != null" >
+        PRESET_LIST = #{presetList,jdbcType=VARCHAR},
+      </if>
+      <if test="cruiseTime != null" >
+        CRUISE_TIME = #{cruiseTime,jdbcType=DECIMAL},
+      </if>
+      <if test="sysComponentId != null" >
+        SYS_COMPONENT_ID = #{sysComponentId,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficPlanVideo" >
+    update T_TRAFFIC_PLAN_VIDEO
+    set VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR},
+      DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      SORT_INDEX = #{sortIndex,jdbcType=DECIMAL},
+      PRESET_LIST = #{presetList,jdbcType=VARCHAR},
+      CRUISE_TIME = #{cruiseTime,jdbcType=DECIMAL},
+      SYS_COMPONENT_ID=#{sysComponentId,jdbcType=DECIMAL}
+    where RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR}
+  </update>
+</mapper>

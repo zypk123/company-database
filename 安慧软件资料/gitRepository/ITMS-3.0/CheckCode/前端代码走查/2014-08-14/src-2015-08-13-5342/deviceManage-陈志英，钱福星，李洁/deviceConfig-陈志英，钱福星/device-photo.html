@@ -1,0 +1,120 @@
+<form method="post" id="devicePhotoFrm" >
+    <div style="width: 100%;">
+        <!--保存按钮-->
+        <div style="margin:8px 8px 0px 8px">
+            <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save',plain:true" cy-click="savePhoto">保存</a>
+        </div>
+        <div id="container" style="overflow-y:auto;height:440px;width: 884px">
+            <div class="table" style="margin-top: 5px">
+                <!--检定证书图片区域-->
+                <div class="tr">
+                    <div class="td" style="width: 100%">
+                        <div id="photoDiv" style="float: left">
+                        </div>
+                        <div id="upDevicePhotoTemDiv" class='imgDiv'>
+                            <img id="upDevicePhoto" src="themes/default/images/upload.png" style="margin: 70px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+<script type="text/javascript">
+    InitPage(["mode"],function($scope) {
+        $scope.load = function(){
+            //初始化文件上传组件
+            $scope.uploader = initUpload();
+            $scope.uploader.init();//调用文件上传组件初始化方法
+            $scope.imageFiles = {};//保存文件对象
+            $scope.imageUrls = {};//保存文件URL
+        }
+        /**
+         * 初始化文件上传
+         * @return {[type]} [description]
+         */
+        function initUpload(){
+            return new plupload.Uploader({
+                runtimes : 'html5',
+                browse_button : "upDevicePhoto", // you can pass in id...
+                container: $scope.$("#upDevicePhotoTemDiv")[0], // ... or DOM Element itself
+                url : 'upload.php',
+                filters : {
+                    max_file_size : '10mb',
+                    prevent_duplicates : true, //不允许选取重复文件
+                    mime_types: [
+                        {title : "照片文件", extensions : "jpg,png,jpeg,bmp,gif"}
+                    ]
+                },
+                init: {
+                    PostInit: function() {
+
+                    },
+                    FilesAdded: function(up, files) {
+                        for(var index=0; index<files.length; index++){
+                            var file = files[index];
+                            //请按照文件名的形式，存储文件信息到页面变量中
+                            parseImageFile(file);
+                        }
+                    },
+                    Error: function(up, err) {
+                        console.log(err);
+                    }
+                }
+            })
+        }
+        /**
+         * 获得图片文件的路径
+         * @return {[type]} [description]
+         */
+        function parseImageFile(file){
+            var name = file.name;
+            $scope.imageFiles[name]=file;
+            var reader = new FileReader();
+            reader.readAsDataURL(file.getSource().getSource());
+            reader.onload = function(e){
+                $scope.imageUrls[name]=this.result;
+                var imgDiv=$("<div class='imgDiv'></div>");
+                var img=$("<img style='width: 270px;height: 270px'/>");
+                img.attr("src",this.result);
+                imgDiv.append(img);
+                var deleteDiv=$("<div style='margin-left: 130px;margin-bottom: 5px'>删除</div>");
+                deleteDiv.click(function()
+                {
+                    //把这个div删除
+                    $(this).parent().remove();
+                    //把文件队列中文件删除
+                    $scope.uploader.removeFile(file);
+                });
+                imgDiv.append(deleteDiv);
+                $scope.$("#photoDiv").append(imgDiv);
+            }
+        }
+
+        $scope.savePhoto=function(){
+           //保存设备图片todo
+           /* //关闭窗体
+           $scope.closeDialog();*/
+        }
+
+    });
+</script>
+<style>
+    #devicePhotoFrm .imgDiv{
+        float: left;
+        border: dashed 1px silver;
+        margin: 5px;
+        height: 270px;
+        width: 270px
+    }
+    #devicePhotoFrm .th{
+        width : 80px;
+        text-align:right;
+    }
+    #devicePhotoFrm .td{
+        width : 208px;
+    }
+
+
+</style>

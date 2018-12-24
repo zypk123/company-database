@@ -1,0 +1,378 @@
+<div class="easyui-layout">
+    <!--定义机构导航-->
+    <div data-options="region:'west',title:'机构导航',split : true," style="width:200px;">
+        <div id="cy-tree"></div>
+    </div>
+    <div data-options="region:'center'">
+        <div class="easyui-layout">
+            <div data-options="region:'center',split : true">
+                <div class="linkbutton_toolbar" id="jg-toolbar">
+                    <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addJg">添加</a>
+                    <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="deleteJg">删除</a>
+                </div>
+                <table id="jgData" cy-datagrid="optionsJg" cy-querydata="deptQueryJg"
+                       cy-url="data/sysManagement/jg-data.json"></table>
+            </div>
+            <!--定义用户信息布局-->
+            <div data-options="region:'south',split : false," style="height : 320px;">
+                <div class="easyui-layout">
+                    <!--定义头部信息-->
+                    <div data-options="region:'north'">
+                        <div class="linkbutton-toolbar" id="yh-toolbar" style="width:250px;float:left">
+                            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'"
+                               cy-click="addYh">添加</a>
+                            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'"
+                               cy-click="deleteYh">删除</a>
+                        </div>
+                        <div class="table" style="float: right;margin-right:10px;width:680px;">
+                            <div class="tr">
+                                <div class="th">姓名：</div>
+                                <div class="td">
+                                    <input type="text" name="yhm" class="easyui-textbox" style="width:80px;">
+                                </div>
+                                <div class="th" style="width: 85px;text-align: right;">身份证号：</div>
+                                <div class="td">
+                                    <input type="text" name="fzh" class="easyui-textbox" style="width: 150px;">
+                                </div>
+                                <div class="th" style="width: 70px;text-align: right;">启用状态：</div>
+                                <div class="td">
+                                    <input name="qyzt" type="checkbox" cy-change="cy-qyzt"/>
+                                </div>
+                                <div class="td" style="width: 70px;">
+                                    <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                                       cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'center'">
+                        <table id="yhData" cy-datagrid="optionsYh" cy-querydata="deptQueryYh"
+                               cy-url="data/sysManagement/yh-data.json"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+InitPage([], function ($scope) {
+    var timeout;//设置全局时间变量
+    $scope.load = function () {
+        //加载树操作
+        $scope.$('#cy-tree').tree({
+            lines: true,
+            animate:true,
+            url: "data/sysManagement/tree.json",
+            //当用户选择树节点时触发
+            onSelect: function (node) {
+                $scope.deptQueryJg.id = node.id;
+                $scope.$search("deptQueryJg");
+            },
+            //默认加载树的第一个节点信息
+            onLoadSuccess: function (node,data) {
+                //获得所有树节点
+                var roots = $scope.$('#cy-tree').tree("getRoots");
+                //默认第一个节点信息
+                $scope.$('#cy-tree').tree("select", roots[0].target)
+            }
+        });
+    };
+    //机构信息主页面显示字段
+    $scope.optionsJg = {
+        columns: [
+            [
+                {field: 'id', checkbox: true,align: 'center', width: 100},
+                {field: 'jgdm', title: '机构代码',align: 'center', width: 50},
+                {field: 'jgmc', title: '机构名称',align: 'center', width: 50},
+                {field: 'fjgmc', title: '父机构名称',align: 'center', width: 50},
+                {field: 'jglx', title: '机构类型',align: 'center', width: 50},
+                {field: 'jgjb', title: '机构级别',align: 'center', width: 50},
+                {field: 'qybszt', title: '启用标识状态',align: 'center',  width: 30},
+                {field: 'cz', title: '操作', align: 'center', formatter: optionsJgCz, width: 60}
+            ]
+        ],
+        toolbar: $scope.$("#jg-toolbar"),
+        //双击事件查看当前机构信息
+        onDblClickRow: function (rowIndex, rowData) {
+            //清除上一次加载时间
+            clearTimeout(timeout);
+            //注入当前行信息
+            $scope.$setParam("InformationData", rowData);
+            $scope.$setParam("close",function(){
+            $scope.$getDialog("checkDialog").dialog("close");
+            });
+             //查看详情窗口
+            $scope.$openDialog("checkDialog", {
+                title: "机构信息",
+                height: 600,
+                width: 800,
+                href: "tpls/sysManagement/institutionUser/institution-information.html"
+            });
+
+        },
+        //选择节点时触发
+        onSelect: function (node) {
+            //设置时间函数:300ms时触发
+            timeout = setTimeout(function () {
+                //返回当前对象
+                $scope.deptQueryYh.id = node.id;
+                //绑定用户信息
+                $scope.$search("deptQueryYh");
+            }, 300)
+        },
+        //加载用户的第一条信息
+        onLoadSuccess: function (node, data) {
+            $scope.$("#jgData").datagrid("selectRow", 0);
+        }
+    };
+    //启用标识
+    function optionsJgBs(value,row,index){
+        var button1 = $("<a class='button-enable' cy-click='enable("+index+")'></a>");
+        var button2 = $("<a class='button-disable' cy-click='disable("+index+")'></a>");
+            button1.linkbutton({
+                iconCls: "icon-enable"
+            });
+            button2.linkbutton({
+                iconCls: "icon-disable"
+            });
+        return $("<span/>").append(button1).append(" ").append(button2).html();
+    }
+    //操作栏信息
+    function optionsJgCz(value, row, index) {
+        var button1 = $("<a class='button-edit' cy-click='editJg(" + index + ")'></a>");//编辑按钮
+        var button2 = $("<a class='button-remove' cy-click='removeJg(" + index + ")'></a>");//删除按钮
+
+            button1.linkbutton({
+            iconCls: "icon-edit"
+            });
+            button2.linkbutton({
+            iconCls: "icon-remove"
+            });
+
+        return $("<span/>").append(button1).append(" ").append(button2).html();
+    }
+    //添加机构信息
+    $scope.addJg = function () {
+        //保存按钮
+        // 通过Ajax提交和后台交互
+
+        //设置关闭按钮
+        $scope.$setParam("closeSelf", function () {
+            $scope.$getDialog("addDialog").dialog("close");
+        });
+        //打开机构信息窗口
+        $scope.$openDialog("addDialog", {
+            title: "机构信息",
+            height: 650,
+            width: 800,
+            href: "tpls/sysManagement/institutionUser/basic-information.html?type=add"
+        });
+    };
+
+    //删除当前行信息
+    $scope.removeJg = function (index) {
+        $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+            if (r) {
+
+            }
+        });
+    };
+    //编辑机构信息
+    $scope.editJg = function (index) {
+        //获取所有行数数据
+        var rowDatas = $scope.$("#jgData").datagrid("getData").rows;
+        //机构信息注入当前行数据
+        $scope.$setParam("InformationData", rowDatas[index]);
+        //保存按钮
+        // 通过Ajax提交和后台交互
+
+        //设置关闭按钮
+        $scope.$setParam("closeSelf", function () {
+            $scope.$getDialog("editDialog").dialog("close");
+        });
+        //打开修改窗口
+        $scope.$openDialog("editDialog", {
+            title: "机构信息",
+            height: 650,
+            width: 800,
+            href: "tpls/sysManagement/institutionUser/basic-information.html?type=edit"
+        });
+    };
+    //机构信息批量删除操作
+    $scope.deleteJg = function () {
+        //获得所有的行数
+        var rows = $scope.$("#jgData").datagrid("getChecked");
+        //选择要删除的行
+        if (rows.length > 0) {
+            $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                if (r) {
+                    var ids = [];
+                    for (var i = 0; i < rows.length; i++) {
+                        ids.push(rows[i].ID);
+                    }
+                    //将选择到的行存入数组并用,分隔转换成字符串，
+                    //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id
+                    // alert(ids.join(','));
+                }
+            });
+        } else {
+            $.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+        }
+    };
+    //用户信息主页面显示字段
+    $scope.optionsYh = {
+        columns: [
+            [
+                {field: 'id', checkbox: true, align: 'center',width: 100},
+                {field: 'xm', title: '姓名',align: 'center', width: 15},
+                {field: 'yhm', title: '用户名',align: 'center', width: 20},
+                {field: 'ssjg', title: '所属机构',align: 'center', width: 40},
+                {field: 'lxdh', title: '联系电话',align: 'center', width: 30},
+                {field: 'sfzh', title: '身份证号',align: 'center', width: 40},
+                {field: 'jh', title: '警号',align: 'center', width: 30},
+                {field: 'qybs', title: '启用标识状态',align: 'center', width: 30},
+                {field: 'dlcs', title: '登陆次数',align: 'center', width: 20},
+                {field: 'zjzlsj', title: '最近登陆时间',align: 'center', width: 30},
+                {field: 'cz', title: '操作', align: 'center', formatter: operateYhCz, width: 60},
+                {field: 'jsfp', title: '角色分配', align: 'center', formatter: operateYhJs, width: 20}
+            ]
+        ],
+        toolbar: $scope.$("#yh-toolbar"),
+        //双击事件查看当前用户信息
+        onDblClickRow: function (rowIndex, rowData) {
+            clearTimeout(timeout);//清除时间片段
+            $scope.$setParam("userInfo", rowData);//注入行内数据
+            $scope.$setParam("close",function(){
+            $scope.$getDialog("checkDialog").dialog("close");
+            });
+            $scope.$openDialog("checkDialog", {
+                title: "机构信息",
+                height: 550,
+                width: 800,
+                href: "tpls/sysManagement/institutionUser/user-information.html"
+            });
+        }
+    };
+    //用户操作栏
+    function operateYhCz(value, row, index) {
+        var button1 = $("<a class='button-edit' cy-click='editYh(" + index + ")'></a>");//编辑按钮
+        var button2 = $("<a class='button-remove' cy-click='removeYh(" + index + ")'></a>");//删除按钮
+
+        button1.linkbutton({
+            iconCls: "icon-edit"
+        });
+        button2.linkbutton({
+            iconCls: "icon-remove"
+        });
+
+        return $("<span/>").append(button1).append(" ").append(button2).html();
+    }
+    //角色分配栏
+    function operateYhJs(value, row, index) {
+        var button1 = $("<a class='button-add' cy-click='addJs(" + index + ")'></a>");//分配按钮
+        button1.linkbutton({
+            iconCls: "icon-add"
+        });
+        return $("<span/>").append(button1).append(" ").html();
+    }
+    //添加角色信息
+    $scope.addJs = function () {
+        //设置关闭按钮
+        $scope.$setParam("close", function () {
+        $scope.$getDialog("jsDialog").dialog("close");
+        });
+        //打开角色窗口
+        $scope.$openDialog("jsDialog", {
+            title: "角色分配",
+            width: 550,
+            height: 400,
+            href: "tpls/sysManagement/institutionUser/roles-allocation.html"
+        });
+    };
+    //添加用户信息
+    $scope.addYh = function () {
+        //保存按钮
+        // 通过Ajax提交和后台交
+
+        //设置关闭按钮
+        $scope.$setParam("close", function () {
+        $scope.$getDialog("add").dialog("close");
+        });
+        //打开用户信息窗口
+        $scope.$openDialog("add", {
+            title: "用户信息",
+            height: 550,
+            width: 800,
+            href: "tpls/sysManagement/institutionUser/user-info.html?type=add"
+        });
+    };
+    //删除单行或者多行用户函数
+    $scope.deleteYh = function () {
+        var rows = $scope.$("#yhData").datagrid("getChecked");
+        //选择要删除的行
+        if (rows.length > 0) {
+            $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                if (r) {
+                    var ids = [];
+                    for (var i = 0; i < rows.length; i++) {
+                        ids.push(rows[i].ID);
+                    }
+                    //将选择到的行存入数组并用,分隔转换成字符串，
+                    //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id
+                    // alert(ids.join(','));
+                }
+            });
+        } else {
+            $.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+        }
+    };
+    //编辑用户信息
+    $scope.editYh = function (index) {
+        //获取当前页面所有行数数据
+        var row = $scope.$("#yhData").datagrid("getData").rows;
+        //用户信息注入当前行数据
+        $scope.$setParam("userInfo", row[index]);
+
+        //保存按钮
+        // 通过Ajax提交和后台交
+
+        //设置关闭按钮
+        $scope.$setParam("close", function () {
+        $scope.$getDialog("edit").dialog("close");
+        });
+        //打开机用户息窗口
+        $scope.$openDialog("edit", {
+            title: "用户信息",
+            height: 550,
+            width: 800,
+            href: "tpls/sysManagement/institutionUser/user-info.html?type=edit"
+        });
+    };
+    //删除当前行用户信息
+    $scope.removeYh = function (index) {
+       $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+            if (r) {
+
+            }
+        });
+    };
+    //禁用当前行用户信息
+    $scope.enableYh = function (index) {
+
+        $.messager.confirm("提示", "你确定要启用吗?", function (r) {
+            if (r) {
+
+            }
+        });
+    };
+    //禁用当前行用户信息
+    $scope.disableYh = function (index) {
+
+        $.messager.confirm("提示", "你确定要要禁用吗?", function (r) {
+            if (r) {
+
+            }
+        });
+    };
+});
+</script>

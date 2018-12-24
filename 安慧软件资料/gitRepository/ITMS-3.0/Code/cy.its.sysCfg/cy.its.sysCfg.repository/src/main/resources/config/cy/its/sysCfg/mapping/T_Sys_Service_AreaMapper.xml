@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Service_AreaMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Service_Area" >
+    <id column="SERVICE_AREA_ID" property="serviceAreaId" jdbcType="VARCHAR" />
+    <result column="SERVICE_AREA_NAME" property="serviceAreaName" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="SERVICE_DESIGN_CAPACITY" property="serviceDesignCapacity" jdbcType="VARCHAR" />
+    <result column="EXISTING_VEHICLE_NUM" property="existingVehicleNum" jdbcType="VARCHAR" />
+    <result column="HAS_GAS_STATION" property="hasGasStation" jdbcType="CHAR" />
+    <result column="OIL_TYPE_LIST" property="oilTypeList" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="SERVICE_TOLLGATE_ID" property="serviceTollgateId" jdbcType="VARCHAR" />
+    <result column="SERVICE_VIDEO_ID" property="serviceVideoId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVICE_AREA_ID, SERVICE_AREA_NAME, DIRECTION_TYPE, SERVICE_DESIGN_CAPACITY, EXISTING_VEHICLE_NUM, 
+    HAS_GAS_STATION, OIL_TYPE_LIST, ROAD_ID, SERVICE_TOLLGATE_ID, SERVICE_VIDEO_ID, DIRECTION_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SERVICE_AREA
+    where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SERVICE_AREA
+    where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service_Area" >
+    insert into T_SYS_SERVICE_AREA (SERVICE_AREA_ID, SERVICE_AREA_NAME, DIRECTION_TYPE, 
+      SERVICE_DESIGN_CAPACITY, EXISTING_VEHICLE_NUM, 
+      HAS_GAS_STATION, OIL_TYPE_LIST, ROAD_ID, 
+      SERVICE_TOLLGATE_ID, SERVICE_VIDEO_ID, DIRECTION_NAME
+      )
+    values (#{serviceAreaId,jdbcType=VARCHAR}, #{serviceAreaName,jdbcType=VARCHAR}, #{directionType,jdbcType=CHAR}, 
+      #{serviceDesignCapacity,jdbcType=VARCHAR}, #{existingVehicleNum,jdbcType=VARCHAR}, 
+      #{hasGasStation,jdbcType=CHAR}, #{oilTypeList,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR}, 
+      #{serviceTollgateId,jdbcType=VARCHAR}, #{serviceVideoId,jdbcType=VARCHAR}, #{directionName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service_Area" >
+    insert into T_SYS_SERVICE_AREA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceAreaId != null" >
+        SERVICE_AREA_ID,
+      </if>
+      <if test="serviceAreaName != null" >
+        SERVICE_AREA_NAME,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="serviceDesignCapacity != null" >
+        SERVICE_DESIGN_CAPACITY,
+      </if>
+      <if test="existingVehicleNum != null" >
+        EXISTING_VEHICLE_NUM,
+      </if>
+      <if test="hasGasStation != null" >
+        HAS_GAS_STATION,
+      </if>
+      <if test="oilTypeList != null" >
+        OIL_TYPE_LIST,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="serviceTollgateId != null" >
+        SERVICE_TOLLGATE_ID,
+      </if>
+      <if test="serviceVideoId != null" >
+        SERVICE_VIDEO_ID,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceAreaId != null" >
+        #{serviceAreaId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceAreaName != null" >
+        #{serviceAreaName,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="serviceDesignCapacity != null" >
+        #{serviceDesignCapacity,jdbcType=VARCHAR},
+      </if>
+      <if test="existingVehicleNum != null" >
+        #{existingVehicleNum,jdbcType=VARCHAR},
+      </if>
+      <if test="hasGasStation != null" >
+        #{hasGasStation,jdbcType=CHAR},
+      </if>
+      <if test="oilTypeList != null" >
+        #{oilTypeList,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceTollgateId != null" >
+        #{serviceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceVideoId != null" >
+        #{serviceVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service_Area" >
+    update T_SYS_SERVICE_AREA
+    <set >
+      <if test="serviceAreaName != null" >
+        SERVICE_AREA_NAME = #{serviceAreaName,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="serviceDesignCapacity != null" >
+        SERVICE_DESIGN_CAPACITY = #{serviceDesignCapacity,jdbcType=VARCHAR},
+      </if>
+      <if test="existingVehicleNum != null" >
+        EXISTING_VEHICLE_NUM = #{existingVehicleNum,jdbcType=VARCHAR},
+      </if>
+      <if test="hasGasStation != null" >
+        HAS_GAS_STATION = #{hasGasStation,jdbcType=CHAR},
+      </if>
+      <if test="oilTypeList != null" >
+        OIL_TYPE_LIST = #{oilTypeList,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceTollgateId != null" >
+        SERVICE_TOLLGATE_ID = #{serviceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceVideoId != null" >
+        SERVICE_VIDEO_ID = #{serviceVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Service_Area" >
+    update T_SYS_SERVICE_AREA
+    set SERVICE_AREA_NAME = #{serviceAreaName,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      SERVICE_DESIGN_CAPACITY = #{serviceDesignCapacity,jdbcType=VARCHAR},
+      EXISTING_VEHICLE_NUM = #{existingVehicleNum,jdbcType=VARCHAR},
+      HAS_GAS_STATION = #{hasGasStation,jdbcType=CHAR},
+      OIL_TYPE_LIST = #{oilTypeList,jdbcType=VARCHAR},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      SERVICE_TOLLGATE_ID = #{serviceTollgateId,jdbcType=VARCHAR},
+      SERVICE_VIDEO_ID = #{serviceVideoId,jdbcType=VARCHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR}
+    where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+  </update>
+</mapper>

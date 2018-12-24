@@ -1,0 +1,155 @@
+<div id="manualStateHistory" class="easyui-layout">
+	<div data-options="region:'north',height:130">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<div class="table">
+				<div class="tr" >
+
+					<div class="th">
+						路段名称：
+					</div>
+					<div class="td">
+						<select type="text" class="easyui-combobox" style="width: 85px"></select>
+					</div>
+					<div class="th" >
+						干预状态：
+					</div>
+					<div class="td">
+						<select type="text" class="easyui-combobox" style="width: 85px"></select>
+					</div>
+
+				</div>
+				<div class="tr">
+
+					<div class="th" >
+						开始时间：
+					</div>
+					<div class="td">
+						<input class="easyui-datetimebox" name="startTime"
+						data-options="required:true,showSeconds:false" value="9/6/2015 10:01" style="width: 85px">
+					</div>
+					<div class="th" >
+						结束时间：
+					</div>
+					<div class="td">
+						<input class="easyui-datetimebox" name="endTime"
+						data-options="required:true,showSeconds:false" value="9/6/2015 10:01" style="width: 85px">
+					</div>
+					<div class="td" style="width: 70px;">
+						<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+						cy-click="searchData" style="width: 60px;float: right;">查询</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div data-options="region:'center'">
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+		cy-url="../html/src/data/trafficMonitor/trafficState/road-state-grid.json"></table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["dataDic2"], function($scope) {
+
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$search("deptQueryDm");
+			$scope.$("#eventType").combobox("loadData",$scope.dataDic2.dicAll.eventType);
+		};
+		$scope.optionsDm = {
+			columns: [
+                [
+                    {field:'NAME',title:'道路名称',align:'center', width:25},
+                    //{field:'POPNAME',title:'道路简称',align:'center', width:20},
+                    //{field: 'TYPE',title: '道路类型',align: 'center',formatter:options_roadType,width: 20},
+                    {field: 'FROADNAME',title: '起点',align: 'center',width: 20},
+                    {field: 'BROADNAME',title: '终点',align: 'center',width: 20},
+                    {field: 'manual_state',title: '状态',align: 'center',formatter:options_roadState, width: 20},
+                    {field: 'update_time',title: '更新时间',align: 'center',width: 30}
+                ]
+            ],
+             onDblClickRow: function (rowIndex, rowData) {
+             	$scope.dataDic2.locationSite(rowData.wkt);
+             }
+		};
+		 function options_roadType(value,row,index){
+        	return getDictTextByValue(value,$scope.dataDic2.dicAll.roadType);
+        }
+        function options_roadState(value,row,index){
+            return getDictTextColorByValue(value,$scope.dataDic2.dicAll.roadState);
+        }
+        function getDictTextByValue(value,data){
+            for(var i in data){
+                if(value==data[i].value){
+                    return data[i].text;
+                }
+            }
+        }
+         function getDictTextColorByValue(value,data){
+         	var str=$("<span/>");
+            for(var i in data){
+                if(value==data[i].value){
+                	if(value==0){
+                		str.append(data[i].text);
+                	}
+                    else if(value==1){
+                    	str.append(data[i].text).addClass("green");
+                    }
+                    else if(value==2){
+                    	str.append(data[i].text).addClass("orange");
+                    }  
+                    else if(value==3){
+                    	str.append(data[i].text).addClass("red");
+                    }                    
+                }
+            }
+            return $("<span/>").append(str).html();
+        }
+
+	}); 
+</script>
+<style>
+	#manualStateHistory .th {
+		width: 60px;
+		 text-align: center;
+        height:18px;
+        line-height:20px;
+	}
+	#manualStateHistory .td {
+		width: 95x;
+		text-align: center;
+        height:18px;
+        line-height:20px;
+	}
+	#manualStateHistory .datagrid-row {
+		height: 31px;
+	}
+	#manualStateHistory .datagrid-cell {
+		font-size: 12px;
+	}
+	
+	 #manualStateHistory .red{
+          	color:white;
+          	background: red;
+          	border: solid 2px red;
+          }
+          #manualStateHistory .orange{
+          	color:white;
+          	background: orange;
+          	border: solid 2px orange;
+          }
+          #manualStateHistory .green{
+          	color:white;
+          	background: green;
+          	border: solid 2px green;
+          }
+          #manualStateHistory .gray{
+          	color:white;
+          	background: gray;
+          	border: solid 2px gray;
+          }
+</style>

@@ -1,0 +1,352 @@
+<!--节假日信息添加、编辑界面-->
+<div class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<form cy-form="codeData" id="form">
+			<div id="code" class="table" style="margin-top: 5px">
+				<div class="tr">
+					<div class="th">
+						所属年份：
+					</div>
+					<div class="td">
+						<input class="easyui-combobox" id="year" name="year" style="width: 135px;" 
+						data-options="editable:false,valueField:'value',textField:'text'"/>
+					</div>
+					<div class="th">
+						节日类型：
+					</div>
+					<div class="td">
+						<input class="easyui-combobox" id="festival" name="festivalType" cy-code="020"
+						data-options="valueField:'value',textField:'text',required: true"
+						style="width: 135px;" />
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						开始日期：
+					</div>
+					<div class="td">
+						<input class="easyui-datebox"
+						data-options="showSeconds:false,editable:true,required:true,validType:['maxDate[\'endDate\']','date']"
+						type="text" id="startDate" name="startDate" style="width: 135px" />
+					</div>
+					<div class="th">
+						截止日期：
+					</div>
+					<div class="td">
+						
+						<input class="easyui-datebox"
+						data-options="showSeconds:false,editable:true,required:true,validType:['minDate[\'startDate\']','date']"
+						type="text" id="endDate" name="endDate" style="width: 135px" />
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						备注：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="remark"  data-options="multiline:true,validType:['length[0,64]']" 
+						style="width: 360px;height: 40px;"/>
+					</div>
+					<div class="tr">
+						<div class="th"></div>
+					</div>
+				</div>
+			</form>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 20px">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<!--保存按钮-->
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["codeData", "saveData", "editData"], function($scope) {
+		var festivalList = [];
+		var code = $scope.$getDefaultCode(['020']);
+		//初始化加载
+		$scope.load = function() {
+
+			var yearData = [];
+
+			var currentYear = new Date().getFullYear();
+			
+			for (var i = currentYear+1; i >= 2000; i--) {
+				yearData.push({
+					"value" : i,
+					"text" : i + "年"
+				});
+			}
+			//初始化加载年份数据
+			$scope.$('#year').combobox('loadData', yearData);
+
+			if ($scope.codeData.year != null && $scope.codeData.year != "") {
+				$scope.$('#year').combobox('select', $scope.codeData.year);
+			} else {
+				$scope.$('#year').combobox('select', yearData[1].value);//设定当前所属年份
+			}
+				//开始时间设置
+				$scope.$('#startDate').datebox("calendar").calendar({
+					validator : function(date) {
+						var value = $scope.$('#year').textbox('getValue');
+						var d1 = new Date((parseInt(value) - 1).toString(), '11', '01');
+						var d2 = new Date(value, '01', '01');
+						//获得节日类型值
+						var festival = $scope.$('#festival').textbox('getValue');
+						//判断节日类型为元旦时，设定开始时间范围
+						if (festival == '1') {
+							if (date >= d1 && date < d2) {
+								return true;
+							} else {
+								return false;
+							}
+						} else {
+							if (date.getFullYear() == value) {
+								return true;
+							} else {
+								return false;
+							}
+						}
+					}
+				});
+			
+			//结束日期设定当年范围
+			$scope.$('#endDate').datebox("calendar").calendar({
+				validator : function(date) {
+					var value = $scope.$('#year').textbox('getValue');
+					if (date.getFullYear() == value) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			});
+		};
+		
+	//判断是否编辑页面
+	if ($scope.$params.get("type") == "add") {
+		//根据年份与开始日期和结束日期做联动
+		$scope.$("#year").combobox({
+			onChange : function(newValue, oldValue) {
+				//获得节日类型值
+				var value = $scope.$('#festival').textbox('getValue');
+				if (value == '1') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format((newValue - 1).toString() + '-12-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-1-31'));
+				} else if (value == '2') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-01-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-02-28'));
+				} else if (value == '3') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-04-30'));
+				} else if (value == '4') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-05-31'));
+				} else if (value == '5') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-05-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-06-30'));
+				} else if (value == '6') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-10-31'));
+				} else  if(value =='7'){
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-10-31'));
+				}
+				//设定开始日历当前年份
+				$scope.$('#startDate').datebox("calendar").calendar({
+					year : newValue
+				});
+				//设定结束日历当前年份
+				$scope.$('#endDate').datebox("calendar").calendar({
+					year : newValue
+				});
+			}
+		});
+		//根据节日类型开始日期和结束日期联动
+		$scope.$("#festival").combobox({
+			onChange : function(newValue, oldValue) {
+				//获得节日类型
+				var festivalValue = newValue;
+				//获得当前年份
+				var value = $scope.$('#year').textbox('getValue');
+				if (festivalValue == '1') {
+					// 设置开始日期输入框的值
+			    	$scope.$('#startDate').datebox('setValue', new Date().format((parseInt(value) - 1) + '-12-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-1-31'));
+				} else if (festivalValue == '2') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-01-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-02-28'));
+				} else if (festivalValue == '3') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-04-30'));
+				} else if (festivalValue == '4') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-05-31'));
+				} else if (festivalValue == '5') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-05-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-06-30'));
+				} else if (festivalValue == '6') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-10-31'));
+				} else if(festivalValue == '7'){
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-10-31'));
+				}
+			}
+		});
+	} else {
+		//根据年份与开始日期和结束日期做联动
+		$scope.$("#year").combobox({
+			onSelect : function(newValue) {
+				var newValue=newValue.value;
+				//获得节日类型值
+				var value = $scope.$('#festival').textbox('getValue');
+				if (value == '1') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format((newValue - 1).toString() + '-12-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-1-31'));
+				} else if (value == '2') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-01-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-02-28'));
+				} else if (value == '3') {
+					// 设置开始日期输入框的值
+					 $scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-04-01'));
+					// 设置日期输入框的值
+					 $scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-04-30'));
+				} else if (value == '4') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-05-31'));
+				} else if (value == '5') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-05-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-06-30'));
+				} else if (value == '6') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-10-31'));
+				} else  if(value =='7'){
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(newValue + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(newValue + '-10-31'));
+				}
+				//设定开始日历当前年份
+				$scope.$('#startDate').datebox("calendar").calendar({
+					year : newValue
+				});
+				//设定结束日历当前年份
+				$scope.$('#endDate').datebox("calendar").calendar({
+					year : newValue
+				});
+			}
+		});
+		//根据节日类型开始日期和结束日期联动
+		$scope.$("#festival").combobox({
+			onSelect : function(newValue) {
+				//获得节日类型
+				var festivalValue = newValue.value;
+				//获得当前年份
+				var value = $scope.$('#year').textbox('getValue');
+				if (festivalValue == '1') {
+					// 设置开始日期输入框的值
+			    	$scope.$('#startDate').datebox('setValue', new Date().format((parseInt(value) - 1) + '-12-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-1-31'));
+				} else if (festivalValue == '2') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-01-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-02-28'));
+				} else if (festivalValue == '3') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-04-30'));
+				} else if (festivalValue == '4') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-04-01'));
+					// 设置日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-05-31'));
+				} else if (festivalValue == '5') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-05-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-06-30'));
+				} else if (festivalValue == '6') {
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-10-31'));
+				} else if(festivalValue == '7'){
+					// 设置开始日期输入框的值
+					$scope.$('#startDate').datebox('setValue', new Date().format(value + '-09-01'));
+					// 设置结束日期输入框的值
+					$scope.$('#endDate').datebox('setValue', new Date().format(value + '-10-31'));
+				}
+			}
+		});
+	}
+		//判断加载页面类型
+		if ($scope.$params.get("type") == "add") {
+			$scope.save = function() {
+				$scope.$updateData("codeData");
+				if ($scope.$("#form").form("validate")) {
+					$scope.saveData($scope.codeData);
+				}
+			};
+		} else {
+			$scope.save = function() {
+				$scope.$updateData("codeData");
+				if ($scope.$("#form").form("validate")) {
+					$scope.editData($scope.codeData);
+				}
+			};
+		}
+	
+	}); 
+</script>
+<style type="text/css">
+	#code .th {
+		width: 80px;
+		text-align: right;
+	}
+	#code .td {
+		width: 150px;
+		text-align: left;
+	}
+</style>

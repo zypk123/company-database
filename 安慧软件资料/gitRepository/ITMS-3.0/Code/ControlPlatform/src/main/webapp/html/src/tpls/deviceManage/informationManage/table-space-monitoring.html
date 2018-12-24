@@ -1,0 +1,58 @@
+<div id="tableSpaceMonitor" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<div>
+			<a id="btnRefresh">刷新</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="tableSpace" cy-datagrid="options" cy-querydata="formData" cy-url="device/monitorManage/queryTableSpace">
+        
+        </table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		/**
+		 * datagrid配置
+		 * @type  easyui的datagrid中的参数对象
+		 */
+		$scope.options = {
+		    columns : [[//注意，此处是二维数组
+		        {align:'center',title:"表空间名",field:"tableSpaceName",width:100},
+		        {align:'center',title:"表空间大小(M)",field:"tableSpaceSize",width:150},
+		        {align:'center',title:"已使用空间(M)",field:"usedSpace",width:150},
+		        {align:'center',title:"使用比",field:"useLevel",width:100},
+		        {align:'center',title:"空闲空间(M)",field:"freeSpace",width:150},
+		        {align:'center',title:"最大块(M)",field:"largestChunk",width:100}
+		    ]],
+		    pagination : false
+		};
+		$scope.load = function(){
+			$scope.$updateData("formData");
+	        $scope.$search("formData");
+			$scope.$("#btnRefresh").click(function() {
+				//刷新表空间的监控
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/monitorManage/queryTableSpace",
+					params : {},
+					success : function(data) {
+						$scope.$('#tableSpace').datagrid("loadData", data.result.rows);
+					},
+					fail : function(errMsg) {
+						console.log(errMsg);
+					}
+				});
+			});
+		};
+	});
+</script>
+<style>
+#tableSpaceMonitor #btnRefresh {
+	margin-top: 5px;
+	margin-right: 5px;
+	color: #0000FF;
+	font-size: 13px;
+	float: right;
+	cursor: pointer;
+}
+</style>

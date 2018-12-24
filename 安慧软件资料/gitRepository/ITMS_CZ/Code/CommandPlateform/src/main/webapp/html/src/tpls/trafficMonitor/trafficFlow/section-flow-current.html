@@ -1,0 +1,99 @@
+<div class="easyui-layout" id="sectionCurrent" >
+	<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+	cy-url="trafficSituation/trafficState/multiple/selectSiteSectionsByOrgPriCodeForGrid"></table>
+</div>
+
+<script type="text/javascript">
+	InitPage(["locationSite1", "childScopeList"], function($scope) {
+		$scope.$getDefaultCode(["070"]);
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$search("deptQueryDm");
+			$scope.childScopeList.refreshSection = $scope.refreshSection;
+		};
+
+		//更新数据并传入主页面
+		$scope.refreshSection = function(rowData) {
+			var dataList = $scope.$('#dmData').datagrid("getRows");
+			for (var index in dataList) {
+				if (rowData.sectionId == dataList[index].sectionId) {
+					console.log("更新了第" + index + "行数据！");
+					$.extend(dataList[index], rowData);
+					$scope.$('#dmData').datagrid("updateRow", {
+						index : index,
+						row : dataList[index]
+					});
+					break;
+				}
+			}
+			//缓存数据 没明白加下面有啥用处？？
+			$scope.$eventProxy();
+		};
+
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'siteName',
+				title : '点位名称',
+				align : 'left',
+				width : 50
+			}, {
+				field : 'directionName',
+				title : '方向',
+				align : 'left',
+				width : 20
+			}, {
+				field : 'totalNum',
+				title : '流量',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'cl',
+				title : '详情',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 15
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if (rowData.lonLat) {
+					$scope.locationSite1(rowData.lonLat);
+				} else {
+					$.messager.alert("警告", "无法获取位置信息！");
+				}
+			},
+			pagination : false,
+			nowrap : false
+		};
+
+		//操作栏信息三到四
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='showInfo(" + index + ")'></a>");
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			return $("<span/>").append(button1).html();
+		}
+
+		//展示详细信息
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			$scope.$openDialog("showDialog", {
+				title : "断面详情",
+				height : 280,
+				width : 490,
+				href : "tpls/trafficMonitor/trafficFlow/section-flow-info.html"
+			});
+		};
+
+		//方向direction的格式化
+		function options_direction(value, row, index) {
+			return $scope.$getCodeName("070", value);
+		}
+
+	}); 
+</script>
+<style>
+</style>

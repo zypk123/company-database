@@ -1,0 +1,107 @@
+<div class="cruisePlanVideoPresetEdit">
+    <div class="table">
+        <form id="videoDetail" style="margin:0" cy-form="videoDetail">
+        <div class="tr">
+            <div class="td" style="width:60px">视频名称：</div>
+            <div class="td" cy-name="videoDetail.videoDeviceName" style="white-space:normal;width: 220px;line-height: 18px">
+                <!---->
+                <!--<input name="videoDeviceName" type="text"-->
+                       <!--data-options="multiline:'true',required:true,editable:false" style="width:100%;height: 40px"/>-->
+            </div>
+        </div>
+
+        <div class="tr">
+            <div class="td" style="width:60px">预置位：</div>
+            <div class="td">
+                <input class="easyui-combobox" id="combPreset" name="combPreset" data-options="editable:false"
+                                   />
+                <!--data-options="valueField:'presetRecordId',textField:'presetDesc'"-->
+            </div>
+        </div>
+        <div class="tr">
+            <div class="td">巡航时间：</div>
+            <div class="td">
+                <input class="easyui-textbox" style="width: 100px"  data-options="required:true,validType:['[length[0,3]','number']" id="textboxCruiseTime" name="cruiseTime"/>
+            </div>
+            <div class="td">
+                秒
+            </div>
+        </div>
+
+        <div class="tr">
+            <div class="td" style="width:60px"></div>
+            <div class="td" style="text-align: center;width:100px;height:35px;margin-left: 30px;">
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="btnSave"
+                   cy-click="save">确定</a>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+                   cy-click="$closeSelf">取消</a>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["videoDetail","refresh"],function($scope) {
+        $scope.load=function(){
+//            var data1= [{
+//                "id":1,
+//                "text":"Java",
+//                "desc":"Write once, run anywhere"
+//            },{
+//                "id":2,
+//                "text":"C#",
+//                "desc":"One of the programming languages designed for the Common Language Infrastructure"
+//            } ];
+//            $("#combPreset").combobox('loadData',data1);
+            //$scope.$updateDom("videoDetail");
+            $scope.loadPreset($scope.videoDetail);
+            $scope.$("#combPreset").combobox({
+                valueField:'presetRecordId',
+                textField:'presetDesc'
+            });
+        };
+        $scope.save=function(){
+            if(!$scope.$("#videoDetail").form('validate')){
+                return;
+            }
+            var presetRecordId=$scope.$("#combPreset").combobox('getValue');
+            var presetDesc=$scope.$("#combPreset").combobox('getText');
+            var cruiseTime=$scope.$("#textboxCruiseTime").textbox('getText');
+            $scope.refresh({
+                presetRecordId: presetRecordId,
+                presetDesc: presetDesc,
+                cruiseTime:cruiseTime
+            });
+            $scope.$closeSelf();
+        };
+        //加载预置位
+        $scope.loadPreset=function(){
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/cruisePlan/getVideoPresetList",
+                params: {
+                    deviceId: $scope.videoDetail.deviceId,
+                    sysComponentId:$scope.videoDetail.sysComponentId
+                },
+                method: "post",
+                success: function (result) {
+                    //presetDic=result.result;
+                    //debugger;
+                    var presetLst=result.result;
+                    presetLst.unshift({
+                        presetRecordId:'',
+                        presetDesc:'请选择'
+                    });
+                    console.log(presetLst);
+                    $scope.$("#combPreset").combobox('loadData',presetLst);
+                    $scope.$("#combPreset").combobox('setValue',$scope.videoDetail.presetList);
+                    ////console.log($("#combPreset").combobox('getData'));
+                    //$("#combPreset").combobox('setValue',$scope.videoDetail.presetList);
+                    //setText
+                },
+                fail: function (errMsg) {
+                    alert('加载预置位失败，原因：' + errMsg);
+                }
+            });
+        };
+    });
+</script>

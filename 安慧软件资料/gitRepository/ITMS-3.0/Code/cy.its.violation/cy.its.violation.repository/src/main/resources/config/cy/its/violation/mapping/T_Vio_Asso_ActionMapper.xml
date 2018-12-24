@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_Asso_ActionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_Asso_Action" >
+    <id column="VIO_ACTION_MATCH_ID" property="vioActionMatchId" jdbcType="VARCHAR" />
+    <result column="ROAD_TYPE" property="roadType" jdbcType="VARCHAR" />
+    <result column="VIOLATION_TYPE" property="violationType" jdbcType="CHAR" />
+    <result column="VIOLATION_DESC" property="violationDesc" jdbcType="VARCHAR" />
+    <result column="VIOLATION_CODE" property="violationCode" jdbcType="VARCHAR" />
+    <result column="LIMIT_SPEED" property="limitSpeed" jdbcType="DECIMAL" />
+    <result column="MAX_RATIO" property="maxRatio" jdbcType="DECIMAL" />
+    <result column="MIN_RATIO" property="minRatio" jdbcType="DECIMAL" />
+    <result column="VEHICLE_TYPE" property="vehicleType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIO_ACTION_MATCH_ID, ROAD_TYPE, VIOLATION_TYPE, VIOLATION_DESC, VIOLATION_CODE, LIMIT_SPEED, 
+    MAX_RATIO, MIN_RATIO, VEHICLE_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_ASSO_ACTION
+    where VIO_ACTION_MATCH_ID = #{vioActionMatchId,jdbcType=VARCHAR}
+  </select>  
+  <select id="selectByViolationCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_ASSO_ACTION
+    where VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_ASSO_ACTION
+    where VIO_ACTION_MATCH_ID = #{vioActionMatchId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_Action" >
+    insert into T_VIO_ASSO_ACTION (VIO_ACTION_MATCH_ID, ROAD_TYPE, VIOLATION_TYPE, 
+      VIOLATION_DESC, VIOLATION_CODE, LIMIT_SPEED, 
+      MAX_RATIO, MIN_RATIO, VEHICLE_TYPE
+      )
+    values (#{vioActionMatchId,jdbcType=VARCHAR}, #{roadType,jdbcType=VARCHAR}, #{violationType,jdbcType=CHAR}, 
+      #{violationDesc,jdbcType=VARCHAR}, #{violationCode,jdbcType=VARCHAR}, #{limitSpeed,jdbcType=DECIMAL}, 
+      #{maxRatio,jdbcType=DECIMAL}, #{minRatio,jdbcType=DECIMAL}, #{vehicleType,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_Action" >
+    insert into T_VIO_ASSO_ACTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vioActionMatchId != null" >
+        VIO_ACTION_MATCH_ID,
+      </if>
+      <if test="roadType != null" >
+        ROAD_TYPE,
+      </if>
+      <if test="violationType != null" >
+        VIOLATION_TYPE,
+      </if>
+      <if test="violationDesc != null" >
+        VIOLATION_DESC,
+      </if>
+      <if test="violationCode != null" >
+        VIOLATION_CODE,
+      </if>
+      <if test="limitSpeed != null" >
+        LIMIT_SPEED,
+      </if>
+      <if test="maxRatio != null" >
+        MAX_RATIO,
+      </if>
+      <if test="minRatio != null" >
+        MIN_RATIO,
+      </if>
+      <if test="vehicleType != null" >
+        VEHICLE_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vioActionMatchId != null" >
+        #{vioActionMatchId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadType != null" >
+        #{roadType,jdbcType=VARCHAR},
+      </if>
+      <if test="violationType != null" >
+        #{violationType,jdbcType=CHAR},
+      </if>
+      <if test="violationDesc != null" >
+        #{violationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="violationCode != null" >
+        #{violationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="limitSpeed != null" >
+        #{limitSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="maxRatio != null" >
+        #{maxRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="minRatio != null" >
+        #{minRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleType != null" >
+        #{vehicleType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_Action" >
+    update T_VIO_ASSO_ACTION
+    <set >
+      <if test="roadType != null" >
+        ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+      </if>
+      <if test="violationType != null" >
+        VIOLATION_TYPE = #{violationType,jdbcType=CHAR},
+      </if>
+      <if test="violationDesc != null" >
+        VIOLATION_DESC = #{violationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="violationCode != null" >
+        VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="limitSpeed != null" >
+        LIMIT_SPEED = #{limitSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="maxRatio != null" >
+        MAX_RATIO = #{maxRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="minRatio != null" >
+        MIN_RATIO = #{minRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleType != null" >
+        VEHICLE_TYPE = #{vehicleType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VIO_ACTION_MATCH_ID = #{vioActionMatchId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_Asso_Action" >
+    update T_VIO_ASSO_ACTION
+    set ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+      VIOLATION_TYPE = #{violationType,jdbcType=CHAR},
+      VIOLATION_DESC = #{violationDesc,jdbcType=VARCHAR},
+      VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR},
+      LIMIT_SPEED = #{limitSpeed,jdbcType=DECIMAL},
+      MAX_RATIO = #{maxRatio,jdbcType=DECIMAL},
+      MIN_RATIO = #{minRatio,jdbcType=DECIMAL},
+      VEHICLE_TYPE = #{vehicleType,jdbcType=VARCHAR}
+    where VIO_ACTION_MATCH_ID = #{vioActionMatchId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,639 @@
+
+<div class="CollateFilter" style="height: 100%;">
+    <div class="easyui-layout" id="queryView" style="height: 100%;width: 100%">
+
+        <div data-options="region:'north'">
+            <form id="frmCond" cy-form="cyFrmCond"  class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">自定义查询</div>
+                    <div class="table">
+                        <a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown"
+                           cy-click="searchSlideDown">展开</a>
+
+                        <div class="tr hide" style="text-align: center;display: none">
+
+                            <!--<div class="th">-->
+                                	<!--违法时间:-->
+                            <!--</div>-->
+                            <!--<div class="td">-->
+                                <!--<input class="easyui-datebox" type="text" name="violationBeginTime" data-options="width:'120px'"/>-->
+                            <!--</div>-->
+                            <!--<div class="th">到</div>-->
+                            <!--<div class="td">-->
+                                <!--<input class="easyui-datebox" type="text" name="violationEndTime" data-options="width:'120px'"/>-->
+                            <!--</div>-->
+                            <div class="th">
+                                违法类型：
+                            </div>
+                            <div class="td">
+
+                                <ul id="liViolationTypeCheckBox">
+                                    <li style="margin-left: 5px"><input id="chkSelectAllViolationType" type="checkbox" cy-click="CheckAllViolationType"/>全选</li>
+                                </ul>
+                                <!--<input class="violationTypeCheckbox" type="checkbox" id="chkRedLight" value=""/>闯红灯-->
+                                <!--<input class="violationTypeCheckbox" type="checkbox" id="chkOverSpeed"/>超速-->
+                                <!--<input class="violationTypeCheckbox" type="checkbox" id="chkVioPark"/>违章停车-->
+                            </div>
+                        </div>
+                        <div class="tr hide" style="display:none">
+                            <div class="td">
+                                <input id="chkArmyPlate" type="checkbox"/>军警车
+                                <input id="chkUnknownPlate" type="checkbox"/>号牌未识别
+                            </div>
+                            <div class="th" style="width: 50px;margin-left: 50px">速度:</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="speedMin" style="width: 50px;margin: 2px"/>
+                            </div>
+                            <div class="th">到</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="speedMax" style="width: 50px;margin: 2px"/>
+                            </div>
+
+                            <div class="td" style="text-align: right;width: 180px">
+
+                                <a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"
+                                   cy-click="searchSlideUp">收起</a>
+
+                                <a class="easyui-linkbutton button hide" style="width: 80px;text-align: right;margin: 2px"
+                                   cy-click="SearchAsync()" iconCls="icon-search">查询</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div data-options="region:'center'">
+                <div style="width: 90%;height:300px" id="unFilterStatisticChart"></div>
+
+                <div style="width: 90%;height:300px" id="filterStatisticChart"></div>
+
+        </div>
+    </div>
+
+    <div class="easyui-layout" id="detailView" style="height:100%;width: 100%;display: none">
+
+        <div data-options="region:'north'">
+            <form id="frmCond1" class="searchForm" method="post">
+                <div class="searchPanel">
+                <div class="panel_title">提示框</div>
+                <div class="table">
+                    <div class="tr">
+                        <!--<div class="td">-->
+                            <!--每页显示：-->
+                            <!--<input type="radio" name="recordPerPage" value="1" cy-click="OnPerPageChange"/>单张-->
+                            <!--<input type="radio" name="recordPerPage" value="2" cy-click="OnPerPageChange"/>两张-->
+                            <!--<input type="radio" name="recordPerPage" value="4" cy-click="OnPerPageChange"/>四张-->
+                        <!--</div>-->
+                        <div class="td"style="margin-left: 20px;font-weight: bold;font-size: 15">
+                                待分捡数据<span class="noteNumber" id="spWaitingFilterNum">1126</span>条，已筛选有效数据<span class="noteNumber" id="spFilterDiscardedNum">135</span>条，无效数据<span class="noteNumber" id="spFilterPassedNum">665</span>条。
+                           </div>
+                    </div>
+                </div>
+
+            </div>
+            </form>
+        </div>
+
+        <div data-options="region:'center'">
+            <div class="easyui-panel picture" id="imageArea0" data-options="style:{float:'left'}" style="width:49%;height: 100%" ></div>
+
+            <div class="easyui-panel picture" id="imageArea1" data-options="style:{float:'left'}" style="width:49%;height: 100%" ></div>
+        </div>
+
+        <div data-options="region:'south'">
+            <form cy-form="VioDetail">
+                <!--违法信息-->
+                <div class="portlet" style="text-align: center">
+                    <div class="portlet-body"  style="width:100%;margin-left:auto;margin-right: auto">
+                        <div class="row tr" style="display: none">
+                            <input name="VIOLATION_ID" type="text"/>
+                        </div>
+                        <div class="row tr" style="margin-bottom: 2px;height: 40px;float: right">
+                            <a class="easyui-linkbutton button" data-options="iconCls:'icon-inport'"
+                               style="width: 120px;margin-right: 10px" cy-click="ReturnToStatistic()">返回统计页面</a>
+
+                            <a class="easyui-linkbutton button" data-options="iconCls:'icon-inport'"
+                               style="width: 80px;margin-right: 10px" cy-click="FilterPassViolation">有效</a>
+                            <a id="btnDiscardLowSpeed" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px" cy-click="FilterDiscardViolation('02')">车速不足</a>
+                            <a id="btnDiscardVaguPicture" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px" cy-click="FilterDiscardViolation('04')">图片模糊</a>
+                            <a id="btnDiscardL" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px" cy-click="FilterDiscardViolation('05')">号牌不全</a>
+                            <a id="btnDiscardNoPlate" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px" cy-click="FilterDiscardViolation('06')">无号牌</a>
+                            <a class="easyui-linkbutton button"
+                               data-options="iconCls:'icon-inport'" style="width: 100px" cy-click="ExportFilterPass()">已筛选导出</a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.$getData("vio", "VioInit")($scope);
+        $.extend($scope,{
+
+            //查询表单
+            cyFrmCond:{
+            },
+            selectFilterItem:{},
+            //详细页面分页数据
+            DetailPageSize:1,
+
+            //直方图点击后进入的查询表单
+            cyStatisticCond:{
+                pageNumber:1,
+                pageSize:20
+            },
+
+            //缓存待处理数据
+            UnfilterViolation:{},
+
+            PassViolations:[],
+            //当前正在处理数据
+            VioDetail:{ },
+
+            //详细页面工作量统计数据
+            WorkLoadStatistics:{
+                WaitingFilterNum:0,
+                FilterDiscardedNum:0,
+                FilterPassedNum:0
+            },
+            load : function(){
+                $scope.initEcharts();
+                $scope.initControl();
+            },
+
+            //初始化图表
+            initEcharts:function(){
+                $scope.initUnFilterStatisticChart();
+                $scope.initFilterStatisticChart();
+            },
+
+            //页面显示工作量统计结果
+            LoadWorkLoadStatistics:function(isPassed,num){
+                $scope.WorkLoadStatistics.WaitingFilterNum=$scope.WorkLoadStatistics.WaitingFilterNum-num;
+                if(isPassed){
+                    $scope.WorkLoadStatistics.FilterPassedNum=$scope.WorkLoadStatistics.FilterPassedNum+num;
+                }
+                else{
+                    $scope.WorkLoadStatistics.FilterDiscardedNum=$scope.WorkLoadStatistics.FilterDiscardedNum+num;
+                }
+                $scope.$("#spWaitingFilterNum").text($scope.WorkLoadStatistics.WaitingFilterNum);
+                $scope.$("#spFilterPassedNum").text($scope.WorkLoadStatistics.FilterPassedNum);
+                $scope.$("#spFilterDiscardedNum").text($scope.WorkLoadStatistics.FilterDiscardedNum);
+            },
+            //页数复选框选择变化
+            OnPerPageChange:function(){
+                var newValue=$scope.$("[name=recordPerPage]:checked").val();
+                if($scope.DetailPageSize!=newValue){
+                    console.log("change:"+newValue);
+                };
+            },
+
+            ReturnToStatistic:function()
+            {
+                $scope.selectViewFn('CollateFilter','queryView');
+                $scope.initEcharts();
+            },
+            //初始化待筛选数据直方图
+            initUnFilterStatisticChart:function(){
+                $scope.cyFrmCond.operationName='getUnfilterStatistic';
+                $scope.PostAjax(
+                    $scope.$restRoot + "violation/getStatisticChartData",
+                    {param:JSON.stringify(
+                        {
+                            opCondition:$scope.cyFrmCond
+                        }
+                    )},
+                    function(data){
+                        require.config({
+                            paths: {
+                                echarts: 'frameworks/echarts/js'
+                            }
+                        });
+                        require(
+                                [
+                                    'echarts',
+                                    'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                                    'echarts/chart/bar'
+                                ],
+                                function (ec) {
+                                    var unFilterStatisticChart = ec.init($scope.$("#unFilterStatisticChart").get(0));
+                                    //上行折线图的配置
+                                    var option={
+                                        title : {
+                                            text: '待筛选数据直方图'
+                                        },
+                                        tooltip : {
+                                            trigger: 'axis'
+                                        },
+                                        legend: {
+                                            data:data.Legend
+                                        },
+                                        toolbox: {
+                                            show : false,
+                                            orient: 'vertical',
+                                            feature : {
+                                                dataView : {show: true, readOnly: false},
+                                                magicType : {show: true, type: ['line', 'bar']},
+                                                restore : {show: true},
+                                                saveAsImage : {show: true}
+                                            }
+                                        },
+                                        calculable : true,
+                                        xAxis : [
+                                            {
+                                                type : 'category',
+                                                data : data.Category
+                                            }
+                                        ],
+                                        yAxis : [
+                                            {
+                                                type : 'value'
+                                            }
+                                        ],
+                                        series : data.Series
+                                    };
+                                    unFilterStatisticChart.setOption(option);
+
+                                    //单击图表打开详细页面
+                                    var ecConfig = require('echarts/config');
+                                    unFilterStatisticChart.on(ecConfig.EVENT.CLICK,function(param){
+                                        //param Object { seriesIndex=2,  seriesName="大车占道",  dataIndex=0,value=1114,  更多...}
+
+                                        $scope.selectViewFn('CollateFilter',"detailView");
+                                        $scope.WorkLoadStatistics.WaitingFilterNum=param.value;
+                                        $scope.WorkLoadStatistics.FilterPassedNum=0;
+                                        $scope.WorkLoadStatistics.FilterDiscardedNum=0;
+                                        $scope.cyStatisticCond.dataIndex=param.dataIndex;
+                                        $scope.cyStatisticCond.seriesName=param.seriesName;
+
+                                        $scope.SearchStatisticData();
+
+                                    });
+                                }
+                        );
+                    },
+                    function(XMLHttpRequest, textStatus, errorThrown){
+                        alert("GetUnFilterStatisticChartData error");
+                    }
+                );
+            },
+
+            //初始化已筛选数据分布饼图
+            initFilterStatisticChart:function(){
+                $scope.cyFrmCond.operationName='getFilterStatistic';
+                $scope.PostAjax(
+                     $scope.$restRoot + "violation/getStatisticChartData",
+                    {param:JSON.stringify(
+                            {
+                                opCondition:$scope.cyFrmCond
+                            })},
+                    function (data) {
+                        require.config({
+                            paths: {
+                                echarts: 'frameworks/echarts/js'
+                            }
+                        });
+                        require(
+                                [
+                                    'echarts',
+                                    'echarts/chart/pie',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                                    'echarts/chart/bar'
+                                ],
+                                function (ec) {
+                                    var filterStatisticChart = ec.init($scope.$("#filterStatisticChart").get(0));
+                                    //上行折线图的配置
+                                    var option={
+                                        title : {
+                                            text:data.Text
+                                        },
+                                        tooltip : {
+                                            trigger: 'item',
+                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                        },
+                                        legend: {
+                                            orient:'vertical',
+                                            x:'left',
+                                            data:data.Legend
+                                            //['确认有效','已废弃','车速不足','无号牌','图片模糊','遮挡号牌']
+                                        },
+                                        toolbox: {
+                                            show : false
+                                        },
+                                        calculable : true,
+                                        series : [
+                                            {
+                                                name:data.Text,
+                                                type:'pie',
+                                                radius:80,
+                                                itemStyle : {
+                                                    normal: {
+                                                        label: {
+                                                            position:'inner',
+                                                            formatter : function (params) {
+                                                                return (params.percent - 0).toFixed(0) + '%'
+                                                            }
+                                                        },
+                                                        labelLine: {
+                                                            show: false
+                                                        }
+                                                    },
+                                                    emphasis: {
+                                                        label: {
+                                                            show: true,
+                                                            formatter : "{b}\n{d}%"
+                                                        }
+                                                    }
+                                                },
+                                                data:data.Series[0].data
+                                            },
+                                            {
+                                                name:data.Text,
+                                                type:'pie',
+                                                radius:[110, 140],
+                                                data:data.Series[1].data
+                                            }
+                                        ]
+                                    };
+                                    filterStatisticChart.setOption(option);
+                                }
+                        );
+                    },
+                    function (data) {
+
+                    }
+                );
+            },
+
+
+            //初始化控件
+            initControl:function(){
+                $scope.$("#btnDiscard").menubutton({
+                    menu : $scope.$("#mbtnDiscard")
+                });
+
+                $scope.$("#btnDiscardBatch").menubutton({
+                    menu : $scope.$("#mbtnDiscardBatch")
+                });
+
+                $scope.$("#btnExport").menubutton({
+                    menu : $scope.$("#mbtnExport")
+                });
+
+                $scope.$("[name=recordPerPage]:checked").onclick=function(){
+                    console.log(this);
+                    console.log($scope.$("[name=recordPerPage]:checked").val());
+                }
+                $scope.GenerateViolationTypeCHK();
+            },
+
+            CheckAllViolationType:function(){
+                var isChecked = $scope.$("#chkSelectAllViolationType").is(":checked");
+                $scope.$(".violationTypeCheckbox").prop("checked", isChecked);
+            },
+            /**
+             * 收起剩余搜索项
+             * @return {[type]} [description]
+             */
+            searchSlideUp: function () {
+                $scope.$(".hide").hide();
+                $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                    height: 90
+                });
+                $scope.$("#queryView").layout("resize");
+                $scope.$("#searchSlideUp").hide();
+                $scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" ");
+            },
+            /**
+             * 展开剩余搜索项
+             * @return {[type]} [description]
+             */
+            searchSlideDown: function () {
+                $scope.$(".hide").slideDown("fast");
+                $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                    height: 140
+                });
+                $scope.$("#queryView").layout("resize");
+                $scope.$("#searchSlideDown").hide();
+                $scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+            },
+            enter : function(){
+                console.log("enter");
+            },
+            leave : function(){
+                console.log("leave");
+            },
+            close : function(){
+                console.log("close");
+            },
+
+
+            //通过查询条件进行查询
+            SearchAsync: function () {
+                $scope.$updateData("cyFrmCond");
+                $scope.cyFrmCond.violationType='';
+                var checkList=$(".violationTypeCheckbox");
+                checkList.each(function(){
+                    if(this.checked){
+                        $scope.cyFrmCond.violationType+=this.value+',';
+                    }
+                });
+                $scope.cyFrmCond.violationType=$scope.cyFrmCond.violationType.substring(0,$scope.cyFrmCond.violationType.length-1);
+                $scope.cyFrmCond.isArmyPlate=$scope.$("#chkArmyPlate").prop("checked");
+                $scope.cyFrmCond.isUnknownPlate=$scope.$("#chkUnknownPlate").prop("checked");
+                $scope.initEcharts();
+            },
+            //通过点击统计报表进行查询
+            SearchStatisticData:function(){
+                $scope.cyStatisticCond.speedMin=$scope.cyFrmCond.speedMin;
+                $scope.cyStatisticCond.speedMax=$scope.cyFrmCond.speedMax;
+                $scope.cyStatisticCond.violationType=$scope.cyFrmCond.violationType;
+                $scope.cyStatisticCond.IsArmyPlate=$scope.cyFrmCond.IsArmyPlate;
+                $scope.cyStatisticCond.IsUnknownPlate=$scope.cyFrmCond.IsUnknownPlate;
+                $scope.PostAjax( $scope.$restRoot + "violation/getStatisticDataForCollateFilter",
+                    $scope.cyStatisticCond,
+                    function(data){
+                        if(data&&data.length>0){
+                            $scope.UnfilterViolation=data;
+                            $scope.LoadDetailViolation();
+                        }
+                        else
+                        {
+                            alert("没有数据");
+                        }
+                    }
+                );
+            },
+
+            //筛选废弃数据
+            FilterDiscardViolation:function(discardReaso){
+
+                $scope.PostAjax(
+                    $scope.$restRoot + "violation/abandonViolation",
+                    {param:JSON.stringify(
+                            {
+                                operationIds:[$scope.VioDetail.violationId],
+                                opField:{
+                                    discardedReason:discardReaso
+                                }
+                            }
+                    )},
+                    function(data){
+                        if(data.ResultCode=="0") {
+                            console.log("成功废弃");
+                            $scope.UnfilterViolation.shift();
+                            $scope.LoadWorkLoadStatistics(false, 1);
+                            $scope.LoadDetailViolation();
+                        }
+                    },
+                    function(XMLHttpRequest, textStatus, errorThrown){
+                        //todo
+                    }
+                );
+            },
+
+            //筛选有效数据
+            FilterPassViolation:function(){
+                $scope.PostAjax(
+                    $scope.$restRoot + "violation/filterViolation",
+                    {param:JSON.stringify(
+                            {
+                                operationIds:[$scope.VioDetail.violationId]
+                            })
+                    },
+                    function(data){
+                        console.log(""+data);
+                        if(data.ResultCode=="0"){
+                            console.log("成功确认有效");
+                            $scope.UnfilterViolation.shift();
+                            $scope.PassViolations.push($scope.VioDetail);
+                            $scope.LoadWorkLoadStatistics(true,1);
+                            $scope.LoadDetailViolation();
+                        }
+                        else{
+                            alert("操作失败，原因:"+data.ErrorMsg);
+                        }
+                    }
+                );
+            },
+            //已筛选导出
+            ExportFilterPass:function()
+            {
+                $scope.PostAjax(
+                    $scope.$restRoot + "violation/exportViolationSet",
+                    {param: JSON.stringify(
+                            {
+                                arrayData: $scope.PassViolations
+                            })
+                    },
+                            function(data){
+                                $scope.$setParam("url",data);
+                                $scope.$openDialog("addDialog", {
+                                    title : "下载违法信息",
+                                    width : 300,
+                                    height : 80,
+                                    href : "tpls/violationMgr/DownLoad.html"
+                                }, true);
+                            }
+                 )
+            },
+
+            //加载详细数据(主要是图片)
+            LoadDetailViolation:function(){
+
+                if ($scope.UnfilterViolation.length > 0) {
+                    if($scope.VioDetail!=null
+                            &&$scope.VioDetail.violationId!=$scope.UnfilterViolation[0].violationId)
+                    {
+                        console.log("LoadDetailViolation:"+$scope.UnfilterViolation[0].violationId);
+                        $scope.PostAjax(
+                            $scope.$restRoot + "violation/viewViolationOfIdWithLock",
+                            {param:JSON.stringify(
+                                    {
+                                        arrayData:[$scope.UnfilterViolation]
+                                    })
+                            },
+                            function(data){
+                                if(data.ResultCode>="0"){
+                                    //todo
+                                    //加载图片
+                                    $scope.VioDetail=data.Data[0];
+                                    if(violation&&violation.image){
+                                        var urlArr=violation.image.split(';');
+                                        if(urlArr[0]){
+                                            $scope.$setParam("images", [urlArr[0]]);
+                                            $scope.$("#imageArea0").panel("refresh", "tpls/public/image-view.html");
+                                            if(urlArr[1])
+                                            {
+                                                $scope.timeout = setTimeout(function () {
+                                                    $scope.$setParam("images", [urlArr[1]]);
+                                                    $scope.$("#imageArea1").panel("refresh", "tpls/public/image-view.html");
+                                                }, 200);
+                                            }
+                                        }
+                                    }
+                                }
+                                else{
+                                    alert("操作失败，原因:"+data.ErrorMsg);
+                                }
+                            }
+                        );
+                    }
+                }
+                else {
+                    $scope.SearchStatisticData();
+                }
+            },
+            //生成违法类型选择框
+            GenerateViolationTypeCHK:function(){
+                var codes = $rootScope.$code['011'];
+                if (codes) {
+                    for (var index in codes) {
+                        var code = codes[index];
+                        var checkBox='<li><input type="checkbox" class="violationTypeCheckbox" id="ckViolationType'+code.value+'" value="'+code.value+'">'+code.text+'</li>'
+                        $scope.$("#liViolationTypeCheckBox").append(checkBox);
+                    }
+                    //
+                }else{
+
+                }
+            }
+
+        });
+    });
+</script>
+
+<style>
+    #detailView .picture{
+        float:left;
+    }
+    .portlet .th
+    {
+        color: #09f;
+    }
+
+    .noteNumber
+    {
+        color: #09f;
+        text-decoration: underline;
+        /*cursor: pointer;*/
+    }
+    .CollateFilter #liViolationTypeCheckBox
+    {
+        margin-top: 5px;
+        margin-left: 5px;
+    }
+    .CollateFilter #liViolationTypeCheckBox li{
+        float:left;
+        list-style: none;
+    }
+</style>

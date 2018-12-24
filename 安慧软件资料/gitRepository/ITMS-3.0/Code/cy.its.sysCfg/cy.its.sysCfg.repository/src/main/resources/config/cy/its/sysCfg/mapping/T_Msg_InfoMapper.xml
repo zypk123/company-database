@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Msg_InfoMapper">
+	<resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Msg_Info">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SENDER" property="sender" jdbcType="VARCHAR" />
+		<result column="SEND_TIME" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="SEND_STATUS" property="sendStatus" jdbcType="CHAR" />
+		<result column="MSG_TYPE" property="msgType" jdbcType="VARCHAR" />
+		<result column="MSG_TITLE" property="msgTitle" jdbcType="VARCHAR" />
+		<result column="MSG_CONTENT" property="msgContent" jdbcType="VARCHAR" />
+		<result column="RECEIVER" property="receiver" jdbcType="CHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, SENDER, SEND_TIME, SEND_STATUS, MSG_TYPE, MSG_TITLE,
+		MSG_CONTENT,
+		RECEIVER, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_MSG_INFO
+		where ID = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_MSG_INFO
+		where ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Msg_Info">
+		insert into T_MSG_INFO (ID,
+		SENDER, SEND_TIME,
+		SEND_STATUS, MSG_TYPE, MSG_TITLE,
+		MSG_CONTENT,
+		RECEIVER, REMARK
+		)
+		values (#{id,jdbcType=VARCHAR},
+		#{sender,jdbcType=VARCHAR},
+		#{sendTime,jdbcType=TIMESTAMP},
+		#{sendStatus,jdbcType=CHAR}, #{msgType,jdbcType=VARCHAR},
+		#{msgTitle,jdbcType=VARCHAR},
+		#{msgContent,jdbcType=VARCHAR},
+		#{receiver,jdbcType=CHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Msg_Info">
+		insert into T_MSG_INFO
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="sender != null">
+				SENDER,
+			</if>
+			<if test="sendTime != null">
+				SEND_TIME,
+			</if>
+			<if test="sendStatus != null">
+				SEND_STATUS,
+			</if>
+			<if test="msgType != null">
+				MSG_TYPE,
+			</if>
+			<if test="msgTitle != null">
+				MSG_TITLE,
+			</if>
+			<if test="msgContent != null">
+				MSG_CONTENT,
+			</if>
+			<if test="receiver != null">
+				RECEIVER,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="sender != null">
+				#{sender,jdbcType=VARCHAR},
+			</if>
+			<if test="sendTime != null">
+				#{sendTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sendStatus != null">
+				#{sendStatus,jdbcType=CHAR},
+			</if>
+			<if test="msgType != null">
+				#{msgType,jdbcType=VARCHAR},
+			</if>
+			<if test="msgTitle != null">
+				#{msgTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="msgContent != null">
+				#{msgContent,jdbcType=VARCHAR},
+			</if>
+			<if test="receiver != null">
+				#{receiver,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Msg_Info">
+		update T_MSG_INFO
+		<set>
+			<if test="sender != null">
+				SENDER = #{sender,jdbcType=VARCHAR},
+			</if>
+			<if test="sendTime != null">
+				SEND_TIME = #{sendTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sendStatus != null">
+				SEND_STATUS = #{sendStatus,jdbcType=CHAR},
+			</if>
+			<if test="msgType != null">
+				MSG_TYPE = #{msgType,jdbcType=VARCHAR},
+			</if>
+			<if test="msgTitle != null">
+				MSG_TITLE = #{msgTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="msgContent != null">
+				MSG_CONTENT = #{msgContent,jdbcType=VARCHAR},
+			</if>
+			<if test="receiver != null">
+				RECEIVER = #{receiver,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Msg_Info">
+		update T_MSG_INFO
+		set SENDER = #{sender,jdbcType=VARCHAR},
+		SEND_TIME =
+		#{sendTime,jdbcType=TIMESTAMP},
+		SEND_STATUS =
+		#{sendStatus,jdbcType=CHAR},
+		MSG_TYPE = #{msgType,jdbcType=VARCHAR},
+		MSG_TITLE = #{msgTitle,jdbcType=VARCHAR},
+		MSG_CONTENT =
+		#{msgContent,jdbcType=VARCHAR},
+		RECEIVER = #{receiver,jdbcType=CHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<select id="getMessageList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from T_MSG_INFO t
+		<where>
+			<if test="sender != null and sender != '' ">
+				AND t.sender like '%' || #{sender,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="receiver != null and receiver != '' ">
+				AND t.receiver like '%' || #{receiver,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="msgType != null and msgType != '' ">
+				AND t.msg_type = #{msgType,jdbcType=VARCHAR}
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != '' ">
+			<![CDATA[ AND T.send_time  >= to_date(#{sendTimeStart},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != '' ">
+			<![CDATA[ AND T.send_time  < to_date(#{sendTimeEnd},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+		</where>
+	</select>
+</mapper>

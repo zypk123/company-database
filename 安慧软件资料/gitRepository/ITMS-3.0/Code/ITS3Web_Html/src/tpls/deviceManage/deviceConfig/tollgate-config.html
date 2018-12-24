@@ -1,0 +1,27 @@
+<div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+<div title="设备信息" data-options="href:'tpls/deviceManage/deviceConfig/tollgate-config-baseinfo.html'">
+
+</div>
+<div title="年检信息" data-options="href:'tpls/deviceManage/deviceConfig/certification.html'">
+
+        </div>
+<div title="实景图片" data-options="href:'tpls/deviceManage/deviceConfig/device-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode表示打开当前弹出框是新增、修改、查看哪种状态
+     */
+    InitPage(["mode"],function($scope) {
+        var currentMode= $scope.mode;
+        if(currentMode=="ADD")
+        {//如果是新增卡口备案信息，则需要把检定信息、图片信息2个tab页禁用，
+        // 因为只有等设备基本信息填写完毕后，才能配置这2个方面的信息
+            var tollgateTabs=$scope.$("#tollgateTabs");
+            $scope.$setParam("tollgateTabs",tollgateTabs);//保存tab对象
+            $scope.$("#tollgateTabs").tabs('disableTab', 1);//禁用年检信息tab页
+            $scope.$("#tollgateTabs").tabs('disableTab', 2);//禁用实景图片tab页
+        }
+    });
+</script>

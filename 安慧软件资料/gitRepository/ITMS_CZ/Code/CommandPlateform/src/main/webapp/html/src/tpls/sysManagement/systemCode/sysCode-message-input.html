@@ -1,0 +1,90 @@
+<!--系统代码添加页面-->
+<div  class="easyui-layout">
+        <div data-options="region:'center',border:false">
+          <form cy-form="codeData" id="form">
+            <div id="code"  class="table"><br/>
+                <div class="tr">
+                    <div class="th">代码类型：</div>
+                    <div class="td">
+                        <span  cy-name="codeType.codeTypeText"></span>
+                        <input id="CT" type="hidden" name="codeType"/>
+                    </div>
+                   	<div class="th">启用状态：</div>
+                    <div class="td">&nbsp;
+                        <input type="radio" name="enableFlag" value="1" checked="checked">是
+                        <input type="radio" name="enableFlag" value="0">否
+                    </div>
+                    <div class="th">编辑状态：</div>
+                    <div class="td">&nbsp;
+                        <input type="radio" name="editable" value="1"checked="checked">是
+                        <input type="radio" name="editable" value="0">否
+                    </div>
+                </div>
+                <div class="tr">
+                <div class="th">代码编号：</div>
+                    <div class="td">
+                        <input name="codeNo" class="easyui-textbox" data-options="required: true" validType="length[0,8]" style="width: 120px;"/>
+                        <!-- <input id="codeId" type="hidden" name="codeId"/> -->
+                    </div>
+                   	<div class="th">代码名称：</div>
+                    <div class="td">
+                        <input  name="codeName" class="easyui-textbox" data-options="required: true" validType="length[0,64]"style="width: 128px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">备注：</div>
+                        <input class="easyui-textbox" name="remark"  data-options="multiline:true,validType:['length[0,128]']" 
+						style="width: 315px;height: 41px;"/>
+                </div>
+            </div>
+        </div>
+     </form>
+        <div data-options="region:'south',border:false" style="height: 40px">
+            <div class="tr">
+                <div class="td" align="center">
+                    <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                    <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+                </div>
+            </div>
+        </div>
+</div>
+<script>
+    InitPage(["codeData","codeType","saveData","editData"],function($scope){
+    	//给代码类型注入Id
+    	$scope.$('#CT').val($scope.codeType.codeTypeId);
+    	//判断是否是编辑页面
+    	if($scope.$params.get("type")=="add"){
+    		//触发保存按钮方法
+            $scope.save = function () {
+            	if($scope.$("#form").form("validate")){
+                	//更新获取form中的数据
+               		 $scope.$updateData("codeData");
+                	//调用父页面的方法
+                	$scope.saveData($scope.codeData);
+                }
+            };
+    	}else{
+    	    //触发保存按钮方法
+            $scope.save = function () {
+            	if($scope.$("#form").form("validate")){
+                	//更新获取form中的数据
+                	$scope.$updateData("codeData");
+                	//调用父页面的方法
+                	$scope.editData($scope.codeData);
+               }
+            };
+    	}
+    	
+    });
+</script>
+<style type="text/css">
+
+    #code .th {
+        width: 80px;
+        text-align: right;
+    }
+    #code .td{
+        width: 110px;
+        text-align: left;
+    }
+</style>

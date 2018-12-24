@@ -1,0 +1,191 @@
+<div class="easyui-layout" id="trafficStateCurrent" >
+	<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+	cy-url="trafficSituation/mapRoad/selectAllForGrid"></table>
+
+</div>
+
+<script type="text/javascript">
+	InitPage(["locationSite1", "childScopeList", "appendData_region"], function($scope) {
+		$scope.$getDefaultCode(["016", "501"]);
+		var list = $scope.result1;
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$search("deptQueryDm");
+			$scope.childScopeList.refrashState = refrashState;
+		};
+		//刷新列表
+		function refrashState(data) {
+			var dataList = $scope.$("#dmData").datagrid("getData").rows;
+			var rowIndex;
+			for (var index in dataList) {
+				if (data.regionalId == dataList[index].regionalId) {
+					$.extend(dataList[index], data);
+					$scope.$('#dmData').datagrid('updateRow', {
+						index : index,
+						row : dataList[index]
+					});
+				}
+			}
+			//缓存数据
+			$scope.$eventProxy();
+		}
+
+
+		$scope.optionsDm = {
+			columns : [[
+			{
+				field : 'name',
+				title : '道路名称',
+				align : 'center',
+				width : 20
+			},
+			//{field:'PopName',title:'道路简称',align:'center', width:20},
+			//{field: 'type',title: '道路类型',align: 'center',formatter:options_roadType, width: 20},
+			{
+				field : 'fRoadName',
+				title : '起点',
+				align : 'left',
+				width : 20
+			}, {
+				field : 'bRoadName',
+				title : '终点',
+				align : 'left',
+				width : 20
+			},
+			//{field: 'DIRECTION',title: '方向',align: 'center',width: 20},
+			{
+				field : 'trafficState',
+				title : '状态',
+				align : 'center',
+				formatter : options_roadState,
+				width : 15
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 10
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if (rowData.wkt != null) {
+					$scope.locationSite1(rowData.wkt);
+				} else {
+					$.messager.alert("警告", "无法获取位置信息！");
+				}
+				$scope.locationSite1(rowData.wkt);
+			},
+			pagination : false,
+			nowrap : false
+		};
+		function options_roadType(value, row, index) {
+			return $scope.$getCodeName("016", value);
+		}
+
+		function options_roadState(value, row, index) {
+			var str = $("<span/>");
+			var txt = $scope.$getCodeName("501", value);
+			if (value == "0") {
+				str.append(txt).addClass("gray");
+			} else if (value == "1") {
+				str.append(txt).addClass("green");
+			} else if (value == "2") {
+				str.append(txt).addClass("orange");
+			} else if (value == "3") {
+				str.append(txt).addClass("red");
+			}
+			return $("<span/>").append(str).html();
+		}
+
+		//操作栏信息三到四
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a title='人工干预' cy-click='manualState(" + index + ")'></a>");
+			//定位按钮
+			button1.linkbutton({
+				iconCls : "icon-deal",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").html();
+
+		}
+
+		//弹出人工干预
+		$scope.manualState = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			//console.log(rowDatas[index]);
+			//后台保存数据
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/manualState/update",
+					params : params,
+					success : function(data) {
+						$scope.$getDialog("createDialog").dialog("close");
+						var obj = {};
+						obj.trafficState = params.controlledState;
+						obj.regionalId = params.regionalId;
+						var str = params.startTime;
+						str = str.replace(/-/g, "/");
+						var date = new Date(str);
+						obj.updateTime = date.getTime();
+						if (params.controlledState == "1") {
+							obj.avgSpeed = 100;
+						} else if (params.controlledState == "2") {
+							obj.avgSpeed = 70;
+						} else if (params.controlledState == "3") {
+							obj.avgSpeed = 30;
+						}
+						//根据人工干预的状态刷新表中的状态
+						//rowDatas[index].trafficState=params.controlledState;
+						//$scope.$('#dmData').datagrid("refreshRow",index);
+						//缓存数据更新表格
+						$scope.$eventProxy();
+						$scope.appendData_region(obj);
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+
+			$scope.$openDialog("createDialog", {
+				title : "人工干预路况",
+				height : 420,
+				width : 550,
+				href : "tpls/trafficMonitor/trafficState/manual-state-current-edit.html"
+			}, true);
+		};
+
+	}); 
+</script>
+<style>
+	#trafficStateCurrent .datagrid-row {
+		height: 31px;
+	}
+	#trafficStateCurrent .datagrid-cell {
+		font-size: 12px;
+	}
+	#trafficStateCurrent .red {
+		color: white;
+		background: red;
+		border: solid 2px red;
+	}
+	#trafficStateCurrent .orange {
+		color: white;
+		background: orange;
+		border: solid 2px orange;
+	}
+	#trafficStateCurrent .green {
+		color: white;
+		background: green;
+		border: solid 2px green;
+	}
+	#trafficStateCurrent .gray {
+		color: white;
+		background: gray;
+		border: solid 1px gray;
+	}
+
+</style>

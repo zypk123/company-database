@@ -1,0 +1,334 @@
+<!--
+ ********************************************************************************
+ * 用户           云南交警总队
+ *
+ * 当前页面名   新近车辆筛查(strange-veh-search.html) 
+ *
+ * 版本号        Version 1.0
+ * 作者           wangyunqi
+ *
+ * 更新履历     2016-04-25：创建
+ ********************************************************************************
+-->
+<div id="strange-veh-search" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:120">
+		<form cy-form="formData" id='searchForm'>
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<!-- <div class="th">
+							目标区域：
+						</div>
+						<div class="td" style="width:180px">
+						<input class="cy-area-choose" id="siteCodes" name="siteCodes" style="width:152px"/>
+						</div> -->
+						<div class="th" >
+						行政区划：
+						</div>
+						<div class="td" style="width:180px;height: 25px;">
+						<input class="cy-district-radio" iscode="true" name="districtCode" style="width:120px;height:25px" required="required"/>
+						</div>
+						<div class="th" style="height:25px;">
+						首次出现时间：
+						</div>
+						<div class="td" style="width:145px;">
+                          <input name="firstTime" id="startDateTime" data-options="required:true,editable:false,prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date']" 
+                                    class="easyui-datebox dispatchTime" style="width:148px;" autocomplete="on" />
+							至	
+                          <input name="endTime" id="endDateTime" data-options="required:true,editable:false,prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date']"
+                                 class="easyui-datebox dispatchTime" style="width:148px;" autocomplete="on" />
+						</div>
+						
+					</div>
+					
+					<div class="tr">
+						<div class="th" >
+							归属地：
+						</div>
+						<div class="td" style="width:100px;">
+							<!-- <input class="easyui-combobox" id="vehLocalization" name="vehLocalization" cy-code="228" style="width:70px"/> -->
+							<select id="vehLocalization" class="easyui-combobox" name="vehLocalization"
+								style="width: 100px;">
+								<option value="">请选择</option>
+								<option value="1">本市</option>
+								<option value="2">本市以外</option>
+								<option value="3">本省</option>
+								<option value="4">外省</option>
+							</select>
+						</div>
+						<div class="th">
+							号牌前缀：
+						</div>
+						<div class="td">
+							<input class="cy-vehNumberbox" name="plateNbr" id = "plateNbr" style="width:120px;" />
+						</div>
+						
+						<div class="th">
+							车辆类型：
+						</div>
+						<div class="td" style="width:145px;">
+							<input class="easyui-combobox" id="vehicleType" name="vehicleType" style="width:145px"
+							           cy-code="001" />
+						</div>
+						
+					    <div class="th" style="margin-left: 8px;">
+							<a class="easyui-linkbutton button-search" cy-click="searchForm"   id="searchButton" data-options="iconCls:'icon-search'">&nbsp;分析&nbsp;</a>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!--数据展示区 -->
+	<div id="dataGridDiv" data-options="region:'center',border:false" style="display:block;z-index:1">
+		<table cy-datagrid="Options" cy-querydata="formData" cy-url="vehTrack/strange/queryStrangeCars" id="datagrid">
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+// 绑定DataGrid
+InitPage([], function($scope) {
+	$scope.$getDefaultCode(['001','006']);
+	var date= $scope.$dateAdd("d",-7);
+    //提供给过车查询和轨迹查询的时间
+    var passTime1;
+    var passTime2;
+
+	$.extend($scope, {
+        /**
+         * 初始化参数
+         * @type {Object}
+         */
+        formData : {
+        	firstTime : date.format("yyyy-MM-dd 00:00:00"),
+        	endTime : new Date().format("yyyy-MM-dd 00:00:00"),
+        },
+        
+        /**
+         * datagrid配置
+         */
+        Options : {
+ 			showHeader: true,
+        	remoteSort: false,
+    		emptyMsg: '没有查询到记录',
+    		data:[],
+            columns:[[
+                {title : "号牌号码",field : "plate_nbr",width : 30,align:"center"},
+                {field:"vehicle_type",title:"车辆类型",width:40,align:"center",formatter:function(value){
+                	return $scope.$getVehType(value);
+                }},
+                {field:"site_name",title:"首次出现点位",width:80,align:"center"},
+                {field:"first_time",title:"首次出现时间",width:80,halign:'center',align:"center",formatter:function(value){
+                	if (value){
+                		return new Date(value).format("yyyy-MM-dd hh:mm:ss");
+                	}
+                }},
+                {field : 'cz',title : '操作',align : 'center',formatter : 
+    					function(value,rowData,rowIndex) {
+                    	  if (value == undefined) {
+                    		  return $scope.operateUserCz(value,rowData,rowIndex);
+                    	  }
+    				},
+    				width : 80
+    			}
+            ]]
+        },
+        
+      	//用户操作栏
+		  operateUserCz : function(value, row, index) {
+		  	//车辆轨迹
+			var button1 = $('<a  title="车辆轨迹" style="color:blue;font-size=14px;" cy-click="viewTrack(\'' + row.plate_nbr + '\',\'' + row.plate_type + '\')">车辆轨迹</a>');
+				//图片列表
+			var button2 = $('<a  title="图片列表" style="color:blue;font-size=14px;" cy-click="vehPass(\'' + row.plate_nbr + '\')">图片列表</a>');
+			button1.linkbutton({
+				//iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				//iconCls : "icon-reload-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		},
+		
+		
+
+        searchForm : function() {
+        	//验证通过进行查询
+        	if(!$scope.$("#searchForm").form("validate")){
+				return;
+			}
+        	var plateNbr = $scope.$("#plateNbr").val();
+			//当输入的车牌号码中不包含'*'或者'='?'且长度小于7，自动给他补足‘*’
+			if (!(plateNbr.indexOf("*") >=0 || plateNbr.indexOf("?") >= 0) && plateNbr.length<7){
+				$scope.$("#plateNbr").textbox("setValue",plateNbr+'*');
+			}
+           	$scope.$updateData("formData");
+           	var vehLocal = $scope.formData.vehLocalization;
+           	var orgCode = ($scope.UserInfo.orgCode).substr(0,4)+"00000000";
+			var platePrefix = $scope.$getPlatePrefix(orgCode);
+			if(!platePrefix){
+				platePrefix = "云";
+			}
+			$scope.formData.justNonlocalVeh='';
+			if(plateNbr!=null && plateNbr!=''&& plateNbr!='*'){
+				if ("1" == vehLocal) {
+					//云南省昆明市的用户需要特殊处理，昆明市的为云A，云B
+					if("云B"==platePrefix){
+						if (!plateNbr.startWith("云B") && !plateNbr.startWith("云A")) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}else {
+					//如果输入车牌号，且车牌号和车牌前缀有冲突，例如plateNbr =云A，platePrefix=云B
+						if (!plateNbr.startWith(platePrefix) && "云" != plateNbr) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}
+				} else if ("2" == vehLocal) {//本市以外 如果输入车牌号，只用是非云A
+					// 昆明市特殊处理云A 云B
+					if("云B"==platePrefix){
+						if (plateNbr.startWith(platePrefix) || plateNbr.startWith("云A")) {
+							$.messager.alert("提示", "你输入的车牌号有误");
+							return;
+						}
+					}
+					if (plateNbr.startWith(platePrefix)) {
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				} else if ("3" == vehLocal) {//本省以外 如果输入车牌号，只能是属于云南的
+					if (!plateNbr.startWith("云")) {
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				} else if ("4" == vehLocal) {//本省以外 如果输入车牌号，只能是不属于云南的
+					if (plateNbr.startWith("云")) {
+						/* $scope.formData.plateNbr = "云*";
+						$scope.formData.justNonlocalVeh = 'unlocal'; */
+						$.messager.alert("提示", "你输入的车牌号有误");
+						return;
+					}
+				}
+			}else{
+				// 昆明市特殊处理云A 云B
+				if("云B"==platePrefix){
+					platePrefix = platePrefix + "*,云A*"
+				}else{
+					platePrefix = platePrefix +"*"
+				}
+				if("1" == vehLocal){
+					$scope.formData.plateNbr = platePrefix;
+				}else if("2" == vehLocal){
+					$scope.formData.plateNbr = platePrefix;
+					$scope.formData.justNonlocalVeh='true';
+				}else if("3" ==vehLocal){
+					$scope.formData.plateNbr = "云*";
+				}else if("4" ==vehLocal){
+					$scope.formData.plateNbr = "云*";
+					$scope.formData.justNonlocalVeh='true';
+				}
+				
+			}
+			$scope.formData.firstTime = $scope.formData.firstTime +" 00:00:00"
+			$scope.formData.endTime = $scope.formData.endTime +" 23:59:59"
+			passTime1 = $scope.formData.firstTime;
+			passTime2 = $scope.formData.endTime;
+                //排序方式
+                $scope.formData.orderType = 'desc';
+                var pager = $scope.$("#datagrid").datagrid("getPager");
+                var paginationOptions = pager.pagination("options");
+                    $scope.formData.pageSize = paginationOptions.pageSize;
+                    $scope.formData.pageNumber = 1;
+                    $scope.formData.totalCount = 0;
+        			$scope.$search("formData", "", function(data) {
+	    			pager.pagination("refresh",{
+	    					total: data.total,
+	    					pageNumber: 1
+							});
+	    			
+	    		})
+		},
+		
+		
+		$getVehType : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("001",value);
+		},
+		
+		$getCarColor : function(value){
+			if(!value) return;
+            return $scope.$getCodeName("006",value);
+		},
+		
+	});
+
+    $scope.load = function() {
+    	//查询时间不能大于当前时间
+		$scope.$('.dispatchTime').each(function(){
+			$(this).datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+		});
+    };
+    
+   /**
+    *查看车辆轨迹 
+    */
+    $scope.viewTrack = function(plateNbr,plateType){
+    	$scope.$goto("010301",
+                {
+		    		plateNbr: plateNbr,
+		    		plateType:plateType,
+		    		passTimeStart:passTime1,
+		    		passTimeEnd:passTime2,
+		    		initSearch:true
+                });
+	},
+	
+	/*
+	 * 查看车辆过车图片
+	 */
+	$scope.vehPass = function(plateNbr){
+		//过车查询
+		$scope.$goto("030201",
+                {
+		    		plateNbr: plateNbr,
+		    		passTimeStart:passTime1,
+		    		passTimeEnd:passTime2,
+		    		model:'image'
+                });
+		
+		
+	}
+}); 
+</script>
+<style>
+    #strange-veh-search .th {
+        width: 80px;
+        text-align: right;
+    }
+    #strange-veh-search .td {
+        width: 120px;
+    }
+    #strange-veh-search p {
+        margin: 0;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        width: 120px;
+        text-align: left;
+    }
+
+</style>

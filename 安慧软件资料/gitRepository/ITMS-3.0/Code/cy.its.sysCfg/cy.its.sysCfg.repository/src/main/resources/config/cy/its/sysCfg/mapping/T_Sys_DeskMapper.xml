@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_DeskMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Desk" >
+    <id column="DESK_ID" property="deskId" jdbcType="VARCHAR" />
+    <result column="DESK_CODE" property="deskCode" jdbcType="VARCHAR" />
+    <result column="DESK_NAME" property="deskName" jdbcType="VARCHAR" />
+    <result column="DESK_PHONE" property="deskPhone" jdbcType="VARCHAR" />
+    <result column="DESK_IP" property="deskIp" jdbcType="VARCHAR" />
+    <result column="DESK_TYPE" property="deskType" jdbcType="VARCHAR" />
+    <result column="DESK_DESC" property="deskDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DESK_ID, DESK_CODE, DESK_NAME, DESK_PHONE, DESK_IP, DESK_TYPE, DESK_DESC
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_DESK
+    where DESK_ID = #{deskId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_DESK
+    where DESK_ID = #{deskId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Desk" >
+    insert into T_SYS_DESK (DESK_ID, DESK_CODE, DESK_NAME, 
+      DESK_PHONE, DESK_IP, DESK_TYPE, 
+      DESK_DESC)
+    values (#{deskId,jdbcType=VARCHAR}, #{deskCode,jdbcType=VARCHAR}, #{deskName,jdbcType=VARCHAR}, 
+      #{deskPhone,jdbcType=VARCHAR}, #{deskIp,jdbcType=VARCHAR}, #{deskType,jdbcType=VARCHAR}, 
+      #{deskDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Desk" >
+    insert into T_SYS_DESK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deskId != null" >
+        DESK_ID,
+      </if>
+      <if test="deskCode != null" >
+        DESK_CODE,
+      </if>
+      <if test="deskName != null" >
+        DESK_NAME,
+      </if>
+      <if test="deskPhone != null" >
+        DESK_PHONE,
+      </if>
+      <if test="deskIp != null" >
+        DESK_IP,
+      </if>
+      <if test="deskType != null" >
+        DESK_TYPE,
+      </if>
+      <if test="deskDesc != null" >
+        DESK_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deskId != null" >
+        #{deskId,jdbcType=VARCHAR},
+      </if>
+      <if test="deskCode != null" >
+        #{deskCode,jdbcType=VARCHAR},
+      </if>
+      <if test="deskName != null" >
+        #{deskName,jdbcType=VARCHAR},
+      </if>
+      <if test="deskPhone != null" >
+        #{deskPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="deskIp != null" >
+        #{deskIp,jdbcType=VARCHAR},
+      </if>
+      <if test="deskType != null" >
+        #{deskType,jdbcType=VARCHAR},
+      </if>
+      <if test="deskDesc != null" >
+        #{deskDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Desk" >
+    update T_SYS_DESK
+    <set >
+      <if test="deskCode != null" >
+        DESK_CODE = #{deskCode,jdbcType=VARCHAR},
+      </if>
+      <if test="deskName != null" >
+        DESK_NAME = #{deskName,jdbcType=VARCHAR},
+      </if>
+      <if test="deskPhone != null" >
+        DESK_PHONE = #{deskPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="deskIp != null" >
+        DESK_IP = #{deskIp,jdbcType=VARCHAR},
+      </if>
+      <if test="deskType != null" >
+        DESK_TYPE = #{deskType,jdbcType=VARCHAR},
+      </if>
+      <if test="deskDesc != null" >
+        DESK_DESC = #{deskDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DESK_ID = #{deskId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Desk" >
+    update T_SYS_DESK
+    set DESK_CODE = #{deskCode,jdbcType=VARCHAR},
+      DESK_NAME = #{deskName,jdbcType=VARCHAR},
+      DESK_PHONE = #{deskPhone,jdbcType=VARCHAR},
+      DESK_IP = #{deskIp,jdbcType=VARCHAR},
+      DESK_TYPE = #{deskType,jdbcType=VARCHAR},
+      DESK_DESC = #{deskDesc,jdbcType=VARCHAR}
+    where DESK_ID = #{deskId,jdbcType=VARCHAR}
+  </update>
+</mapper>

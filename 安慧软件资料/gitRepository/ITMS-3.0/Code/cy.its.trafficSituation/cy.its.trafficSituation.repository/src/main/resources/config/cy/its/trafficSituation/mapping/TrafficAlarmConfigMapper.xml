@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficAlarmConfigMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficAlarmConfig" >
+    <id column="ALARM_VALUE_ID" property="alarmValueId" jdbcType="VARCHAR" />
+    <result column="ALARM_VALUE_TYPE" property="alarmValueType" jdbcType="VARCHAR" />
+    <result column="ROAD_TYPE" property="roadType" jdbcType="VARCHAR" />
+    <result column="MIN" property="min" jdbcType="VARCHAR" />
+    <result column="MAX" property="max" jdbcType="VARCHAR" />
+    <result column="ALARM_GRADE" property="alarmGrade" jdbcType="VARCHAR" />
+    <result column="LIMIT_SPEED" property="limitSpeed" jdbcType="DECIMAL" />
+    <result column="DIFFUSION_CONTENT" property="diffusionContent" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ALARM_VALUE_ID, ALARM_VALUE_TYPE, ROAD_TYPE, MIN, MAX, ALARM_GRADE, LIMIT_SPEED, 
+    DIFFUSION_CONTENT, REMARK
+  </sql>
+  
+  <select id="selectAll" resultMap="BaseResultMap"  parameterType="java.util.HashMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_ALARM_VALUE
+    order by ALARM_VALUE_TYPE asc,ALARM_GRADE asc
+  </select>
+  
+  <select id="selectByType" resultMap="BaseResultMap"  parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_ALARM_VALUE
+    where ALARM_VALUE_TYPE like #{alarmValueType,jdbcType=VARCHAR}
+  </select>
+ 
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_ALARM_VALUE
+    where ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_ALARM_VALUE
+    where ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmConfig" >
+    insert into T_TRAFFIC_ALARM_VALUE (ALARM_VALUE_ID, ALARM_VALUE_TYPE, ROAD_TYPE, 
+      MIN, MAX, ALARM_GRADE, 
+      LIMIT_SPEED, DIFFUSION_CONTENT, REMARK
+      )
+    values (#{alarmValueId,jdbcType=VARCHAR}, #{alarmValueType,jdbcType=CHAR}, #{roadType,jdbcType=CHAR}, 
+      #{min,jdbcType=VARCHAR}, #{max,jdbcType=VARCHAR}, #{alarmGrade,jdbcType=CHAR}, 
+      #{limitSpeed,jdbcType=DECIMAL}, #{diffusionContent,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmConfig" >
+    insert into T_TRAFFIC_ALARM_VALUE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="alarmValueId != null" >
+        ALARM_VALUE_ID,
+      </if>
+      <if test="alarmValueType != null" >
+        ALARM_VALUE_TYPE,
+      </if>
+      <if test="roadType != null" >
+        ROAD_TYPE,
+      </if>
+      <if test="min != null" >
+        MIN,
+      </if>
+      <if test="max != null" >
+        MAX,
+      </if>
+      <if test="alarmGrade != null" >
+        ALARM_GRADE,
+      </if>
+      <if test="limitSpeed != null" >
+        LIMIT_SPEED,
+      </if>
+      <if test="diffusionContent != null" >
+        DIFFUSION_CONTENT,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="alarmValueId != null" >
+        #{alarmValueId,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmValueType != null" >
+        #{alarmValueType,jdbcType=CHAR},
+      </if>
+      <if test="roadType != null" >
+        #{roadType,jdbcType=CHAR},
+      </if>
+      <if test="min != null" >
+        #{min,jdbcType=VARCHAR},
+      </if>
+      <if test="max != null" >
+        #{max,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmGrade != null" >
+        #{alarmGrade,jdbcType=CHAR},
+      </if>
+      <if test="limitSpeed != null" >
+        #{limitSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="diffusionContent != null" >
+        #{diffusionContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmConfig" >
+    update T_TRAFFIC_ALARM_VALUE
+    <set >
+      <if test="alarmValueType != null" >
+        ALARM_VALUE_TYPE = #{alarmValueType,jdbcType=CHAR},
+      </if>
+      <if test="roadType != null" >
+        ROAD_TYPE = #{roadType,jdbcType=CHAR},
+      </if>
+      <if test="min != null" >
+        MIN = #{min,jdbcType=VARCHAR},
+      </if>
+      <if test="max != null" >
+        MAX = #{max,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmGrade != null" >
+        ALARM_GRADE = #{alarmGrade,jdbcType=CHAR},
+      </if>
+      <if test="limitSpeed != null" >
+        LIMIT_SPEED = #{limitSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="diffusionContent != null" >
+        DIFFUSION_CONTENT = #{diffusionContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficAlarmConfig" >
+    update T_TRAFFIC_ALARM_VALUE
+    set ALARM_VALUE_TYPE = #{alarmValueType,jdbcType=CHAR},
+      ROAD_TYPE = #{roadType,jdbcType=CHAR},
+      MIN = #{min,jdbcType=VARCHAR},
+      MAX = #{max,jdbcType=VARCHAR},
+      ALARM_GRADE = #{alarmGrade,jdbcType=CHAR},
+      LIMIT_SPEED = #{limitSpeed,jdbcType=DECIMAL},
+      DIFFUSION_CONTENT = #{diffusionContent,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ALARM_VALUE_ID = #{alarmValueId,jdbcType=VARCHAR}
+  </update>
+</mapper>

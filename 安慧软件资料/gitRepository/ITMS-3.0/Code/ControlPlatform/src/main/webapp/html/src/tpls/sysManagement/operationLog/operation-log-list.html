@@ -1,0 +1,186 @@
+<!--操作日志主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'">
+		<form cy-form="deptQueryLog" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="cxLog" class="table">
+					<div class="tr">
+						<div class="th">
+							操作用户：
+						</div>
+						<div class="td">
+							<input name="opeUserName" class="easyui-textbox" data-options="validType:['notBlank']" />
+						</div>
+
+						<div class="th">
+							操作时间：
+						</div>
+						<div class="td">
+							<input  name="operateBeginTime" id="operateBeginTime" class="easyui-datetimebox" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'operateEndTime\']','date']" style="width: 150px;"/>
+							到：
+							<input  name="operateEndTime" id="operateEndTime" class="easyui-datetimebox" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'operateBeginTime\']','date']" style="width: 150px;"/>
+						</div>
+						<div class="th">
+							操作结果：
+						</div>
+						<div class="td">
+							<input type="radio" name="operateResult" value="" checked="checked"/>
+							全部
+							<input type="radio" name="operateResult" value="1"/>
+							成功
+							<input type="radio" name="operateResult" value="2"/>
+							失败
+						</div>
+						<div class="td" style="width: 90px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 70px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="logData" cy-datagrid="optionsLog" cy-querydata="deptQueryLog"
+		cy-url="sysCfg/OperationLog/findByOperationLog"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//初始化列表数据
+		$scope.load = function() {
+			$scope.$updateData("deptQueryLog");
+			$scope.$search("deptQueryLog");
+			$scope.$('#operateEndTime').each(function(){
+				$(this).datebox('calendar').calendar({
+					validator : function(date) {
+						var now = new Date();
+						var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+						return date <= d1;
+					}
+				});
+			});
+		};
+		$scope.searchData = function() {
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("deptQueryLog");
+				//获得当前第几页
+				var count = $scope.$("#logData").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					//刷新,跳转到第一页
+					$scope.$("#logData").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("deptQueryLog");
+				}
+			}
+		};
+		$.extend($scope, {
+			/**
+			 * 初始化参数
+			 * @type {Object}
+			 */
+			deptQueryLog : {
+				operateBeginTime : new Date().format("yyyy-MM-dd 08:00:00"),
+				operateEndTime : new Date().format("yyyy-MM-dd hh:mm:ss")
+			},
+		});
+		//列表主字段
+		$scope.optionsLog = {
+			columns : [[{
+				field : "opeUserName",
+				title : "操作用户",
+				align : 'center',
+				width : 30
+			}, {
+				field : "computerIp",
+				title : "用户IP",
+				align : 'center',
+				width : 30
+			}, {
+				field : "sysFunctionCode",
+				title : "操作类型",
+				align : 'center',
+				formatter : opertionsFunctionName,
+				width : 20
+			}, {
+				field : "consumeSeconds",
+				title : "操作耗时",
+				align : 'center',
+				width : 20
+			}, {
+				field : "operateResult",
+				title : "操作结果",
+				align : 'center',
+				formatter : operateResultName,
+				width : 20
+			}, {
+				field : "errorDesc",
+				title : "操作失败描述",
+				align : 'center',
+				formatter : operateErrorDesc,
+				width : 50
+			}, {
+				field : "operateTime",
+				title : "操作时间",
+				align : 'center',
+				width : 20
+			}]],
+						
+		};
+		function opertionsFunctionName(value) {
+			return getFunctionName($rootScope.UserInfo.menus, value);
+		}
+
+		//获取功能点名称
+		function getFunctionName(resources, code) {
+			for (var index in resources) {
+				var item = resources[index];
+				if (item.resourceCode == code) {
+					return item.resourceName;
+				} else {
+					var name = getFunctionName(item.subResource, code);
+					if (name) {
+						return name;
+					}
+				}
+			}
+		}
+
+		//根据返回值转换汉字
+		function operateResultName(value) {
+			if (value == "1") {
+				return "成功";
+			} else {
+				return "失败";
+			}
+
+		};
+		//显示隐藏部分
+		function operateErrorDesc(value, row, index) {
+			var errorDescStr = "";
+			if (value == null) {
+				return "<span> </span>";
+			}
+
+			if (value.length > 300) {
+				errorDescStr = '' + value.substring(0, 300) + '...';
+			} else {
+
+				errorDescStr = '' + value + '';
+			}
+
+			return "<span title='" + value + "'>" + errorDescStr + "</span>";
+
+		}
+
+	}); 
+</script>
+<style type="text/css">
+	#cxLog .th {
+		width: 110px;
+		text-align: right;
+	}
+</style>

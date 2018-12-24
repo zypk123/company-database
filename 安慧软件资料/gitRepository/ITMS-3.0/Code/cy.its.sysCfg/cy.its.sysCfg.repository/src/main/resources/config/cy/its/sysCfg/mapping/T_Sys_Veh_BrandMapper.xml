@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Veh_BrandMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Veh_Brand" >
+    <id column="VEHICLE_BRAND_ID" property="vehicleBrandId" jdbcType="VARCHAR" />
+    <result column="BRAND_CODE" property="brandCode" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_SUB_BRAND" property="vehicleSubBrand" jdbcType="VARCHAR" />
+    <result column="HAIKANG_CODE" property="haikangCode" jdbcType="VARCHAR" />
+    <result column="DAHUA_CODE" property="dahuaCode" jdbcType="VARCHAR" />
+    <result column="BRAND_ADDRESS" property="brandAddress" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VEHICLE_BRAND_ID, BRAND_CODE, VEHICLE_BRAND, VEHICLE_SUB_BRAND, HAIKANG_CODE, DAHUA_CODE, 
+    BRAND_ADDRESS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_VEH_BRAND
+    where VEHICLE_BRAND_ID = #{vehicleBrandId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_VEH_BRAND
+    where VEHICLE_BRAND_ID = #{vehicleBrandId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Veh_Brand" >
+    insert into T_SYS_VEH_BRAND (VEHICLE_BRAND_ID, BRAND_CODE, VEHICLE_BRAND, 
+      VEHICLE_SUB_BRAND, HAIKANG_CODE, DAHUA_CODE, 
+      BRAND_ADDRESS)
+    values (#{vehicleBrandId,jdbcType=VARCHAR}, #{brandCode,jdbcType=VARCHAR}, #{vehicleBrand,jdbcType=VARCHAR}, 
+      #{vehicleSubBrand,jdbcType=VARCHAR}, #{haikangCode,jdbcType=VARCHAR}, #{dahuaCode,jdbcType=VARCHAR}, 
+      #{brandAddress,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Veh_Brand" >
+    insert into T_SYS_VEH_BRAND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vehicleBrandId != null" >
+        VEHICLE_BRAND_ID,
+      </if>
+      <if test="brandCode != null" >
+        BRAND_CODE,
+      </if>
+      <if test="vehicleBrand != null" >
+        VEHICLE_BRAND,
+      </if>
+      <if test="vehicleSubBrand != null" >
+        VEHICLE_SUB_BRAND,
+      </if>
+      <if test="haikangCode != null" >
+        HAIKANG_CODE,
+      </if>
+      <if test="dahuaCode != null" >
+        DAHUA_CODE,
+      </if>
+      <if test="brandAddress != null" >
+        BRAND_ADDRESS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vehicleBrandId != null" >
+        #{vehicleBrandId,jdbcType=VARCHAR},
+      </if>
+      <if test="brandCode != null" >
+        #{brandCode,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleBrand != null" >
+        #{vehicleBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleSubBrand != null" >
+        #{vehicleSubBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="haikangCode != null" >
+        #{haikangCode,jdbcType=VARCHAR},
+      </if>
+      <if test="dahuaCode != null" >
+        #{dahuaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brandAddress != null" >
+        #{brandAddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Veh_Brand" >
+    update T_SYS_VEH_BRAND
+    <set >
+      <if test="brandCode != null" >
+        BRAND_CODE = #{brandCode,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleBrand != null" >
+        VEHICLE_BRAND = #{vehicleBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleSubBrand != null" >
+        VEHICLE_SUB_BRAND = #{vehicleSubBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="haikangCode != null" >
+        HAIKANG_CODE = #{haikangCode,jdbcType=VARCHAR},
+      </if>
+      <if test="dahuaCode != null" >
+        DAHUA_CODE = #{dahuaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brandAddress != null" >
+        BRAND_ADDRESS = #{brandAddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VEHICLE_BRAND_ID = #{vehicleBrandId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Veh_Brand" >
+    update T_SYS_VEH_BRAND
+    set BRAND_CODE = #{brandCode,jdbcType=VARCHAR},
+      VEHICLE_BRAND = #{vehicleBrand,jdbcType=VARCHAR},
+      VEHICLE_SUB_BRAND = #{vehicleSubBrand,jdbcType=VARCHAR},
+      HAIKANG_CODE = #{haikangCode,jdbcType=VARCHAR},
+      DAHUA_CODE = #{dahuaCode,jdbcType=VARCHAR},
+      BRAND_ADDRESS = #{brandAddress,jdbcType=VARCHAR}
+    where VEHICLE_BRAND_ID = #{vehicleBrandId,jdbcType=VARCHAR}
+  </update>
+</mapper>

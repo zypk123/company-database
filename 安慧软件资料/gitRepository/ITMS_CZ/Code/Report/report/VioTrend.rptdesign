@@ -1,0 +1,3138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">report/statistics-libs.rptlibrary</property>
+            <property name="namespace">statistics-libs</property>
+        </structure>
+    </list-property>
+    <parameters>
+        <scalar-parameter name="orgCode" id="972">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="districtCode" id="966">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="roadCode" id="967">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="siteCode" id="968">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="violationType" id="969">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="violationBeginTime" id="970">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="violationEndTime" id="971">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="type" id="965">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="timeType" id="973">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="birtds" id="992"
+ extends="statistics-libs.birtds"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="VIO_WORK_SUM" id="5">
+            <property name="nullsOrdering">nulls lowest</property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">ORG_CODE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">ORG_CODE</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">ORG_CODE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">VIO_SITE_CODE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">VIO_SITE_CODE</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">VIO_SITE_CODE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">ADDRESS_DESC</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">ADDRESS_DESC</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">ADDRESS_DESC</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">VIOLATION_TIME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">VIOLATION_TIME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">VIOLATION_TIME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">ORG_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">ORG_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">ORG_NAME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">VIOLATION_NUM</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">VIOLATION_NUM</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">VIOLATION_NUM</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">SITE_SORT</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">SITE_SORT</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SITE_SORT</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">STATUS_FLAG</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">STATUS_FLAG</text-property>
+                    <text-property name="heading">STATUS_FLAG</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">ORG_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">VIO_SITE_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">ADDRESS_DESC</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">VIOLATION_TIME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">ORG_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">VIOLATION_NUM</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">SITE_SORT</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">STATUS_FLAG</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );
+var orgCode = reportContext.getParameterValue("orgCode");  
+var districtCode = reportContext.getParameterValue("districtCode");  
+var roadCode = reportContext.getParameterValue("roadCode");  
+var siteCode = reportContext.getParameterValue("siteCode");  
+var violationType = reportContext.getParameterValue("violationType"); 
+var violationBeginTime = reportContext.getParameterValue("violationBeginTime");  
+var violationEndTime = reportContext.getParameterValue("violationEndTime"); 
+var type = reportContext.getParameterValue("type");  
+var timeType = reportContext.getParameterValue("timeType"); 
+var query = "";  
+var continuousTime = "";
+var table = "X_VIO_D_VIOLATION ";
+var statusTable = "X_D_M_UNUSUAL_TIME ";
+var timeFormat="";
+var statusTimeFormat="";
+if(timeType=="D")
+{
+timeFormat ="to_char(t.violation_time,'HH24\"时\"') ";
+continuousTime="select lpad(rownum-1,2,'0')||'时' as Atime from dual connect by rownum<=24 ";
+table = "X_VIO_H_VIOLATION ";
+statusTable = "X_D_D_UNUSUAL_TIME ";
+statusTimeFormat = "to_char(t.start_time,'HH24\"时\"') ";
+}
+else if(timeType=="M" || timeType=="O")
+{
+timeFormat="to_char(t.violation_time,'mm\"月\"dd\"日\"') ";
+continuousTime="select to_char(to_date('"+violationBeginTime+"', 'yyyy-MM-dd') +rownum - 1,'mm\"月\"dd\"日\"') as Atime "+
+               " from dual connect by rownum <=to_date('"+violationEndTime+"', 'yyyy-MM-dd') - to_date('"+violationBeginTime+"', 'yyyy-MM-dd') + 1";
+statusTimeFormat ="to_char(t.start_time,'mm\"月\"dd\"日\"') ";
+}
+else if(timeType=="Y")
+{
+timeFormat="to_char(t.violation_time,'yyyy-MM') ";
+continuousTime="select to_char(add_months(to_date('"+violationBeginTime+"', 'yyyy-MM-dd'),rownum-1),'yyyy-MM') as Atime from dual "+
+"connect by rownum<=months_between(to_date('"+violationEndTime+"', 'yyyy-MM-dd'),to_date('"+violationBeginTime+"', 'yyyy-MM-dd'))+1";
+statusTimeFormat ="to_char(t.start_time,'yyyy-MM') ";
+}
+if(type == "0")
+{  
+query = query +" with t_sys_org_view as(select a.org_id,a.org_code,a.org_privilege_code,a.org_name,a.level_hierarchy,a.collapse_hierarchy, "+
+       "case when a.level_hierarchy >= 3 then substr(a.collapse_hierarchy,instr(a.collapse_hierarchy, '->', 1, 2) + 2,12) else a.org_code end display_org_code "+
+  "from (select a.org_id,a.org_code,a.org_privilege_code,a.org_name,level level_hierarchy,sys_connect_by_path(org_code, '->') collapse_hierarchy from t_sys_org a, (select a.org_privilege_code from t_sys_org a where a.org_code = '"+orgCode+"') b "+
+     "where substr(a.org_privilege_code, 0, length(b.org_privilege_code)) = b.org_privilege_code "+
+     "and a.is_department = '1'"+
+         "start with a.org_code = '"+orgCode+"' connect by prior a.org_id = a.parent_instruct_org_id) a)";
+    query = query + " select v.display_org_code as org_code, "+
+       "r.org_name, "+
+       "t.site_code as vio_site_code, "+
+       "t.site_name as address_desc, "+
+       "t.Atime as violation_time, "+
+       "t.violation_num, "+
+       "decode(t.fault_device_num,NULL,0,1) status_flag, "+
+       "DENSE_RANK() over(partition by v.display_org_code order by t.org_code, t.site_code) as site_sort "+
+  "from (select t.org_code, "+
+               "t.site_code, "+
+               "t.site_name, "+
+               "t.Atime, "+
+               "v.violation_num, "+
+               "r.fault_device_num "+
+          "from (select t.org_code,t.site_id,t.site_code,t.site_name, v.Atime "+
+                  "from T_SYS_SITE_VIEW t,("+continuousTime+") v "+
+                 "where t.org_code in (select a.org_code from t_sys_org_view a) and t.site_code in(select t.site_code from t_sys_site_view t) ) t "+
+          "left join (select t.org_code, "+
+                           "t.vio_site_code, "+
+                           "t.address_desc, "+
+                            timeFormat+" violation_time, "+
+                           "sum(t.violation_num) as violation_num "+
+                      "from "+table+" t "+
+                     "where t.org_code in (select a.org_code from t_sys_org_view a) and t.vio_site_code in(select t.site_code from t_sys_site_view t) ";
+if(violationType!= null &amp;&amp; !violationType.equals(""))
+ {
+ query = query + " AND T.VIOLATION_TYPE in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+violationType+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ query = query +" AND T.VIOLATION_TIME >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+         " AND T.VIOLATION_TIME < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1  "+
+         "group by t.org_code, "+
+                  "t.vio_site_code, "+
+                  "t.address_desc, "+
+                   timeFormat+ ") v "+
+            "on t.site_code = v.vio_site_code "+
+           "and t.Atime = v.violation_time "+
+           "left join(select t.site_id, v.start_time,count(t.device_id) as fault_device_num "+
+  "from (select t.site_id,t.device_id from T_SYS_DEVICE_VIEW t where t.collection_type is not null) t,"+
+       "(select t.device_id, "+statusTimeFormat+" start_time "+
+          "from "+statusTable+" t "+
+         "where t.start_time >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+           "and t.start_time < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1 ) v "+
+ "where t.device_id = v.device_id "+
+ "group by t.site_id,v.start_time) r "+
+           "on t.site_id = r.site_id "+
+           "and t.Atime = r.start_time) t, "+
+       "t_sys_org_view v, "+
+       "(select t.org_code, t.org_name "+
+          "from t_sys_org_view t "+
+         "where t.level_hierarchy in ('1', '2')) r "+
+ "where t.org_code = v.org_code "+
+   "and v.display_org_code = r.org_code ";
+}
+else if(type == "1")
+{
+   query = query +" with t_sys_org_view as(select a.org_id,a.org_code,a.org_name,a.level_hierarchy,a.collapse_hierarchy, "+
+       "case when a.level_hierarchy >= 3 then substr(a.collapse_hierarchy,instr(a.collapse_hierarchy, '->', 1, 2) + 2,12) else a.org_code end display_org_code "+
+  "from (select a.org_id,a.org_code,a.org_name,level level_hierarchy,sys_connect_by_path(org_code, '->') collapse_hierarchy from t_sys_org a "+
+         "start with a.org_code = '"+orgCode+"' connect by prior a.org_id = a.parent_instruct_org_id) a)";
+    query = query + " select t.district_code as org_code, "+
+       "nvl(v.district_name,t.district_code) as org_name, "+
+       "t.site_code as vio_site_code, "+
+       "t.site_name as address_desc, "+
+       "t.Atime as violation_time, "+
+       "t.violation_num, "+
+       "decode(t.fault_device_num,NULL,0,1) status_flag, "+
+       "DENSE_RANK() over(partition by t.district_code order by t.district_code, t.site_code) as site_sort "+
+  "from (select t.district_code, "+
+               "t.site_code, "+
+               "t.site_name, "+
+               "t.Atime, "+
+               "v.violation_num, "+
+               "r.fault_device_num "+
+          "from (select t.district_code, t.site_id, t.site_code, t.site_name, v.Atime "+
+                  "from T_SYS_SITE_VIEW t,("+continuousTime+") v "+
+                 "where t.org_code in (select a.org_code from t_sys_org_view a) and t.site_code in(select t.site_code from t_sys_site_view t) ";
+ if(districtCode!=null &amp;&amp; !districtCode.equals(""))
+ {
+   query = query + " AND T.district_code IN  (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select FUNC_GET_DISTRICT_CODE('"+districtCode+"', ',') as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }        
+   query = query + ") t left join (select t.district_code, "+
+                           "t.vio_site_code, "+
+                           "t.address_desc, "+
+                           timeFormat+ " violation_time, "+
+                           "sum(t.violation_num) as violation_num "+
+                     "from "+table+" t "+
+                     "where t.org_code in (select a.org_code from t_sys_org_view a) and t.vio_site_code in(select t.site_code from t_sys_site_view t) ";
+ if(districtCode!=null &amp;&amp; !districtCode.equals(""))
+ {
+   query = query + " AND T.district_code IN  (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select FUNC_GET_DISTRICT_CODE('"+districtCode+"', ',') as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+if(violationType!= null &amp;&amp; !violationType.equals(""))
+ {
+ query = query + " AND T.VIOLATION_TYPE in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+violationType+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ query = query +" AND T.VIOLATION_TIME >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+         " AND T.VIOLATION_TIME < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1   "+
+         "group by t.district_code, "+
+                  "t.vio_site_code, "+
+                  "t.address_desc, "+
+                  timeFormat +" ) v "+
+            "on t.site_code = v.vio_site_code "+
+           "and t.Atime = v.violation_time  "+
+           "left join(select t.site_id, v.start_time,count(t.device_id) as fault_device_num "+
+  "from (select t.site_id,t.device_id from T_SYS_DEVICE_VIEW t where t.collection_type is not null) t,"+
+       "(select t.device_id, "+statusTimeFormat+" start_time "+
+          "from "+statusTable+" t "+
+         "where t.start_time >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+           "and t.start_time < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1 ) v "+
+ "where t.device_id = v.device_id "+
+ "group by t.site_id,v.start_time) r "+
+           "on t.site_id = r.site_id "+
+           "and t.Atime = r.start_time ) t,t_sys_district v "+
+ " where t.district_code = v.district_code(+)";
+}
+else if(type == "2")
+{
+query = query +" with t_sys_org_view as(select a.org_id,a.org_code,a.org_name,a.level_hierarchy,a.collapse_hierarchy, "+
+       "case when a.level_hierarchy >= 3 then substr(a.collapse_hierarchy,instr(a.collapse_hierarchy, '->', 1, 2) + 2,12) else a.org_code end display_org_code "+
+  "from (select a.org_id,a.org_code,a.org_name,level level_hierarchy,sys_connect_by_path(org_code, '->') collapse_hierarchy from t_sys_org a "+
+         "start with a.org_code = '"+orgCode+"' connect by prior a.org_id = a.parent_instruct_org_id) a)";
+    query = query + " select  t.road_code as org_code, "+
+       "nvl(nvl(v.road_name,t.road_code),'道路不详') as org_name, "+
+       "t.site_code as vio_site_code, "+
+       "t.site_name as address_desc, "+
+       "t.Atime as violation_time, "+
+       "t.violation_num, "+
+       "decode(t.fault_device_num,NULL,0,1) status_flag, "+
+       "DENSE_RANK() over(partition by t.road_code order by t.road_code, t.site_code) as site_sort "+
+  "from (select t.road_code, "+
+               "t.site_code, "+
+               "t.site_name, "+
+               "t.Atime, "+
+               "v.violation_num, "+
+               "r.fault_device_num "+
+          "from (select t.road_code, t.site_id, t.site_code, t.site_name, v.Atime "+
+                  "from T_SYS_SITE_VIEW t,("+continuousTime+") v "+
+                 "where t.org_code in (select a.org_code from t_sys_org_view a) and t.site_code in(select t.site_code from t_sys_site_view t)  ";
+if(roadCode!= null &amp;&amp; !roadCode.equals(""))
+ {
+ query = query + " AND T.road_code in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+roadCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }               
+ query = query + ") t left join (select t.road_code, "+
+                           "t.vio_site_code, "+
+                           "t.address_desc, "+
+                            timeFormat+" violation_time, "+
+                           "sum(t.violation_num) as violation_num "+
+                      "from "+table+" t "+
+                     "where t.org_code in (select a.org_code from t_sys_org_view a) and t.vio_site_code in(select t.site_code from t_sys_site_view t) ";
+ if(roadCode!= null &amp;&amp; !roadCode.equals(""))
+ {
+ query = query + " AND T.road_code in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+roadCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }   
+if(violationType!= null &amp;&amp; !violationType.equals(""))
+ {
+ query = query + " AND T.VIOLATION_TYPE in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+violationType+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ query = query +" AND T.VIOLATION_TIME >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+         " AND T.VIOLATION_TIME < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1  "+
+         "group by t.road_code, "+
+                  "t.vio_site_code, "+
+                  "t.address_desc, "+
+                   timeFormat +" ) v "+
+                  "on t.site_code = v.vio_site_code "+
+                  "and t.Atime = v.violation_time "+
+  "left join(select t.site_id, v.start_time,count(t.device_id) as fault_device_num "+
+  "from (select t.site_id,t.device_id from T_SYS_DEVICE_VIEW t where t.collection_type is not null) t,"+
+       "(select t.device_id, "+statusTimeFormat+" start_time "+
+          "from "+statusTable+" t "+
+         "where t.start_time >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+           "and t.start_time < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1 ) v "+
+ "where t.device_id = v.device_id "+
+ "group by t.site_id,v.start_time) r "+
+           "on t.site_id = r.site_id "+
+           "and t.Atime = r.start_time) t,t_sys_road v "+
+ "where t.road_code = v.road_code(+) ";
+}
+else if(type == "3")
+{
+query = query +" with t_sys_org_view as(select a.org_id,a.org_code,a.org_name,a.level_hierarchy,a.collapse_hierarchy, "+
+       "case when a.level_hierarchy >= 3 then substr(a.collapse_hierarchy,instr(a.collapse_hierarchy, '->', 1, 2) + 2,12) else a.org_code end display_org_code "+
+  "from (select a.org_id,a.org_code,a.org_name,level level_hierarchy,sys_connect_by_path(org_code, '->') collapse_hierarchy from t_sys_org a "+
+         "start with a.org_code = '"+orgCode+"' connect by prior a.org_id = a.parent_instruct_org_id) a)";
+    query = query + " select v.display_org_code as org_code, "+
+       "r.org_name, "+
+       "t.site_code as vio_site_code, "+
+       "t.site_name as address_desc, "+
+       "t.Atime as violation_time, "+
+       "t.violation_num, "+
+       "decode(t.fault_device_num,NULL,0,1) status_flag, "+
+       "DENSE_RANK() over(partition by v.display_org_code order by t.org_code, t.site_code) as site_sort "+
+  "from (select t.org_code, "+
+               "t.site_code, "+
+               "t.site_name, "+
+               "t.Atime, "+
+               "v.violation_num, "+
+               "r.fault_device_num "+
+          "from (select t.org_code, t.site_id,t.site_code, t.site_name, v.Atime "+
+                  "from T_SYS_SITE_VIEW t,("+continuousTime+") v "+
+                 "where t.org_code in (select a.org_code from t_sys_org_view a) ";
+ if(siteCode!=null &amp;&amp; !siteCode.equals(""))
+ {
+   query = query + " AND T.site_code IN  (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+siteCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }   
+ else
+ {
+   query = query + "and t.site_code in(select t.site_code from t_sys_site_view t) ";
+ }     
+   query = query + ") t left join (select t.org_code, "+
+                           "t.vio_site_code, "+
+                           "t.address_desc, "+
+                            timeFormat+ " violation_time, "+
+                           "sum(t.violation_num) as violation_num "+
+                      "from "+table+" t "+
+                     "where t.org_code in (select a.org_code from t_sys_org_view a) ";
+ if(siteCode!=null &amp;&amp; !siteCode.equals(""))
+ {
+   query = query + " AND T.vio_site_code IN  (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+siteCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+if(violationType!= null &amp;&amp; !violationType.equals(""))
+ {
+ query = query + " AND T.VIOLATION_TYPE in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+violationType+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ query = query +" AND T.VIOLATION_TIME >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+         " AND T.VIOLATION_TIME < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1  "+
+         "group by t.org_code, "+
+                  "t.vio_site_code, "+
+                  "t.address_desc, "+
+                   timeFormat+ ") v "+
+            "on t.site_code = v.vio_site_code "+
+           "and t.Atime = v.violation_time  "+
+           "left join(select t.site_id, v.start_time,count(t.device_id) as fault_device_num "+
+  "from (select t.site_id,t.device_id from T_SYS_DEVICE_VIEW t where t.collection_type is not null) t,"+
+       "(select t.device_id, "+statusTimeFormat+" start_time "+
+          "from "+statusTable+" t "+
+         "where t.start_time >= to_date('"+violationBeginTime+"','yyyy-MM-dd') "+
+           "and t.start_time < to_date('"+violationEndTime+"','yyyy-MM-dd') + 1 ) v "+
+ "where t.device_id = v.device_id "+
+ "group by t.site_id,v.start_time) r "+
+           "on t.site_id = r.site_id "+
+           "and t.Atime = r.start_time) t, "+
+       "t_sys_org_view v, "+
+       "(select t.org_code, t.org_name "+
+          "from t_sys_org_view t "+
+         "where t.level_hierarchy in ('1', '2')) r "+
+ "where t.org_code = v.org_code "+
+   "and v.display_org_code = r.org_code "; 
+}
+this.queryText = query;  
+out = new PrintWriter(new FileWriter(Packages.cy.its.birt.report.servlet.GlobalProerty.loPath+"/debuginfo.txt", true ));   
+out.println("数据集名称：-->"+ "VIO_TREND"); 
+out.println("orgCode：-->"+ orgCode); 
+out.println("districtCode：-->"+ districtCode);    
+out.println("roadCode：-->"+ roadCode); 
+out.println("siteCode：-->"+ siteCode);    
+out.println("violationType：-->"+ violationType); 
+out.println("violationBeginTime：-->"+ violationBeginTime);    
+out.println("violationEndTime：-->"+ violationEndTime); 
+out.println("type：-->"+type);
+out.println("timetype：-->"+timeType);
+out.println("queryText：-->"+ this.queryText); 
+out.println("\n");    
+out.close();  
+]]></method>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">ORG_CODE</property>
+                    <property name="nativeName">ORG_CODE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">VIO_SITE_CODE</property>
+                    <property name="nativeName">VIO_SITE_CODE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">ADDRESS_DESC</property>
+                    <property name="nativeName">ADDRESS_DESC</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">VIOLATION_TIME</property>
+                    <property name="nativeName">VIOLATION_TIME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">ORG_NAME</property>
+                    <property name="nativeName">ORG_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">VIOLATION_NUM</property>
+                    <property name="nativeName">VIOLATION_NUM</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">SITE_SORT</property>
+                    <property name="nativeName">SITE_SORT</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">STATUS_FLAG</property>
+                    <property name="nativeName">STATUS_FLAG</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select null as org_code,
+       null as vio_site_code,
+       null as address_desc,
+       null as violation_time,
+       null as org_name,
+       null as violation_num,
+       null as site_sort,
+       null as status_flag from dual]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>PLATE_NBR</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>PLATE_NBR</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>PLATE_NBR</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>PLATE_TYPE</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>2</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>PLATE_TYPE</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>PLATE_TYPE</design:label>
+            <design:formattingHints>
+              <design:displaySize>2</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>VIO_NUM</design:name>
+              <design:position>3</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>-127</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>VIO_NUM</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>VIO_NUM</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>MAIN_VIO</design:name>
+              <design:position>4</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>4000</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>MAIN_VIO</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>MAIN_VIO</design:label>
+            <design:formattingHints>
+              <design:displaySize>4000</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>DETAIL</design:name>
+              <design:position>5</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>4000</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>DETAIL</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>DETAIL</design:label>
+            <design:formattingHints>
+              <design:displaySize>4000</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="QueryParamForNameByCode" id="682">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">DISPLAY_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">DISPLAY_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">DISPLAY_NAME</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">DISPLAY_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );
+var orgCode = reportContext.getParameterValue("orgCode");  
+var districtCode = reportContext.getParameterValue("districtCode");  
+var roadCode = reportContext.getParameterValue("roadCode");  
+var siteCode = reportContext.getParameterValue("siteCode");  
+var violationType = reportContext.getParameterValue("violationType"); 
+var violationBeginTime = reportContext.getParameterValue("violationBeginTime");  
+var violationEndTime = reportContext.getParameterValue("violationEndTime"); 
+var query = ""; 
+query = query +"select max(display_name) as display_name "+
+  " from (select wmsys.wm_concat(max(t.display_name)) over(order by t.sort_index) as display_name "+
+          " from (select t.sort_index, "+
+                       " t.data_type || wmsys.wm_concat(display_name) over(partition by t.data_type order by t.sort_index) as display_name "+
+                  " from (select null as sort_index,null as data_type,null as display_name from dual ";
+ if(orgCode!=null &amp;&amp; !orgCode.equals(""))
+ {
+   query = query +" union select '1' as sort_index,'采集机构：' as data_type,t.org_name as display_name from t_sys_org t where t.org_code = '"+orgCode+"' ";
+ }
+ if(districtCode!=null &amp;&amp; !districtCode.equals(""))
+ {
+   query = query +" union select '2' as sort_index,'行政区划：' as data_type,t.district_name display_name from t_sys_district t where t.district_code in "+
+   " (select regexp_substr(dcode, '[^,]+', 1, rownum) as district "+
+   " from (select '"+districtCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ if(roadCode!=null &amp;&amp; !roadCode.equals(""))
+ {
+   query = query +" union select '3' as sort_index,'采集道路：' as data_type,t.road_name display_name from t_sys_road t where t.road_code IN "+
+   " (select regexp_substr(dcode, '[^,]+', 1, rownum) as roadcode "+
+   " from (select '"+roadCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ if(siteCode!=null &amp;&amp; !siteCode.equals(""))
+ {
+   query = query +" union select '4' as sort_index,'监测点位：' as data_type,t.site_name display_name from t_sys_site t where t.site_code IN "+
+   " (select regexp_substr(dcode, '[^,]+', 1, rownum) as sitecode "+
+   " from (select '"+siteCode+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ }
+ if(violationType!=null &amp;&amp; !violationType.equals(""))
+ {
+   query = query +" union select '5' as sort_index,'违法类型：' as data_type,t.code_name as display_name from t_sys_code t where t.code_no in "+
+  " (select regexp_substr(dcode, '[^,]+', 1, rownum) as siteCode "+
+   " from (select '"+violationType+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1)  and t.code_type = '011' ";
+ }   
+query = query +"  ) t) t group by t.sort_index) t ";
+this.queryText = query;
+out = new PrintWriter(new FileWriter(Packages.cy.its.birt.report.servlet.GlobalProerty.loPath+"/debuginfo.txt", true ));  
+out.println("数据集名称：-->"+ "QueryParamForNameByCode"); 
+out.println("orgCode：-->"+ orgCode); 
+out.println("districtCode：-->"+ districtCode);    
+out.println("roadCode：-->"+ roadCode); 
+out.println("siteCode：-->"+ siteCode);    
+out.println("violationType：-->"+ violationType); 
+out.println("violationBeginTime：-->"+ violationBeginTime);    
+out.println("violationEndTime：-->"+ violationEndTime); 
+out.println("queryText：-->"+ this.queryText); 
+out.println("\n");    
+out.close();
+]]></method>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">DISPLAY_NAME</property>
+                    <property name="nativeName">DISPLAY_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select 
+from ]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <cubes>
+        <tabular-cube name="VIO_WORK_SUM_Cube" id="248">
+            <property name="dimensions">
+                <tabular-dimension name="Group" id="776">
+                    <property name="isTimeType">false</property>
+                    <property name="defaultHierarchy">NewTabularHierarchy</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy" id="777">
+                            <property name="levels">
+                                <tabular-level name="VIO_SITE_CODE" id="837">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">VIO_SITE_CODE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group1" id="779">
+                    <property name="isTimeType">false</property>
+                    <property name="defaultHierarchy">NewTabularHierarchy1</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy1" id="780">
+                            <property name="levels">
+                                <tabular-level name="ADDRESS_DESC" id="838">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">ADDRESS_DESC</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group2" id="782">
+                    <property name="defaultHierarchy">NewTabularHierarchy2</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy2" id="783">
+                            <property name="levels">
+                                <tabular-level name="VIOLATION_TIME" id="784">
+                                    <property name="dataType">string</property>
+                                    <property name="levelType">dynamic</property>
+                                    <property name="columnName">VIOLATION_TIME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group3" id="839">
+                    <property name="defaultHierarchy">NewTabularHierarchy3</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy3" id="840">
+                            <property name="levels">
+                                <tabular-level name="ORG_CODE" id="841">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">ORG_CODE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group4" id="842">
+                    <property name="defaultHierarchy">NewTabularHierarchy4</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy4" id="843">
+                            <property name="levels">
+                                <tabular-level name="SITE_SORT" id="844">
+                                    <property name="dataType">decimal</property>
+                                    <property name="columnName">SITE_SORT</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group5" id="899">
+                    <property name="defaultHierarchy">NewTabularHierarchy5</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy5" id="900">
+                            <property name="levels">
+                                <tabular-level name="ORG_NAME" id="901">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">ORG_NAME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+            </property>
+            <property name="measureGroups">
+                <tabular-measure-group name="Summary Field" id="785">
+                    <property name="measures">
+                        <tabular-measure name="VIOLATION_NUM" id="786">
+                            <expression name="measureExpression" type="javascript">dataSetRow["VIOLATION_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+                <tabular-measure-group name="Summary Field1" id="974">
+                    <property name="measures">
+                        <tabular-measure name="STATUS_FLAG" id="975">
+                            <property name="function">max</property>
+                            <property name="isCalculated">false</property>
+                            <expression name="measureExpression" type="javascript">dataSetRow["STATUS_FLAG"]</expression>
+                            <property name="dataType">integer</property>
+                            <property name="isVisible">true</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+            </property>
+            <property name="dataSet">VIO_WORK_SUM</property>
+        </tabular-cube>
+    </cubes>
+    <styles>
+        <style name="tab_style" id="247">
+            <property name="fontSize">9pt</property>
+            <property name="fontWeight">lighter</property>
+            <property name="borderBottomColor">#C7D3AD</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C7D3AD</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C7D3AD</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C7D3AD</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <text id="6">
+            <property name="fontFamily">"楷体"</property>
+            <property name="fontSize">16pt</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="height">1.5cm</property>
+            <property name="contentType">auto</property>
+            <text-property name="content"><![CDATA[电子抓拍交通违法行为趋势分析]]></text-property>
+        </text>
+        <data id="681">
+            <property name="fontFamily">"楷体"</property>
+            <property name="marginTop">10pt</property>
+            <property name="marginBottom">10pt</property>
+            <property name="dataSet">QueryParamForNameByCode</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">QueryParams</property>
+                    <expression name="expression" type="javascript">dataSetRow["DISPLAY_NAME"]+"  统计时间："+params["violationBeginTime"].value&#13;
++" 至 "+params["violationEndTime"].value+"日"</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <property name="resultSetColumn">QueryParams</property>
+        </data>
+        <extended-item extensionName="Crosstab" extensionVersion="3.7.0" id="919">
+            <property name="cube">VIO_WORK_SUM_Cube</property>
+            <property name="measures">
+                <extended-item extensionName="MeasureView" id="942">
+                    <property name="measure">VIOLATION_NUM</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="943">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <expression name="testExpr" type="javascript">data["STATUS_FLAG_Group5/ORG_NAME_Group2/VIOLATION_TIME"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">1</value>
+                                    </simple-property-list>
+                                    <property name="backgroundColor">#FFFF00</property>
+                                </structure>
+                            </list-property>
+                            <property name="content">
+                                <data id="944">
+                                    <method name="onRender"><![CDATA[var v = this.getValue();
+if(v != null &amp;&amp; v != ""){
+ v = v.toString();
+ var n = v.length();
+ if(v.length()>7){
+ var v1 = v.substring(0,5);
+ var v2 = v.substring(5,v.length());
+ v = v1 + "\n" + v2;
+ v = v.substring(0,n-1);
+ }
+ else
+ {
+  v = v.substring(0,n-2);
+ }
+}
+this.setDisplayValue(v); ]]></method>
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="aggregations">
+                        <extended-item extensionName="AggregationCell" id="951">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="952">
+                                    <method name="onRender"><![CDATA[var v = this.getValue();
+if(v != null &amp;&amp; v != ""){
+ v = v.toString();
+ var n = v.length();
+ if(v.length()>7){
+ var v1 = v.substring(0,5);
+ var v2 = v.substring(5,v.length());
+ v = v1 + "\n" + v2;
+ v = v.substring(0,n-1);
+ }
+ else
+ {
+  v = v.substring(0,n-2);
+ }
+}
+this.setDisplayValue(v); ]]></method>
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group5/ORG_NAME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="958">
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="959">
+                                    <structure name="numberFormat">
+                                        <property name="category">Fixed</property>
+                                        <property name="pattern">###0{RoundingMode=HALF_UP}</property>
+                                    </structure>
+                                    <structure name="stringFormat">
+                                        <property name="category">Custom</property>
+                                        <property name="pattern">></property>
+                                    </structure>
+                                    <method name="onRender"><![CDATA[/* var v = this.getValue();
+if(v != null &amp;&amp; v != ""){
+ v = v.toString();
+ var n = v.length();
+ if(v.length()>7){
+ var v1 = v.substring(0,5);
+ var v2 = v.substring(5,v.length());
+ v = v1 + "\n" + v2;
+ v = v.toString();
+ //v = v.substring(0,n-2);
+ }
+}
+this.setDisplayValue(v); */]]></method>
+                                    <property name="resultSetColumn">VIOLATION_NUM</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="960">
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="961">
+                                    <method name="onRender"><![CDATA[var v = this.getValue();
+if(v != null &amp;&amp; v != ""){
+ v = v.toString();
+ var n = v.length();
+ if(v.length()>7){
+ var v1 = v.substring(0,5);
+ var v2 = v.substring(5,v.length());
+ v = v1 + "\n" + v2;
+ v = v.substring(0,n-1);
+ }
+ else
+ {
+  v = v.substring(0,n-2);
+ }
+}
+this.setDisplayValue(v); ]]></method>
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group2/VIOLATION_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="945">
+                            <property name="content">
+                                <label id="946">
+                                    <text-property name="text">VIOLATION_NUM</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="CrosstabCell" id="953">
+                            <property name="content">
+                                <label id="954">
+                                    <text-property name="text">VIOLATION_NUM</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+                <extended-item extensionName="MeasureView" id="976">
+                    <property name="measure">STATUS_FLAG</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="977">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="width">0px</property>
+                        </extended-item>
+                    </property>
+                    <property name="aggregations">
+                        <extended-item extensionName="AggregationCell" id="978">
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="981">
+                            <property name="content">
+                                <label id="982">
+                                    <text-property name="text">STATUS_FLAG</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="rows">
+                <extended-item extensionName="CrosstabView" id="925">
+                    <property name="grandTotal">
+                        <extended-item extensionName="CrosstabCell" id="957">
+                            <property name="content">
+                                <label id="962">
+                                    <text-property name="text">总计</text-property>
+                                </label>
+                            </property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="926">
+                            <property name="dimension">Group3</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View5" id="927">
+                                    <property name="level">Group3/ORG_CODE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="928">
+                                            <property name="content">
+                                                <data name="ORG_CODE1" id="929">
+                                                    <list-property name="visibility">
+                                                        <structure>
+                                                            <property name="format">all</property>
+                                                            <expression name="valueExpr" type="javascript">true</expression>
+                                                        </structure>
+                                                    </list-property>
+                                                    <property name="resultSetColumn">ORG_CODE</property>
+                                                </data>
+                                            </property>
+                                            <property name="width">1px</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="931">
+                            <property name="dimension">Group5</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View6" id="932">
+                                    <property name="level">Group5/ORG_NAME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="933">
+                                            <property name="content">
+                                                <data name="ORG_NAME1" id="935">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="textAlign">center</property>
+                                                    <property name="resultSetColumn">ORG_NAME</property>
+                                                </data>
+                                            </property>
+                                            <property name="width">1.5cm</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="columns">
+                <extended-item extensionName="CrosstabView" id="937">
+                    <property name="grandTotal">
+                        <extended-item extensionName="CrosstabCell" id="950">
+                            <property name="content">
+                                <label id="955">
+                                    <text-property name="text">合计</text-property>
+                                </label>
+                            </property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="backgroundColor">#E9E8E4</property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="938">
+                            <property name="dimension">Group2</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View7" id="939">
+                                    <property name="level">Group2/VIOLATION_TIME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="940">
+                                            <property name="content">
+                                                <data name="VIOLATION_TIME1" id="941">
+                                                    <property name="fontSize">8pt</property>
+                                                    <property name="resultSetColumn">VIOLATION_TIME</property>
+                                                </data>
+                                            </property>
+                                            <property name="fontFamily">"楷体"</property>
+                                            <property name="backgroundColor">#E9E8E4</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="header">
+                <extended-item extensionName="CrosstabCell" id="947">
+                    <property name="content">
+                        <label id="956">
+                            <text-property name="text">机构\违法时间</text-property>
+                        </label>
+                    </property>
+                    <property name="fontFamily">"楷体"</property>
+                    <property name="backgroundColor">#E9E8E4</property>
+                    <property name="style">tab_style</property>
+                </extended-item>
+            </property>
+            <property name="hideMeasureHeader">true</property>
+            <list-property name="visibility">
+                <structure>
+                    <property name="format">all</property>
+                    <expression name="valueExpr" type="javascript">var v = params["type"].value;&#13;
+if ( v == '0' )&#13;
+{&#13;
+false;&#13;
+}&#13;
+else&#13;
+{&#13;
+true;&#13;
+}</expression>
+                </structure>
+            </list-property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">ORG_CODE</property>
+                    <expression name="expression">dimension["Group3"]["ORG_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">ORG_NAME</property>
+                    <expression name="expression">dimension["Group5"]["ORG_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_TIME</property>
+                    <expression name="expression">dimension["Group2"]["VIOLATION_TIME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group5/ORG_NAME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_FLAG_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["STATUS_FLAG"]</expression>
+                    <property name="dataType">integer</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">MAX</property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_FLAG_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["STATUS_FLAG"]</expression>
+                    <property name="dataType">integer</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">MAX</property>
+                </structure>
+            </list-property>
+        </extended-item>
+        <extended-item extensionName="Crosstab" extensionVersion="3.7.0" id="845">
+            <property name="cube">VIO_WORK_SUM_Cube</property>
+            <property name="measures">
+                <extended-item extensionName="MeasureView" id="870">
+                    <property name="measure">VIOLATION_NUM</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="871">
+                            <property name="aggregationOnRow">Group1/ADDRESS_DESC</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <expression name="testExpr" type="javascript">data["STATUS_FLAG_Group1/ADDRESS_DESC_Group2/VIOLATION_TIME"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">1</value>
+                                    </simple-property-list>
+                                    <property name="backgroundColor">#FFFF00</property>
+                                </structure>
+                            </list-property>
+                            <property name="content">
+                                <data id="872">
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group1/ADDRESS_DESC_Group2/VIOLATION_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="aggregations">
+                        <extended-item extensionName="AggregationCell" id="880">
+                            <property name="aggregationOnRow">Group1/ADDRESS_DESC</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="881">
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group1/ADDRESS_DESC</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="893">
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="894">
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group2/VIOLATION_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="895">
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="896">
+                                    <property name="resultSetColumn">VIOLATION_NUM</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="913">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="914">
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="915">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">8pt</property>
+                            <property name="textAlign">right</property>
+                            <property name="content">
+                                <data id="916">
+                                    <property name="resultSetColumn">VIOLATION_NUM_Group5/ORG_NAME</property>
+                                </data>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="873">
+                            <property name="content">
+                                <label id="874">
+                                    <text-property name="text">VIOLATION_NUM</text-property>
+                                </label>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                        <extended-item extensionName="CrosstabCell" id="882">
+                            <property name="content">
+                                <label id="883">
+                                    <text-property name="text">VIOLATION_NUM</text-property>
+                                </label>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+                <extended-item extensionName="MeasureView" id="983">
+                    <property name="measure">STATUS_FLAG</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="984">
+                            <property name="aggregationOnRow">Group1/ADDRESS_DESC</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                            <property name="width">0in</property>
+                        </extended-item>
+                    </property>
+                    <property name="aggregations">
+                        <extended-item extensionName="AggregationCell" id="985">
+                            <property name="aggregationOnRow">Group5/ORG_NAME</property>
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                        </extended-item>
+                        <extended-item extensionName="AggregationCell" id="987">
+                            <property name="aggregationOnColumn">Group2/VIOLATION_TIME</property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="990">
+                            <property name="content">
+                                <label id="991">
+                                    <text-property name="text">STATUS_FLAG</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="rows">
+                <extended-item extensionName="CrosstabView" id="847">
+                    <property name="grandTotal">
+                        <extended-item extensionName="CrosstabCell" id="892">
+                            <property name="content">
+                                <label id="897">
+                                    <property name="fontFamily">"楷体"</property>
+                                    <text-property name="text">总计</text-property>
+                                </label>
+                            </property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="848">
+                            <property name="dimension">Group3</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View" id="849">
+                                    <property name="level">Group3/ORG_CODE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="850">
+                                            <property name="content">
+                                                <data name="ORG_CODE" id="851">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="textAlign">left</property>
+                                                    <list-property name="visibility">
+                                                        <structure>
+                                                            <property name="format">all</property>
+                                                            <expression name="valueExpr" type="javascript">true</expression>
+                                                        </structure>
+                                                    </list-property>
+                                                    <property name="resultSetColumn">ORG_CODE</property>
+                                                </data>
+                                            </property>
+                                            <property name="width">1px</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="902">
+                            <property name="dimension">Group5</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View4" id="903">
+                                    <property name="level">Group5/ORG_NAME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="904">
+                                            <property name="content">
+                                                <data name="ORG_NAME" id="905">
+                                                    <property name="textAlign">center</property>
+                                                    <property name="resultSetColumn">ORG_NAME</property>
+                                                </data>
+                                            </property>
+                                            <property name="fontFamily">"楷体"</property>
+                                            <property name="width">1.5cm</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                    <property name="aggregationHeader">
+                                        <extended-item extensionName="CrosstabCell" id="912">
+                                            <property name="content">
+                                                <text id="918">
+                                                    <property name="contentType">auto</property>
+                                                    <text-property name="content"><![CDATA[小计]]></text-property>
+                                                </text>
+                                            </property>
+                                            <property name="fontFamily">"楷体"</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="853">
+                            <property name="dimension">Group4</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View1" id="854">
+                                    <property name="level">Group4/SITE_SORT</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="855">
+                                            <property name="content">
+                                                <data name="SITE_SORT" id="857">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="resultSetColumn">SITE_SORT</property>
+                                                </data>
+                                            </property>
+                                            <property name="width">1cm</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="859">
+                            <property name="dimension">Group1</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View2" id="860">
+                                    <property name="level">Group1/ADDRESS_DESC</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="861">
+                                            <property name="content">
+                                                <data name="ADDRESS_DESC" id="863">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="textAlign">center</property>
+                                                    <property name="resultSetColumn">ADDRESS_DESC</property>
+                                                </data>
+                                            </property>
+                                            <property name="width">3.5cm</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="columns">
+                <extended-item extensionName="CrosstabView" id="865">
+                    <property name="grandTotal">
+                        <extended-item extensionName="CrosstabCell" id="879">
+                            <property name="content">
+                                <label id="884">
+                                    <property name="fontFamily">"楷体"</property>
+                                    <text-property name="text">总计</text-property>
+                                </label>
+                            </property>
+                            <property name="backgroundColor">#E9E8E4</property>
+                            <property name="style">tab_style</property>
+                        </extended-item>
+                    </property>
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="866">
+                            <property name="dimension">Group2</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View3" id="867">
+                                    <property name="level">Group2/VIOLATION_TIME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="868">
+                                            <property name="content">
+                                                <data name="VIOLATION_TIME" id="869">
+                                                    <property name="resultSetColumn">VIOLATION_TIME</property>
+                                                </data>
+                                            </property>
+                                            <property name="fontFamily">"楷体"</property>
+                                            <property name="backgroundColor">#E9E8E4</property>
+                                            <property name="style">tab_style</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="header">
+                <extended-item extensionName="CrosstabCell" id="875">
+                    <property name="content">
+                        <label id="885">
+                            <property name="fontFamily">"楷体"</property>
+                            <text-property name="text">点位违法时间</text-property>
+                        </label>
+                    </property>
+                    <property name="backgroundColor">#E9E8E4</property>
+                    <property name="style">tab_style</property>
+                </extended-item>
+            </property>
+            <property name="hideMeasureHeader">true</property>
+            <list-property name="visibility">
+                <structure>
+                    <property name="format">all</property>
+                    <expression name="valueExpr" type="javascript">var v = params["type"].value;&#13;
+if ( v != '0' )&#13;
+{&#13;
+false;&#13;
+}&#13;
+else&#13;
+{&#13;
+true;&#13;
+}</expression>
+                </structure>
+            </list-property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">ORG_CODE</property>
+                    <expression name="expression">dimension["Group3"]["ORG_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">SITE_SORT</property>
+                    <text-property name="displayName">I</text-property>
+                    <expression name="expression" type="javascript">dimension["Group4"]["SITE_SORT"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">ADDRESS_DESC</property>
+                    <expression name="expression">dimension["Group1"]["ADDRESS_DESC"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_TIME</property>
+                    <expression name="expression">dimension["Group2"]["VIOLATION_TIME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group1/ADDRESS_DESC_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/ADDRESS_DESC</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group1/ADDRESS_DESC</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/ADDRESS_DESC</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group3/ORG_CODE</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group3/ORG_CODE</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group3/ORG_CODE_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group3/ORG_CODE</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">ORG_CODE_TOTAL</property>
+                    <expression name="expression">dimension["Group3"]["ORG_CODE"]+" TOTAL"</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">ORG_NAME</property>
+                    <expression name="expression">dimension["Group5"]["ORG_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group4/SITE_SORT_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group4/SITE_SORT</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group4/SITE_SORT</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group4/SITE_SORT</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">SITE_SORT_TOTAL</property>
+                    <expression name="expression">dimension["Group4"]["SITE_SORT"]+" TOTAL"</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">VIOLATION_NUM_Group5/ORG_NAME</property>
+                    <expression name="expression">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">ORG_NAME_TOTAL</property>
+                    <expression name="expression">dimension["Group5"]["ORG_NAME"]+" TOTAL"</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_FLAG_Group5/ORG_NAME_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["STATUS_FLAG"]</expression>
+                    <property name="dataType">integer</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group5/ORG_NAME</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">MAX</property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_FLAG_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["STATUS_FLAG"]</expression>
+                    <property name="dataType">integer</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">MAX</property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_FLAG_Group1/ADDRESS_DESC_Group2/VIOLATION_TIME</property>
+                    <expression name="expression">measure["STATUS_FLAG"]</expression>
+                    <property name="dataType">integer</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/ADDRESS_DESC</value>
+                        <value>Group2/VIOLATION_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">MAX</property>
+                </structure>
+            </list-property>
+        </extended-item>
+        <extended-item extensionName="Chart" id="775">
+            <property name="cube">VIO_WORK_SUM_Cube</property>
+            <xml-property name="xmlRepresentation"><![CDATA[<model:ChartWithAxes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:attribute="http://www.birt.eclipse.org/ChartModelAttribute" xmlns:data="http://www.birt.eclipse.org/ChartModelData" xmlns:layout="http://www.birt.eclipse.org/ChartModelLayout" xmlns:model="http://www.birt.eclipse.org/ChartModel" xmlns:type="http://www.birt.eclipse.org/ChartModelType">
+  <Version>2.6.1</Version>
+  <Type>Line Chart</Type>
+  <SubType>Overlay</SubType>
+  <Block>
+    <Children xsi:type="layout:TitleBlock">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>true</Visible>
+      <Label>
+        <Caption>
+          <Value>交通违法趋势分析</Value>
+          <Font>
+            <Name>楷体</Name>
+            <Size>12.0</Size>
+            <Bold>false</Bold>
+            <Alignment>
+              <horizontalAlignment>Center</horizontalAlignment>
+              <verticalAlignment>Center</verticalAlignment>
+            </Alignment>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>true</Visible>
+      </Label>
+    </Children>
+    <Children xsi:type="layout:Plot">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>true</Visible>
+      <HorizontalSpacing>5</HorizontalSpacing>
+      <VerticalSpacing>5</VerticalSpacing>
+      <ClientArea>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>0</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>0.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>0.0</Right>
+        </Insets>
+      </ClientArea>
+    </Children>
+    <Children xsi:type="layout:Legend">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Anchor>South</Anchor>
+      <Stretch>Both</Stretch>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Dash_Dotted</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>153</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>true</Visible>
+      <Triggers>
+        <Condition>onmouseover</Condition>
+        <Action>
+          <Type>Invoke_Script</Type>
+          <Value xsi:type="attribute:ScriptValue">
+            <Script></Script>
+          </Value>
+        </Action>
+      </Triggers>
+      <Cursor>
+        <Type>Auto</Type>
+      </Cursor>
+      <ClientArea>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>0</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>2.0</Top>
+          <Left>2.0</Left>
+          <Bottom>2.0</Bottom>
+          <Right>2.0</Right>
+        </Insets>
+      </ClientArea>
+      <Text>
+        <Value></Value>
+        <Font>
+          <Name>楷体</Name>
+          <Size>9.0</Size>
+          <Alignment/>
+        </Font>
+      </Text>
+      <Orientation>Horizontal</Orientation>
+      <Direction>Top_Bottom</Direction>
+      <Separator>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </Separator>
+      <Position>Below</Position>
+      <ItemType>Series</ItemType>
+      <Title>
+        <Caption>
+          <Value></Value>
+          <Font>
+            <Alignment/>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>false</Visible>
+      </Title>
+      <TitlePosition>Above</TitlePosition>
+      <ShowValue>false</ShowValue>
+    </Children>
+    <Bounds>
+      <Left>0.0</Left>
+      <Top>0.0</Top>
+      <Width>557.25</Width>
+      <Height>278.625</Height>
+    </Bounds>
+    <Insets>
+      <Top>3.0</Top>
+      <Left>3.0</Left>
+      <Bottom>3.0</Bottom>
+      <Right>3.0</Right>
+    </Insets>
+    <Row>-1</Row>
+    <Column>-1</Column>
+    <Rowspan>-1</Rowspan>
+    <Columnspan>-1</Columnspan>
+    <Outline>
+      <Style>Solid</Style>
+      <Thickness>1</Thickness>
+      <Color>
+        <Transparency>255</Transparency>
+        <Red>0</Red>
+        <Green>0</Green>
+        <Blue>0</Blue>
+      </Color>
+      <Visible>false</Visible>
+    </Outline>
+    <Visible>true</Visible>
+  </Block>
+  <Dimension>Two_Dimensional</Dimension>
+  <Units>Points</Units>
+  <SeriesThickness>10.0</SeriesThickness>
+  <ExtendedProperties>
+    <Name>enable.area.alt</Name>
+    <Value>false</Value>
+  </ExtendedProperties>
+  <SampleData>
+    <BaseSampleData>
+      <DataSetRepresentation>'A','B','C','D','E'</DataSetRepresentation>
+    </BaseSampleData>
+    <OrthogonalSampleData>
+      <DataSetRepresentation>6,4,12,8,10</DataSetRepresentation>
+      <SeriesDefinitionIndex>0</SeriesDefinitionIndex>
+    </OrthogonalSampleData>
+  </SampleData>
+  <Interactivity>
+    <LegendBehavior>ToggleSerieVisibility</LegendBehavior>
+  </Interactivity>
+  <EmptyMessage>
+    <Caption>
+      <Value>This chart contains no data.</Value>
+      <Font>
+        <Alignment>
+          <horizontalAlignment>Center</horizontalAlignment>
+          <verticalAlignment>Center</verticalAlignment>
+        </Alignment>
+      </Font>
+    </Caption>
+    <Background xsi:type="attribute:ColorDefinition">
+      <Transparency>64</Transparency>
+      <Red>127</Red>
+      <Green>127</Green>
+      <Blue>127</Blue>
+    </Background>
+    <Outline>
+      <Color>
+        <Transparency>128</Transparency>
+        <Red>127</Red>
+        <Green>127</Green>
+        <Blue>127</Blue>
+      </Color>
+      <Visible>true</Visible>
+    </Outline>
+    <Insets>
+      <Top>10.0</Top>
+      <Left>10.0</Left>
+      <Bottom>10.0</Bottom>
+      <Right>10.0</Right>
+    </Insets>
+    <Visible>false</Visible>
+  </EmptyMessage>
+  <Axes>
+    <Type>Text</Type>
+    <Title>
+      <Caption>
+        <Value>X-Axis Title</Value>
+        <Font>
+          <Size>14.0</Size>
+          <Bold>true</Bold>
+          <Alignment>
+            <horizontalAlignment>Center</horizontalAlignment>
+            <verticalAlignment>Center</verticalAlignment>
+          </Alignment>
+        </Font>
+      </Caption>
+      <Background xsi:type="attribute:ColorDefinition">
+        <Transparency>0</Transparency>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Background>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+      </Outline>
+      <Insets>
+        <Top>0.0</Top>
+        <Left>2.0</Left>
+        <Bottom>0.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Visible>false</Visible>
+    </Title>
+    <TitlePosition>Below</TitlePosition>
+    <AssociatedAxes>
+      <Type>Linear</Type>
+      <Title>
+        <Caption>
+          <Value>Y-Axis Title</Value>
+          <Font>
+            <Size>14.0</Size>
+            <Bold>true</Bold>
+            <Alignment>
+              <horizontalAlignment>Center</horizontalAlignment>
+              <verticalAlignment>Center</verticalAlignment>
+            </Alignment>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>false</Visible>
+      </Title>
+      <TitlePosition>Left</TitlePosition>
+      <SeriesDefinitions ZOrder="0">
+        <Query>
+          <Definition>data[&quot;Group5/ORG_NAME&quot;]</Definition>
+          <Grouping>
+            <GroupType>Text</GroupType>
+          </Grouping>
+        </Query>
+        <SeriesPalette>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>80</Red>
+            <Green>166</Green>
+            <Blue>218</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>242</Red>
+            <Green>88</Green>
+            <Blue>106</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>232</Red>
+            <Green>172</Green>
+            <Blue>57</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>255</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>64</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>170</Red>
+            <Green>85</Green>
+            <Blue>85</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>192</Red>
+            <Green>192</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>192</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>7</Red>
+            <Green>146</Green>
+            <Blue>94</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>128</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>0</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>64</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>80</Red>
+            <Green>240</Green>
+            <Blue>120</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>64</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>0</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>0</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>64</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>0</Blue>
+          </Entries>
+        </SeriesPalette>
+        <Series xsi:type="type:LineSeries">
+          <Visible>true</Visible>
+          <Label>
+            <Caption>
+              <Value></Value>
+              <Font>
+                <Name>Verdana</Name>
+                <Size>9.0</Size>
+                <Alignment/>
+              </Font>
+              <Color>
+                <Transparency>255</Transparency>
+                <Red>154</Red>
+                <Green>204</Green>
+                <Blue>0</Blue>
+              </Color>
+            </Caption>
+            <Background xsi:type="attribute:ColorDefinition">
+              <Transparency>0</Transparency>
+              <Red>255</Red>
+              <Green>255</Green>
+              <Blue>255</Blue>
+            </Background>
+            <Outline>
+              <Style>Dash_Dotted</Style>
+              <Thickness>1</Thickness>
+              <Color>
+                <Transparency>0</Transparency>
+                <Red>255</Red>
+                <Green>255</Green>
+                <Blue>255</Blue>
+              </Color>
+              <Visible>true</Visible>
+            </Outline>
+            <Insets>
+              <Top>0.0</Top>
+              <Left>2.0</Left>
+              <Bottom>0.0</Bottom>
+              <Right>3.0</Right>
+            </Insets>
+            <Visible>false</Visible>
+          </Label>
+          <DataDefinition>
+            <Definition>data[&quot;Summary Field/VIOLATION_NUM&quot;]</Definition>
+            <Grouping>
+              <GroupType>Text</GroupType>
+              <AggregateExpression>Sum</AggregateExpression>
+            </Grouping>
+          </DataDefinition>
+          <DataPoint>
+            <Components>
+              <Type>Series_Value</Type>
+            </Components>
+            <Components>
+              <Type>Base_Value</Type>
+            </Components>
+            <Components>
+              <Type>Orthogonal_Value</Type>
+            </Components>
+            <Prefix></Prefix>
+            <Suffix></Suffix>
+            <Separator>,</Separator>
+          </DataPoint>
+          <LabelPosition>Above</LabelPosition>
+          <Stacked>true</Stacked>
+          <Triggers>
+            <Condition>onmouseover</Condition>
+            <Action>
+              <Type>Show_Tooltip</Type>
+              <Value xsi:type="attribute:TooltipValue">
+                <Text>valueSeriesName+&quot;\n&quot;+categoryData+&quot;\n&quot;+valueData</Text>
+                <Delay>200</Delay>
+              </Value>
+            </Action>
+          </Triggers>
+          <Translucent>false</Translucent>
+          <Cursor>
+            <Type>Pointer</Type>
+          </Cursor>
+          <Markers>
+            <Type>Circle</Type>
+            <Size>2</Size>
+            <Visible>true</Visible>
+            <Outline>
+              <Visible>false</Visible>
+            </Outline>
+          </Markers>
+          <LineAttributes>
+            <Style>Solid</Style>
+            <Thickness>1</Thickness>
+            <Color>
+              <Transparency>0</Transparency>
+              <Red>255</Red>
+              <Green>255</Green>
+              <Blue>255</Blue>
+            </Color>
+            <Visible>true</Visible>
+          </LineAttributes>
+          <PaletteLineColor>true</PaletteLineColor>
+          <Curve>false</Curve>
+          <ShadowColor>
+            <Transparency>0</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </ShadowColor>
+          <ConnectMissingValue>true</ConnectMissingValue>
+        </Series>
+        <Grouping>
+          <GroupType>Text</GroupType>
+          <AggregateExpression>Sum</AggregateExpression>
+        </Grouping>
+        <Sorting>Ascending</Sorting>
+        <SortKey>
+          <Definition>data[&quot;Summary Field/VIOLATION_NUM&quot;]</Definition>
+        </SortKey>
+      </SeriesDefinitions>
+      <Orientation>Vertical</Orientation>
+      <LineAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </LineAttributes>
+      <Label>
+        <Caption>
+          <Value></Value>
+          <Font>
+            <Name>楷体</Name>
+            <Size>9.0</Size>
+            <Alignment/>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>true</Visible>
+      </Label>
+      <LabelPosition>Left</LabelPosition>
+      <MajorGrid>
+        <LineAttributes>
+          <Style>Dash_Dotted</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>196</Red>
+            <Green>196</Green>
+            <Blue>196</Blue>
+          </Color>
+          <Visible>true</Visible>
+        </LineAttributes>
+        <TickStyle>Across</TickStyle>
+        <TickAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>196</Red>
+            <Green>196</Green>
+            <Blue>196</Blue>
+          </Color>
+          <Visible>true</Visible>
+        </TickAttributes>
+      </MajorGrid>
+      <MinorGrid>
+        <LineAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>225</Red>
+            <Green>225</Green>
+            <Blue>225</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </LineAttributes>
+        <TickStyle>Across</TickStyle>
+        <TickAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>225</Red>
+            <Green>225</Green>
+            <Blue>225</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </TickAttributes>
+      </MinorGrid>
+      <Scale>
+        <MinorGridsPerUnit>5</MinorGridsPerUnit>
+      </Scale>
+      <Origin>
+        <Type>Min</Type>
+        <Value xsi:type="data:NumberDataElement">
+          <Value>0.0</Value>
+        </Value>
+      </Origin>
+      <PrimaryAxis>true</PrimaryAxis>
+      <Percent>false</Percent>
+      <Aligned>false</Aligned>
+    </AssociatedAxes>
+    <SeriesDefinitions>
+      <Query>
+        <Definition></Definition>
+      </Query>
+      <SeriesPalette>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>80</Red>
+          <Green>166</Green>
+          <Blue>218</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>242</Red>
+          <Green>88</Green>
+          <Blue>106</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>232</Red>
+          <Green>172</Green>
+          <Blue>57</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>255</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>64</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>170</Red>
+          <Green>85</Green>
+          <Blue>85</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>192</Red>
+          <Green>192</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>192</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>7</Red>
+          <Green>146</Green>
+          <Blue>94</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>128</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>0</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>64</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>80</Red>
+          <Green>240</Green>
+          <Blue>120</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>64</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>0</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>0</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>64</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>0</Blue>
+        </Entries>
+      </SeriesPalette>
+      <Series>
+        <Visible>true</Visible>
+        <Label>
+          <Caption>
+            <Value></Value>
+            <Font>
+              <Alignment/>
+            </Font>
+          </Caption>
+          <Background xsi:type="attribute:ColorDefinition">
+            <Transparency>0</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Background>
+          <Outline>
+            <Style>Solid</Style>
+            <Thickness>1</Thickness>
+            <Color>
+              <Transparency>255</Transparency>
+              <Red>0</Red>
+              <Green>0</Green>
+              <Blue>0</Blue>
+            </Color>
+            <Visible>false</Visible>
+          </Outline>
+          <Insets>
+            <Top>0.0</Top>
+            <Left>2.0</Left>
+            <Bottom>0.0</Bottom>
+            <Right>3.0</Right>
+          </Insets>
+          <Visible>false</Visible>
+        </Label>
+        <DataDefinition>
+          <Definition>data[&quot;Group2/VIOLATION_TIME&quot;]</Definition>
+        </DataDefinition>
+        <SeriesIdentifier></SeriesIdentifier>
+        <DataPoint>
+          <Components>
+            <Type>Orthogonal_Value</Type>
+          </Components>
+          <Separator>, </Separator>
+        </DataPoint>
+        <LabelPosition>Outside</LabelPosition>
+        <Stacked>false</Stacked>
+      </Series>
+      <Grouping>
+        <GroupType>Text</GroupType>
+        <AggregateExpression>Sum</AggregateExpression>
+      </Grouping>
+      <Sorting>Ascending</Sorting>
+      <SortKey>
+        <Definition>data[&quot;Group2/VIOLATION_TIME&quot;]</Definition>
+      </SortKey>
+    </SeriesDefinitions>
+    <Orientation>Horizontal</Orientation>
+    <LineAttributes>
+      <Style>Solid</Style>
+      <Thickness>1</Thickness>
+      <Color>
+        <Transparency>255</Transparency>
+        <Red>0</Red>
+        <Green>0</Green>
+        <Blue>0</Blue>
+      </Color>
+      <Visible>true</Visible>
+    </LineAttributes>
+    <Label>
+      <Caption>
+        <Value></Value>
+        <Font>
+          <Name>楷体</Name>
+          <Size>8.0</Size>
+          <Alignment/>
+          <Rotation>0.0</Rotation>
+        </Font>
+      </Caption>
+      <Background xsi:type="attribute:ColorDefinition">
+        <Transparency>0</Transparency>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Background>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+      </Outline>
+      <Insets>
+        <Top>0.0</Top>
+        <Left>2.0</Left>
+        <Bottom>0.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Visible>true</Visible>
+    </Label>
+    <LabelPosition>Below</LabelPosition>
+    <MajorGrid>
+      <LineAttributes>
+        <Style>Dash_Dotted</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>196</Red>
+          <Green>196</Green>
+          <Blue>196</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </LineAttributes>
+      <TickStyle>Across</TickStyle>
+      <TickAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>196</Red>
+          <Green>196</Green>
+          <Blue>196</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </TickAttributes>
+    </MajorGrid>
+    <MinorGrid>
+      <LineAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>225</Red>
+          <Green>225</Green>
+          <Blue>225</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </LineAttributes>
+      <TickStyle>Across</TickStyle>
+      <TickAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>225</Red>
+          <Green>225</Green>
+          <Blue>225</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </TickAttributes>
+    </MinorGrid>
+    <Scale>
+      <MinorGridsPerUnit>5</MinorGridsPerUnit>
+      <TickBetweenCategories>false</TickBetweenCategories>
+    </Scale>
+    <Origin>
+      <Type>Min</Type>
+      <Value xsi:type="data:NumberDataElement">
+        <Value>0.0</Value>
+      </Value>
+    </Origin>
+    <PrimaryAxis>true</PrimaryAxis>
+    <CategoryAxis>true</CategoryAxis>
+    <Percent>false</Percent>
+  </Axes>
+  <Orientation>Vertical</Orientation>
+  <UnitSpacing>50.0</UnitSpacing>
+  <Rotation>
+    <Angles>
+      <XAngle>-20.0</XAngle>
+      <YAngle>45.0</YAngle>
+      <ZAngle>0.0</ZAngle>
+      <Type>None</Type>
+    </Angles>
+  </Rotation>
+</model:ChartWithAxes>
+]]></xml-property>
+            <property name="outputFormat">SVG</property>
+            <property name="cubeFilter">
+                <filter-condition-element>
+                    <expression name="expr" type="javascript">data["Group/VIOLATION_TYPE"]</expression>
+                    <property name="operator">ne</property>
+                    <simple-property-list name="value1">
+                        <value type="javascript">"合计"</value>
+                    </simple-property-list>
+                </filter-condition-element>
+            </property>
+            <property name="inheritColumns">false</property>
+            <property name="height">278.625pt</property>
+            <property name="width">11.125in</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">Group/VIO_SITE_CODE</property>
+                    <expression name="expression" type="javascript">dimension["Group"]["VIO_SITE_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Group1/ADDRESS_DESC</property>
+                    <expression name="expression" type="javascript">dimension["Group1"]["ADDRESS_DESC"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Group2/VIOLATION_TIME</property>
+                    <expression name="expression" type="javascript">dimension["Group2"]["VIOLATION_TIME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Group3/ORG_CODE</property>
+                    <expression name="expression" type="javascript">dimension["Group3"]["ORG_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Group4/SITE_SORT</property>
+                    <expression name="expression" type="javascript">dimension["Group4"]["SITE_SORT"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">Group5/ORG_NAME</property>
+                    <expression name="expression" type="javascript">dimension["Group5"]["ORG_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">Summary Field/VIOLATION_NUM</property>
+                    <expression name="expression" type="javascript">measure["VIOLATION_NUM"]</expression>
+                    <property name="dataType">decimal</property>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+            </list-property>
+        </extended-item>
+    </body>
+</report>

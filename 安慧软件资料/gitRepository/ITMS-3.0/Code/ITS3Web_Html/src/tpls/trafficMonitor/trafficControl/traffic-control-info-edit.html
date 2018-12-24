@@ -1,0 +1,171 @@
+<div id="trafficControlInfo" class="easyui-layout" >
+    <form cy-form="newData">
+        <div class="table">
+            <div class="tr">
+                <div class="th">
+                    交通管制名称：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="traffic_control_name">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    所在道路：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="road_name">
+                </div>
+                <div class="th">管制方向：
+                </div>
+                <div class="td" >
+                    <input type="radio" name="direction" value="1" checked="true"/>双向
+                    <input type="radio" name="direction" value="2"/>上行
+                    <input type="radio" name="direction" value="3"/>下行
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    开始地点：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="start_site">
+                </div>
+                <div class="th">
+                    结束地点：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="end_site">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="height:45px;">
+                    管制原因：
+                </div>
+                <div class="td" >&nbsp;&nbsp;&nbsp;
+                    <textarea  name="control_reason" style="height:45px; width: 383px;"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="height:45px;">
+                    影响范围：
+                </div>
+                <div class="td" >&nbsp;&nbsp;&nbsp;
+                    <textarea  name="influence_range" style="height:45px; width: 383px;"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    开始时间：
+                </div>
+                <div class="td" >
+                    <input class="easyui-datetimebox" name="start_time"
+                           data-options="required:true,showSeconds:false" >
+                </div>
+                <div class="th">
+                    结束时间：
+                </div>
+                <div class="td" >
+                    <input class="easyui-datetimebox" name="end_time"
+                           data-options="required:true,showSeconds:false" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="height:45px;">
+                    管制措施：
+                </div>
+                <div class="td" >&nbsp;&nbsp;&nbsp;
+                    <textarea  name="control_measures" style="height:45px; width: 383px;"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td" style="width:70%;height:55px;">
+                    <div class="th" style="height:55px; ">
+                        绕行路线：
+                    </div>
+                    <div class="td" >&nbsp;&nbsp;&nbsp;
+                        <textarea  name="bypass_line" style="height:55px; width: 250px;"/>
+                    </div>
+                </div>
+                <div class="td" style="width: 30%;height:55px; text-align: center;">
+                    <div class="tr" id="" >
+                        <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="newFunction.create_bypass">绘制线路</a>
+                    </div>
+                    <div class="tr" id="create_bypass">
+                        <a class="easyui-linkbutton button-edit" data-options="iconCls:'icon-edit'" cy-click="newFunction.modify_bypass">修改线路</a>
+                    </div>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管制单位：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="org_name">
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="tel">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    录入人：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="create_by">
+                </div>
+                <div class="th">
+                    录入时间：
+                </div>
+                <div class="td" >
+                    <input  class="easyui-textbox" name="create_time">
+                </div>
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeWindow">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="saveData" >保存</a>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script type="text/javascript">
+    InitPage(["newData","newFunction"],function($scope){
+        $scope.load=function(){
+
+        }
+        //关闭窗口
+        $scope.closeWindow=function(){
+            //关闭时的操作
+            //$scope.newFunction.controlLayer
+            $scope.$destroySelf();
+
+        }
+        //保存数据
+        $scope.saveData=function(){
+            //保存操作
+
+
+            $scope.$destroySelf();
+        }
+
+
+    });
+</script>
+
+<style>
+    #trafficControlInfo .th{
+        width: 100px;
+        text-align: right;
+    }
+    #trafficControlInfo .td{
+        width: 150px;
+        text-align: right;
+    }
+    #trafficControlInfo span[cy-name]{
+        color: #0000ff;
+    }
+</style>

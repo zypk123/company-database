@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysDailyMenuMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.home.SysDailyMenu" >
+    <id column="DAILY_MENU_ID" property="dailyMenuId" jdbcType="VARCHAR" />
+    <result column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="VISIT_COUNT" property="visitCount" jdbcType="DECIMAL" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="SORT_INDEX" property="sortIndex" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DAILY_MENU_ID, MENU_CODE, USER_ID, VISIT_COUNT, UPDATE_TIME, SORT_INDEX
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_DAILY_MENU
+    where DAILY_MENU_ID = #{dailyMenuId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_DAILY_MENU
+    where DAILY_MENU_ID = #{dailyMenuId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.home.SysDailyMenu" >
+    insert into T_SYS_DAILY_MENU (DAILY_MENU_ID, MENU_CODE, USER_ID, 
+      VISIT_COUNT, UPDATE_TIME, SORT_INDEX
+      )
+    values (#{dailyMenuId,jdbcType=VARCHAR}, #{menuCode,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{visitCount,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{sortIndex,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.home.SysDailyMenu" >
+    insert into T_SYS_DAILY_MENU
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dailyMenuId != null" >
+        DAILY_MENU_ID,
+      </if>
+      <if test="menuCode != null" >
+        MENU_CODE,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="visitCount != null" >
+        VISIT_COUNT,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dailyMenuId != null" >
+        #{dailyMenuId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuCode != null" >
+        #{menuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="visitCount != null" >
+        #{visitCount,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sortIndex != null" >
+        #{sortIndex,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.home.SysDailyMenu" >
+    update T_SYS_DAILY_MENU
+    <set >
+      <if test="menuCode != null" >
+        MENU_CODE = #{menuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="visitCount != null" >
+        VISIT_COUNT = #{visitCount,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX = #{sortIndex,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DAILY_MENU_ID = #{dailyMenuId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.home.SysDailyMenu" >
+    update T_SYS_DAILY_MENU
+    set MENU_CODE = #{menuCode,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      VISIT_COUNT = #{visitCount,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      SORT_INDEX = #{sortIndex,jdbcType=VARCHAR}
+    where DAILY_MENU_ID = #{dailyMenuId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectMenusByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_DAILY_MENU
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByUserPermmission" >
+     delete from T_SYS_DAILY_MENU m
+	  where (m.user_id, m.menu_code) not in
+	        (select distinct ru.user_id, f.menu_code
+	           from T_SYS_FUNCTION        f,
+	                T_SYS_ROLE_PERMISSION r,
+	                T_SYS_ROLE_USER       ru
+	          where f.function_code = r.function_code
+	            and r.role_id = ru.role_id)
+	     or m.menu_code not in (select menu_code from t_sys_menu)
+	     or m.user_id not in (select user_id from t_sys_user)
+  </delete>
+</mapper>

@@ -1,0 +1,253 @@
+<div class="easyui-layout" id="passMonitor">
+	<div data-options="region:'west',width:280,border:false" style="border-right:solid 1px #ddd">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false,height:60">
+				<div class="table" id="deviceSearch">
+					<div class="tr">
+						<div class="td">
+							<input id="searchParam" class="easyui-textbox"
+								style="width:200px;height:26px;line-height:26px;" data-options="prompt:'输入类型、道路、设备名称、状态'">
+							<a id="searchButton" class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+								 cy-click="searchDeviceInTree">查找</a>
+							
+						</div>
+					</div>
+					<div class="tr">
+						<input type="radio" name="treeType" value="1" checked cy-focus="changeType"/>按机构
+						<input type="radio" name="treeType" value="2" cy-focus="changeType"/>按道路
+					</div>
+				</div>
+			</div>
+			<div data-options="region:'center',border:false">
+				<div id="tree" style="margin:10px 5px;"></div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'east',width:350,border:false,title:'过车信息'" style="border-left:solid 1px #ddd">
+		<table cy-datagrid="options">
+			
+		</table>
+	</div>
+	<div data-options="region:'center',border:false" style="overflow:hidden;"> 
+		<div id="monitor" class="easyui-panel" data-options="border:false,cls:'monitorLable',fit:true" style="background-color:#666">
+			
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		//收缩最外层菜单面板,头部面板
+		//$scope.$topLayout.layout("collapse","north");
+		$scope.$topLayout.layout("collapse","west");
+		//检索类型
+		var searchType = 1;
+		//初始化树数据
+		searchDeviceBytype();
+		//初始化监视器对象
+		var monitor = new Monitor({
+			target : $scope.$("#monitor"),
+			onClose : closeMonitor,
+			onStart : startListener,
+			onStop : stopListener,
+		});
+		//初始化查询回车事件
+		$scope.$("#searchParam").textbox("textbox").keydown(function(event) {
+			if(event.keyCode == "13"){
+				$scope.searchDeviceInTree();
+			}
+		});
+		//初始化数据，事件等
+		$.extend($scope,{
+			//在树中查找
+			searchDeviceInTree : function(){
+				//在树中查找
+				var treeData = $scope.$("#tree").tree("getRoots");
+				var param = $scope.$("#searchParam").val();
+				if(param == ""){
+					return;
+				}
+				//取消选中的节点，并还原到初始状态
+				$scope.$("#tree").tree("collapseAll");
+
+				//查找第一个符合条件的节点
+				var id = searchTextInData(treeData,param);
+				//如果查找到了节点，则选中该节点
+				if(id){
+					var node = $scope.$("#tree").tree("find",id);
+					$scope.$("#tree").tree("select",node.target).tree("expandTo",node.target);
+				}
+			},
+			/**
+			 * 切换树类型
+			 * @param  {[type]} event 事件对象
+			 */
+			changeType : function(event){
+				var el = $(event.currentTarget);
+				if(el.get(0).checked){
+					//已经是选中状态
+					return;
+				}else{
+					if(el.val() == "1"){
+						//按机构
+						$scope.$("#tree").tree("reload");
+					}else{
+						//按道路
+						$scope.$("#tree").tree("reload");
+					}
+				}
+			},
+			//过车列表参数
+			options : {
+				columns : [[
+					{field:"clxz",title:"车辆性质",width:100},
+					{field:"hphm",title:"号牌号码",width:100},
+					{field:"sj",title:"时间(" + new Date().format("yyyy-MM-dd") + ")",width:150},
+					{field:"cd",title:"车道",width:100}
+				]],
+				pagination: false,
+				scrollbarSize : 0
+			}
+		});
+
+		var checkList = {};
+		var isInit = false;
+		/**
+		 * 按照新的类型查找树
+		 * @return {[type]} [description]
+		 */
+		function searchDeviceBytype(){
+			$scope.$("#tree").tree({
+				queryParams : {searchType : searchType},
+				method : "get",
+				url : "data/passvehicle/treeSearch.json",
+				checkbox : true,
+				onCheck : function(node,checked){
+					if(isInit){
+						//树在初始化的时候不做任何操作
+						return;
+					}
+					if(node.children){
+						//是根节点
+						if(checked){
+							//增加
+							addNode(node.children);
+						}else{
+							//删除
+							removeNode(node.children);
+						}
+					}else{
+						//是叶子节点
+						if(checked){
+							//增加
+							monitor.addMonitor(node.id,node.text);
+							checkList[node.id] = node.id
+						}else{
+							//删除
+							monitor.removeMonitor(node.id);
+							delete checkList[node.id];
+						}
+					}					
+				},
+				onLoadSuccess : function(){
+					isInit = true;
+					//选中已经选择的节点
+					for(var index in checkList){
+						var node = $(this).tree("find",index);
+						$(this).tree("check",node.target);
+						$(this).tree("expandTo",node.target);
+
+					}
+					isInit = false;
+				}
+			})
+		}
+
+		/**
+		 * 添加一个根节点下所有设备的监控窗口
+		 * @param {[type]} children 子节点数组
+		 */
+		function addNode(children){
+			for(var index=0; index<children.length; index++){
+				var child = children[index];
+				if(child.children){
+					//还是根节点
+					addNode(child.children);
+				}else{
+					//是叶子节点
+					monitor.addMonitor(child.id,child.text);
+					checkList[child.id] = child.id;
+				}
+			}
+		}
+
+		/**
+		 * 删除一个设备下所有的监控窗口
+		 * @param  {[type]} children 子节点数组
+		 */
+		function removeNode(children){
+			for(var index=0; index<children.length; index++){
+				var child = children[index];
+				if(child.children){
+					//还是根节点
+					removeNode(child.children);
+				}else{
+					//是叶子节点
+					monitor.removeMonitor(child.id);
+					delete checkList[child.id];
+				}
+			}
+		}
+		/**
+		 * 查找树结构的数据
+		 * @param  {[type]} data [description]
+		 * @return {[type]}      [description]
+		 */
+		function searchTextInData(children,param){
+			for(var index=0; index<children.length; index++){
+				var node = children[index];
+				if(node.text.indexOf(param) >= 0){
+					return node.id;
+				}else{
+					if(node.children){
+						var id = searchTextInData(node.children,param);
+						if(id){
+							return id;
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * 关闭监视器的回调方法
+		 * @return {[type]} [description]
+		 */
+		function closeMonitor(id){
+			var node = $scope.$("#tree").tree("find",id);
+			$scope.$("#tree").tree("uncheck",node.target);
+		}
+
+		/**
+		 * 停止监听方法
+		 * @return {[type]} [description]
+		 */
+		function stopListener(id){
+			console.log("stop" + id);
+		}
+
+		/**
+		 * 开始监听方法
+		 * @param  {[type]} id [description]
+		 * @return {[type]}    [description]
+		 */
+		function startListener(id){
+			console.log("start" + id);
+		}
+
+	});
+</script>
+<style>
+	div.td{
+		margin-left:5px
+	}
+</style>

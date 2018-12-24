@@ -1,0 +1,15 @@
+<div class="loginTop"><div class="lgdiv"><img src="themes/default/images/login_bg.jpg"><div class="loginBg"><div class="loginTitle"><table><tr><td class="td1">智能交通设备管控平台</td></tr><tr><td class="td2">—安徽 合肥交警支队—</td></tr></table></div><form id="ff" class="easyui-form table" method="post" data-options="novalidate:true"><div class="table"><div class="tr"><div class="th">用户名</div></div><div class="tr"><div class="td"><input id="name" class="easyui-textbox" name="LoginName" data-options="
+                            prompt:'用户名',
+                            iconCls:'icon-man',
+                            iconAlign:'left',
+                            iconWidth:34,
+                            height:40,
+                            required:true,
+                            validType:'length[1,12]'"></div></div><div class="tr"><div class="th">密码</div></div><div class="tr"><div class="td"><input id="password" class="easyui-textbox" name="PassWord" type="password" data-options="
+                            prompt:'密码',
+                            iconCls:'icon-lock',
+                            iconAlign:'left',
+                            iconWidth:34,
+                            height:40,
+                            required:true,
+                            validType:'length[1,10]'"></div></div><div class="tr"><div class="td loginButton"><a class="easyui-linkbutton button" cy-click="loginSubmit"><pre>登   录</pre></a></div></div></div></form></div></div></div><script type="text/javascript">InitPage([],function(e){function t(t){$rootScope.ContextId=t.Token,$rootScope.UserInfo=new User(t),$rootScope.menus=t.Menus,sessionStorage.logInfo=JSON.stringify(t),e.$gotoPage("main.html")}e.loginSubmit=function(){$.messager.progress({title:"请稍候",msg:"登录中..."});$.getJSON("data/menu/result.json?a="+(new Date).getTime(),function(e){try{e.AuthenrizeResult.IsOK&&t(e.AuthenrizeResult)}catch(o){alert(o.toString())}$.messager.progress("close")})}});</script>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ServerPlatformMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.ServerPlatform" >
+    <id column="SERVER_PLAT_ID" property="serverPlatId" jdbcType="VARCHAR" />
+    <result column="SERVER_PLAT_NAME" property="serverPlatName" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="SURVEY_SYSTEM_ID" property="surveySystemId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVER_PLAT_ID, SERVER_PLAT_NAME, REMARK, SURVEY_SYSTEM_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SERVER_PLAT
+    where SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_SERVER_PLAT
+    where SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.ServerPlatform" >
+    insert into T_DEVICE_SERVER_PLAT (SERVER_PLAT_ID, SERVER_PLAT_NAME,  
+      REMARK, SURVEY_SYSTEM_ID)
+    values (#{serverPlatId,jdbcType=VARCHAR}, #{serverPlatName,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{surveySystemId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.ServerPlatform" >
+    insert into T_DEVICE_SERVER_PLAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serverPlatId != null" >
+        SERVER_PLAT_ID,
+      </if>
+      <if test="serverPlatName != null" >
+        SERVER_PLAT_NAME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="surveySystemId != null" >
+        SURVEY_SYSTEM_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serverPlatId != null" >
+        #{serverPlatId,jdbcType=VARCHAR},
+      </if>
+      <if test="serverPlatName != null" >
+        #{serverPlatName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="surveySystemId != null" >
+        #{surveySystemId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.ServerPlatform" >
+    update T_DEVICE_SERVER_PLAT
+    <set >
+      <if test="serverPlatName != null" >
+        SERVER_PLAT_NAME = #{serverPlatName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="surveySystemId != null" >
+        SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.ServerPlatform" >
+    update T_DEVICE_SERVER_PLAT
+    set SERVER_PLAT_NAME = #{serverPlatName,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR}
+    where SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR}
+  </update>
+    	
+  <select id="selectServerPlatforms" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_DEVICE_SERVER_PLAT V
+		<where>
+			<if test="surveySystemId != null and surveySystemId != ''">
+				AND v.survey_system_id = #{surveySystemId,jdbcType=VARCHAR}
+			</if>			
+			<if test="orgIds != null and orgIds.size() > 0 ">
+				AND v.survey_system_id in
+				(select survey_system_id
+                 from t_device_survey_sys t
+                where t.org_id in 
+                <foreach collection="orgIds" index="index" item="orgId" open="(" separator="," close=")">
+					#{"orgId",jdbcType=VARCHAR}
+				</foreach>)
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+  <select id="countServerPlatforms" resultType="java.lang.Integer" parameterType="java.util.Map">
+	select count(1) FROM T_DEVICE_SERVER_PLAT V
+	<where>
+		<if test="surveySystemId != null and surveySystemId != ''">
+			AND v.survey_system_id = #{surveySystemId,jdbcType=VARCHAR}
+		</if>			
+		<if test="orgIds != null and orgIds.size() > 0 ">
+			AND v.survey_system_id in
+			(select survey_system_id
+                  from t_device_survey_sys t
+                 where t.org_id in 
+                <foreach collection="orgIds" index="index" item="orgId" open="(" separator="," close=")">
+				#{"orgId",jdbcType=VARCHAR}
+			 </foreach>)
+		</if>
+	</where>
+  </select>
+</mapper>

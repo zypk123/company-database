@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SysModelMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.SysModel" >
+    <id column="DEVICE_SYS_MODEL_ID" property="deviceSysModelId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_MODEL_NAME" property="deviceSysModelName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_SYS_MODEL_ID, DEVICE_SYS_MODEL_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_MODEL
+    where DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_SYS_MODEL
+    where DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.SysModel" >
+    insert into T_DEVICE_SYS_MODEL (DEVICE_SYS_MODEL_ID, DEVICE_SYS_MODEL_NAME
+      )
+    values (#{deviceSysModelId,jdbcType=VARCHAR}, #{deviceSysModelName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.SysModel" >
+    insert into T_DEVICE_SYS_MODEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceSysModelId != null" >
+        DEVICE_SYS_MODEL_ID,
+      </if>
+      <if test="deviceSysModelName != null" >
+        DEVICE_SYS_MODEL_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceSysModelId != null" >
+        #{deviceSysModelId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysModelName != null" >
+        #{deviceSysModelName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.SysModel" >
+    update T_DEVICE_SYS_MODEL
+    <set >
+      <if test="deviceSysModelName != null" >
+        DEVICE_SYS_MODEL_NAME = #{deviceSysModelName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.SysModel" >
+    update T_DEVICE_SYS_MODEL
+    set DEVICE_SYS_MODEL_NAME = #{deviceSysModelName,jdbcType=VARCHAR}
+    where DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectModels" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_MODEL
+    <where>
+		<if test="sysModelName != null and sysModelName != '' ">
+			DEVICE_SYS_MODEL_NAME like '%'||#{sysModelName,jdbcType=VARCHAR}||'%'
+		</if>
+	</where>
+  </select>
+</mapper>

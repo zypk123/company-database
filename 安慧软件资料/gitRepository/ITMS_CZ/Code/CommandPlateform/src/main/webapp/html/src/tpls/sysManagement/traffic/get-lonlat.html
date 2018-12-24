@@ -1,0 +1,70 @@
+<div id="getLonLat" class="easyui-layout"  >
+	<div id="map">
+
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["lonLat", "saveLonLat"], function($scope) {
+		var cyMap = new CYMap($scope.$("#map")[0]);
+		var point;
+		var wkt_c = new OpenLayers.Format.WKT();
+		$scope.load = function() {
+			init();
+			moveToMap();
+		};
+		//移动地图至执法服务站或者中心点
+		function moveToMap() {
+			if ($scope.lonLat) {
+				var style = {
+					graphicWidth : 18,
+					graphicHeight : 18,
+					externalGraphic : "frameworks/Openlayers/img/marker-blue.png"
+				};
+				var geometry = wkt_c.read($scope.lonLat).geometry.clone();
+				geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+				point.addFeatures(feature);
+				cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+			} 
+		}
+		//初始化地图
+		function init() {
+			cyMap.map.events.remove("dblclick");
+			cyMap.map.events.registerPriority("dblclick", map, onMapDoubleClick);
+			point = new OpenLayers.Layer.Vector("point");
+			cyMap.map.addLayer(point);
+		}
+		//双击地图回调函数，获取经纬度
+		function onMapDoubleClick(e) {
+			var lonlat1 = cyMap.map.getLonLatFromViewPortPx(e.xy);
+			var style = {
+				graphicWidth : 18,
+				graphicHeight : 18,
+				externalGraphic : "frameworks/Openlayers/img/marker.png"
+			};
+			var geometry = new OpenLayers.Geometry.Point(lonlat1.lon, lonlat1.lat);
+			var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+			point.addFeatures(feature);
+			var geo = lonlat1.clone();
+			geo.transform(cyMap.map.getProjectionObject(), cyMap.map.displayProjection);
+			var str = "经度：" + geo.lon.toFixed(6) + "<br>" + "纬度：" + geo.lat.toFixed(6);
+			$.messager.confirm('确认', str, function(r) {
+				if (r) {
+					$scope.$destroySelf();
+					$scope.saveLonLat(geo);
+					point.removeFeatures(point.features[0]);
+				} else {
+					point.removeFeatures(feature);
+				}
+			});
+		}
+	}); 
+</script>
+<style type="text/css">
+	#map {
+		width: 100%;
+		height: 100%;
+	}
+
+</style>

@@ -1,0 +1,117 @@
+<div id="weatherInfo" class="easyui-layout"  >
+	<div data-options="region:'center',border:false" >
+		<div class="table" >
+			<div class="tr">
+				<div class="th">
+					设备名称：
+				</div>
+				<div class="td">
+					<span cy-name=newData.deviceName></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					管理机构：
+				</div>
+				<div class="td">
+					<span cy-name=newData.orgCode cy-filter="$getOrgName"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					路面温度：
+				</div>
+				<div class="td">
+					<span cy-name=newData.roadTemperature ></span>&nbsp;℃
+				</div>
+				<div class="th">
+					路基温度：
+				</div>
+				<div class="td">
+					<span cy-name=newData.roadbedTemperature></span>&nbsp;℃
+				</div>
+
+			</div>
+
+			<div class="tr">
+
+				<div class="th">
+					水膜厚度：
+				</div>
+				<div class="td">
+					<span cy-name=newData.waterFileHeigh></span>&nbsp;mm
+				</div>
+				<div class="th">
+					含盐量：
+				</div>
+				<div class="td">
+					<span cy-name=newData.salinity></span>&nbsp;%
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					结冰点温度：
+				</div>
+				<div class="td" >
+					<span cy-name=newData.freezingTemperature></span>&nbsp;℃
+				</div>
+
+				<div class="th">
+					道路状况：
+				</div>
+				<div class="td">
+					<span cy-name=newData.roadCondition cy-filter="options_roadCondition"></span>&nbsp;
+				</div>
+			</div>			
+			<div class="tr">
+				<div class="th">
+					更新时间：
+				</div>
+				<div class="td" >
+					<span cy-name=newData.recordTime></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height:38px" >
+		<div style="text-align: center; ">
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-trend'" cy-click="openDialogchart">趋势图</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["newData"], function($scope) {
+		$scope.$getDefaultCode(["509"]);
+		//方向direction的格式化
+		$scope.options_roadCondition=function(value, row, index) {
+			return $scope.$getCodeName("509", value);
+		};
+		$scope.openDialogchart = function() {
+			$scope.$setParam("deviceSysNbr", $scope.newData.deviceSysNbr);
+			$scope.$setParam("recordTime", $scope.newData.recordTime);
+			$scope.$openDialog("createDialog", {
+				title : "趋势图",
+				height : 500,
+				width : 800,
+				href : "tpls/trafficMonitor/trafficWeather/weatherLg/weather-lg-chart.html"
+			}, true);
+		};
+
+	}); 
+</script>
+
+<style type="text/css">
+	#weatherInfo .th {
+		width: 95px;
+		text-align: right;
+	}
+	#weatherInfo .td {
+		width: 120px;
+	}
+	#weatherInfo span[cy-name] {
+		color: #0000ff;
+	}
+
+</style>

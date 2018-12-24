@@ -1,0 +1,352 @@
+﻿<div id="vioprocessstatsdiv" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style=" height: 150px">
+        <div class="toolbar" style="float:left;width:100%">
+            <form class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">统计方式：</div>
+                            <div class="td">
+                                <select class="easyui-combobox" style="width:150px" name="StatMode" data-options="singleSelect:true,panelHeight:'auto'">
+                                    <option value="1">执行机构</option>
+                                    <option value="2">录入人员</option>
+                                    <option value="3">违法类型</option>
+                                    <option value="4">执法类型</option>
+                                    <option value="5">设备类型</option>
+                                </select>
+                            </div>
+                            <div class="th">处理机构：</div>
+                            <div class="td">
+                                <select id="orgLevel" class="easyui-combotree" name="OrgCode" data-options="" onselect="true" style="width:150px" />
+                            </div>
+                            <div class="th">违法时间：</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="VioStart" style="width:150px" data-options="required:true,showSeconds:true">
+                            </div>
+                            <div class="th">至：</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="VioEnd" style="width:150px" data-options="required:true,showSeconds:true">
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">采集类型：</div>
+                            <div class="td">
+                                <select class="easyui-combobox" style="width:150px" name="CollectedType"
+                                        data-options="multiple:true,panelHeight:'auto'">
+                                    <option value="1">闯红灯设备</option>
+                                    <option value="2">公路卡口设备</option>
+                                    <option value="3">测速设备</option>
+                                    <option value="4">闭路电视</option>
+                                    <option value="5">移动摄像</option>
+                                    <option value="6">警务通</option>
+                                    <option value="7">区间测速</option>
+                                    <option value="8">卫星定位装置</option>
+                                    <option value="9">其它电子设备</option>
+                                </select>
+                            </div>
+                            <div class="th">违法类型：</div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="violationType" name="ViolationType" style="width:150px"
+                                       data-options="valueField:'ID',textField:'NAME',multiple:true,panelHeight:'auto'">
+                            </div>
+                            <div class="th">录入时间：</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="EntryStart" style="width:150px"
+                                       data-options="required:false,showSeconds:true">
+                            </div>
+                            <div class="th">至：</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" name="EntryEnd" style="width:150px"
+                                       data-options="required:false,showSeconds:true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="linkbutton_toolbar">
+                    <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="VioStatsMgr.StatsViolaitonInfos();">统计</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+
+        <table id="dg" class="easyui-datagrid"
+               data-options="
+              height:300,
+               fitColumns:true,
+               striped:true,
+               noHeader:true,
+               rownumbers:true,
+               pagination:true,
+               showfooter:true,
+               singleSelect:true,
+               scrollbarSize:0,
+               toolbar:'#vioProcessStatsDiv .toolbar'
+               ">
+            <thead>
+                <tr>
+                    <th data-options="field:'ORG_NAME',width:10">
+                        处理机构
+                    </th>
+                    <th data-options="field:'VIO_TYPE',width:10">
+                        已分拣
+                    </th>
+                    <th data-options="field:'VIO_NUM',width:10" formatter="formatPrice">
+                        正常执法
+                    </th>
+                    <th data-options="field:'field3',width:10,align:'right'">
+                        军车
+                    </th>
+                    <th data-options="field:'field4',width:10,align:'right'">
+                        警车
+                    </th>
+                    <th data-options="field:'field5',width:10,align:'right'">
+                        农用车
+                    </th>
+                    <th data-options="field:'field6',width:10,align:'right'">
+                        白名单车
+                    </th>
+                    <th data-options="field:'field7',width:10,align:'right'">
+                        废弃
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div data-options="region:'south'" style=" height: 400px">
+        <div id="container" title="">
+        </div>
+    </div>
+</div>
+<script>
+    $.parser.onComplete = function () {
+        $.ajax({
+            url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+            type: "POST",
+            data: {},
+            beforeSend: function (request) {
+                request.setRequestHeader("ContextID", ContextId);
+            },
+            contentType: 'application/json',
+            success: function (retData) {
+                VioStatsMgr.sysCodeDic = retData;
+                VioStatsMgr.initCombobox(retData);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            },
+        },
+        $('#orgLevel').combotree({
+            loadFilter: function (rows) {
+                return convert(rows);
+            }
+        }));
+        //给默认的输入框赋值
+        //device_monitor.$(".searchForm").form("load", device_monitor.defaultParams);
+        //重置加载器完成事件，防止在查询时多次运行
+        $.parser.onComplete = function () { };
+    };
+    var VioStatsMgr = {
+        defaultParams: {},
+        sysCodeDic: null,
+        search: function () {
+            $.ajax({
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+                type: "POST",
+                data: {},
+                beforeSend: function (request) {
+                    request.setRequestHeader("ContextID", ContextId);
+                },
+                contentType: 'application/json',
+                success: function (retData) {
+                    VioStatsMgr.sysCodeDic = retData;
+                    VioStatsMgr.initCombobox(retData);
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        },
+        frmSubmit: function (param) {
+            param.ContextId = ContextId;
+            return true;
+        },
+        initCombobox: function (initData) {
+            $('#violationType').combobox('loadData', initData["VIOLATIONTYPE"]);
+            $('#orgLevel').combotree('loadData', initData["ORGLEVEL"]);
+        },
+        StatsViolaitonInfos: function () {
+            $('#vioprocessstatsdiv .searchForm').form('submit', {
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/StatsViolaitonInfos",
+                onSubmit: function (param) {
+                    param.ContextId = parent.ContextId;
+                    return true;
+                },
+                success: function (data) {
+                    var data = eval('(' + data + ')');
+                    if (data.Error != '') {
+                        alert(data.Error);
+                    }
+                    else {
+                        if (data.Result.length == 0) {
+                            alert("没有查询出符合条件的违法处理记录！");
+                        }
+                        var gridData = {};
+                        gridData.total = data.Result.length;
+                        gridData.rows = data.Result;
+                        $('#dg').datagrid('loadData', gridData);
+                        VioStatsMgr.plotChart(data.Result);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        },
+        plotChart: function (data) {
+            data.sort(compare("VIO_TYPE"));//按违法类型进行排序
+            var obj = '[';
+            var _sersies = new Array();
+            var _categories = new Array();
+            for (var i = 0; i < data.length; i++)
+            {
+                _categories.push(data[i].ORG_NAME);//添加X轴分类
+                if (_sersies.length == 0)//如果序列无任何值，添加第一条数据
+                {
+                    _sersies.push(data[i].VIO_TYPE);
+                    obj += "{name:'" + data[i].VIO_TYPE + "',data:[['" + data[i].ORG_NAME + "'," + data[i].VIO_NUM + "]";
+                }
+                else
+                {
+                    if (_sersies[_sersies.length - 1].indexOf(data[i].VIO_TYPE) == '-1') //如果数组不包含该序列,添加新序列，如果包含该序列，则添加值至序列内
+                    {
+                        _sersies.push(data[i].VIO_TYPE);
+                        obj += "]},{name:'" + data[i].VIO_TYPE + "',data:[['" + data[i].ORG_NAME + "'," + data[i].VIO_NUM + "]"
+                    }
+                    else
+                    {
+                        obj += ",['" + data[i].ORG_NAME + "'," + data[i].VIO_NUM + "]"
+                    }
+                }
+            }
+            obj = obj + ']}]';
+            //var seriess = [{
+            //    name: 'Population',
+            //    data: [['Tokyo', 34], ['Jakarta', 21]]
+            //}, {
+            //    name: 'ssat',
+            //    data: [['Tokyo', 31], ['Jakarta', 23]]
+            //}];
+            $('#container').highcharts({
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Monthly Average Rainfall'
+                },
+                subtitle: {
+                    text: 'Source: WorldClimate.com'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                xAxis: {
+                    categories: []
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '采 集 违 法 (次)'
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                series: eval(obj),
+                lang: {
+                    printChart:"打印图表",
+                    contextButtonTitle: "图表导出菜单",
+                    decimalPoint: ".",
+                    downloadJPEG: "下载JPEG图片",
+                    downloadPDF: "下载PDF文件",
+                    downloadPNG: "下载PNG文件",
+                    downloadSVG: "下载SVG文件",
+                    drillUpText: "返回 {series.name}",
+                    loading: "加载中"
+                }
+            })
+        }
+    }
+
+    function compare(propertyName) {
+        return function (object1, object2) {
+            var value1 = object1[propertyName];
+            var value2 = object2[propertyName];
+            if (value2 < value1) {
+                return -1;
+            }
+            else if (value2 > value1) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+
+    function formatPrice(val, row) {
+        if (val > 3) {
+            return '<span style="color:red;">' + val + '</span>';
+        } else {
+            return val;
+        }
+    }
+
+    function convert(rows) {
+        function exists(rows, parentId) {
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].ID == parentId) return true;
+            }
+            return false;
+        }
+
+        var nodes = [];
+        // get the top level nodes
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (!exists(rows, row.RESERVE1)) {
+                nodes.push({
+                    id: row.ID,
+                    text: row.NAME
+                });
+            }
+        }
+
+        var toDo = [];
+        for (var i = 0; i < nodes.length; i++) {
+            toDo.push(nodes[i]);
+        }
+        while (toDo.length) {
+            var node = toDo.shift();	// the parent node
+            // get the children nodes
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                if (row.RESERVE1 == node.id) {
+                    var child = { id: row.ID, text: row.NAME };
+                    if (node.children) {
+                        node.children.push(child);
+                    } else {
+                        node.children = [child];
+                    }
+                    toDo.push(child);
+                }
+            }
+        }
+        return nodes;
+    };
+
+
+</script>

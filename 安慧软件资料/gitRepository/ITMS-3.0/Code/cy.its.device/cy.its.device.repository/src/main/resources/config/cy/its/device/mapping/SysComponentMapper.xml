@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SysComponentMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.SysComponent" >
+    <id column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="SYS_COMPONENT_TYPE" property="sysComponentType" jdbcType="CHAR" />
+    <result column="ASSEMBLE_SERIAL_NBR" property="assembleSerialNbr" jdbcType="VARCHAR" />
+    <result column="BRAND" property="brand" jdbcType="VARCHAR" />
+    <result column="MODEL" property="model" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="CAMERA_IP" property="cameraIp" jdbcType="VARCHAR" />
+    <result column="CAMERA_PORT" property="cameraPort" jdbcType="DECIMAL" />
+    <result column="CONN_CHANNEL" property="connChannel" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="SOFTWARE_VERSION" property="softwareVersion" jdbcType="VARCHAR" />
+    <result column="ONLINE_STATUS" property="onlineStatus" jdbcType="VARCHAR" />
+    <result column="STATUS_UPDATE_TIME" property="statusUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="SPECIFICATION" property="specification" jdbcType="VARCHAR" />
+    <result column="DEVICE_NBR" property="deviceNbr" jdbcType="VARCHAR" />
+    <result column="DEVICE_KEY" property="deviceKey" jdbcType="VARCHAR" />
+    <result column="COMPONENT_NAME" property="componentName" jdbcType="VARCHAR" />
+    <result column="LANE_NBR" property="laneNbr" jdbcType="VARCHAR" />
+    <result column="IS_VIDEO_SUPPORT" property="isVideoSupport" jdbcType="CHAR" />
+    <result column="CAMERA_SN" property="cameraSn" jdbcType="VARCHAR" />
+    <result column="ACCESS_MODE" property="accessMode" jdbcType="CHAR" />
+    <result column="VIDEO_ACCESS_MODE" property="videoAccessMode" jdbcType="CHAR" />
+    <result column="PREVIEW_PARAM" property="previewParam" jdbcType="VARCHAR" />
+    <result column="PLAYBACK_PARAM" property="playbackParam" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SYS_COMPONENT_ID, DEVICE_ID, SYS_COMPONENT_TYPE, ASSEMBLE_SERIAL_NBR, BRAND, MODEL, 
+    DIRECTION_TYPE, CAMERA_IP, CAMERA_PORT, CONN_CHANNEL, USER_NAME, PASSWORD, SOFTWARE_VERSION, 
+    ONLINE_STATUS, STATUS_UPDATE_TIME, SPECIFICATION, DEVICE_NBR, DEVICE_KEY, COMPONENT_NAME, 
+    LANE_NBR, IS_VIDEO_SUPPORT, CAMERA_SN, ACCESS_MODE, VIDEO_ACCESS_MODE, PREVIEW_PARAM, PLAYBACK_PARAM
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_COMPONENT
+    where SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+  </select>
+  <select id="componentOfDeviceKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_COMPONENT
+    where DEVICE_KEY = #{deviceKey,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByDeviceNbr" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_COMPONENT
+    where DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_SYS_COMPONENT
+    where SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.SysComponent" >
+    insert into T_DEVICE_SYS_COMPONENT (SYS_COMPONENT_ID, DEVICE_ID, SYS_COMPONENT_TYPE, 
+      ASSEMBLE_SERIAL_NBR, BRAND, MODEL, 
+      DIRECTION_TYPE, CAMERA_IP, CAMERA_PORT, 
+      CONN_CHANNEL, USER_NAME, PASSWORD, 
+      SOFTWARE_VERSION, ONLINE_STATUS, STATUS_UPDATE_TIME, 
+      SPECIFICATION, DEVICE_NBR, DEVICE_KEY, 
+      COMPONENT_NAME, LANE_NBR, IS_VIDEO_SUPPORT, 
+      CAMERA_SN, ACCESS_MODE, VIDEO_ACCESS_MODE
+      )
+    values (#{sysComponentId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{sysComponentType,jdbcType=CHAR}, 
+      #{assembleSerialNbr,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, 
+      #{directionType,jdbcType=CHAR}, #{cameraIp,jdbcType=VARCHAR}, #{cameraPort,jdbcType=DECIMAL}, 
+      #{connChannel,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{softwareVersion,jdbcType=VARCHAR}, #{onlineStatus,jdbcType=VARCHAR}, #{statusUpdateTime,jdbcType=TIMESTAMP}, 
+      #{specification,jdbcType=VARCHAR}, #{deviceNbr,jdbcType=VARCHAR}, #{deviceKey,jdbcType=VARCHAR}, 
+      #{componentName,jdbcType=VARCHAR}, #{laneNbr,jdbcType=VARCHAR}, #{isVideoSupport,jdbcType=CHAR}, 
+      #{cameraSn,jdbcType=VARCHAR}, #{accessMode,jdbcType=CHAR}, #{videoAccessMode,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.SysComponent" >
+    insert into T_DEVICE_SYS_COMPONENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sysComponentId != null" >
+        SYS_COMPONENT_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="sysComponentType != null" >
+        SYS_COMPONENT_TYPE,
+      </if>
+      <if test="assembleSerialNbr != null" >
+        ASSEMBLE_SERIAL_NBR,
+      </if>
+      <if test="brand != null" >
+        BRAND,
+      </if>
+      <if test="model != null" >
+        MODEL,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="cameraIp != null" >
+        CAMERA_IP,
+      </if>
+      <if test="cameraPort != null" >
+        CAMERA_PORT,
+      </if>
+      <if test="connChannel != null" >
+        CONN_CHANNEL,
+      </if>
+      <if test="userName != null" >
+        USER_NAME,
+      </if>
+      <if test="password != null" >
+        PASSWORD,
+      </if>
+      <if test="softwareVersion != null" >
+        SOFTWARE_VERSION,
+      </if>
+      <if test="onlineStatus != null" >
+        ONLINE_STATUS,
+      </if>
+      <if test="statusUpdateTime != null" >
+        STATUS_UPDATE_TIME,
+      </if>
+      <if test="specification != null" >
+        SPECIFICATION,
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR,
+      </if>
+      <if test="deviceKey != null" >
+        DEVICE_KEY,
+      </if>
+      <if test="componentName != null" >
+        COMPONENT_NAME,
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR,
+      </if>
+      <if test="isVideoSupport != null" >
+        IS_VIDEO_SUPPORT,
+      </if>
+      <if test="cameraSn != null" >
+        CAMERA_SN,
+      </if>
+      <if test="accessMode != null" >
+        ACCESS_MODE,
+      </if>
+      <if test="videoAccessMode != null" >
+        VIDEO_ACCESS_MODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sysComponentId != null" >
+        #{sysComponentId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysComponentType != null" >
+        #{sysComponentType,jdbcType=CHAR},
+      </if>
+      <if test="assembleSerialNbr != null" >
+        #{assembleSerialNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="cameraIp != null" >
+        #{cameraIp,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraPort != null" >
+        #{cameraPort,jdbcType=DECIMAL},
+      </if>
+      <if test="connChannel != null" >
+        #{connChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="softwareVersion != null" >
+        #{softwareVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="onlineStatus != null" >
+        #{onlineStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="statusUpdateTime != null" >
+        #{statusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="specification != null" >
+        #{specification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNbr != null" >
+        #{deviceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceKey != null" >
+        #{deviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="componentName != null" >
+        #{componentName,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="isVideoSupport != null" >
+        #{isVideoSupport,jdbcType=CHAR},
+      </if>
+      <if test="cameraSn != null" >
+        #{cameraSn,jdbcType=VARCHAR},
+      </if>
+      <if test="accessMode != null" >
+        #{accessMode,jdbcType=CHAR},
+      </if>
+      <if test="videoAccessMode != null" >
+        #{videoAccessMode,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.SysComponent" >
+    update T_DEVICE_SYS_COMPONENT
+    <set >
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysComponentType != null" >
+        SYS_COMPONENT_TYPE = #{sysComponentType,jdbcType=CHAR},
+      </if>
+      <if test="assembleSerialNbr != null" >
+        ASSEMBLE_SERIAL_NBR = #{assembleSerialNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        BRAND = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        MODEL = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="cameraIp != null" >
+        CAMERA_IP = #{cameraIp,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraPort != null" >
+        CAMERA_PORT = #{cameraPort,jdbcType=DECIMAL},
+      </if>
+      <if test="connChannel != null" >
+        CONN_CHANNEL = #{connChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        USER_NAME = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        PASSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="softwareVersion != null" >
+        SOFTWARE_VERSION = #{softwareVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="onlineStatus != null" >
+        ONLINE_STATUS = #{onlineStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="statusUpdateTime != null" >
+        STATUS_UPDATE_TIME = #{statusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="specification != null" >
+        SPECIFICATION = #{specification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceKey != null" >
+        DEVICE_KEY = #{deviceKey,jdbcType=VARCHAR},
+      </if>
+      <if test="componentName != null" >
+        COMPONENT_NAME = #{componentName,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="isVideoSupport != null" >
+        IS_VIDEO_SUPPORT = #{isVideoSupport,jdbcType=CHAR},
+      </if>
+      <if test="cameraSn != null" >
+        CAMERA_SN = #{cameraSn,jdbcType=VARCHAR},
+      </if>
+      <if test="accessMode != null" >
+        ACCESS_MODE = #{accessMode,jdbcType=CHAR},
+      </if>
+      <if test="videoAccessMode != null" >
+        VIDEO_ACCESS_MODE = #{videoAccessMode,jdbcType=CHAR},
+      </if>
+    </set>
+    where SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+  </update>
+  <!--<update id="updateLaneId" parameterType="cy.its.device.domain.model.SiteSys" >
+  	update T_DEVICE_SYS_COMPONENT
+  	set DRIVE_LANE_ID = #{laneId,jdbcType=VARCHAR}
+  	where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>-->
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.SysComponent" >
+    update T_DEVICE_SYS_COMPONENT
+    set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      SYS_COMPONENT_TYPE = #{sysComponentType,jdbcType=CHAR},
+      ASSEMBLE_SERIAL_NBR = #{assembleSerialNbr,jdbcType=VARCHAR},
+      BRAND = #{brand,jdbcType=VARCHAR},
+      MODEL = #{model,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      CAMERA_IP = #{cameraIp,jdbcType=VARCHAR},
+      CAMERA_PORT = #{cameraPort,jdbcType=DECIMAL},
+      CONN_CHANNEL = #{connChannel,jdbcType=VARCHAR},
+      USER_NAME = #{userName,jdbcType=VARCHAR},
+      PASSWORD = #{password,jdbcType=VARCHAR},
+      SOFTWARE_VERSION = #{softwareVersion,jdbcType=VARCHAR},
+      ONLINE_STATUS = #{onlineStatus,jdbcType=VARCHAR},
+      STATUS_UPDATE_TIME = #{statusUpdateTime,jdbcType=TIMESTAMP},
+      SPECIFICATION = #{specification,jdbcType=VARCHAR},
+      DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      DEVICE_KEY = #{deviceKey,jdbcType=VARCHAR},
+      COMPONENT_NAME = #{componentName,jdbcType=VARCHAR},
+      LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      IS_VIDEO_SUPPORT = #{isVideoSupport,jdbcType=CHAR},
+      CAMERA_SN = #{cameraSn,jdbcType=VARCHAR},
+      ACCESS_MODE = #{accessMode,jdbcType=CHAR},
+      VIDEO_ACCESS_MODE = #{videoAccessMode,jdbcType=CHAR}
+    where SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectComponents" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SYS_COMPONENT
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>  
+</mapper>

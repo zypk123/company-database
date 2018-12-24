@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.CertificationMapper" >
+  
+  <resultMap id="BaseResultMapList_Yes" type="java.util.HashMap" >
+  	<result column="EQUIPMENT_NBR" property="equipmentNbr" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="EQUIPMENT_TYPE" property="equipmentType" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="EQUIPMENT_TYPE_NAME" property="equipmentTypeName" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="EQUIPMENT_NAME" property="equipmentName" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="CERTIFICATION_NBR" property="certificationNbr" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="EXPIRE_DATE" property="expireDate" jdbcType="TIMESTAMP" javaType="java.lang.String" />
+    <result column="CERTIFICATED_DATE" property="certificatedDate" jdbcType="TIMESTAMP" javaType="java.lang.String" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapList_No" type="java.util.HashMap"  >
+  	<result column="EQUIPMENT_NBR" property="equipmentNbr" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="EQUIPMENT_TYPE" property="equipmentType" jdbcType="VARCHAR"  javaType="java.lang.String" />
+  	<result column="EQUIPMENT_TYPE_NAME" property="equipmentTypeName" jdbcType="VARCHAR"  javaType="java.lang.String"  />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"  javaType="java.lang.String"  />
+    <result column="CERTIFICATION_NBR" property="certificationNbr" jdbcType="VARCHAR"  javaType="java.lang.String"  />
+    <result column="EXPIRE_DATE" property="expireDate" jdbcType="TIMESTAMP"  javaType="java.lang.String" />
+    <result column="CERTIFICATED_DATE" property="certificatedDate" jdbcType="TIMESTAMP"  javaType="java.lang.String"  />
+  </resultMap>
+  
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.Certification" >
+    <id column="CERTIFICATION_ID" property="certificationId" jdbcType="VARCHAR" />
+    <result column="CERTIFICATION_NBR" property="certificationNbr" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_DATE" property="certificatedDate" jdbcType="TIMESTAMP" />
+    <result column="EXPIRE_DATE" property="expireDate" jdbcType="TIMESTAMP" />
+    <result column="CERTIFICATED_ORG" property="certificatedOrg" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_PERSON" property="certificatedPerson" jdbcType="VARCHAR" />
+    <result column="URL" property="url" jdbcType="VARCHAR" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_RESULT" property="certificatedResult" jdbcType="CHAR" />
+    <result column="CERTIFICATE_PHOTO" property="certificatePhoto" jdbcType="VARCHAR" />
+    <result column="EQUIPMENT_TYPE" property="equipmentType" jdbcType="VARCHAR" />
+    <result column="EQUIPMENT_NBR" property="equipmentNbr" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CERTIFICATION_ID, CERTIFICATION_NBR, CERTIFICATED_DATE, EXPIRE_DATE, CERTIFICATED_ORG, 
+    CERTIFICATED_PERSON, URL, CREATE_BY, CREATE_TIME, UPDATE_BY, REMARK, CERTIFICATED_RESULT, 
+    CERTIFICATE_PHOTO, EQUIPMENT_TYPE, EQUIPMENT_NBR, UPDATE_TIME, ORG_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION
+    where CERTIFICATION_ID = #{certificationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_CERTIFICATION
+    where CERTIFICATION_ID = #{certificationId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.Certification" >
+    insert into T_DEVICE_CERTIFICATION (CERTIFICATION_ID, CERTIFICATION_NBR, 
+      CERTIFICATED_DATE, EXPIRE_DATE, CERTIFICATED_ORG, 
+      CERTIFICATED_PERSON, URL, CREATE_BY, 
+      CREATE_TIME, UPDATE_BY, REMARK, 
+      CERTIFICATED_RESULT, CERTIFICATE_PHOTO, EQUIPMENT_TYPE, 
+      EQUIPMENT_NBR, UPDATE_TIME, ORG_NAME
+      )
+    values (#{certificationId,jdbcType=VARCHAR}, #{certificationNbr,jdbcType=VARCHAR}, 
+      #{certificatedDate,jdbcType=TIMESTAMP}, #{expireDate,jdbcType=TIMESTAMP}, #{certificatedOrg,jdbcType=VARCHAR}, 
+      #{certificatedPerson,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{certificatedResult,jdbcType=CHAR}, #{certificatePhoto,jdbcType=VARCHAR}, #{equipmentType,jdbcType=VARCHAR}, 
+      #{equipmentNbr,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{orgName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.Certification" >
+    insert into T_DEVICE_CERTIFICATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="certificationId != null" >
+        CERTIFICATION_ID,
+      </if>
+      <if test="certificationNbr != null" >
+        CERTIFICATION_NBR,
+      </if>
+      <if test="certificatedDate != null" >
+        CERTIFICATED_DATE,
+      </if>
+      <if test="expireDate != null" >
+        EXPIRE_DATE,
+      </if>
+      <if test="certificatedOrg != null" >
+        CERTIFICATED_ORG,
+      </if>
+      <if test="certificatedPerson != null" >
+        CERTIFICATED_PERSON,
+      </if>
+      <if test="url != null" >
+        URL,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="certificatedResult != null" >
+        CERTIFICATED_RESULT,
+      </if>
+      <if test="certificatePhoto != null" >
+        CERTIFICATE_PHOTO,
+      </if>
+      <if test="equipmentType != null" >
+        EQUIPMENT_TYPE,
+      </if>
+      <if test="equipmentNbr != null" >
+        EQUIPMENT_NBR,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="certificationId != null" >
+        #{certificationId,jdbcType=VARCHAR},
+      </if>
+      <if test="certificationNbr != null" >
+        #{certificationNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedDate != null" >
+        #{certificatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null" >
+        #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="certificatedOrg != null" >
+        #{certificatedOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedPerson != null" >
+        #{certificatedPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedResult != null" >
+        #{certificatedResult,jdbcType=CHAR},
+      </if>
+      <if test="certificatePhoto != null" >
+        #{certificatePhoto,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentType != null" >
+        #{equipmentType,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentNbr != null" >
+        #{equipmentNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgName != null" >
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Certification" >
+    update T_DEVICE_CERTIFICATION
+    <set >
+      <if test="certificationNbr != null" >
+        CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedDate != null" >
+        CERTIFICATED_DATE = #{certificatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null" >
+        EXPIRE_DATE = #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="certificatedOrg != null" >
+        CERTIFICATED_ORG = #{certificatedOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedPerson != null" >
+        CERTIFICATED_PERSON = #{certificatedPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        URL = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedResult != null" >
+        CERTIFICATED_RESULT = #{certificatedResult,jdbcType=CHAR},
+      </if>
+      <if test="certificatePhoto != null" >
+        CERTIFICATE_PHOTO = #{certificatePhoto,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentType != null" >
+        EQUIPMENT_TYPE = #{equipmentType,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentNbr != null" >
+        EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CERTIFICATION_ID = #{certificationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Certification" >
+    update T_DEVICE_CERTIFICATION
+    set CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR},
+      CERTIFICATED_DATE = #{certificatedDate,jdbcType=TIMESTAMP},
+      EXPIRE_DATE = #{expireDate,jdbcType=TIMESTAMP},
+      CERTIFICATED_ORG = #{certificatedOrg,jdbcType=VARCHAR},
+      CERTIFICATED_PERSON = #{certificatedPerson,jdbcType=VARCHAR},
+      URL = #{url,jdbcType=VARCHAR},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CERTIFICATED_RESULT = #{certificatedResult,jdbcType=CHAR},
+      CERTIFICATE_PHOTO = #{certificatePhoto,jdbcType=VARCHAR},
+      EQUIPMENT_TYPE = #{equipmentType,jdbcType=VARCHAR},
+      EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      ORG_NAME = #{orgName,jdbcType=VARCHAR}
+    where CERTIFICATION_ID = #{certificationId,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 升序查询设备对应的证书信息 -->
+  <select id="selectCertifications" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION
+    where EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR} order by expire_date asc
+  </select>
+  
+  <!-- 
+  <select id="findLatesCertByDevId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION
+    where EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR} order by expire_date desc
+  </select>
+   -->
+   <!-- 降序查询设备对应的证书信息 -->
+  <select id="findLatesCertByDevSysNbr" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  	select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION
+    where EQUIPMENT_NBR = #{deviceSysNbr,jdbcType=VARCHAR} order by expire_date desc
+  </select>
+  
+  <!-- 校验证书编号是否存在，添加时校验只传证书编号，修改时校验传证书编号与ID -->
+  <select id="selectCertificationCountByNbrId" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select 
+    count(*)
+    from T_DEVICE_CERTIFICATION
+    where CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR}
+     <if test="certificationId != null and certificationId !=''" >
+        and CERTIFICATION_ID != #{certificationId,jdbcType=VARCHAR}
+      </if>
+  </select>
+  
+  
+   <!-- 查询已登记设备的证书信息 -->
+   <select id="selectEquipmentCertificationList" resultMap="BaseResultMapList_Yes" parameterType="java.util.Map" >
+     select 
+     bb.EQUIPMENT_NBR,bb.EQUIPMENT_TYPE,bb.EQUIPMENT_TYPE_NAME,bb.EQUIPMENT_NAME,bb.ORG_NAME,aa.CERTIFICATION_NBR,to_char(aa.EXPIRE_DATE,'yyyy-mm-dd') EXPIRE_DATE,to_char(aa.CERTIFICATED_DATE,'yyyy-mm-dd') CERTIFICATED_DATE
+     from  
+	    (select a.regional_id as device_id,a.regional_code as equipment_nbr,a.regional_name as equipment_name,b.org_id,b.org_name, EQUIPMENT_TYPE,EQUIPMENT_TYPE_NAME 
+	    from t_sys_org d,t_sys_org b,(select a.*,'48800001' as EQUIPMENT_TYPE,'区间测速' as EQUIPMENT_TYPE_NAME  from T_DEVICE_REGION a) a 
+	    where a.org_id=b.org_id and b.org_privilege_code like d.org_privilege_code||'%' and a.verification_mark='1'
+	     <if test="orgId != null and orgId != ''" >
+	        and d.org_id= #{orgId,jdbcType=VARCHAR}
+	     </if>
+	     <if test="equipmentTypeArray != null and equipmentTypeArray.length > 0" >
+	        and a.EQUIPMENT_TYPE in
+	        <foreach collection="equipmentTypeArray" index="index" item="item" 
+					open="(" separator="," close=")">
+					trim(#{item,jdbcType=VARCHAR})
+			 </foreach>
+	     </if>
+	     <if test="equipmentNbr != null and equipmentNbr != ''" >
+	        and a.regional_code like '%'||#{equipmentNbr,jdbcType=VARCHAR}||'%'
+	     </if>
+	  	union 
+	  	select  a.device_id,a.device_sys_nbr,a.device_name,b.org_id,b.org_name,'488'||c.code_type||c.code_no as EQUIPMENT_TYPE, c.code_name as EQUIPMENT_TYPE_NAME from t_sys_org d,t_sys_org b,
+	  	(select * from t_sys_code a where a.code_no in(select substr(b.code_no,7,length(b.code_no)-6) from t_sys_code b where substr(b.code_no,4,3)='400' and  b.code_type='488') and a.code_type='400') c,
+	  	T_DEVICE_SYS a    where a.org_id=b.org_id and b.org_privilege_code like d.org_privilege_code||'%' and  c.code_no=a.device_type  and a.verification_mark='1'
+	  	<if test="orgId != null and orgId != ''" >
+	        and d.org_id=#{orgId,jdbcType=VARCHAR}
+	     </if>
+	     <if test="equipmentTypeArray != null and equipmentTypeArray.length > 0 " >
+	        and '488400'||trim(c.code_no) in
+	        <foreach collection="equipmentTypeArray" index="index" item="item" 
+					open="(" separator="," close=")">
+					trim(#{item,jdbcType=VARCHAR})
+			 </foreach>
+	     </if>
+	     <if test="equipmentNbr != null and equipmentNbr != ''" >
+	        and a.device_sys_nbr  like '%'||#{equipmentNbr,jdbcType=VARCHAR}||'%'
+	     </if>
+	  	union 
+	  	select a.equipment_id,a.equipment_nbr,a.equipment_name,b.org_id,b.org_name,'488'||c.code_type||c.code_no as EQUIPMENT_TYPE, c.code_name as EQUIPMENT_TYPE_NAME  from t_sys_org d,t_sys_org b,
+	  	(select * from t_sys_code a where a.code_no in(select substr(b.code_no,7,length(b.code_no)-6) from t_sys_code b where substr(b.code_no,4,3)='484' and  b.code_type='488') and a.code_type='484') c,
+	  	T_DEVICE_EQUIPMENT a   where a.org_id=b.org_id and b.org_privilege_code like d.org_privilege_code||'%' and c.code_no=a.equipment_type  and a.verification_mark='1'
+	  	 <if test="orgId != null and orgId != ''" >
+	        and d.org_id=#{orgId,jdbcType=VARCHAR}
+	     </if>
+	     <if test="equipmentTypeArray != null and equipmentTypeArray.length > 0 " >
+	        and '488484'||trim(c.code_no) in
+	        <foreach collection="equipmentTypeArray" index="index" item="item" 
+					open="(" separator="," close=")">
+					trim(#{item,jdbcType=VARCHAR})
+			 </foreach>
+	     </if>
+	     <if test="equipmentNbr != null and equipmentNbr != ''" >
+	        and a.equipment_nbr  like '%'||#{equipmentNbr,jdbcType=VARCHAR}||'%'
+	     </if>
+	  	) bb, 
+  		(select b.*
+ from (SELECT a.*,(case  when (TRUNC(a.EXPIRE_DATE - SYSDATE) >= 60) then '1' 
+  when (TRUNC(a.EXPIRE_DATE - SYSDATE) &lt;= 59 and TRUNC(a.EXPIRE_DATE - SYSDATE) &gt;= 30)  then  '2'
+  when (TRUNC(a.EXPIRE_DATE - SYSDATE) &lt;= 29 and TRUNC(a.EXPIRE_DATE - SYSDATE) &gt;=0)  then  '3'
+  else  '4' end ) as EXPIRE_DATE_Section ,ROW_NUMBER() OVER(PARTITION BY a.equipment_nbr  ORDER BY a.expire_date  DESC) rn
+         FROM T_DEVICE_CERTIFICATION a  
+         <where>
+         <if test="beginCertificatedDate != null  and beginCertificatedDate != ''">
+    		    and a.CERTIFICATED_DATE &gt;= to_date(#{beginCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')
+			</if>
+			<if test="endCertificatedDate != null  and endCertificatedDate != ''">
+    		    and a.CERTIFICATED_DATE &lt; to_date(#{endCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')+1
+			</if>
+		   </where>
+         ) b where rn=1) aa
+ 		<where> 	
+   			<if test="(expireDateSectionArray == null or expireDateSectionArray.length &lt;= 0) and (beginCertificatedDate == null or  beginCertificatedDate == '') and (endCertificatedDate == null  or endCertificatedDate == '')">
+    		     aa.EQUIPMENT_NBR(+)=bb.EQUIPMENT_NBR 
+			</if>
+			<if test="(expireDateSectionArray != null and expireDateSectionArray.length &gt;= 1) or (beginCertificatedDate != null and beginCertificatedDate != '') or (endCertificatedDate != null  and endCertificatedDate != '')">
+    		     aa.EQUIPMENT_NBR=bb.EQUIPMENT_NBR 
+			</if>
+	   		<if test="expireDateSectionArray != null and expireDateSectionArray.length &gt;= 1">
+	   		      and aa.EXPIRE_DATE_Section in 
+				<foreach collection="expireDateSectionArray" index="index" item="section" 
+					open="(" separator="," close=")">
+					#{section,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+  	    </where>
+  </select>
+  
+  <!-- 查询未登记设备的证书信息 -->
+   <select id="selectNoEquipmentCertificationList" resultMap="BaseResultMapList_No" parameterType="java.util.Map" >
+     select 
+     aa.equipment_nbr EQUIPMENT_NBR ,aa.EQUIPMENT_TYPE EQUIPMENT_TYPE ,b.code_name as EQUIPMENT_TYPE_NAME,aa.org_name ORG_NAME,aa.CERTIFICATION_NBR CERTIFICATION_NBR ,to_char(aa.EXPIRE_DATE,'yyyy-mm-dd') EXPIRE_DATE,to_char(aa.CERTIFICATED_DATE,'yyyy-mm-dd') CERTIFICATED_DATE
+   from t_sys_code b, 
+   (select b.* from (SELECT a.*,ROW_NUMBER() OVER(PARTITION BY a.equipment_nbr  ORDER BY a.expire_date  DESC) rn
+         FROM T_DEVICE_CERTIFICATION a 
+		<where>
+		     <if test="beginCertificatedDate != null  and beginCertificatedDate != ''" >
+		  		    and a.CERTIFICATED_DATE &gt;= to_date(#{beginCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')
+			 </if>
+			 <if test="endCertificatedDate != null  and endCertificatedDate != ''">
+		  		    and  a.CERTIFICATED_DATE &lt; to_date(#{endCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')+1
+			 </if>
+		     <if test="equipmentTypeArray != null and equipmentTypeArray.length &gt;= 1" >
+		        and a.equipment_type in
+		        <foreach collection="equipmentTypeArray" index="index" item="item" 
+						open="(" separator="," close=")">
+						trim(#{item,jdbcType=VARCHAR})
+				 </foreach>
+		     </if>
+		      <if test="equipmentNbr != null  and equipmentNbr != ''" >
+		         and a.equipment_nbr like '%'||#{equipmentNbr,jdbcType=VARCHAR}||'%'
+		      </if>
+		      <if test="orgName != null  and orgName != ''" >
+		         and a.org_name like '%'||#{orgName,jdbcType=VARCHAR}||'%'
+		      </if>
+      </where>
+         ) b where rn=1) aa
+          where
+           not exists(select * from (
+           select a.regional_code as equipment_nbr from T_DEVICE_REGION a where a.verification_mark='1'
+			union 
+			select a.device_sys_nbr from T_DEVICE_SYS a   where  a.verification_mark='1'
+			union 
+			select a.equipment_nbr from T_DEVICE_EQUIPMENT a  where a.verification_mark='1'
+           ) bb where aa.equipment_nbr=bb.equipment_nbr )
+           and aa.equipment_nbr is not null
+           and aa.equipment_type=b.code_no and b.code_type='488'
+  </select>
+   
+</mapper>

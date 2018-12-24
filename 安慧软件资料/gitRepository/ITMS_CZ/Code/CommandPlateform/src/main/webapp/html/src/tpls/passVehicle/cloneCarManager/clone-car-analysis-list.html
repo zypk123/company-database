@@ -1,0 +1,632 @@
+<!--
+ ********************************************************************************
+ * 用户            云南交警总队
+ * 系统名         智能交通平台
+ * 子系统名     套牌车分析记录查询
+ *
+ * 版本号          Version 1.0
+ * 作者            Yunqi Wang
+ *
+ * 更新履历       2016-3-8：创建
+ ********************************************************************************
+-->
+<!--套牌主分析页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 80px;">
+		<form cy-form="cloneVehicle" id="searchForm">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div id="falseDeck" class="table">
+					<div class="tr">
+						<div class="th" style="margin-left: 20px;">检测时间：</div>
+						<div class="td">
+							<input name="startTime" class="easyui-datetimebox" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date'],required:true,showSeconds:true"  id="start"/>至 <input
+								name="endTime" class="easyui-datetimebox" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date'],required:true,showSeconds:true" id="end" />
+						</div>
+						<div class="th" style="width: 100px; text-align: right">确认标识：</div>
+						<div class="td">
+							<input type="checkbox" name="clone_flag" value="1"
+								id="firstCheckBox" />全部 <input type="checkbox"
+								name="clone_flag" value="2" cy-click="cancelAllCheck" />有效 <input
+								type="checkbox" name="clone_flag" value="3"
+								cy-click="cancelAllCheck" />无效 <input type="checkbox"
+								name="clone_flag" value="0" cy-click="cancelAllCheck" />未确认
+						</div>
+						
+						<div class="th" style="margin-left: 30px;">号牌号码：</div>
+						<div class="td">
+							<input type="title" name="plate_nbr" class="easyui-textbox" />
+						</div>
+						
+						<div class="td" style="width: 100px;">
+							<a class="easyui-linkbutton "
+								data-options="iconCls:'icon-search'" cy-click="SearchAsync"
+								style="width: 60px; float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region: 'center'" style="width: 450px">
+		<table cy-datagrid="optionsCloneVehicle" cy-querydata="cloneVehicle"
+			cy-url="vehTrack/clone/findCloneCar"
+			id="tbDataGrid"></table>
+		<!--  ../html/src/tpls/passVehicle/cloneCarManager/data.json-->
+
+	</div>
+
+	<div data-options="region:'east'" style="width: 450px">
+		<div class="easyui-panel" id="imageArea0" style="height: 250px;"></div>
+
+		<div class="easyui-panel" id="imageArea1" style="height: 250px;"></div>
+		<br>
+		<!-- <div style="display: block;" id="confirmInvalidDiv">
+			&nbsp;&nbsp;无效原因: <select id="cc" class="easyui-combobox"
+				name="invalid" style="width: 200px;">
+				<option value="">请选择</option>
+				<option value="3">号牌识别错误</option>
+				<option value="4">系统分析不准确</option>
+				<option value="2">图像证据不足</option>
+			</select>
+		</div> -->
+		<br>
+		<div>
+			<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','3')">号牌识别错误</a>
+			<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','2')">图像证据不足</a>
+			<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','4')">分析不准确</a>
+			<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','5')">其他原因</a>
+				
+				<a class="easyui-linkbutton" style="width: 70px"
+				cy-click="confirmButton('valid','')">确认套牌</a> 
+			
+		</div>
+		<br>
+		<div style="text-align: center">
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-left'"
+				cy-click="selectPre">上一条</a> <a class="easyui-linkbutton"
+				data-options="iconCls:'icon-right'" cy-click="selectNext">下一条</a>
+		</div>
+		<br>
+		<!--<div style="overflow-y: auto;height: auto;width:250px;">-->
+		<!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_0.jpg"/>-->
+		<!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_1.jpg"/>-->
+		<!--</div>-->
+	</div>
+</div>
+<script>
+	InitPage(
+			[],
+			function($scope) {
+				$scope.$getDefaultCode(['234','002']);
+				$scope.load = function() {
+					//更新数据
+					$scope.$updateData("cloneVehicle");
+					
+					
+				};
+				$.extend($scope, {
+					/**
+		             * 初始化参数
+		             * @type {Object}
+		             */
+		             cloneVehicle : {
+		            	startTime : new Date().format("yyyy-MM-dd 00:00:00"),
+		            	endTime : new Date().format("yyyy-MM-dd hh:mm:ss")
+		            }
+				}),
+				//列表主字段
+				$scope.optionsCloneVehicle = {
+					columns : [ [ {
+						field : 'clone_vehicle_id',
+						checkbox : false,
+						align : 'center',
+						hidden:true,
+						width : 100
+					}, {
+						field : 'clone_flag',
+						title : '是否套牌',
+						align : 'center',
+						width : 25,
+						formatter:function(value, row, index) {
+							return $scope.confirmFlag(value);	
+						}
+					}, {
+						field : 'plate_nbr',
+						title : '号牌号码',
+						align : 'center',
+						width : 25,
+						styler : function(value, row, index) {
+							return $scope.plateColorFilter(row);
+							
+						}
+					}, 
+					 {
+						field : 'pass_time1',
+						title : '过车时间差(小时)',
+						align : 'center',
+						width : 40,
+						formatter:function(value,row,index){
+							if (row && row.pass_time1){
+							var time1 = row.pass_time1;
+							var time2 = row.pass_time2; 
+							var time3 = time1.replace("-", "/").replace("-", "/"); 
+							var time4 = time2.replace("-", "/").replace("-", "/"); 
+							var diff= Date.parse(time4)-Date.parse(time3);
+							var minutes=Math.abs(diff)/(60*1000*60);
+							return minutes.toFixed(1);
+							}
+						}
+					},  
+					{
+						field : 'betweenDistance',
+						title : '点位距离差(Km)',
+						align : 'center',
+						width : 40
+					},  
+					 /* {
+						field : 'pass_time1',
+						title : '过车时间1',
+						align : 'center',
+						width : 20
+					},   */
+					{
+						field : 'site_name1',
+						title : '过车点位1',
+						align : 'center',
+						width : 40
+					}, 
+					
+					{
+						field : 'site_name2',
+						title : '过车点位2',
+						align : 'center',
+						width : 30
+					}, 
+					 {
+					field : 'pass_time2',
+					title : '检测时间',
+					align : 'center',
+					width : 30
+				},  
+					/* {
+						field : 'confirmor',
+						title : '确认人',
+						align : 'center',
+						width : 20
+					}, {
+						field : 'confirm_time',
+						title : '确认时间',
+						align : 'center',
+						width : 20
+					},  */
+					] ],
+					singleSelect : true,
+					method : 'get',
+					fitColumns : true,
+					striped : true,
+					selectOnCheck : false,
+					pagination : true,
+					nowarp : false,
+					onLoadSuccess:function(data){
+						$scope.$('#tbDataGrid').datagrid('selectRow', 0);
+						$scope.displayListImage($scope.$('#tbDataGrid').datagrid(
+								'getSelected'));
+					},
+					//单击加载图片
+					onClickRow : function(index, row) {
+						if ($scope.timeout) {
+							clearTimeout($scope.timeout);
+							$scope.timeout = false;
+						} else {
+							$scope.timeout = setTimeout(function() {
+								$scope.displayListImage(row);
+								$scope.timeout = false;
+							}, 300);
+						}
+					},
+					onDblClickRow : function(index, row) {
+						$scope.$setParam("index", index);
+						$scope.$setParam("rowData", row);
+						$scope.$setParam("currentData", $scope.$('#tbDataGrid')
+								.datagrid("getRows"));
+						//查询方法
+						$scope
+								.$setParam(
+										"searchData",
+										function(type, callback) {
+											var currentPage = $scope.$(
+													"#tbDataGrid").datagrid(
+													"getPager").pagination(
+													"options").pageNumber;
+											var pageSize = $scope.$(
+													"#tbDataGrid").datagrid(
+													"getPager").pagination(
+													"options").pageSize;
+											var total = $scope.$("#tbDataGrid")
+													.datagrid("getPager")
+													.pagination("options").total;
+											//type类型：next或者prev  上一页或者下一页
+											if (type == "pre") {
+												//查找前一页
+												if (currentPage == 1) {
+													//已经是第一页
+													$.messager.alert("提示",
+															"前面没有更多的数据!");
+													$scope.$excute(callback,
+															undefined);
+												} else {
+													//查询数据
+													$scope.searchProgress();
+													//返回上一页
+													$scope.$("#tbDataGrid")
+															.pagination(
+																	"options").pageNumber = currentPage - 1;
+													refreshData(
+															$scope.cloneVehicle,
+															callback);
+												}
+											} else {
+												 //查找后一页
+												if(currentPage == Math.ceil(total/pageSize)){
+													//已经是最后一页
+													$.messager.alert("提示","后面没有更多的数据!");
+													$scope.$excute(callback,undefined);
+												}else{ 
+												//查询数据
+												//$scope.searchProgress();
+												//跳到下一页
+												$scope.$("#tbDataGrid")
+														.datagrid("getPager")
+														.pagination("options").pageNumber = currentPage + 1;
+												refreshData(
+														$scope.cloneVehicle,
+														callback);
+												}
+											}
+										});
+
+						$scope
+								.$openDialog(
+										"lookDialog",
+										{
+											title : "查看套牌车详细信息",
+											width : 1200,
+											height : 840,
+											href : "tpls/passVehicle/cloneCarManager/clone-car-analysis-detail.html"
+										}, true);
+					},
+
+				};
+				
+
+				//显示图片
+				$scope.displayListImage = function(data) {
+					if (data && data.image_url1) {
+						$scope.$setParam("images", [ $scope.$servletRoot+"VioImage?imageUrl="+data.image_url1 ]);
+						$scope.$("#imageArea0").panel("refresh",
+								"tpls/public/image-view.html");
+					}
+					$scope.timeout = setTimeout(function() {
+						console.log("parent");
+						if (data && data.image_url2) {
+							$scope.$setParam("images", [$scope.$servletRoot+"VioImage?imageUrl="+data.image_url2 ]);
+							$scope.$("#imageArea1").panel("refresh",
+									"tpls/public/image-view.html");
+						}
+					}, 500);
+				};
+				//增加操作栏按钮
+				function operatetFalseDeck(value, row, index) {
+					var button1 = $("<a class='button-edit' cy-click='editRedList("
+							+ index + ")'></a>");//编辑按钮
+					var button2 = $("<a class='button-remove' cy-click='removeRedList("
+							+ index + ")'></a>");//删除按钮
+
+					button1.linkbutton({
+						iconCls : "icon-edit"
+					});
+					button2.linkbutton({
+						iconCls : "icon-remove"
+					});
+					return $("<span/>").append(button1).append(" ").append(
+							button2).html();
+				}
+				;
+				//打开添加信息窗口
+				$scope.addFalseDeck = function() {
+					$scope
+							.$openDialog(
+									"falseDeckDialog",
+									{
+										title : '车辆详情',
+										width : 800,
+										height : 300,
+										href : 'tpls/passVehicle/controlManager/false-deck-manager-add.html'
+									});
+				};
+
+				//全选和取消全选
+				$scope.$('#firstCheckBox').click(function() {
+					var flag = this.checked;
+					$scope.$("input[name='clone_flag']").each(function() {
+						this.checked = flag;
+					})
+					//为什么这样不行，但是在其他的都可以
+					//$scope.$("input[name='confirmFlag']").attr("checked",this.checked);
+				});
+
+				//取消全部选中
+				$scope.cancelAllCheck = function() {
+					var flag = this.checked;
+					if (!flag) {
+						$scope.$('#firstCheckBox').attr("checked", false);
+					}
+				};
+				/* 
+				$scope.confirmInvalid=function(){
+					$scope.$("#confirmInvalidDiv").css("display","block");
+				}; */
+
+				//选择下一条
+				$scope.selectNext = function() {
+					var row = $scope.$('#tbDataGrid').datagrid('getSelected');
+					var currentPage = $scope.$("#tbDataGrid").datagrid(
+							"getPager").pagination("options").pageNumber;
+					var pageSize = $scope.$("#tbDataGrid").datagrid(
+					"getPager").pagination("options").pageSize;
+					if (row) {
+						var index = $scope.$('#tbDataGrid').datagrid(
+								'getRowIndex', row);
+						$scope.$('#tbDataGrid')
+								.datagrid('selectRow', index + 1);
+						row = $scope.$('#tbDataGrid').datagrid('getSelected');
+						if (row) {
+							$scope.displayListImage(row);
+						} else {
+							if (index + 1 == $scope.$('#tbDataGrid').datagrid(
+									"getRows").length && index + 1 == pageSize) {
+								//跳到下一页
+								$scope.$("#tbDataGrid").datagrid("getPager")
+										.pagination("options").pageNumber = currentPage + 1;
+								$scope.cloneVehicle.pageNumber = currentPage + 1;
+								//$scope.$("#tbDataGrid").datagrid("getPager").pagination('select', currentPage + 1);
+								$scope.SearchAsync("next");
+							}else {
+								
+							$scope.$('#tbDataGrid').datagrid('selectRow', index);
+							$.messager.alert('提示','已到最后一条!',"warning");
+							}
+						}
+					} else {
+						$.messager.alert('提示','已到最后一条!',"warning");
+					}
+				};
+
+				//选择上一条
+				$scope.selectPre = function() {
+					var row = $scope.$('#tbDataGrid').datagrid('getSelected');
+					var currentPage = $scope.$("#tbDataGrid").datagrid(
+							"getPager").pagination("options").pageNumber;
+					if (row) {
+						var index = $scope.$('#tbDataGrid').datagrid(
+								'getRowIndex', row);
+						var obj = $scope.$('#tbDataGrid').datagrid('selectRow',
+								index - 1);
+						row = $scope.$('#tbDataGrid').datagrid('getSelected');
+						if (row) {
+							$scope.VioDetail = row;
+							$scope.displayListImage(row);
+						} else {
+							if (index == 0 && currentPage>1) {
+								//跳到上一页
+								$scope.$("#tbDataGrid").datagrid("getPager")
+										.pagination("options").pageNumber = currentPage - 1;
+								$scope.cloneVehicle.pageNumber = currentPage - 1;
+								$scope.SearchAsync("pre");
+							}else {
+								$scope.$('#tbDataGrid').datagrid('selectRow', index);
+								$.messager.alert('提示','已到第一条!',"warning");
+							}
+						}
+					} else {
+						$.messager.alert('提示','已到第一条!',"warning");
+					}
+				};
+
+				/**
+				 * 查询
+				 * @constructor
+				 */
+				$scope.SearchAsync = function(type) {
+					if(!$scope.$("#searchForm").form("validate")){
+							return;
+						}
+					$scope.$updateData("cloneVehicle");
+					var check;
+					$scope.$("input[name='clone_flag']:checked").each(
+							function(i) {
+								if (0 == i) {
+									check = $(this).val();
+								} else {
+									check += ("," + $(this).val());
+								}
+							});
+					$scope.cloneVehicle.clone_flag = check;
+					$scope.$search("cloneVehicle", "", function(data) {
+						if (data && data != null && data.rows.length > 0) {
+							if ("pre" == type) {
+								$scope.$('#tbDataGrid').datagrid('selectRow',
+										$scope.cloneVehicle.pageSize - 1);
+							} else {
+								$scope.$('#tbDataGrid')
+										.datagrid('selectRow', 0);
+							}
+							$scope.$("#tbDataGrid").datagrid("getPager")
+							.pagination('refresh');
+							$scope.displayListImage($scope.$('#tbDataGrid')
+									.datagrid('getSelected'));
+						} else {
+							$.messager.alert("提示","查无数据",'info');
+							$scope.VioDetail = {};
+							$scope.$updateDom('cloneVehicle');
+						}
+						;
+					});
+				};
+
+				/**
+				 * 刷新数据
+				 */
+				var refreshData = function(params, callback) {
+					//获取分页信息
+					params.pageSize = $scope.$("#tbDataGrid").datagrid(
+							"getPager").pagination("options").pageSize;
+					params.pageNumber = $scope.$("#tbDataGrid").datagrid(
+							"getPager").pagination("options").pageNumber;
+					//获取后台数据
+					$scope
+							.$ajaxRequest({
+								url : $scope.$restRoot + "/vehTrack/clone/findCloneCar",
+								params : params,
+								success : function(data) {
+									$scope.$("#tbDataGrid").datagrid("getPager")
+									.pagination('refresh');
+									//更新数据
+									currentData = data;
+									updatePassData(data);
+									//滚动条滚动到顶部
+									//$scope.$("#passInfoContent").scrollTop(0);
+									//数据加载完毕，关闭进度条
+									$.messager.progress("close");
+									//执行自定义回调函数
+									$scope.$excute(callback, data.result.rows);
+								},
+								fail : function() {
+									$.messager.progress("close");
+									$.messager.alert("提示", "服务器繁忙","info");
+								}
+							});
+				};
+
+				/**
+				 * 更新数据 
+				 */
+				var updatePassData = function(data) {
+					$scope.$('#tbDataGrid').datagrid('loadData', data.result);
+					$scope.$updateDom("cloneVehicle");
+					$scope.$('#tbDataGrid').datagrid('selectRow', 0);
+					$scope.displayListImage($scope.$('#tbDataGrid').datagrid(
+							'getSelected'));
+				};
+
+				/**
+				 * 显示查询进度条
+				 */
+				$scope.searchProgress = function() {
+					$.messager.progress({
+						title : false,
+						msg : "正在查询，请稍后...",
+						interval : 1000,
+						text : "查询中..."
+					});
+				};
+
+				/**
+				 * 号牌颜色过滤器
+				 */
+				$scope.plateColorFilter = function(row) {
+					if (row) {
+						var colorCode = row.plate_color;
+						var style;
+						switch (colorCode) {
+						case "0":
+							style = "background-color: white;color: red;";
+							break;
+						case "1":
+							style = "background-color: yellow;color: #00000;";
+							break;
+						case "2":
+							style = "background-color: blue;color: #FFFFFF;";
+							break;
+						case "3":
+							style = "background-color: black;color: #FFFFFF;";
+							break;
+						case "4":
+							style = "background-color: #888888;color: #FFFFFF;";
+							break;
+						}
+						return style;
+					}
+				};
+				
+				/**
+				 * 确认标识
+				 */
+				$scope.confirmFlag = function(value) {
+					if (value) {
+						
+						return $scope.$getCodeName("234", value);
+					}
+				};
+
+				/**
+				 *确认按钮
+				 */
+				$scope.confirmButton = function(flag,value) {
+					var row = $scope.$('#tbDataGrid').datagrid('getSelected');
+					var param = "clone_vehicle_id=" + row.clone_vehicle_id+ "&confirm_desc="+"&clone_flag=";
+					if ("valid" == flag) {
+						param = param + "1";
+					} else if ("invalid" == flag) {
+						param = param + value;
+						/* if ($scope.$("#cc").combo("getValue")) {
+							param = param + $scope.$("#cc").combo("getValue");
+						} else {
+							param = param + "0";
+						} */
+					}
+				//获取后台数据
+				$scope
+						.$ajaxRequest({
+							url : $scope.$restRoot + "/vehTrack/clone/updateConfirmFlag",
+							params : param,
+							success : function(data) {
+								if("success" == data){
+									$.messager.alert("提示", "确认成功");
+								}
+							},
+							fail : function() {
+								$.messager.progress("close");
+								$.messager.alert("提示", "服务器繁忙");
+							}
+						});
+				};
+				/**
+				 * 号牌颜色过滤器
+				 */
+				$scope.siteCodeFilter = function(siteCode) {
+					if(!siteCode) return;
+		             return $scope.$getCodeName("002",value);
+				};
+
+			});
+</script>
+<style type="text/css">
+#cloneVehicle .th {
+	text-align: right;
+	width: 100px;
+}
+
+#cloneVehicle .veh-detial {
+	margin-left: 20px;
+	color: #24628A;
+	font-size: 14px;
+}
+</style>
+
+

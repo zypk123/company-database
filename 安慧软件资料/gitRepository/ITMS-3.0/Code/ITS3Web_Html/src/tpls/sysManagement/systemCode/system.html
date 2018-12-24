@@ -1,0 +1,139 @@
+<div class="easyui-layout">
+    <div data-options="region:'west',title:'代码管理',split: true " style="width: 200px;">
+        <div id="cy-tree"></div>
+    </div>
+    <div data-options="region:'center'">
+        <div class="linkbutton_toolbar" id="dm-toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addDm">添加</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="deleteDm">删除</a>
+        </div>
+        <table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+               cy-url="data/sysManagement/dm-data.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.load=function(){
+            $scope.$('#cy-tree').tree({
+
+                animate:true,
+                url:"data/sysManagement/system-tree.json",
+                onSelect: function(node){
+                    $scope.deptQueryDm.id=node.id;
+                    $scope.$search("deptQueryDm");
+                 },
+                onLoadSuccess: function(node,data){
+                   var roots=$scope.$('#cy-tree').tree("getRoots");
+                   $scope.$('#cy-tree').tree("select",roots[0].target);
+                }
+            })
+        };
+        $scope.optionsDm = {
+            columns: [
+                [
+                    {field: 'id',checkbox:true,align: 'center',width: 50},
+                    {field:'dmlx',title:'代码类型',align:'center',width:30},
+                    {field: 'dmbh',title: '代码编号',align: 'center',width: 30},
+                    {field: 'dmmc',title: '代码名称',align: 'center',width: 50},
+                    {field: 'qyzt',title: '启用状态',align: 'center',width: 30},
+                    {field: 'bz',title: '备注',align: 'center',width: 50},
+                    {field: 'cz',title: '操作',align: 'center',formatter: optionsDmCz,width: 40}
+                ]
+            ],
+            toolbar: $scope.$("#dm-toolbar")
+        };
+        function optionsCode(value,row,index){
+            var button1 = $("<a class='button-enable' cy-click='enable("+index+")'></a>");
+            var button2 = $("<a class='button-disable' cy-click='disable("+index+")'></a>");
+            button1.linkbutton({
+                iconCls: "icon-enable"
+            });
+            button2.linkbutton({
+                iconCls: "icon-disable"
+            });
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        //操作栏信息
+        function optionsDmCz(value, row, index) {
+            var button1 = $("<a class='button-edit' cy-click='editDm(" + index + ")'></a>");//编辑按钮
+            var button2 = $("<a class='button-remove' cy-click='removeDm(" + index + ")'></a>");//删除按钮
+
+            button1.linkbutton({
+                iconCls: "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls: "icon-remove"
+            });
+
+            return $("<span/>").append(button1).append(" ").append(button2).append(" ").html();
+        }
+        $scope.addDm=function(){
+            //保存按钮
+            // 通过Ajax提交和后台交互
+
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+            $scope.$openDialog("addDialog",{
+                title:"添加代码信息",
+                width:600,
+                height:300,
+                href:"tpls/sysManagement/systemCode/codeInformation.html?type=add"
+            })
+        };
+        //编辑页面
+        $scope.editDm=function(index){
+            //获取所有行数数据
+            var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+            console.log(rowDatas);
+            //机构信息注入当前行数据
+            $scope.$setParam("codeData", rowDatas[index]);
+
+            //保存按钮
+            // 通过Ajax提交和后台交互
+
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("editDialog").dialog("close");
+            });
+            $scope.$openDialog("editDialog",{
+                title:"修改代码信息",
+                width:600,
+                height:300,
+                href:"tpls/sysManagement/systemCode/codeInformation.html?type=edit"
+            })
+        };
+
+        //机构信息批量删除操作
+        $scope.deleteDm = function () {
+            //获得所有的行数
+            var rows = $scope.$("#dmData").datagrid("getChecked");
+            //选择要删除的行
+            if (rows.length > 0) {
+                $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                    if (r) {
+                        var ids = [];
+                        for (var i = 0; i < rows.length; i++) {
+                            ids.push(rows[i].ID);
+                        }
+                        //将选择到的行存入数组并用,分隔转换成字符串，
+                        //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id
+                        // alert(ids.join(','));
+                    }
+                });
+            } else {
+                $.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+            }
+        };
+        //删除当前行信息
+        $scope.removeDm = function (index) {
+            $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                if (r) {
+
+                }
+            });
+        };
+
+    })
+</script>

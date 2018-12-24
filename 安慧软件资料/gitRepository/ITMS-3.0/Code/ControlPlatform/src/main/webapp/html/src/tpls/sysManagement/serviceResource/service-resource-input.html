@@ -1,0 +1,54 @@
+<div id="service-resource-input" class="easyui-layout">
+	<!-- 数据录入区 -->
+	<div data-options="region:'center',border:false">
+		<form cy-form="formData" id="form">
+			<div class="table">
+				<div class="tr">
+					<div class="th">姓名：</div>
+					<div class="td">
+						<input class="easyui-textbox" name="name" required="true"  data-options="validType:'length[2,10]'" style="width:100px;"/>
+					</div>
+					<div class="th">性别：</div>
+					<div class="td">
+						<input class="easyui-combobox" cy-code="105" name="sex" style="width:100px;"/>
+					</div>
+					<div class="th">生日：</div>
+					<div class="td">
+						<input class="easyui-datebox" name="birth" style="width:100px;"/>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	<!-- 按钮 -->
+	<div data-options="region:'south',border:false,height:40">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["saveData"], function($scope) {
+		
+		/**
+		 * 保存 
+		 */
+		$scope.save = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				$scope.saveData($scope.formData);
+			}
+		};
+	}); 
+</script>
+<style>
+	#service-resource-input .th {
+		width: 60px;
+		text-align: right;
+	}
+	#service-resource-input .td {
+		width: 110px;
+	}
+</style>

@@ -1,0 +1,31 @@
+<div id="NJDYDetail" class="easyui-panel" data-options="fit:true" >
+	<div id="tt" class="easyui-tabs" data-options="fit:true">
+		<div title="实时能见度仪数据" id="current">
+		</div>
+		<div title="历史能见度仪数据" id="history" >				
+		</div>
+
+	</div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage(["locationSite_njdy","childScopeList_njdy"],function($scope){
+        $scope.load=function(){
+        	$scope.$setParam("childScopeList",$scope.childScopeList_njdy);
+        	
+        	$scope.$setParam("locationSite1",$scope.locationSite_njdy);
+        	$scope.$("#current").panel("refresh","tpls/trafficMonitor/trafficWeather/weatherNjdy/weather-njdy-current.html");
+        	
+        	$scope.$setParam("locationSite2",$scope.locationSite_njdy);
+        	$scope.$("#history").panel("refresh","tpls/trafficMonitor/trafficWeather/weatherNjdy/weather-njdy-history.html");
+        	
+          };
+       
+    });
+</script>
+
+<style>
+            
+
+</style>

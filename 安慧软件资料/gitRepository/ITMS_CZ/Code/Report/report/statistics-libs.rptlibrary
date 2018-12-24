@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <list-property name="propertyBindings">
+        <structure>
+            <property name="name">odaDriverClass</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaURL</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaUser</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaAutoCommit</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaIsolationMode</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaPassword</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">odaJndiName</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">OdaConnProfileName</property>
+            <property name="id">8</property>
+        </structure>
+        <structure>
+            <property name="name">OdaConnProfileStorePath</property>
+            <property name="id">8</property>
+        </structure>
+    </list-property>
+    <property name="units">in</property>
+    <property name="theme">defaultTheme</property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="birtds" id="8">
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );
+var myResourceFolder = reportContext.getDesignHandle().getResourceFolder(); 
+this.setExtensionProperty("OdaConnProfileStorePath", myResourceFolder + "/WEB-INF/birtds.xml");
+out = new PrintWriter(new FileWriter(Packages.cy.its.birt.report.servlet.GlobalProerty.loPath+"/debuginfo.txt", true ));
+out.println("myresourcefolder：-->"+ myResourceFolder + "/WEB-INF/birtds.xml"); 
+out.println("\n");    
+out.close();]]></method>
+            <list-property name="privateDriverProperties">
+                <ex-property>
+                    <name>metadataBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledMetadataBidiFormatStr</name>
+                </ex-property>
+                <ex-property>
+                    <name>contentBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledContentBidiFormatStr</name>
+                </ex-property>
+            </list-property>
+            <property name="odaDriverClass">oracle.jdbc.OracleDriver</property>
+            <property name="odaURL">jdbc:oracle:thin:@192.168.10.240:1521:orcl</property>
+            <property name="odaUser">itms3</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">aXRtczM=</encrypted-property>
+            <property name="OdaConnProfileName">birtds</property>
+            <property name="OdaConnProfileStorePath">src/main/webapp/WEB-INF/birtds.xml</property>
+        </oda-data-source>
+    </data-sources>
+    <themes>
+        <theme name="defaultTheme" id="4"/>
+    </themes>
+    <page-setup>
+        <simple-master-page name="NewSimpleMasterPage" id="3"/>
+    </page-setup>
+</library>

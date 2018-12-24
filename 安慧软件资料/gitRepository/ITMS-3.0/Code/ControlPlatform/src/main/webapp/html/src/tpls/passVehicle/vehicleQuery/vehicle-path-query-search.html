@@ -1,0 +1,153 @@
+<div class="table" style="margin-top: 40px;" id="vehicle-path-query-search">
+	<form id="form" cy-form="searchData">
+		<div class="tr">
+			<div class="th">
+				号牌号码：
+			</div>
+			<div class="td">
+				<input class="cy-vehNumberbox input" name="plateNbr" data-options="required:true" style="height: 40px;"/>
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				号牌种类：
+			</div>
+			<div class="td">
+				<input class="easyui-combobox" id="plateType" name="plateType"  style="width:195px;height: 40px;" cy-code="002" />
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				查询范围：
+			</div>
+			<div class="td" style="height:100px;line-height: 25px;font-size: 14px;padding-top:15px;">
+				<input class="radio" type="radio" value="0" name="searchType" checked="checked" cy-change="chagenSearchTimeType"/>
+				自定义
+				<br />
+				<input class="radio" class="radio" value="1"  type="radio" name="searchType" cy-change="chagenSearchTimeType"/>
+				最近2小时
+				<br />
+				<input class="radio" type="radio" value="2"  name="searchType" cy-change="chagenSearchTimeType"/>
+				最近1天
+				<br />
+				<input class="radio" type="radio" value="3"  name="searchType" cy-change="chagenSearchTimeType"/>
+				最近1周
+			</div>
+		</div>
+		<div class="tr">
+			<div class="th">
+				时间范围：
+			</div>
+			<div class="td" style="height:120px;">
+				<input class="easyui-datetimebox input" id="passTimeStart" name="passTimeStart"
+					required="true" data-options="prompt:'输入开始时间',validType:['maxDate[\'passTimeEnd\']','date']" style="height: 40px;"/>
+				<p style="height:18px;line-height: 18px;margin:5px;font-size: 14px;">至</p>
+				<input class="easyui-datetimebox input" id="passTimeEnd" name="passTimeEnd"
+					required="true" data-options="prompt:'输入结束时间',validType:['minDate[\'passTimeStart\']','date']" style="height: 40px;"/>
+			</div>
+		</div>
+	 	<div class="tr">
+			<div class="th" style="width:285px;text-align: center;">
+				<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchPath">查找轨迹</a>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+    InitPage(["search","searchData","data"], function($scope) {
+    	
+    	$scope.$initSearchDate($scope.$("#passTimeStart"),$scope.$("#passTimeEnd"));
+    	
+		/**
+		 * 启动加载 
+		 */
+		$scope.load = function(){
+			if ($scope.data && $scope.data.length>0){
+				$scope.searchData.plateNbr = $scope.data[0];
+				$scope.searchData.plateType = $scope.data[1];
+				$scope.searchData.passTimeStart = $scope.data[2];
+				$scope.searchData.passTimeEnd = $scope.data[3];
+				
+				if ($scope.data[4]){
+					$scope.$updateDom("searchData");
+					$scope.searchPath();
+				}
+			}
+			//样式调整
+			fitStyle();
+			//初始化输入框状态
+			$scope.chagenSearchTimeType();
+		};
+        
+        /**
+         * 调整样式 
+         */
+        var fitStyle = function(){
+        	$scope.$(".textbox-icon").css({
+        		width : 30,
+        		opacity : 1
+        	});
+        };
+        
+        /**
+         * 更改选择时间类型
+         */
+        $scope.chagenSearchTimeType = function(evt){
+       		var value = $scope.$(":radio:checked[name=searchType]").val();
+			if(value == "0"){
+				//启用自定义时间
+				$scope.$("#passTimeStart,#passTimeEnd").datetimebox("enable").datetimebox("enableValidation");
+			}else{
+				//禁用自定义事件
+				$scope.$("#passTimeStart,#passTimeEnd").datetimebox("disable").datetimebox("disableValidation");
+			}
+        };
+        
+        /**
+         * 查询过车数据 
+         */
+        $scope.searchPath = function(){
+        	if($scope.$("#form").form("validate")){
+        		//更新查询条件
+        		$scope.$updateData("searchData");
+        		$scope.searchData.pageSize = 200;
+        		$scope.searchData.pageNumber = 1;
+        		$scope.search($scope.searchData);
+        	}
+        };
+    }); 
+</script>
+<style>
+    #vehicle-path-query .th {
+        width: 100px;
+        text-align: right;
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+    }
+    #vehicle-path-query .td {
+        width: 200px;
+        text-align: left;
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+    }
+    #vehicle-path-query .input {
+        width: 190px;
+        font-size: 16px;
+    }
+    #vehicle-path-query .radio {
+        width: auto;
+    }
+    #vehicle-path-query .textbox-button-right {
+        width: 30px;
+    }
+    #vehicle-path-query .button-search .l-btn-text {
+        line-height: 35px;
+        font-size: 14px;
+    }
+    #vehicle-path-query .textbox-text{
+    	font-size: 14px;
+    }
+</style>

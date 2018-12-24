@@ -1,0 +1,224 @@
+<div class="easyui-panel" data-options="fit:true,border:false" id="trafficCount">
+		<div class="table">
+			<div class="tr" style="background: #005AB5;color: white;font-size: 12px;height:24px;">
+				<div class="td">
+					图例
+				</div>
+				<div class="th">
+					类型
+				</div>
+				<div class="td">
+					数量
+				</div>
+				<div class="td">
+					详情
+				</div>
+			</div>
+			<div class="tr" style="background-color:#e5f8e5;">
+				<div class="td">
+					<img src="themes/default/images/layers/section03.png">
+				</div>
+				<div class="th">					
+					断面流量
+				</div>
+				<div class="td" >
+					<span cy-name="dataCount.secAlarmCount" style="color: red"></span>/
+					<span cy-name="dataCount.secCount"></span>
+				</div>
+				<div class="td" >
+					<img src="themes/default/images/detail01.png" title="详情"  cy-click="func.showSection">
+				</div>
+			</div>
+			<div class="tr">
+				<div class="td">
+					<img src="themes/default/images/layers/state03.png">
+				</div>
+				<div class="th">
+					区间状态
+				</div>
+				<div class="td">
+					<span cy-name="dataCount.regAlarmCount" style="color: red"></span>/
+					<span cy-name="dataCount.regCount"></span>
+				</div>
+				<div class="td" >
+					<img src="themes/default/images/detail01.png" title="详情"  cy-click="func.showRegion">
+				</div>
+			</div>
+			<div class="tr" style="background-color:#e5f8e5;">
+				<div class="td">
+					<img src="themes/default/images/layers/event03.png">
+				</div>
+				<div class="th">
+					事件检测
+				</div>
+				<div class="td">
+					<span cy-name="dataCount.eventAlarmCount" style="color: red"></span>/
+					<span cy-name="dataCount.eventCount"></span>
+				</div>
+				<div class="td" >
+					<img src="themes/default/images/detail01.png" title="详情"  cy-click="func.showEvent">
+				</div>
+			</div>
+			<div class="tr" >
+				<div class="td">
+					<img src="themes/default/images/layers/weather03.png">
+				</div>
+				<div class="th">
+					交通气象
+				</div>
+				<div class="td">
+					<span cy-name="dataCount.weaAlarmCount"style="color: red"></span>/
+					<span cy-name="dataCount.weaCount"></span>
+				</div>
+				<div class="td" >
+					<img src="themes/default/images/detail01.png" title="详情"  cy-click="func.showWeather">
+				</div>
+			</div>
+			<div class="tr" style="background-color:#e5f8e5;">
+				<div class="td">
+					<img src="themes/default/images/layers/control03.png">
+				</div>
+				<div class="th">
+					交通管制
+				</div>
+				<div class="td" >
+					<span cy-name="dataCount.controlCount"></span>
+				</div>
+				<div class="td" >
+					<img src="themes/default/images/detail01.png" title="详情"  cy-click="func.showControl">
+					<!-- <a class="easyui-linkbutton " data-options="iconCls:'icon-detail',plain : true" cy-click="func.showControl"></a> -->
+				</div>
+			</div>
+		</div>
+
+</div>
+<script type="text/javascript">
+	InitPage(["dataCount","func","childScopeListCount"], function($scope) {
+		$scope.load=function(){
+			$scope.childScopeListCount.refreshCount=refreshCount;
+			$scope.childScopeListCount.clearTimeOutForCount=clearTimeOut;
+			$scope.childScopeListCount.setTimeOutForCount=countsAjax;
+			secCountAjax();
+			regCountAjax();
+			weaCountAjax();
+			countsAjax();
+		};
+		var timeOutId;
+		function clearTimeOut(){
+			if(timeOutId){
+		   		clearTimeout(timeOutId);
+			}
+		}
+		//传回主页面的刷新数量的方法
+		function refreshCount (data){
+			if(data.secAlarmCount||data.secAlarmCount==0){
+				$scope.dataCount.secAlarmCount=data.secAlarmCount;
+			}
+			if(data.regAlarmCount||data.regAlarmCount==0){
+				$scope.dataCount.regAlarmCount=data.regAlarmCount;
+			}
+			if(data.eventAlarmCount||data.eventAlarmCount==0){
+				$scope.dataCount.eventAlarmCount=data.eventAlarmCount;
+			}
+			if(data.weaAlarmCount||data.weaAlarmCount==0){
+				$scope.dataCount.weaAlarmCount=data.weaAlarmCount;
+			}
+			if(data.controlCount||data.controlCount==0){
+				$scope.dataCount.controlCount=data.controlCount;
+			}
+			$scope.$updateDom("dataCount");
+		}
+		//断面总数
+		function secCountAjax(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficState/multiple/selectSecCount",
+				success : function(data) {	
+					$scope.dataCount.secCount=data;
+					$scope.$updateDom("dataCount");
+				},
+				fail : function(errMsg) {
+				}
+			});			
+		}
+		//区间总数
+		function regCountAjax(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/mapRoad/selectRoadCount",
+				success : function(data) {	
+					$scope.dataCount.regCount=data;
+					$scope.$updateDom("dataCount");
+				},
+				fail : function(errMsg) {
+				}
+			});		
+		}
+		//气象设备总数
+		function weaCountAjax(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/device/deviceCount",
+				params : {deviceType : "05"},
+				success : function(data) {	
+					$scope.dataCount.weaCount=data;
+					$scope.$updateDom("dataCount");
+				},
+				fail : function(errMsg) {
+				}
+			});		
+		}
+		//当天事件总数、当天未处理事件总数、有效的交通管制总数
+		function countsAjax(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/alarmEvent/getCounts",
+				success : function(data) {	
+					$scope.dataCount.eventCount=data.eventCount;
+					$scope.dataCount.eventAlarmCount=data.eventAlarmCount;
+					$scope.dataCount.controlCount=data.controlCount;
+					$scope.$updateDom("dataCount");
+					// var date=new Date();
+					// var seperator2 = ":";
+					// var currentdate = date.getHours() + seperator2 + date.getMinutes()
+           			 // + seperator2 + date.getSeconds();					
+					// console.log("[counts:]"+currentdate);
+					timeOutId=setTimeout(function(){return countsAjax();}, 90*1000);	
+				},
+				fail : function(errMsg) {
+				}
+			});		
+		}
+	}); 
+</script>
+
+<style>
+	#trafficCount .tr {
+		border-bottom: solid 1px #D1E9E9;
+		border-top: solid 1px #D1E9E9;
+		opacity: 0.6;
+		height: 20px;
+	}
+	#trafficCount .th {
+		width: 51px;
+		text-align: center;
+		height: 13px;
+		line-height: 12px;
+		padding: 4px 0;
+	}
+	#trafficCount .td {
+		width: 40px;
+		text-align: center;
+		height: 13px;
+		line-height: 10px;
+		padding: 4px 0;
+		
+	}	
+	#trafficCount .datagrid-row{
+		height: 22px;
+		line-height:18px;
+		text-align: center;
+	}
+	#trafficCount img{
+		cursor: pointer;
+		text-align:center;
+		width: 16px;
+		height:16px;	
+	}
+</style>

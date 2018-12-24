@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.CertificationRecordMapper" >
+  
+   <resultMap id="BaseResultMapList" type="java.util.HashMap" >
+  	<result column="RECORD_ID" property="recordId" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="CERTIFICATION_NBR" property="certificationNbr" jdbcType="VARCHAR" javaType="java.lang.String" />
+  	<result column="EQUIPMENT_NBR" property="equipmentNbr" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="MODEL_NAME" property="modelName" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="CERTIFICATED_DATE" property="certificatedDate" jdbcType="TIMESTAMP" javaType="java.lang.String" />
+    <result column="EXPIRE_DATE" property="expireDate" jdbcType="TIMESTAMP" javaType="java.lang.String" />
+    <result column="IMPORT_DATE" property="importDate" jdbcType="VARCHAR" javaType="java.lang.String" />
+    <result column="IMPORT_MARK" property="importMark" jdbcType="VARCHAR" javaType="java.lang.String" />
+  </resultMap>
+  
+  
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.CertificationRecord" >
+    <id column="RECORD_ID" property="recordId" jdbcType="VARCHAR" />
+    <result column="IMPORT_DATE" property="importDate" jdbcType="VARCHAR" />
+    <result column="EQUIPMENT_NBR" property="equipmentNbr" jdbcType="VARCHAR" />
+    <result column="CERTIFICATION_NBR" property="certificationNbr" jdbcType="VARCHAR" />
+    <result column="EQUIPMENT_TYPE" property="equipmentType" jdbcType="VARCHAR" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" />
+    <result column="MODEL_NAME" property="modelName" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_DATE" property="certificatedDate" jdbcType="TIMESTAMP" />
+    <result column="EXPIRE_DATE" property="expireDate" jdbcType="TIMESTAMP" />
+    <result column="EXPIRE_MARK" property="expireMark" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_RESULT" property="certificatedResult" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_ORG" property="certificatedOrg" jdbcType="VARCHAR" />
+    <result column="CERTIFICATED_PERSON" property="certificatedPerson" jdbcType="VARCHAR" />
+    <result column="IMPORT_MARK" property="importMark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_PERSON" property="createPerson" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_PERSON" property="updatePerson" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="IMPORT_ACCEPT" property="importAccept" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RECORD_ID, IMPORT_DATE, EQUIPMENT_NBR, CERTIFICATION_NBR, EQUIPMENT_TYPE, 
+    ORG_NAME, DEVICE_NAME, MODEL_NAME, CERTIFICATED_DATE, EXPIRE_DATE, EXPIRE_MARK, CERTIFICATED_RESULT, 
+    CERTIFICATED_ORG, CERTIFICATED_PERSON, IMPORT_MARK, CREATE_TIME, CREATE_PERSON, UPDATE_TIME, 
+    UPDATE_PERSON, REMARK, IMPORT_ACCEPT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION_RECORD
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_CERTIFICATION_RECORD
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.CertificationRecord" >
+    insert into T_DEVICE_CERTIFICATION_RECORD (RECORD_ID, IMPORT_DATE,
+      EQUIPMENT_NBR, CERTIFICATION_NBR, EQUIPMENT_TYPE, 
+      ORG_NAME, DEVICE_NAME, MODEL_NAME, 
+      CERTIFICATED_DATE, EXPIRE_DATE, EXPIRE_MARK, 
+      CERTIFICATED_RESULT, CERTIFICATED_ORG, CERTIFICATED_PERSON, 
+      IMPORT_MARK, CREATE_TIME, CREATE_PERSON, 
+      UPDATE_TIME, UPDATE_PERSON, REMARK, 
+      IMPORT_ACCEPT)
+    values (#{recordId,jdbcType=VARCHAR}, #{importDate,jdbcType=VARCHAR},
+      #{equipmentNbr,jdbcType=VARCHAR}, #{certificationNbr,jdbcType=VARCHAR}, #{equipmentType,jdbcType=VARCHAR}, 
+      #{orgName,jdbcType=VARCHAR}, #{deviceName,jdbcType=VARCHAR}, #{modelName,jdbcType=VARCHAR}, 
+      #{certificatedDate,jdbcType=TIMESTAMP}, #{expireDate,jdbcType=TIMESTAMP}, #{expireMark,jdbcType=VARCHAR}, 
+      #{certificatedResult,jdbcType=VARCHAR}, #{certificatedOrg,jdbcType=VARCHAR}, #{certificatedPerson,jdbcType=VARCHAR}, 
+      #{importMark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createPerson,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updatePerson,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{importAccept,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.CertificationRecord" >
+    insert into T_DEVICE_CERTIFICATION_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        RECORD_ID,
+      </if>
+      <if test="importDate != null" >
+        IMPORT_DATE,
+      </if>
+      <if test="equipmentNbr != null" >
+        EQUIPMENT_NBR,
+      </if>
+      <if test="certificationNbr != null" >
+        CERTIFICATION_NBR,
+      </if>
+      <if test="equipmentType != null" >
+        EQUIPMENT_TYPE,
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME,
+      </if>
+      <if test="deviceName != null" >
+        DEVICE_NAME,
+      </if>
+      <if test="modelName != null" >
+        MODEL_NAME,
+      </if>
+      <if test="certificatedDate != null" >
+        CERTIFICATED_DATE,
+      </if>
+      <if test="expireDate != null" >
+        EXPIRE_DATE,
+      </if>
+      <if test="expireMark != null" >
+        EXPIRE_MARK,
+      </if>
+      <if test="certificatedResult != null" >
+        CERTIFICATED_RESULT,
+      </if>
+      <if test="certificatedOrg != null" >
+        CERTIFICATED_ORG,
+      </if>
+      <if test="certificatedPerson != null" >
+        CERTIFICATED_PERSON,
+      </if>
+      <if test="importMark != null" >
+        IMPORT_MARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="createPerson != null" >
+        CREATE_PERSON,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="updatePerson != null" >
+        UPDATE_PERSON,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="importAccept != null" >
+        IMPORT_ACCEPT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="importDate != null" >
+        #{importDate,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentNbr != null" >
+        #{equipmentNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="certificationNbr != null" >
+        #{certificationNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentType != null" >
+        #{equipmentType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceName != null" >
+        #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelName != null" >
+        #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedDate != null" >
+        #{certificatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null" >
+        #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireMark != null" >
+        #{expireMark,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedResult != null" >
+        #{certificatedResult,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedOrg != null" >
+        #{certificatedOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedPerson != null" >
+        #{certificatedPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="importMark != null" >
+        #{importMark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createPerson != null" >
+        #{createPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatePerson != null" >
+        #{updatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="importAccept != null" >
+        #{importAccept,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.CertificationRecord" >
+    update T_DEVICE_CERTIFICATION_RECORD
+    <set >
+      <if test="importDate != null" >
+        IMPORT_DATE = #{importDate,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentNbr != null" >
+        EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="certificationNbr != null" >
+        CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentType != null" >
+        EQUIPMENT_TYPE = #{equipmentType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceName != null" >
+        DEVICE_NAME = #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelName != null" >
+        MODEL_NAME = #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedDate != null" >
+        CERTIFICATED_DATE = #{certificatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null" >
+        EXPIRE_DATE = #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireMark != null" >
+        EXPIRE_MARK = #{expireMark,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedResult != null" >
+        CERTIFICATED_RESULT = #{certificatedResult,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedOrg != null" >
+        CERTIFICATED_ORG = #{certificatedOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedPerson != null" >
+        CERTIFICATED_PERSON = #{certificatedPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="importMark != null" >
+        IMPORT_MARK = #{importMark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createPerson != null" >
+        CREATE_PERSON = #{createPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatePerson != null" >
+        UPDATE_PERSON = #{updatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="importAccept != null" >
+        IMPORT_ACCEPT = #{importAccept,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.CertificationRecord" >
+    update T_DEVICE_CERTIFICATION_RECORD
+    set IMPORT_DATE = #{importDate,jdbcType=VARCHAR},
+      EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR},
+      CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR},
+      EQUIPMENT_TYPE = #{equipmentType,jdbcType=VARCHAR},
+      ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      DEVICE_NAME = #{deviceName,jdbcType=VARCHAR},
+      MODEL_NAME = #{modelName,jdbcType=VARCHAR},
+      CERTIFICATED_DATE = #{certificatedDate,jdbcType=TIMESTAMP},
+      EXPIRE_DATE = #{expireDate,jdbcType=TIMESTAMP},
+      EXPIRE_MARK = #{expireMark,jdbcType=VARCHAR},
+      CERTIFICATED_RESULT = #{certificatedResult,jdbcType=VARCHAR},
+      CERTIFICATED_ORG = #{certificatedOrg,jdbcType=VARCHAR},
+      CERTIFICATED_PERSON = #{certificatedPerson,jdbcType=VARCHAR},
+      IMPORT_MARK = #{importMark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      CREATE_PERSON = #{createPerson,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      UPDATE_PERSON = #{updatePerson,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      IMPORT_ACCEPT = #{importAccept,jdbcType=VARCHAR}
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+   <!-- 根据导入批次 证书编号更新 -->
+   <update id="updateByByNbrImportDate" parameterType="cy.its.device.domain.model.CertificationRecord" >
+    update T_DEVICE_CERTIFICATION_RECORD
+    <set >
+      <if test="importDate != null" >
+        IMPORT_DATE = #{importDate,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentNbr != null" >
+        EQUIPMENT_NBR = #{equipmentNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="certificationNbr != null" >
+        CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="equipmentType != null" >
+        EQUIPMENT_TYPE = #{equipmentType,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceName != null" >
+        DEVICE_NAME = #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelName != null" >
+        MODEL_NAME = #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedDate != null" >
+        CERTIFICATED_DATE = #{certificatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null" >
+        EXPIRE_DATE = #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireMark != null" >
+        EXPIRE_MARK = #{expireMark,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedResult != null" >
+        CERTIFICATED_RESULT = #{certificatedResult,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedOrg != null" >
+        CERTIFICATED_ORG = #{certificatedOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificatedPerson != null" >
+        CERTIFICATED_PERSON = #{certificatedPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="importMark != null" >
+        IMPORT_MARK = #{importMark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createPerson != null" >
+        CREATE_PERSON = #{createPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatePerson != null" >
+        UPDATE_PERSON = #{updatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="importAccept != null" >
+        IMPORT_ACCEPT = #{importAccept,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR} and import_date = #{importDate,jdbcType=VARCHAR}
+  </update>
+  
+    
+  <!-- 查询导入批次信息 -->
+   <select id="selectCertificationRecordList" resultMap="BaseResultMapList" parameterType="java.util.Map" >
+     select a.RECORD_ID,a.CERTIFICATION_NBR,a.EQUIPMENT_NBR,a.ORG_NAME,a.DEVICE_NAME,a.MODEL_NAME,to_char(a.CERTIFICATED_DATE,'yyyy-mm-dd') CERTIFICATED_DATE,to_char(a.EXPIRE_DATE,'yyyy-mm-dd') EXPIRE_DATE ,a.IMPORT_DATE,b.code_name as IMPORT_MARK
+     from t_sys_code b, T_DEVICE_CERTIFICATION_RECORD a 
+     where a.import_mark=b.code_no and b.code_type='490'
+     <if test="importDate != null and importDate != ''" >
+        and a.import_date=#{importDate,jdbcType=VARCHAR}
+     </if>
+      <if test="beginCertificatedDate != null and beginCertificatedDate != ''">
+  		    and a.CERTIFICATED_DATE &gt;= to_date(#{beginCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')
+	 </if>
+	 <if test="endCertificatedDate != null and endCertificatedDate != '' ">
+  		   and  a.CERTIFICATED_DATE &lt; to_date(#{endCertificatedDate,jdbcType=VARCHAR},'YYYY-MM-DD')+1
+	 </if>
+     <if test="equipmentTypeArray != null and equipmentTypeArray.length &gt;= 1" >
+        and a.equipment_type in
+        <foreach collection="equipmentTypeArray" index="index" item="item" 
+				open="(" separator="," close=")">
+				trim(#{item,jdbcType=VARCHAR})
+		 </foreach>
+      </if>
+      <if test="equipmentNbr != null and equipmentNbr != ''" >
+         and a.equipment_nbr like '%'||#{equipmentNbr,jdbcType=VARCHAR} ||'%'
+      </if>
+      <if test="orgName != null and orgName != ''" >
+         and a.org_name like '%'|| #{orgName,jdbcType=VARCHAR} ||'%'
+      </if>
+      <if test="importMarkArray != null and importMarkArray.length &gt; 0 ">
+   		      and a.import_mark in 
+		<foreach collection="importMarkArray" index="index" item="mark"
+			open="(" separator="," close=")">
+			#{mark,jdbcType=VARCHAR}
+		</foreach>
+	  </if>
+  </select>
+  <!-- 根据ID查询导入批次信息  -->
+   <select id="selectCertificationRecordListByIds" resultMap="BaseResultMapList" parameterType="java.lang.reflect.Array" >
+     select a.RECORD_ID,a.CERTIFICATION_NBR,a.EQUIPMENT_NBR,a.ORG_NAME,a.DEVICE_NAME,a.MODEL_NAME,to_char(a.CERTIFICATED_DATE,'yyyy-mm-dd') CERTIFICATED_DATE,to_char(a.EXPIRE_DATE,'yyyy-mm-dd') EXPIRE_DATE,a.IMPORT_DATE,b.code_name as IMPORT_MARK
+     from t_sys_code b, T_DEVICE_CERTIFICATION_RECORD a 
+     where a.import_mark=b.code_no and b.code_type='490'
+  		and a.RECORD_ID in 
+		<foreach collection="array" index="index" item="recordId" open="(" separator="," close=")">
+			#{recordId,jdbcType=VARCHAR}
+		</foreach>
+  </select>
+   
+  <!-- 查询需年检设备对应的设备类型 -->
+   <select id="selectVerificationEquipmentTypeByNbr" resultType="java.lang.String"   parameterType="java.lang.String" >
+      select '48800001' as EQUIPMENT_TYPE from T_DEVICE_REGION  a where a.verification_mark='1'
+      	<if test="equipmentNbr != null and equipmentNbr != ''" >
+         and a.regional_code = #{equipmentNbr,jdbcType=VARCHAR}
+        </if>
+      union 
+      select  '488484' || a.DEVICE_TYPE   from T_DEVICE_SYS a where a.verification_mark='1'
+      	<if test="equipmentNbr != null and equipmentNbr != ''" >
+         and a.device_sys_nbr = #{equipmentNbr,jdbcType=VARCHAR}
+        </if>
+      union 
+      select  '488400' || a.EQUIPMENT_TYPE    from T_DEVICE_EQUIPMENT a   where  a.verification_mark='1'
+	   	<if test="equipmentNbr != null and equipmentNbr != ''" >
+         and a.equipment_nbr = #{equipmentNbr,jdbcType=VARCHAR}
+        </if>
+  </select>
+  
+  <!-- 查询所有需年检设备的设备编码 -->
+   <select id="selectAllVerificationEquipmentNbr" resultType="java.lang.String"  >
+      select a.regional_code as EQUIPMENT_NBR  from T_DEVICE_REGION  a where a.verification_mark='1'
+      union 
+      select  a.device_sys_nbr   from T_DEVICE_SYS a where a.verification_mark='1'
+      union 
+      select a.equipment_nbr  from T_DEVICE_EQUIPMENT a   where  a.verification_mark='1'
+  </select>
+  
+  
+  
+  
+  
+  <!-- 根据入库批次 证书编号查询入库记录信息 -->
+  <select id="selectCertificationByNbrImportDate" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_CERTIFICATION_RECORD
+    where CERTIFICATION_NBR = #{certificationNbr,jdbcType=VARCHAR} and import_date = #{importDate,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 根据入库批次 查询本批次已经入库的检定证书编号 -->
+  <select id="selectCertificationNbrListByImportDate" resultType="java.lang.String" parameterType="java.lang.String" >
+    select trim(CERTIFICATION_NBR) from T_DEVICE_CERTIFICATION_RECORD
+    where CERTIFICATION_NBR is not null and  import_date = #{importDate,jdbcType=VARCHAR}
+  </select>
+  
+  
+    <!-- 根据记录表更新证书信息 -->
+  <update id="updateCertificationByRecord"  parameterType="java.util.HashMap" >
+	  update T_DEVICE_CERTIFICATION a
+	   set (CERTIFICATED_DATE,
+	        EXPIRE_DATE,
+	        CERTIFICATED_ORG,
+	        CERTIFICATED_PERSON,
+	        UPDATE_BY,
+	        CERTIFICATED_RESULT,
+	        EQUIPMENT_TYPE,
+	        EQUIPMENT_NBR,
+	        UPDATE_TIME,
+	        ORG_NAME) =
+	       (select distinct b.certificated_date,
+	               b.expire_date,
+	               b.certificated_org,
+	               b.certificated_person,
+	               #{currentUserId,jdbcType=VARCHAR},
+	               decode(b.certificated_result,'合格',1,2),
+	               b.equipment_type,
+	               b.equipment_nbr,
+	               #{createDate, jdbcType=TIMESTAMP},
+	               b.org_name
+	          from T_DEVICE_CERTIFICATION_RECORD b
+	         where a.certification_nbr = b.certification_nbr
+	           and b.import_mark in ('1', '2')
+	           and b.import_date =  #{importDate,jdbcType=VARCHAR}
+	           and b.import_accept = #{importAccept,jdbcType=VARCHAR})
+	 	where exists
+	 	(select distinct b.certificated_date,
+               b.expire_date,
+               b.certificated_org,
+               b.certificated_person,
+               #{currentUserId,jdbcType=VARCHAR},
+               decode(b.certificated_result,'合格',1,2),
+               b.equipment_type,
+               b.equipment_nbr,
+               #{createDate, jdbcType=TIMESTAMP},
+               b.org_name
+	          from T_DEVICE_CERTIFICATION_RECORD b
+	         where a.certification_nbr = b.certification_nbr
+	           and b.import_mark in ('1', '2')
+	           and b.import_date =  #{importDate,jdbcType=VARCHAR}
+	           and b.import_accept = #{importAccept,jdbcType=VARCHAR})
+  </update>
+  
+  <!-- 根据记录表插入证书信息(只插入交警设备的证书) -->
+  <insert id="insertCertificationByRecord"  parameterType="java.util.HashMap"  >
+	   insert into T_DEVICE_CERTIFICATION
+		  ( CERTIFICATION_ID,
+		    CERTIFICATION_NBR,
+		    CERTIFICATED_DATE,
+		    EXPIRE_DATE,
+		    CERTIFICATED_ORG,
+		    CERTIFICATED_PERSON,
+		    CREATE_BY,
+		    CREATE_TIME,
+		    CERTIFICATED_RESULT,
+		    EQUIPMENT_TYPE,
+		    EQUIPMENT_NBR,
+		    ORG_NAME
+		)
+	  select distinct  b.record_id,
+	         b.certification_nbr,
+	         b.certificated_date,
+	         b.expire_date,
+	         b.certificated_org,
+	         b.certificated_person,
+	         #{currentUserId, jdbcType=VARCHAR},
+	         #{createDate, jdbcType=TIMESTAMP},
+	         decode(b.certificated_result,'合格',1,2),
+	         b.equipment_type,
+	         b.equipment_nbr,
+	         b.org_name
+	    from T_DEVICE_CERTIFICATION_RECORD b
+	   where not exists (select *
+	            from T_DEVICE_CERTIFICATION a
+	           where a.certification_nbr = b.certification_nbr)
+	     and b.import_mark in ('1', '2')
+	     and b.import_date =  #{importDate, jdbcType=VARCHAR}
+	     and b.import_accept = #{importAccept, jdbcType=VARCHAR}
+  </insert>
+  
+  <!-- 查询导入批次列表 -->
+  <select id="selectImportDateList" resultType="java.lang.String"  >
+    select 
+      distinct import_date
+    from T_DEVICE_CERTIFICATION_RECORD order by import_date desc
+  </select>
+  
+  <!-- 查询导入结果 -->
+  <select id="selectImportResult" resultType="java.util.HashMap" parameterType="java.lang.String"   >
+    select 
+      sum(decode(a.import_mark,'1',1,0)) IMPORTSUCESSCOUNT, 
+      sum(decode(a.import_mark,'2',1,0)) UNREGISTEREDCOUNT, 
+      sum(decode(a.import_mark,'3',1,0)) UNPOLICECOUNT,       
+      sum(decode(a.import_mark,'4',1,0)) OTHERCOUNT
+    from T_DEVICE_CERTIFICATION_RECORD a where a.import_date =  #{importDate, jdbcType=VARCHAR}
+	     and a.import_accept = #{importAccept, jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 
+  <insert id="insertCertificationRecordBatch" parameterType="java.util.List" >
+    insert into T_DEVICE_CERTIFICATION_RECORD (RECORD_ID, IMPORT_DATE,
+      EQUIPMENT_NBR, CERTIFICATION_NBR, EQUIPMENT_TYPE, 
+      ORG_NAME, DEVICE_NAME, MODEL_NAME, 
+      CERTIFICATED_DATE, EXPIRE_DATE, EXPIRE_MARK, 
+      CERTIFICATED_RESULT, CERTIFICATED_ORG, CERTIFICATED_PERSON, 
+      IMPORT_MARK, CREATE_TIME, CREATE_PERSON, 
+      UPDATE_TIME, UPDATE_PERSON, REMARK, 
+      IMPORT_ACCEPT)
+    <foreach collection="list" item="rocord" index="index" separator=" union all " >
+      select #{rocord.recordId,jdbcType=VARCHAR}, #{rocord.importDate,jdbcType=VARCHAR},
+      #{rocord.equipmentNbr,jdbcType=VARCHAR}, #{rocord.certificationNbr,jdbcType=VARCHAR}, #{rocord.equipmentType,jdbcType=VARCHAR}, 
+      #{rocord.orgName,jdbcType=VARCHAR}, #{rocord.deviceName,jdbcType=VARCHAR}, #{rocord.modelName,jdbcType=VARCHAR}, 
+      #{rocord.certificatedDate,jdbcType=TIMESTAMP}, #{rocord.expireDate,jdbcType=TIMESTAMP}, #{rocord.expireMark,jdbcType=VARCHAR}, 
+      #{rocord.certificatedResult,jdbcType=VARCHAR}, #{rocord.certificatedOrg,jdbcType=VARCHAR}, #{rocord.certificatedPerson,jdbcType=VARCHAR}, 
+      #{rocord.importMark,jdbcType=VARCHAR}, #{rocord.createTime,jdbcType=TIMESTAMP}, #{rocord.createPerson,jdbcType=VARCHAR}, 
+      #{rocord.updateTime,jdbcType=TIMESTAMP}, #{rocord.updatePerson,jdbcType=VARCHAR}, #{rocord.remark,jdbcType=VARCHAR}, 
+      #{rocord.importAccept,jdbcType=VARCHAR} from dual
+    </foreach>
+  </insert>
+   -->
+  
+  <!-- 批量插入检定证书批量导入记录表   MERGE方式效率反而更高些  有些费解  -->
+  <insert id="insertCertificationRecordBatch" parameterType="java.util.List">
+	MERGE INTO T_DEVICE_CERTIFICATION_RECORD record
+		USING
+		(
+		 <foreach collection="list" item="rocord" index="index" separator=" union " >
+	      select #{rocord.recordId,jdbcType=VARCHAR} RECORD_ID, #{rocord.importDate,jdbcType=VARCHAR} IMPORT_DATE,
+	      #{rocord.equipmentNbr,jdbcType=VARCHAR} EQUIPMENT_NBR, #{rocord.certificationNbr,jdbcType=VARCHAR} CERTIFICATION_NBR, #{rocord.equipmentType,jdbcType=VARCHAR} EQUIPMENT_TYPE, 
+	      #{rocord.orgName,jdbcType=VARCHAR} ORG_NAME, #{rocord.deviceName,jdbcType=VARCHAR} DEVICE_NAME, #{rocord.modelName,jdbcType=VARCHAR} MODEL_NAME, 
+	      #{rocord.certificatedDate,jdbcType=TIMESTAMP} CERTIFICATED_DATE, #{rocord.expireDate,jdbcType=TIMESTAMP} EXPIRE_DATE, #{rocord.expireMark,jdbcType=VARCHAR} EXPIRE_MARK, 
+	      #{rocord.certificatedResult,jdbcType=VARCHAR} CERTIFICATED_RESULT, #{rocord.certificatedOrg,jdbcType=VARCHAR} CERTIFICATED_ORG, #{rocord.certificatedPerson,jdbcType=VARCHAR} CERTIFICATED_PERSON, 
+	      #{rocord.importMark,jdbcType=VARCHAR} IMPORT_MARK, #{rocord.createTime,jdbcType=TIMESTAMP} CREATE_TIME, #{rocord.createPerson,jdbcType=VARCHAR} CREATE_PERSON, 
+	      #{rocord.updateTime,jdbcType=TIMESTAMP} UPDATE_TIME, #{rocord.updatePerson,jdbcType=VARCHAR} UPDATE_PERSON, #{rocord.remark,jdbcType=VARCHAR} REMARK, 
+	      #{rocord.importAccept,jdbcType=VARCHAR} IMPORT_ACCEPT from dual
+	    </foreach>
+		) recordIn
+		ON (record.certification_nbr=recordIn.certification_nbr and record.import_date=recordIn.import_date)
+		WHEN MATCHED THEN UPDATE SET
+	        record.EQUIPMENT_NBR = recordIn.EQUIPMENT_NBR,
+	        record.EQUIPMENT_TYPE = recordIn.EQUIPMENT_TYPE,
+	        record.ORG_NAME = recordIn.ORG_NAME,
+	        record.DEVICE_NAME = recordIn.DEVICE_NAME,
+	        record.MODEL_NAME = recordIn.MODEL_NAME,
+	        record.CERTIFICATED_DATE = recordIn.CERTIFICATED_DATE,
+	        record.EXPIRE_DATE = recordIn.EXPIRE_DATE,
+	        record.EXPIRE_MARK = recordIn.EXPIRE_MARK,
+	        record.CERTIFICATED_RESULT = recordIn.CERTIFICATED_RESULT,
+	        record.CERTIFICATED_ORG = recordIn.CERTIFICATED_ORG,
+	        record.CERTIFICATED_PERSON = recordIn.CERTIFICATED_PERSON,
+	        record.IMPORT_MARK = recordIn.IMPORT_MARK,
+	        record.CREATE_TIME = recordIn.CREATE_TIME,
+	        record.CREATE_PERSON = recordIn.CREATE_PERSON,
+	        record.UPDATE_TIME = recordIn.UPDATE_TIME ,
+	        record.UPDATE_PERSON = recordIn.UPDATE_PERSON ,
+	        record.REMARK = recordIn.REMARK ,
+	        record.IMPORT_ACCEPT = recordIn.IMPORT_ACCEPT
+		WHEN NOT MATCHED THEN
+		        INSERT(record.RECORD_ID, record.IMPORT_DATE,record.EQUIPMENT_NBR,record.CERTIFICATION_NBR,record.EQUIPMENT_TYPE,record.ORG_NAME,
+						record.DEVICE_NAME,record.MODEL_NAME,record.CERTIFICATED_DATE,record.EXPIRE_DATE,record.EXPIRE_MARK,
+						record.CERTIFICATED_RESULT,record.CERTIFICATED_ORG,record.CERTIFICATED_PERSON,record.IMPORT_MARK,
+						record.CREATE_TIME,record.CREATE_PERSON,record.UPDATE_TIME,record.UPDATE_PERSON,record.REMARK,record.IMPORT_ACCEPT)
+		        VALUES(	recordIn.RECORD_ID,recordIn.IMPORT_DATE,recordIn.EQUIPMENT_NBR,recordIn.CERTIFICATION_NBR,recordIn.EQUIPMENT_TYPE,recordIn.ORG_NAME,
+					   	recordIn.DEVICE_NAME,recordIn.MODEL_NAME,recordIn.CERTIFICATED_DATE,recordIn.EXPIRE_DATE,recordIn.EXPIRE_MARK,
+					   	recordIn.CERTIFICATED_RESULT,recordIn.CERTIFICATED_ORG,recordIn.CERTIFICATED_PERSON,recordIn.IMPORT_MARK,
+						recordIn.CREATE_TIME,recordIn.CREATE_PERSON,recordIn.UPDATE_TIME,recordIn.UPDATE_PERSON,recordIn.REMARK,recordIn.IMPORT_ACCEPT)
+	</insert>
+  
+  
+  
+   <!-- 批量更新检定证书批量导入记录表-->
+  <update id="updateCertificationRecordBatchByNbrImportDate" parameterType="java.util.List" >
+  	<foreach collection="list" item="rocord" index="index" open="begin" close=";end;" separator=";" >
+	    update T_DEVICE_CERTIFICATION_RECORD
+	    <set >
+	      <if test="rocord.importDate != null" >
+	        IMPORT_DATE = #{rocord.importDate,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.equipmentNbr != null" >
+	        EQUIPMENT_NBR = #{rocord.equipmentNbr,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.certificationNbr != null" >
+	        CERTIFICATION_NBR = #{rocord.certificationNbr,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.equipmentType != null" >
+	        EQUIPMENT_TYPE = #{rocord.equipmentType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.orgName != null" >
+	        ORG_NAME = #{rocord.orgName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.deviceName != null" >
+	        DEVICE_NAME = #{rocord.deviceName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.modelName != null" >
+	        MODEL_NAME = #{rocord.modelName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.certificatedDate != null" >
+	        CERTIFICATED_DATE = #{rocord.certificatedDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="rocord.expireDate != null" >
+	        EXPIRE_DATE = #{rocord.expireDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="rocord.expireMark != null" >
+	        EXPIRE_MARK = #{rocord.expireMark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.certificatedResult != null" >
+	        CERTIFICATED_RESULT = #{rocord.certificatedResult,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.certificatedOrg != null" >
+	        CERTIFICATED_ORG = #{rocord.certificatedOrg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.certificatedPerson != null" >
+	        CERTIFICATED_PERSON = #{rocord.certificatedPerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.importMark != null" >
+	        IMPORT_MARK = #{rocord.importMark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.createTime != null" >
+	        CREATE_TIME = #{rocord.createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="rocord.createPerson != null" >
+	        CREATE_PERSON = #{rocord.createPerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.updateTime != null" >
+	        UPDATE_TIME = #{rocord.updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="rocord.updatePerson != null" >
+	        UPDATE_PERSON = #{rocord.updatePerson,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.remark != null" >
+	        REMARK = #{rocord.remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rocord.importAccept != null" >
+	        IMPORT_ACCEPT = #{rocord.importAccept,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where CERTIFICATION_NBR = #{rocord.certificationNbr,jdbcType=VARCHAR} and import_date = #{rocord.importDate,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+  
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.BackupServiceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.BackupService" >
+    <id column="SERVICE_ID" property="serviceId" jdbcType="VARCHAR" />
+    <result column="SERVER_ID" property="serverId" jdbcType="VARCHAR" />
+    <result column="SERVICE_NAME" property="serviceName" jdbcType="VARCHAR" />
+    <result column="ENABLE_TIME" property="enableTime" jdbcType="TIMESTAMP" />
+    <result column="RUNNING_STATE" property="runningState" jdbcType="CHAR" />
+    <result column="RESTART_FLAG" property="restartFlag" jdbcType="CHAR" />
+    <result column="SERVER_IP" property="serverIp" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVICE_ID, SERVER_ID, SERVICE_NAME, ENABLE_TIME, RUNNING_STATE, RESTART_FLAG, SERVER_IP
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_BACKUP_SERVICE
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_BACKUP_SERVICE
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.BackupService" >
+    insert into T_DEVICE_BACKUP_SERVICE (SERVICE_ID, SERVER_ID, SERVICE_NAME, 
+      ENABLE_TIME, RUNNING_STATE, RESTART_FLAG, 
+      SERVER_IP)
+    values (#{serviceId,jdbcType=VARCHAR}, #{serverId,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR}, 
+      #{enableTime,jdbcType=TIMESTAMP}, #{runningState,jdbcType=CHAR}, #{restartFlag,jdbcType=CHAR}, 
+      #{serverIp,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.BackupService" >
+    insert into T_DEVICE_BACKUP_SERVICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        SERVICE_ID,
+      </if>
+      <if test="serverId != null" >
+        SERVER_ID,
+      </if>
+      <if test="serviceName != null" >
+        SERVICE_NAME,
+      </if>
+      <if test="enableTime != null" >
+        ENABLE_TIME,
+      </if>
+      <if test="runningState != null" >
+        RUNNING_STATE,
+      </if>
+      <if test="restartFlag != null" >
+        RESTART_FLAG,
+      </if>
+      <if test="serverIp != null" >
+        SERVER_IP,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="serverId != null" >
+        #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null" >
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="enableTime != null" >
+        #{enableTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runningState != null" >
+        #{runningState,jdbcType=CHAR},
+      </if>
+      <if test="restartFlag != null" >
+        #{restartFlag,jdbcType=CHAR},
+      </if>
+      <if test="serverIp != null" >
+        #{serverIp,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.BackupService" >
+    update T_DEVICE_BACKUP_SERVICE
+    <set >
+      <if test="serverId != null" >
+        SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null" >
+        SERVICE_NAME = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="enableTime != null" >
+        ENABLE_TIME = #{enableTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runningState != null" >
+        RUNNING_STATE = #{runningState,jdbcType=CHAR},
+      </if>
+      <if test="restartFlag != null" >
+        RESTART_FLAG = #{restartFlag,jdbcType=CHAR},
+      </if>
+      <if test="serverIp != null" >
+        SERVER_IP = #{serverIp,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.BackupService" >
+    update T_DEVICE_BACKUP_SERVICE
+    set SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      SERVICE_NAME = #{serviceName,jdbcType=VARCHAR},
+      ENABLE_TIME = #{enableTime,jdbcType=TIMESTAMP},
+      RUNNING_STATE = #{runningState,jdbcType=CHAR},
+      RESTART_FLAG = #{restartFlag,jdbcType=CHAR},
+      SERVER_IP = #{serverIp,jdbcType=VARCHAR}
+    where SERVICE_ID = #{serviceId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectBackupServices" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_DEVICE_BACKUP_SERVICE
+		<where>
+			<if test="serverId != null and serverId != '' ">
+				SERVER_ID = #{serverId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

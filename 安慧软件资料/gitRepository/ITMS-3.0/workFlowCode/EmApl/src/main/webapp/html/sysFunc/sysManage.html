@@ -1,0 +1,113 @@
+<div ng-controller="SysManageController" style="height: 100%">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row">
+                <div class="col-xs-3" id="orgTree">
+                    <div class="panel panel-default">
+                        <div class="panel-body" style="height: 99%;">
+                            <div style="height:99%;overflow:auto;">
+                                <!-- <div data-angular-treeview="true" data-tree-id="mytree" data-tree-model="roleList" data-node-id="value" data-node-label="name" data-node-isLeaf="isLeaf" data-node-children="children">
+                                </div> -->
+                                <div z-tree style="font:normal 12px/35px 'Arial';color:#dcdcdc;" class="ztree" ng-model="selectNode"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-9" id="dataPanel" style="margin-left:-20px;">
+                    <div class="panel panel-default" style="height:99%;margin-right: -20px;">
+                        <div class="panel-body" style="height: 99%;width:100%;">
+                            <div class="searchPanel">
+                                <div class="panel_title">查询条件</div>
+                                <form class="form-inline " style="margin-top: 5px;">
+                                    <lable class="lable">姓名：</lable>
+                                    <input type="text" class="form-control input-sm" ng-model="first">
+                                    <lable class="lable">警号：</lable>
+                                    <input type="text" class="form-control input-sm" ng-model="id">
+                                    <button class="btn btn-primary btn-sm" style="margin-left:50px" ng-click="getUserList()">查询</button>
+                                </form>
+                            </div>
+                            <div style="height: 70%;width:100%;overflow: auto;">
+                                <table class="table table-bordered table-show table-striped">
+                                    <thead>
+                                        <tr class="active">
+                                            <td class="table-unite" width="15%">姓名</td>
+                                            <td class="table-unite" width="25%">机构部门</td>
+                                            <td class="table-unite" width="25%">警号</td>
+                                            <td class="table-unite" width="15%">邮箱</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="info in showInfo" ng-click="userDetail(info)">
+                                            <td class="table-unite " width="15%">{{info.first}}
+                                            </td>
+                                            <td class="table-unite" width="25%">{{info.groupName | limitTo:10}}</td>
+                                            <td class="table-unite" width="25%">{{info.id}}</td>
+                                            <td class="table-unite" width="15%">{{info.email}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <div style="float: left;">
+                                    <uib-pagination boundary-links="true" total-items="totalItems" max-size="maxSize" force-ellipses="true" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+                                </div>
+                                <div style="float: left; line-height: 70px">共{{totalItems}}条</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.table-show > thead > tr > th,
+.table-show > tbody > tr > th,
+.table-show > tfoot > tr > th,
+.table-show > thead > tr > td,
+.table-show > tbody > tr > td,
+.table-show > tfoot > tr > td {
+    font-size: 13px;
+    padding: 5px 12px 5px 12px;
+    /*vertical-align: middle;*/
+    border: 1px solid #EEE;
+    line-height: 20px;
+}
+
+.table-unite {
+    text-align: center;
+}
+
+.searchPanel {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    float: left;
+    margin: 10px 1%;
+    padding: 10px 0;
+    width: 97%;
+}
+
+.cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.wrapper {
+    display: table;
+}
+
+.searchPanel .panel_title {
+    background: #ffffff none repeat scroll 0 0;
+    color: #6fb3e0;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-top: -20px;
+    padding: 0 5px;
+    position: absolute;
+}
+
+.lable {
+    font-size: 12px;
+    margin-left: 20px;
+}
+</style>

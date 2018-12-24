@@ -1,0 +1,179 @@
+<!--巡航方案管理-->
+<div class="cruise-config-listView" style="height: 100%;">
+    <div class="easyui-layout">
+        <!--机构设备树-->
+
+        <div data-options="region:'north'" style="height: 100px">
+            <form cy-form="cyFrmCond" id="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="td">巡航方案</div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="comboCruisePlan" name="cruisePlanId" style="width: 120px"
+                                       data-options="valueField:'videoPlanId',textField:'videoPlanName',panelHeight:'auto'"/>
+                            </div>
+                            <div class="td">巡航人员</div>
+                            <div class="td">
+                                <input class="easyui-textbox" data-options="showSeconds:false" type="text"
+                                       name="cruiseUser" style="width: 135px"/>
+                            </div>
+                            <div class="td">巡航时间</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" data-options="required:true,validType:['maxDate[\'cruiseEndTime\']','date']" type="text"
+                                       name="cruiseBeginTime" id="cruiseBeginTime" style="width: 150px"/>
+                            </div>
+                            <div class="td">到</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox"  data-options="required:true,validType:['minDate[\'cruiseBeginTime\']','maxEndDate','date']"  type="text"
+                                       name="cruiseEndTime" id="cruiseEndTime" style="width: 150px"/>
+                                <!--validType:['maxDate[\'cruiseEndTime\']','date']-->
+                            </div>
+                            <div class="td">
+                                <a class="easyui-linkbutton button" cy-click="searchAsync" id="searchButton"
+                                   data-options="iconCls:'icon-search'">查询</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            </form>
+        </div>
+        <div data-options="region:'center'">
+            <table id="gridCruiseLogList" cy-datagrid="options" cy-querydata="cyFrmCond" cy-url="/video/cruisePlan/getVideoCruiseLog">
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        $scope.$getData("vio", "VioInit")($scope);
+
+        /**
+         * grid列表中最后一列格式化
+         * @param value  当前单元格值
+         * @param rowData 当前行
+         * @param rowIndex 当前行所在索引值
+         * @returns {*|jQuery}
+         */
+        $scope.viewVideoLogForamt = function (value, rowData, rowIndex) {
+            if(rowData.eventLst&&rowData.eventLst.length>0){
+                var detailBtn = $("<a  title='查看' class='easyui-linkbutton'></a>");
+                detailBtn.linkbutton({
+                    iconCls: "icon-search-solid",
+                    plain:true
+                }).attr('cy-click', "viewVideoLog('" + rowIndex + "')");
+                return $("<span/>").append(detailBtn).append("  ").html();
+            }
+            else{
+                return '';
+            }
+        }
+
+
+        $.extend($scope, {
+            //查询表单
+            cyFrmCond: {
+                plateNbr: $scope.DefaultPlateNbr,
+                cruiseBeginTime: ((new Date()).dateAdd('d', -$scope.QueryTimeRange
+                )).format('yyyy-MM-dd HH:mm:ss'),
+                cruiseEndTime:(new Date()).format('yyyy-MM-dd HH:mm:ss')
+            },
+            load:function(){
+                $scope.searchAsync();
+                $scope.loadVideoPlanCombobox();
+
+                $("#cruiseEndTime").datebox('calendar').calendar({
+                    validator: function(date){
+                        var now = new Date();
+                        var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        return date <= d1;
+                    }
+                });
+            },
+            enter: function () {
+                console.log("enter");
+            },
+            leave: function () {
+                console.log("leave");
+            },
+            close: function () {
+                console.log("close");
+            },
+            // 加载巡航方案下拉框
+            loadVideoPlanCombobox: function () {
+                var queryParams = {};
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/cruisePlan/getVideoCruisePlanList",
+                    params: queryParams,
+                    method: "post",
+                    success: function (result) {
+                        $scope.$("#comboCruisePlan").combobox('loadData', result.result);
+                    }
+                })
+            },
+            options:{
+                columns:[
+                    [
+                        {title: "巡航方案", field: "videoPlanName", width: 10},//
+                        {title: "巡航人", field: "videoPlanPerson", width: 10},//
+                        {title: "巡航开始时间", field: "videoPlanStartTime", width: 10},//
+                        {title: "巡航结束时间", field: "videoPlanEndTime", width: 10},
+                        {title: "客户端IP", field: "computerIp", width: 10},//
+                        {title: "巡航日志", field: "test", width: 10,formatter:$scope.viewVideoLogForamt}
+                    ]
+                ],
+                singleSelect: true,
+                method: 'get',
+                fitColumns: true,
+                striped: true,
+                selectOnCheck: false,
+                pagination: true,
+
+                //双击进入详细页面
+                onDblClickRow: function (index, row) {
+                    $scope.openDetailDialog(row);
+                }
+            },
+            searchAsync:function(){
+                if(!$scope.$("#searchForm").form("validate")){
+                    return;
+                }
+                $("#gridCruiseLogList").datagrid('getPager').pagination(
+                        {
+                            pageNumber:1
+                        });
+                $scope.cyFrmCond.pageNumber=1;
+                $scope.$updateData("cyFrmCond");
+                //加载所有的巡航方案
+                $scope.$search("cyFrmCond","",function(data){
+                    if (data && data != null&&data.rows.length>0) {
+                        $scope.$('#gridCruiseLogList').datagrid('selectRow', 0);
+                    }
+                });
+            },
+            viewVideoLog:function(rowIndex){
+                var row = $scope.$("#gridCruiseLogList").datagrid("getRows")[rowIndex];
+                if(row){
+                    $scope.$setParam("videoPlanLog",row);
+                    $scope.$openDialog("addDialog", {
+                        title : "查看巡航日志",
+                        width : 800,
+                        height : 450,
+                        href : "tpls/trafficMonitor/videoMonitor/cruise-log-detail.html"
+                    }, true);
+                }
+            },
+            openDetailDialog:function(row){
+                $scope.$setParam("videoPlanLog",row);
+                $scope.$openDialog("addDialog", {
+                    title : "查看巡航日志",
+                    width : 800,
+                    height : 450,
+                    href : "tpls/trafficMonitor/videoMonitor/cruise-log-detail.html"
+                }, true);
+            }
+        });
+    });
+</script>

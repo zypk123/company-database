@@ -1,0 +1,256 @@
+<div id="chooseLocation" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:90" style="border-bottom:solid 1px #ddd">
+		<div class="table">
+			<form method="post" id="locationSearchFrom">
+				<div class="tr">
+					<div class="th">
+						行政区划：
+					</div>
+					<div class="td">
+						<input class="cy-district-checkbox" style="width:400px;" id="districtCode" name="districtCode" />
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th" >
+						道路：
+					</div>
+					<div class="td" >
+						<input class="cy-road-checkbox" id="roadCode" filter="filterRoad" data-options="multiple:true" name="roadCode" style="width:400px" />
+					</div>
+					<div class="th" style="width:100px;">
+						<a class="easyui-linkbutton" cy-click="searchSite" data-options="iconCls:'icon-search'">查询点位</a>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false,title:'点位列表'" style="border-right:solid 1px #ddd">
+		<div id="locationTree" style="margin:5px 20px;"></div>
+	</div>
+	<div data-options="region:'east',border:false,width:'50%',title:'已选点位'" id="checkLocation">
+
+	</div>
+	<div data-options="region:'south',border:false,height:45" style="border-top:solid 1px #ddd">
+		<div class="linkbutton_toolbar" style="text-align:center;">
+			<a class="easyui-linkbutton button-main" cy-click="ok"	data-options="iconCls:'icon-ok'">确定</a>
+			<a class="easyui-linkbutton " cy-click="clear" data-options="iconCls:'icon-clear'">清空</a>
+			<a class="easyui-linkbutton " cy-click="$destroySelf" data-options="iconCls:'icon-cancel'">关闭</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["getData"], function($scope) {
+
+		var checkList = [];
+
+		$scope.load = function() {
+			initTree();
+		};
+
+		function initTree(){
+			$scope.$("#locationTree").width(380).tree({
+				checkbox : true,
+				onCheck : function(node, checked) {
+					if (checked) {
+						//当前结点已经选中,展开结点
+						$(this).tree("expand", node.target);
+					}
+					//清空历史
+					checkList = [];
+					//获得所有选择的节点
+					var checked = $scope.$("#locationTree").tree("getChecked");
+					//只能选叶子节点
+					for (var index = 0; index < checked.length; index++) {
+						if (checked[index].attribute && checked[index].attribute.nodeType == "site") {
+							checkList.push(checked[index]);
+						}
+					}
+					//在已选列表中展示选择的节点
+					$scope.$("#checkLocation").html("");
+					addNewCheckedList();
+				}
+			});
+		}
+	
+		/**
+		 * 重置已选列表
+		 */
+		var addNewCheckedList = function() {
+			var table = $("<div class='table'></div>");
+			for (var index in checkList) {
+				var tr = $("<div class='tr'></div>");
+				var th = $("<div class='th'></div>");
+				var td = $("<div class='td'></div>");
+				var closeButton = $("<a></a>").linkbutton({
+					iconCls : 'icon-cancel-solid',
+					plain : true
+				}).click({
+					removeEl : tr
+				}, function(e) {
+					//取消该元素的选中状态
+					var node = e.data.removeEl.data("node");
+					$scope.$("#locationTree").tree("uncheck", node.target);
+				});
+				tr.data("node", checkList[index]);
+				th.text(checkList[index].text);
+				td.append(closeButton);
+				if (index % 2 == 0) {
+					tr.css("backgroundColor", "#efefef");
+				} else {
+					tr.css("backgroundColor", "#e5e5e5");
+				}
+				table.append(tr.append(th).append(td));
+			}
+			$scope.$("#checkLocation").append(table);
+		};
+
+		//行政区划与道路联动
+		$scope.filterRoad = function(id, text, attribute) {
+			var districtCodeStr = $scope.$("#districtCode").textbox("getValue");
+			if (!districtCodeStr || districtCodeStr == "") {
+				return true;
+			}
+			if (attribute.nodeType && attribute.nodeType != "road") {
+				return true;
+			}
+			var districtCodes = districtCodeStr.split(",");
+			for (var index in districtCodes) {
+				var districtCode = districtCodes[index];
+				if (attribute.districtCode && attribute.districtCode.startWith(districtCode)) {
+					return true;
+				}
+			}
+			return false;
+		};
+		
+		/**
+		 * 查找点位信息 
+		 */
+		$scope.searchSite = function() {
+			var roadIds = $scope.$("#roadCode").textbox("getValue");
+			var districtCodes = $scope.$("#districtCode").textbox("getValue");
+			if (roadIds == "" && districtCodes == "") {
+				$.messager.alert("提示", "至少选择一个条件");
+				return;
+			}
+			//查找卡口点位信息
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/site/findPassSites",
+				params : {
+					roadIds : roadIds,
+					districtCodes : districtCodes
+				},
+				success : function(data) {
+					var tree = convertToTreeData(data);
+					$scope.currentTreeData = tree;
+					$scope.$("#locationTree").tree("loadData", tree);
+				}
+			});
+		};
+
+		/**
+		 * 转化为树对象
+		 */
+		function convertToTreeData(data) {
+			var treeData = [];
+			for (var index in data) {
+				var siteInfo = data[index];
+				var roadNode = findNode(treeData, siteInfo.roadId);
+				if (!roadNode) {
+					roadNode = {
+						id : siteInfo.roadId,
+						text : $scope.$getRoadName(siteInfo.roadId),
+						state : "closed",
+						attribute : {
+							nodeType : "road"
+						},
+						children : []
+					};
+					treeData.push(roadNode);
+				}
+				var siteNode = {
+					id : siteInfo.siteCode,
+					text : siteInfo.siteName,
+					attribute : {
+						nodeType : "site"
+					}
+				};
+				roadNode.children.push(siteNode);
+			}
+			return treeData;
+		}
+
+		/**
+		 * 道路节点是否存在
+		 */
+		function findNode(array, id) {
+			for (var index in array) {
+				var item = array[index];
+				if (item.id == id) {
+					return item;
+				}
+			}
+		}
+		
+		/**
+		 * 清空所有数据
+		 */
+		$scope.clear = function(){
+			//清空行政区划
+			$scope.$("#districtCode").textbox("clear");
+			//清空道路
+			$scope.$("#roadCode").textbox("clear");
+			//重新加载树，清空已选
+			$scope.$("#locationTree").html("");
+			initTree();
+			$scope.$("#checkLocation").html("");
+		};
+		
+		/**
+		 * 确定 
+		 */
+		$scope.ok = function(){
+			var returnData = {};
+			returnData.districtCodes = $scope.$("#districtCode").textbox("getValue");
+			returnData.districtNames = $scope.$("#districtCode").textbox("getText");
+			var  roadIds= $scope.$("#roadCode").textbox("getValue");
+			returnData.roadCodes = $scope.$getRoadCode(roadIds);
+			returnData.roadNames = $scope.$("#roadCode").textbox("getText");
+			var siteCodes = "";
+			var siteNames = "";
+			for(var index in checkList){
+				var item = checkList[index];
+				siteCodes += item.id + ",";
+				siteNames += item.text + ",";
+			};
+			returnData.siteCodes = siteCodes.substring(0,siteCodes.length - 1);
+			returnData.siteNames = siteNames.substring(0,siteNames.length - 1);
+			$scope.$excute($scope.getData,returnData);
+		};
+	}); 
+</script>
+<style>
+	#chooseLocation .th {
+		width: 120px;
+		text-align: right;
+	}
+	#chooseLocation .td {
+		width: 420px;
+	}
+	#chooseLocation #checkLocation .th {
+		text-align: left;
+		float: left;
+		width: 70%;
+		padding: 0 12px;
+		height: 30px;
+		line-height: 30px;
+	}
+	#chooseLocation #checkLocation .td {
+		text-align: right;
+		float: left;
+		padding: 0 12px;
+		height: 30px;
+		line-height: 30px;
+		width: 40px;
+	}
+</style>

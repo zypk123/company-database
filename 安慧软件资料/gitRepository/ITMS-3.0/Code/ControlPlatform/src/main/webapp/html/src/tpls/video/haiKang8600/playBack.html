@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="0">
+    <title>海康8600控件回放</title>
+    <!--系统基本框架，jQuery，easyui等-->
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/icon.css">
+    <script src="../../../frameworks/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 验证配置 -->
+    <script type="text/javascript" src="../../../js/validation.js"></script>
+    <!-- 自定义框架文件 -->
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/its3.css">
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/violationMgr.css">
+    <script type="text/javascript" src="../../../js/rootScope.js"></script>
+    <script type="text/javascript" src="../../../js/templateInit.js"></script>
+    <script type="text/javascript" src="../../../js/date-util.js"></script>
+    <script type="text/javascript" src="../../../js/violationMgr.js"></script>
+
+    <title>实时预览Demo</title>
+    <style type="text/css">
+        div, td, input {
+            font-size: 12px;
+        }
+
+        .ptzBtn {
+            width: 32px;
+        }
+
+        #Select1 {
+            width: 67px;
+        }
+
+        #SelectWnd {
+            width: 70px;
+        }
+    </style>
+</head>
+<body >
+<div class="easyui-layout" id="playBackLayout"  data-options='fit:true' >
+    <div data-options="region:'center'">
+        <object clsid="{94A3C73C-0816-4228-8AC9-868B7AD49674}" type="application/x-itst-activex"
+                id="PlayBackOCX" width="100%" height="100%" name="ocx"></object>
+    </div>
+    <!--回放搜索条件-->
+    <div data-options="region:'east',title:'搜索设置'" style="width:218px;overflow: hidden">
+        <div class="table"> 
+            <div class="tr" style="text-align: center">
+                <div class="td">开始时间：</div>
+                <div class="td">
+                    <input class="easyui-datetimebox" type="text"
+                           name="videoBeginTime" id="videoBeginTime"
+                           data-options="required:true,validType:['maxDate[\'videoEndTime\']','date']"
+                            style="width: 155px"/>
+                </div>
+                <div class="td">结束时间：</div>
+                <div class="td">
+                    <input class="easyui-datetimebox" type="text"
+                           name="videoEndTime" id="videoEndTime"
+                           data-options="required:true,validType:['minDate[\'videoBeginTime\']','maxEndDate','date']"
+                           style="width: 155px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: center">
+            </div>
+            <div class="tr" style="text-align: center;">
+                <a class="easyui-linkbutton button " onclick="searchInsideBack()"
+                   data-options="iconCls:'icon-search'"
+                   style="float:right;" >搜索回放</a>
+            </div>
+            <div class="tr divPanel">
+                <div class="td title">本地配置</div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td">抓图路径：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name="capturePath" id="txtCapturePath" value="D:\capture"  style="width:155px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td">下载路径：</div>
+                <div class="td">
+                    <input class="easyui-textbox" name="downLoadPath" id="txtDownLoadPath" value="D:\capture"  style="width:155px"/>
+                </div>
+            </div>
+            <div class="tr" style="text-align: right;">
+                <a class="easyui-linkbutton button" onclick="setLocalParam()" style="float:right;"
+                   data-options="iconCls:'icon-handle'">设置本地参数</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script language="javascript" type="text/javascript">
+//播放的控件
+var Ocx = document.getElementById("PlayBackOCX");
+
+getPara={};
+$(function ($) {
+
+    $("#videoBeginTime").datetimebox('setValue',(new Date()).format('yyyy-MM-dd')+" 00:00:00");
+    $("#videoEndTime").datetimebox('setValue',(new Date()).format('yyyy-MM-dd hh:mm:ss'));
+
+    $("#videoEndTime").datebox('calendar').calendar({
+        validator: function (date) {
+            var now = new Date();
+            var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return date <= d1;
+        }
+    });
+    //检测并提示安装控件
+    var isOcxLoad=checkOcxLoad();
+    //根据传入参数决定是否显示云台控制控件
+    var local_url = document.location.href;
+    console.log(local_url);
+    var u=local_url.split("?");
+    console.log('视频回放弹出');
+    if(typeof(u[1]) == "string"){
+        u = u[1].split("&");
+        //////console.log(u);
+        for(var i in u){
+            var j = u[i].split("=");//p1=val1 p1 val1
+            getPara[j[0]] = j[1];
+        }
+        //debugger;
+        //视频框数预定义
+        if(getPara['gridNum']){
+            var gridNum=parseInt(getPara['gridNum']);
+            if(gridNum&&isOcxLoad){
+               changePreviewWindowLayout(gridNum);
+            }
+        }
+        //////console.log(getPara);
+
+        //'setValue',(new Date()).format('yyyy-MM-dd')+" 00:00:00");
+
+
+        if(getPara['singlePreview']&&getPara['singlePreview']=="1"){
+            detailPanelCollpse=true;
+            $("#playBackLayout").layout("remove", "east");
+        }
+        else{
+
+        }
+//        console.log('视频回放弹出');
+//        //视频回放弹出
+//        if(getPara['parentUrl']&&getPara['parentUrl'].indexOf('popPlayBack')>-1){
+//            $scope=parent.window.$rootScope.$tabs.tabs('getSelected').data('scopeObject');
+//
+//        }
+//        if($scope.iframeLoaded){
+//            console.log('scope frame loaded');
+//            $scope.iframeLoaded();
+//        }
+    };
+
+});
+
+    var curVideoDevice = {
+        deviceId: "",
+        deviceSysNbr: "44020000001320000002",
+        cameraServerTypeIp: "192.168.10.39",
+        videoDeviceName: "IPdome",
+        preViewParam:"",
+        playBackParam:''
+    };
+
+    //改变预览窗口大小
+    var changePreviewWindowLayout=function(gridNum){
+        console.log('changePreviewWindowLayout:'+gridNum);
+        if(gridNum){
+            //Ocx.ShowPlayviewToolBar(gridNum>1?1:0); //去除控件下方的屏幕切换状态栏
+            Ocx.SetWndNum(gridNum); //设置视频窗口数
+        }
+        else{
+            alert("设置窗口数参数为空");
+        }
+    };
+
+/**
+ * 检查控件是否正确加载
+ */
+checkOcxLoad=function(){
+    try{
+        Ocx.GetCurWndNum();
+        return true;
+    }
+    catch(e){
+        return false;
+    }
+};
+
+    //搜索历史视频
+    function GetBackParams(startTime, EndTime) {
+        var PBXml = "<?xml version='1.0'?><Parament><BeginTime>" + startTime + "</BeginTime><EndTime>" + EndTime + "</EndTime><RecordType>23</RecordType></Parament>";
+
+        try {
+            var res = Ocx.StartQueryRecord(PBXml);
+            //document.getElementById('lbl').innerText =res+"&"+PBXml;
+        } catch (error) {
+            alert("搜索录像失败!");
+        }
+    }
+    //搜索历史视频
+    function GetBackParamsFor8600V323(startTime, EndTime) {
+        var PBXml = "<?xml version='1.0'?><Parament><BeginTime>" + startTime + "</BeginTime><EndTime>" + EndTime + "</EndTime><RecordType>3</RecordType><CuZoneID>0</CuZoneID></Parament>";
+
+        try {
+            var res = Ocx.StartQueryRecord(PBXml);
+            //console.log(PBXml);
+            //document.getElementById('lbl').innerText =res+"&"+PBXml;
+            //console.log(res);
+        } catch (error) {
+            alert("搜索录像失败!");
+        }
+    }
+    //设置本地参数
+    function SetlocalParam(pictype, picpath, recordpath, downloadPath) {
+        var LoacalXml = "<?xml version='1.0'?><Parament><CappicMode>" + pictype + "</CappicMode><CappicPath>" +
+                picpath + "</CappicPath><CutPath>" + recordpath + "</CutPath><CutFileSize>2</CutFileSize><DownloadPath>"
+                + downloadPath + "</DownloadPath></Parament>";
+        var res = Ocx.SetLocalParam(LoacalXml);
+        //document.getElementById("lbl").innerText = res;
+        if (res == 0) {
+            return "设置本地参数成功！";
+        }
+        else {
+            return "设置本地参数失败！";
+        }
+    }
+
+    var cagServerIp = "";
+    var currentCameraId = "";
+    function StartPlaybackVideo(playBackContentStr, serverIp, port, userName, password) {
+        try {
+
+            var strXml = "<?xml version='1.0'?><Parament><PlayWndIndex>" + Ocx.GetFocusWndIndex() + "</PlayWndIndex>" + playBackContentStr;
+            //document.getElementById("lbl").innerText = strXml + "|" + serverIp+"|"+ port+"|"+ userName+"|" +password;
+            currentCameraId = getCameraId(playBackContentStr);
+            if (serverIp == cagServerIp) { //回放的视频都是同一个海康平台下的
+                var res = Ocx.SetPlayBackParam(strXml);
+            }
+            else {
+                if (serverIp != null && port != null && userName != null && password != null) {
+                    var res = Ocx.Register_CagByUserInfo(serverIp, port, userName, password);
+                    if (res == 0) { //注册成功
+                        Ocx.SetPlayBackParam(strXml);
+                        cagSvcIp = serverIp;
+                        //document.getElementById("lbl").innerText = res;
+                    }
+                    else {
+                        alert("注册CAG服务器失败，IP：" + serverIp);
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            alert(e.message);
+        }
+
+    }
+
+
+    function StartPlaybackVideoFor8200(ele) {
+        try {
+            var strXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>><Parament><PlayWndIndex>" + Ocx.GetFocusWndIndex() + "</PlayWndIndex>" + ele;
+            var res = Ocx.SetPlayBackParam(strXml);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function StartPlaybackVideoFor8600V323(ele) {
+        try {
+            var strXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>><Parament><PlayWndIndex>" + Ocx.GetFocusWndIndex() + "</PlayWndIndex>" + ele;
+            return Ocx.SetPlayBackParam(strXml);
+            ////console.log(res);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function getCameraId(xmlString) {
+        var re = new RegExp("<CameraID>(.*)</CameraID>", "ig");
+        var arr = re.exec(xmlString);
+        return RegExp.$1;
+
+    }
+    //回放场景播放
+    function StartPlayBackGroup(ele, StartTime, EndTime) {
+        //        document.getElementById('lbl').innerText = ele + StartTime + EndTime;
+        var GroupParams = ele.split('@');
+        if (GroupParams.length < 1)
+            return;
+        if (GroupParams.length > Ocx.GetCurWndNum()) {
+            window.external.notify("请将回放窗口数设置为大于等于" + GroupParams.length); //消息通知
+            return;
+        }
+        for (var i = 0; i < GroupParams.length; i++) {
+            var PlayBackArr = GroupParams[i].split('|');
+            StartPlaybackVideo(PlayBackArr[0], PlayBackArr[1], PlayBackArr[2], PlayBackArr[3], PlayBackArr[4]);
+            GetBackParams(StartTime, EndTime);
+        }
+    }
+    //停止场景
+    function StopGroup() {
+        Ocx.StopAllPlayBack();
+    }
+
+    initVideo = function (videoDevice) {
+        console.log('initVideo');
+        curVideoDevice = videoDevice;
+        if(!curVideoDevice.playBackParam){
+            $.messager.show({
+                title:'回放提示',
+                msg:'无法回放，回放参数为空!',
+                timeout:2*1000,
+                showType:'slide',
+                style:{
+                    right:'',
+                    top:220,
+                    bottom:''
+                }
+            });
+            return;
+        }
+        var playBackParam=curVideoDevice.playBackParam.replace('\n','');
+        ////console.log(playBackParam);
+        var res=StartPlaybackVideoFor8600V323(playBackParam);
+        console.log(res);
+        if(!hasPointVideo){
+            hasPointVideo=res==0;
+        }
+    };
+
+
+    var hasPointVideo=false;
+
+    searchBack=function (stTime, edTime) {
+        if(hasPointVideo){
+            //console.log('searchBack,stTime:'+stTime+";edTime:"+edTime);
+            GetBackParamsFor8600V323(stTime, edTime);
+        }
+        else{
+            $.messager.show({
+                title:'回放提示',
+                msg:'请先选择回放视频',
+                timeout:2*1000,
+                showType:'slide',
+                style:{
+                    right:'',
+                    top:220,
+                    bottom:''
+                }
+            });
+        }
+    }
+
+    function searchInsideBack() {
+        if(hasPointVideo){
+            var stTime=$("input[name='videoBeginTime']").val();
+            var edTime=$("input[name='videoEndTime']").val();
+            //console.log('searchInsideBack,stTime:'+stTime+";edTime:"+edTime);
+            GetBackParamsFor8600V323(stTime, edTime);
+        }
+        else{
+            $.messager.show({
+                title:'回放提示',
+                msg:'请先选择回放视频',
+                timeout:2*1000,
+                showType:'slide',
+                style:{
+                    right:'',
+                    top:220,
+                    bottom:''
+                }
+            });
+        }
+    }
+
+    function setLocalParam(){
+        var capturePath = $("#txtCapturePath").val(); 
+        var downloadPath=$("#txtDownloadPath").val(); 
+        SetlocalParam('0',capturePath,downloadPath,downloadPath); 
+    }
+
+</script>
+<style>
+    .divPanel{
+        text-align: center;
+        height: 30px;
+        margin:2px 0px;
+        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, #ffffff 0px, #f2f2f2 100%) repeat-x scroll 0 0;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #d4d4d4;
+    }
+    .divPanel>.title{
+      font-weight: bold;
+      font-size: 12px;
+  }
+</style>
+</html>

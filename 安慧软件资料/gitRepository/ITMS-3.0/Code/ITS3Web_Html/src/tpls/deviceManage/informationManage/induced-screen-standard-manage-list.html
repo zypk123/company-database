@@ -1,0 +1,195 @@
+<div id="inducedScreenStandard" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">规格名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="Spec_Name"/>
+                        </div>
+                        <div class="th">诱导屏类型：</div>
+                        <div class="td">
+                            <input id="Led_Type" class="easyui-combobox" name="Led_Type"/>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+        </div>
+    </div>
+    <div  data-options="region:'center',border:true">
+        <table id="inducedScreenStandardInfo" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/informationManage/inducedScreenData.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //保存本页面数据字典，object类型，key：code，value：字典项数组
+        var dicts;
+        $scope.load = function(){
+            //查询数据字典
+            $scope.$ajaxRequest({
+                url:"data/deviceManage/informationManage/dict.json",
+                success:function(data){
+                    //保存数据字典
+                    dicts = data.dicts;
+                    $scope.$("#Led_Type").combobox("loadData",dicts["999"]);
+                },
+                fail : function(errTxt){
+                    $.messager.alert(errTxt);
+                }
+            });
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         * 诱导屏规格列表参数
+         */
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+                {field: 'id', checkbox: true},
+                {title:"规格名称",field:"Spec_Name",width:150},
+                {title:"诱导屏类型",field:"Led_Type",width:150},
+                {title:"发光类型",field:"Light_Mode",width:150},
+                {title:"颜色分类",field:"Color_Mode",width:150},
+                {title:"外观形状",field:"shape",width:150},
+                {title : "操作",field : "OPERATER",width : 100,formatter : operate}
+            ]]
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        //条件查询
+        $scope.searchData = function(){
+            $scope.$search("queryData");
+        };
+        /**
+         * 新增诱导屏规格信息
+         */
+        $scope.addData = function(){
+            //页面数据字典传递
+            $scope.$setParam("dicts",dicts);
+            //建立弹出框
+            $scope.$openDialog("addDialog",{
+                title : "新增诱导屏规格信息",
+                width : 800,
+                height :300,
+                href : "tpls/deviceManage/informationManage/induced-screen-standard-operate.html"
+            },true);
+            //关闭添加弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+            /**
+             * 新增保存
+             */
+            $scope.$setParam("saveData",function(data) {
+                //后台保存数据
+                $.ajax({
+                    url: "",
+                    data: "",
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新列表
+                        $scope.search("queryData");
+                    }
+                });
+            });
+        };
+        /**
+         *编辑诱导屏规格信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            //页面数据字典传递
+            $scope.$setParam("dicts",dicts);
+            //获取行数据
+            var rowData = $scope.$("#inducedScreenStandardInfo").datagrid("getData").rows[index];
+            $scope.$setParam("formData",rowData);
+            //建立弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑诱导屏规格信息",
+                width : 800,
+                height :300,
+                href : "tpls/deviceManage/informationManage/induced-screen-standard-operate.html"
+            },true);
+            //关闭添加弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("editDialog").dialog("close");
+            });
+        };
+        //保存
+        function saveData(data){
+            $.ajax({
+                url: "",
+                data: data ,
+                dataType: "json",
+                success: function (data) {
+                    //刷新列表
+                    $scope.search("queryData");
+                }
+            });
+        }
+        /**
+         *删除诱导屏规格信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $.messager.alert("提示",index+"删除成功！");
+                }
+            });
+        };
+        /**
+         * 批量删除
+         * @returns false
+         */
+        $scope.removeSomeData = function(){
+            var rows = $('#inducedScreenStandardInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                    if(flag){
+                        $.messager.alert("提示","删除成功！");
+                    }
+                });
+            }
+        };
+    });
+</script>
+<style type="text/css">
+    #inducedScreenStandard .th{
+        width: 85px;
+        text-align: right;
+    }
+    #inducedScreenStandard .easyui-textbox{
+        width:120px;
+    }
+    #inducedScreenStandard .button-search{
+        margin-left: 10px;
+    }
+</style>

@@ -1,0 +1,377 @@
+<div id="RoadFlowView" style="height: 100%;">
+    <div class="easyui-layout" id="queryView">
+        <div data-options="region:'north'">
+            <form cy-form="cyFrmCond" class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px"> 管辖单位：
+                            </div>
+                            <div class="td" style="padding-left:5px">
+                                <input class="cy-org-radio" id="cmbOrgQ" name="orgCode" data-options="required:true" iscode="true" width="135px;">
+                            </div>
+                            <div class="th" style="padding-left: 5px">时间方式：</div>
+                            <div class="td">
+                                <select id="timeType" name="timeType"
+                                        style="width: 75px;">
+                                    <option value="D">日</option>
+                                    <option value="W">周</option>
+                                    <option value="M">月</option>
+                                </select>
+                            </div>
+                            <div class="th" style="padding-left: 5px; display: inline">统计时间：</div>
+                            <div class="td year-hide" style="display: none">
+                                <input class="easyui-combobox" id="year" name="year"
+                                       data-options="valueField:'value',textField:'text'"
+                                       style="width: 75px;"/>
+                            </div>
+                            <div class="td month-hide"
+                                 style="padding-left: 5px; display: none">
+                                <input class="easyui-combobox" id="month" name="month"
+                                       data-options="valueField:'value',textField:'text',required:true,validType:['monthGreater','monthFirstDay']"
+                                       style="width: 75px;"/>
+                            </div>
+                            <div class="td week-hide"
+                                 style="padding-left: 5px; display: none">
+                                <input class="easyui-combobox" id="week" name="week"
+                                       data-options="valueField:'value',textField:'text',required:true,validType:['weekGreater','weekFirstDay']"
+                                       style="width: 75px;"/>
+                            </div>
+                            <div class="th start-date-hide"
+								style="padding-left: 5px; display: none">从：</div>
+							<div class="td start-date-hide" style="display: none;margin-left:5px">
+								<input class="easyui-datebox"
+									data-options="showSeconds:false,editable:false,required:true"
+									type="text" id="beginTime" name="beginTime" 
+									style="width: 135px" />
+							</div>
+                            <div class="th start-date-hide"
+                                 style="padding-left: 5px; display: none">至：
+                            </div>
+                            <div class="td end-date-hide" style="display: inline">
+                                <input class="easyui-datebox"
+                                       data-options="showSeconds:false,editable:false,required:true"
+                                       type="text" id="endTime" name="endTime"
+                                       style="width: 135px"/>
+                            </div>
+                            <div class="td" style="text-align: right; width: 100px">
+                                <a class="easyui-linkbutton button" cy-click="searchReport"
+                                   id="searchButton" data-options="iconCls:'icon-search'">查询</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div data-options="region:'center'" style="padding-left: 12px">
+            <iframe id="iframe" src="" align="center" width="100%" height="100%"
+                    marginwidth=0 scrolling="yes" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        var curYear = new Date().getFullYear();
+        var curweek = 1;
+        var curmonth = 1;
+    	var curDate = new Date(Date.parse(new Date().format("yyyy-MM-dd").replace(/-/g,  "/")));
+    	$.extend($.fn.validatebox.defaults.rules, {   
+    	    weekGreater: {   
+    	        validator: function(value,param){ 
+    	        	if($scope.$('#timeType').combobox('getValue')=="W"){
+    	        	 var year = $scope.$('#year').combobox('getValue');//获取选择年份、月份
+    	             var week = $scope.$('#week').combobox('getValue');
+    	              if(curYear == year && curweek < week){
+    	            		return false;
+    	            	}else{
+    	            		return true;
+    	            	}
+    	        	}else{
+    		        	return true;
+    		        	}  
+    		        },   
+    	        message: '选择周大于当前周'  
+    	    },
+     	    weekFirstDay: {   
+    	        validator: function(value,param){   
+    	        	if($scope.$('#timeType').combobox('getValue')=="W"){
+    	        	 var year = $scope.$('#year').combobox('getValue');//获取选择年份、月份
+    	             var week = $scope.$('#week').combobox('getValue');
+    	             var beginDate = getWeekStartDate(year, week, 1);
+    	                if(beginDate.toLocaleDateString() == new Date().toLocaleDateString()){
+    	                		return false;
+    	                 }else{
+    	            		return true;
+    	            	}
+    	        }else{
+    	        	return true;
+    	        	}  
+    	        },
+    	        message: '选择周起始日期不可为今天'  
+    	    },
+    	    monthGreater: {   
+    	        validator: function(value,param){  
+    	        	if($scope.$('#timeType').combobox('getValue')=="M"){
+    	        	 var year = $scope.$('#year').combobox('getValue');//获取选择年份、月份
+    	             var month = $scope.$('#month').combobox('getValue');
+    	              if(curYear == year && curmonth < month){
+    	            		return false;
+    	            	}else{
+    	            		return true;
+    	            	}
+    	        	}else{
+    		        	return true;
+    		        	}   
+    		        },   
+    	        message: '选择月大于当前月'  
+    	    },
+    	    monthFirstDay: {   
+    	        validator: function(value,param){ 
+    	        	if($scope.$('#timeType').combobox('getValue')=="M"){
+    	        	 var year = $scope.$('#year').combobox('getValue');//获取选择年份、月份
+    	             var month = $scope.$('#month').combobox('getValue')-1;
+    	             var myDate = new Date(year, month, 1);
+    	                if(myDate.format('yyyy-MM-dd') == new Date().format('yyyy-MM-dd')){
+    	                		return false;
+    	                 }else{
+    	            		return true;
+    	            	}
+    	        }else{
+    	        	return true;
+    	        	}   
+    	        },
+    	        message: '选择月起始日期不可为今天'  
+    	    }
+    	});
+        $.extend($scope, {
+            //默认日期初始化
+            cyFrmCond: {
+                beginTime: new Date().dateAdd('d', -7).format('yyyy-MM-dd'),
+                endTime: new Date().dateAdd('d', -1).format('yyyy-MM-dd')
+            },
+            searchReport: function () {
+            	if($scope.$(".searchForm").form('validate')){
+                var paramString = "";
+                var orgCode = $scope.$("#cmbOrgQ").textbox("getValue");
+                var timeType = $scope.$('#timeType').combobox('getValue');
+                var beginDate = "";
+                var endDate = "";
+                if (timeType == "W")//周统计
+                {
+                	var year = $scope.$("#year").combobox('getValue');
+                	var week = $scope.$("#week").combobox('getValue');
+                	var beginDate = new Date($scope.$("#beginTime").datebox('getValue'));
+                	var endDate = new Date($scope.$("#endTime").datebox('getValue')).dateAdd('d',1);
+                    beginDate = beginDate.format('yyyy-MM-dd');
+                    endDate = endDate.format('yyyy-MM-dd');
+                    paramString += "&YEAR=" + year + "&WEEK=" + week + "&ORG_AUTHORITY_CODE=" + orgCode + "&BEGIN_DATE=" + beginDate + "&END_DATE=" + endDate;
+                    $scope.$("#iframe").attr("src", "../../../Report/run?__report=Area_report_week.rptdesign" + paramString);
+                    console.log("../../frameset?__report=Area_report_week.rptdesign" + paramString);
+                }
+                else if (timeType == "M")//月统计
+                {
+                	var year = $scope.$("#year").combobox('getValue');
+                	var week = $scope.$("#week").combobox('getValue');
+                	var beginDate = new Date($scope.$("#beginTime").datebox('getValue'));
+                	var endDate = new Date($scope.$("#endTime").datebox('getValue')).dateAdd('d',1);
+                    beginDate = beginDate.format('yyyy-MM-dd');
+                    endDate = endDate.format('yyyy-MM-dd');
+                    paramString += "&ORG_AUTHORITY_CODE=" + orgCode + "&BEGIN_DATE=" + beginDate + "&END_DATE=" + endDate;
+                    $scope.$("#iframe").attr("src", "../../../Report/run?__report=Area_report_month.rptdesign" + paramString);
+                    console.log("../../frameset?__report=Area_report_month.rptdesign" + paramString);
+                }
+                else {
+                    beginDate = $scope.$("#endTime").datebox('getValue');
+                    paramString += "&ORG_AUTHORITY_CODE=" + orgCode + "&PASS_TIME=" + beginDate;
+                    $scope.$("#iframe").attr("src", "../../../Report/run?__report=Area_report_day.rptdesign" + paramString);
+                    console.log("../../frameset?__report=Area_report_day.rptdesign" + paramString);
+                }
+              }  
+            },
+            load: function () {
+                //获取当前年份,月份
+                var yearData = [];
+                var monthData = [];
+                var weekData = [];
+                var currentYear = new Date().getFullYear();
+                var currentMonth = new Date().getMonth() + 1;
+                var currentDay = new Date().getDate();
+                var currentWeek = 1;
+                //构造年份、月份数据，加载到年月下拉控件中
+                for (var i = currentYear; i >= 2010; i--) {
+                    yearData.push({"value": i, "text": i + "年"});
+                }
+                $scope.$('#year').combobox('loadData', yearData);
+                if (yearData.length > 0) {
+                    $scope.$('#year').combobox('select', yearData[0].value);
+                }
+                for (var i = 1; i <= 12; i++) {
+                    monthData.push({"value": i, "text": i + "月"});
+                }
+                $scope.$('#month').combobox('loadData', monthData);
+                for (var i = 1; i <= 53; i++) {
+                    weekData.push({"value": i, "text": "第" + i + "周"});
+                }
+                $scope.$('#week').combobox('loadData', weekData);
+                $scope.$('#timeType').combobox('select', "D");
+                if (monthData.length > 0) {
+                    curmonth = currentMonth;
+                    $scope.$('#month').combobox('select', currentMonth);
+                }
+                if (weekData.length > 0) {
+                    var d1 = new Date(currentYear, currentMonth - 1, currentDay);
+                    var d2 = new Date(currentYear, 0, 1);
+                    var d = Math.round((d1 - d2) / 86400000);
+                    currentWeek = Math.ceil((d + ((d2.getDay() + 1) - 1)) / 7);
+                    curweek = currentWeek;
+                    $scope.$('#week').combobox('select', currentWeek);
+                }
+            }
+        })//根据日期选择方式，控制日期相关控件显示 与 隐藏
+        $scope.$('#timeType').combobox({
+            valueField: 'value',
+            textField: 'text',
+			onSelect : function(rec) {
+				if (rec.value == "W") {
+					$scope.$(".year-hide").show();
+					$scope.$(".month-hide").hide();//月隐藏
+					$scope.$(".week-hide").show();
+					$scope.$(".start-date-hide").show();
+					getWeekDate($scope.$('#year').combobox('getValue'),$scope.$('#week').combobox('getValue'));
+
+				} else if (rec.value == "M") {
+					$scope.$(".year-hide").show();
+					$scope.$(".month-hide").show();
+					$scope.$(".week-hide").hide();//周隐藏
+					$scope.$(".start-date-hide").show();
+					getMonthDate($scope.$('#year').combobox('getValue'),$scope.$('#month').combobox('getValue'));
+				}
+				else
+					{
+					$scope.$(".start-date-hide").hide();//日期显示，年、月、周隐藏
+					$scope.$(".year-hide").hide();
+					$scope.$(".month-hide").hide();
+					$scope.$(".week-hide").hide();
+					}
+			}
+        });
+        
+    	$scope.$('.easyui-datebox').each(function() {
+    		$(this).datebox('calendar').calendar({
+    			validator : function(date) {
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date < d1;
+    			}
+    		});
+    	});
+    	
+    	$scope.$('#endTime').datebox('calendar').calendar({//按周查询，时间范围限制在11天内；按月查询，时间范围限制在31天内
+    		validator: function(value){ 
+        	var date = $scope.$('#beginTime').datebox("getValue");
+            var timeType = $scope.$('#timeType').combobox('getValue');
+        	if(!date || date == ""){
+    			return true;
+    		}
+        	if(timeType == "W" && new Date(value) > new Date(date).dateAdd('d',10) || 
+        	   timeType == "M" && new Date(value) > new Date(date).dateAdd('d',31) ){
+    			return false;
+    		}
+    		return true;
+          }
+    	});
+    	
+    	$scope.$("#year").combobox({//年份选择，重新设置开始日期及截止日期
+    					onSelect : function(rec) {
+    						var timeType = $scope.$('#timeType').combobox('getValue');
+    						var year = rec.value;
+    						if(timeType == "W"){
+    							var week = $scope.$('#week').combobox('getValue');
+    							getWeekDate(year,week);
+    						}
+    						if(timeType == "M"){
+    							 var month = $scope.$('#month').combobox('getValue');
+    							 getMonthDate(year,month);
+    						}
+    					}
+    			});		
+
+    	$scope.$("#week").combobox({//周选择，重新设置开始日期及截止日期
+    					onSelect : function(rec) {
+    						var year = $scope.$('#year').combobox('getValue');
+    						getWeekDate(year, rec.value);
+    					}
+    				});
+
+    	$scope.$("#month").combobox({//月份选择，重新设置开始日期及截止日期
+    					onSelect : function(rec) {
+    						var year = $scope.$('#year').combobox('getValue');
+    						getMonthDate(year, rec.value);
+    					}
+    				});
+
+    	$scope.$("#beginTime").datebox({//开始日期选择，重新根据时间方式，选择的年月或年周设置截止日期
+    					onSelect : function(date) {
+    						var timeType = $scope.$('#timeType').combobox('getValue');
+    						$scope.$('#year').combobox('setValue',date.getFullYear());
+    						if(timeType =="M"){
+    						$scope.$('#month').combobox('setValue',date.getMonth() + 1);
+    						}else if(timeType =="W"){
+    						var week = weekofyear(date);
+    						$scope.$('#week').combobox('setValue',week);
+    						}
+    						var endDate;
+    						
+    						if(timeType == "M"){
+    							var year = date.getFullYear();
+    							var month = date.getMonth() + 1;
+    							var day = date.getDate() - 1;
+    						    endDate = new Date(year,month,day);
+    						}else if(timeType == "W"){
+    							endDate = date.dateAdd('d',6);
+    						}
+    						if(endDate >= curDate){
+    							endDate = new Date().dateAdd('d',-1);
+    						}
+    						$scope.$('#endTime').datebox('setValue', endDate.format('yyyy-MM-dd'));
+    					}
+    				});
+            
+    	$scope.$("#endTime").datebox({//截止日期验证
+    		onSelect : function(date) {
+    			var timeType = $scope.$('#timeType').combobox('getValue');
+    			if(timeType =="D"){
+    				$scope.$('#beginTime').datebox('setValue', date.format("yyyy-MM-dd"));
+    				$scope.$(".searchForm").form('validate');
+    			}
+    		}
+    	});
+    				function getMonthDate(year, month) {//按月统计计算开始日期与截止日期
+    					var myDate = new Date(year, month - 1, 1);
+    					var beginDate = myDate.format("yyyy-MM-dd");
+    					myDate.setMonth(month); //设置截止日期 当月最后一天
+    					myDate.setDate(0);
+    					if (myDate >= curDate) {
+    						myDate = new Date().dateAdd('d', -1);
+    					}
+    					var endDate = myDate.format("yyyy-MM-dd");
+    					$scope.$('#beginTime').datebox('setValue', beginDate);
+    					$scope.$('#endTime').datebox('setValue', endDate);
+    				}
+
+    				function getWeekDate(year, week) {//按周统计计算开始日期与截止日期
+    					var beginDate = getWeekStartDate(year, week, 1);
+    					var endDate = beginDate.dateAdd('d', 6);
+    					if (endDate >= curDate) {
+    						endDate = new Date().dateAdd('d', -1);
+    					}
+    					beginDate = beginDate.format('yyyy-MM-dd');
+    					endDate = endDate.format('yyyy-MM-dd');
+    					$scope.$('#beginTime').datebox('setValue', beginDate);
+    					$scope.$('#endTime').datebox('setValue', endDate);
+    				}
+    				
+    			});
+
+    </script>

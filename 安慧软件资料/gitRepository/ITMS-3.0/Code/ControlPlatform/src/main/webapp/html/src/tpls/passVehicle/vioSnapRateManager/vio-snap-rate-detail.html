@@ -1,0 +1,175 @@
+<div class="easyui-layout" id="vioSnapRateDetail" style="height:100%">
+	<div data-options="region:'north',height:50">
+		<form cy-form="formData" class="searchForm" method="post">
+			<div class="table">
+				<div class="tr">
+					<div class="th" style="margin-left: 40px;">
+						点位：
+					</div>
+					<div class="td">
+						<span cy-name="formData.site_name" ></span>
+					</div>
+
+					<div class="th" style="margin-left: 50px;">
+						方向：
+					</div>
+					<div class="td">
+						<span cy-name="formData.direction_name"></span>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div data-options="region:'center'">
+
+		<div id="container" class="easyui-panel" data-options="fit:true"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(['rowData'], function($scope) {
+		$scope.load = function() {
+			$scope.formData = $scope.rowData;
+			$scope.$updateDom("formData");
+			initData();
+			showAllChart()
+		}
+		//定义echarts入口
+		function initData() {
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar', 'echarts/chart/pie']);
+		} ;
+
+		/**
+		 *显示超速柱状图
+		 */
+		function showAllChart() {
+			var myChart = require('echarts').init($scope.$("#container").get(0));
+			var rows = $scope.rowData.subTypeDetailMap;
+			//获得keys值
+			var xAxisData = Object.keys(rows);
+			var row;
+			//过车超速次数
+			var yVioCount = [];
+			//过车超速比
+			var yVioRate = [];
+			for (var i = 0; i < rows.length; i++) {
+				row = rows[i];
+				xAxisData.push(row.data_day);
+				yVioCount.push(row.vioCount);
+				yVioRate.push(row.vioRate);
+			}
+
+			var option = {
+				title : {
+					text : $scope.formData.site_name + '各超速明细',
+				},
+				tooltip : {
+					trigger : 'axis',
+					/*
+					 formatter : function(params, ticket, callback) {
+					 var res = ":" + params[0].name;
+					 res += "</br>缂哄け鐜�:" + params[0].value + "%";
+					 res += "</br>鎺ュ叆鐜�:" + params[1].value + "%";
+					 return res;
+					 }*/
+
+				},
+				legend : {
+					data : ['超速比', '超速次数']
+				},
+				toolbox : {
+					show : true,
+					feature : {
+						mark : {
+							show : false
+						},
+						dataView : {
+							show : false,
+							readOnly : false
+						},
+						magicType : {
+							show : false,
+							type : ['line', 'bar']
+						},
+						restore : {
+							show : false
+						},
+						saveAsImage : {
+							show : true
+						}
+					}
+				},
+				calculable : true,
+				xAxis : [{
+					type : 'category',
+					name : '超速类型',
+					data : xAxisData
+				}],
+				yAxis : [{
+					type : 'value',
+					name : '超速比',
+					axisLabel : {
+						formatter : '{value}%'
+					}
+				}, {
+					type : 'value',
+					name : '超速次数',
+					axisLabel : {
+						formatter : '{value}'
+					}
+				}],
+				series : [{
+					name : '超速比',
+					type : 'bar',
+					data : yVioRate,
+					/*markPoint : {
+
+					 data : [
+					 {type : 'max', name: '鏈�澶у��'},
+					 {type : 'min', name: '鏈�灏忓��'}
+					 ]
+
+					 },*/
+				}, {
+					name : '超速次数',
+					type : 'bar',
+					data : yVioCount,
+					/*markPoint : {
+
+					 data : [
+					 {type : 'max', name: '鏈�澶у��'},
+					 {type : 'min', name: '鏈�灏忓��'}
+					 ]
+
+					 },*/
+				}]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+
+		}
+
+	})
+
+</script>
+
+<style type="text/css">
+	#vioSnapRateDetail .th {
+		width: 80px;
+		text-align: right;
+	}
+	#vioSnapRateDetail .easyui-combobox {
+		width: 150px;
+	}
+	#vioSnapRateDetail .button-search {
+		margin-left: 10px;
+	}
+</style>

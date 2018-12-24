@@ -1,0 +1,234 @@
+<!--道路添加页面-->
+<div  class="easyui-layout">
+    <form cy-form="roadData" id="form">
+        <div class="searchPanel">
+            <div class="panel_title">
+                道路信息
+            </div>
+            <div id="roadMessage" class="table">
+                <div class="tr">
+                    <div class="th">
+                        道路编号：
+                    </div>
+                    <div class="td">
+                        <input name="roadCode" class="easyui-textbox" data-options="required:true,validType:['notBlank','length[0,6]']" style="width: 149px;"/>
+                    </div>
+                    <div class="th" >
+                        道路名称：
+                    </div>
+                    <div class="td">
+                        <input  name="roadName"  class="easyui-textbox" data-options="validType:['notBlank','length[0,32]'],required: true"/>
+                    </div>
+                    <div class="th" >
+                        道路别名：
+                    </div>
+                    <div class="td">
+                        <input  name="roadAliasName"  class="easyui-textbox" data-options="validType:['notBlank','length[0,64]']"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        道路类型：
+                    </div>
+                    <div class="td">
+                        <input id="roadTypeId" name="roadType" class="easyui-combobox" cy-code="016" data-options="required: true" style="width: 149px;"/>
+                    </div>
+                    <div class="th">
+                        行政区划：
+                    </div>
+                    <div class="td">
+                        <input  name="districtCodeList"  class="cy-district-checkbox"/>
+                    </div>
+                    <div class="th">
+                        管理机构：
+                    </div>
+                    <div class="td">
+                        <input  name="orgId"  id="orgId" class="cy-org-checkbox"  data-options="required: true"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        行政等级：
+                    </div>
+                    <div class="td">
+                        <input name="roadAdminGrade" class="easyui-combobox" cy-code="017" style="width: 149px;"/>
+                    </div>
+                   	<div class="th" style="width: 103px;">
+                        双向或单向：
+                    </div>
+                    <div class="td" style="width: 136px">
+                        &nbsp;&nbsp;
+                        <input  type="radio" name="isOneDirection" value="0" checked="checked"/>
+                        双向
+                        <input type="radio" name="isOneDirection" value="1" />
+                        单向
+                    </div>
+                    <span id="directionTypeOne" style="display: none">
+                        <div class="th">
+                            方向类型：
+                        </div>
+                        <div class="td">
+                            <!-- <input  name="noDirectionTypeCity" class="easyui-combobox" cy-code="070" style="width: 120px;" /> -->
+                            <input type="radio" name="noDirectionTypeCity" value="0" checked="checked"/>全部  
+                            <input type="radio" name="noDirectionTypeCity" value="1"/>上行
+                            <input type="radio" name="noDirectionTypeCity" value="2"/>下行
+                        </div>
+                    </span>
+                    <span id="directionTypeTwo" style="display: none" >
+                        <div class="th">
+                            道路走向：
+                        </div>
+                        <div class="td">
+                            <input  name="directionTypeCity" class="easyui-combobox"  cy-code="072" style="width: 135px;" />
+                        </div>
+                    </span>
+                   </div>
+                 <div class="tr">
+                    <div class="th" style="width:116px">
+                        超速认定方式：
+                    </div>
+                    <div class="td" style="width: 125px;">
+                        <input name="vioConfirmModel" class="easyui-combobox" cy-code="130" style="width: 125px;"/>
+                    </div>
+                    <div class="th">
+                        起点名称：
+                    </div>
+                    <div class="td">
+                        <input name="roadBeginName" class="easyui-textbox" data-options="validType:['notBlank','length[0,64]']" />
+                    </div>
+                    <div class="th">
+                        终点名称：
+                    </div>
+                    <div class="td">
+                        <input name="roadEndName" class="easyui-textbox" data-options="validType:['notBlank','length[0,64]']"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 92px;">
+                        道路总长：
+                    </div>
+                    <div class="td" >
+                        <input  name="roadLength" class="easyui-textbox" style="width: 119px;" data-options="prompt:'请输入数字类型'"/>
+                        公里
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="searchPanel">
+            <div class="panel_title">
+                道路结构
+            </div>
+            <div id="road-structure" class="table">
+                <div class="tr">
+                    <div class="th">
+                        路面结构：
+                    </div>
+                    <div class="td">
+                        <input  name="roadStructure" class="easyui-combobox" cy-code="132" style="width: 125px;"/>
+                    </div>
+                    <div class="th" style="width: 82px;">
+                        道路地形：
+                    </div>
+                    <div class="td" style="width: 170px;">
+                        <input  name="roadLandscape" class="easyui-combobox" cy-code="133" style="width: 162px;"/>
+                    </div>
+                    <div class="th">
+                        道路线形：
+                    </div>
+                    <div class="td">
+                        <input  name="roadLinear" class="easyui-combobox"  cy-code="134" style="width: 125px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 113px;">
+                        中央隔离设施：
+                    </div>
+                    <div class="td" style="width: 120px;">
+                        <input  name="centralIsolation" class="easyui-combobox"  cy-code="136" style="width: 102px;"/>
+                    </div>
+                    <div class="th" style="width: 113px;">
+                        道路隔离设施：
+                    </div>
+                    <div class="td" style="width: 140px;">
+                        <input  name="roadIsolation" class="easyui-combobox"  cy-code="135" style="width: 140px;"/>
+                    </div>
+                    <div class="th" style="width: 120px;">
+                        防护设施类型：
+                    </div>
+                    <div class="td" style="width: 120px;">
+                        <input  name="protectFacilities" class="easyui-combobox"  cy-code="137" style="width: 102px;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-options="regions:'south',border:false" style="height: 20px;" >
+            <div class="tr">
+                <div class="td" style="text-align: center">
+                    <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+                    cy-click="save">保存</a>
+                    <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                    cy-click="$closeSelf">取消</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["roadData", "saveRoad", "editRoad"], function($scope) {
+    $scope.$getDefaultCode(['070', '072', '016', '017', '132', '133', '134', '135', '136','137']);
+				
+        if ($scope.$params.get("type") == "add") {
+            $scope.save = function() {
+            if ($scope.$("#form").form("validate")) {
+                //更新form数据
+                $scope.$updateData("roadData");
+                //调用父页面saveRoad方法
+                $scope.saveRoad($scope.roadData);
+               }
+            };
+        } else {
+            $scope.save = function() {
+           		if ($scope.$("#form").form("validate")) {
+                   	//更新form数据
+                	$scope.$updateData("roadData");
+                	//调用父页面editRoad方法
+                	$scope.editRoad($scope.roadData);
+               }
+            };
+
+        }
+
+        $scope.$("#roadTypeId").combobox({
+            onChange : function(value) {
+                if ((value == "5") || (value == "6") || (value == "7") || (value == "8")) {
+                    $scope.$("#directionTypeOne").hide();
+                    $scope.$("#directionTypeTwo").show();
+                } else {
+                    $scope.$("#directionTypeOne").show();
+                    $scope.$("#directionTypeTwo").hide();
+                }
+            }
+        });
+		
+		
+    });
+
+</script>
+<style type="text/css">
+    #roadMessage .th {
+        text-align: right;
+        width: 90px;
+    }
+    #roadMessage .td {
+        text-align: left;
+        width: 150px;
+    }
+    #road-structure .th {
+        text-align: right;
+        width: 90px;
+    }
+     #road-structure .td {
+        text-align: left;
+        width: 150px;
+    }
+</style>

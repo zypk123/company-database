@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.PhotoMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.Photo" >
+    <id column="PHOTO_ID" property="photoId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="PHOTO_TYPE" property="photoType" jdbcType="CHAR" />
+    <result column="PHOTO" property="photo" jdbcType="VARCHAR" />
+    <result column="PHOTO_DESC" property="photoDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PHOTO_ID, DEVICE_ID, PHOTO_TYPE, PHOTO, PHOTO_DESC
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_PHOTO
+    where PHOTO_ID = #{photoId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_PHOTO
+    where PHOTO_ID = #{photoId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.Photo" >
+    insert into T_DEVICE_PHOTO (PHOTO_ID, DEVICE_ID, PHOTO_TYPE, 
+      PHOTO, PHOTO_DESC)
+    values (#{photoId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{photoType,jdbcType=CHAR}, 
+      #{photo,jdbcType=VARCHAR}, #{photoDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.Photo" >
+    insert into T_DEVICE_PHOTO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="photoId != null" >
+        PHOTO_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="photoType != null" >
+        PHOTO_TYPE,
+      </if>
+      <if test="photo != null" >
+        PHOTO,
+      </if>
+      <if test="photoDesc != null" >
+        PHOTO_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="photoId != null" >
+        #{photoId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="photoType != null" >
+        #{photoType,jdbcType=CHAR},
+      </if>
+      <if test="photo != null" >
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="photoDesc != null" >
+        #{photoDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Photo" >
+    update T_DEVICE_PHOTO
+    <set >
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="photoType != null" >
+        PHOTO_TYPE = #{photoType,jdbcType=CHAR},
+      </if>
+      <if test="photo != null" >
+        PHOTO = #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="photoDesc != null" >
+        PHOTO_DESC = #{photoDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PHOTO_ID = #{photoId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Photo" >
+    update T_DEVICE_PHOTO
+    set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      PHOTO_TYPE = #{photoType,jdbcType=CHAR},
+      PHOTO = #{photo,jdbcType=VARCHAR},
+      PHOTO_DESC = #{photoDesc,jdbcType=VARCHAR}
+    where PHOTO_ID = #{photoId,jdbcType=VARCHAR}
+  </update>
+    <select id="selectPhotoes" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_PHOTO
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+</mapper>

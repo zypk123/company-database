@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.ServiceAreaMapper">
+	<resultMap id="BaseResultMap" type="cy.its.road.domain.model.highway.ServiceArea">
+		<id column="SERVICE_AREA_ID" property="serviceAreaId" jdbcType="VARCHAR" />
+		<result column="SERVICE_AREA_NAME" property="serviceAreaName"
+			jdbcType="VARCHAR" />
+		<result column="SERVICE_AREA_TYPE" property="serviceAreaType"
+			jdbcType="CHAR" />
+		<result column="ENTRANCE_TYPE" property="entranceType"
+			jdbcType="CHAR" />
+		<result column="SERVICE_AREA_GRADE" property="serviceAreaGrade"
+			jdbcType="CHAR" />
+		<result column="SERVICE_DESIGN_CAPACITY" property="serviceDesignCapacity"
+			jdbcType="VARCHAR" />
+		<result column="EXISTING_VEHICLE_NUM" property="existingVehicleNum"
+			jdbcType="VARCHAR" />
+		<result column="HAS_GAS_STATION" property="hasGasStation"
+			jdbcType="CHAR" />
+		<result column="OIL_TYPE_LIST" property="oilTypeList" jdbcType="VARCHAR" />
+		<result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+		<result column="MILEAGE" property="mileage" jdbcType="VARCHAR" />
+		<result column="SERVICE_TOLLGATE_ID" property="serviceTollgateId"
+			jdbcType="VARCHAR" />
+		<result column="SERVICE_VIDEO_ID" property="serviceVideoId"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SERVICE_AREA_ID, SERVICE_AREA_NAME, SERVICE_AREA_TYPE, ENTRANCE_TYPE,
+		SERVICE_AREA_GRADE,
+		SERVICE_DESIGN_CAPACITY, EXISTING_VEHICLE_NUM, HAS_GAS_STATION, OIL_TYPE_LIST, ROAD_ID,
+		MILEAGE, SERVICE_TOLLGATE_ID, SERVICE_VIDEO_ID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_SERVICE_AREA
+		where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_SYS_SERVICE_AREA
+		where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.road.domain.model.highway.ServiceArea">
+		insert into T_SYS_SERVICE_AREA (SERVICE_AREA_ID, SERVICE_AREA_NAME,
+		SERVICE_AREA_TYPE,
+		ENTRANCE_TYPE, SERVICE_AREA_GRADE, SERVICE_DESIGN_CAPACITY,
+		EXISTING_VEHICLE_NUM, HAS_GAS_STATION, OIL_TYPE_LIST,
+		ROAD_ID, MILEAGE, SERVICE_TOLLGATE_ID,
+		SERVICE_VIDEO_ID)
+		values (#{serviceAreaId,jdbcType=VARCHAR},
+		#{serviceAreaName,jdbcType=VARCHAR}, #{serviceAreaType,jdbcType=CHAR},
+		#{entranceType,jdbcType=CHAR}, #{serviceAreaGrade,jdbcType=CHAR},
+		#{serviceDesignCapacity,jdbcType=VARCHAR},
+		#{existingVehicleNum,jdbcType=VARCHAR},
+		#{hasGasStation,jdbcType=CHAR}, #{oilTypeList,jdbcType=VARCHAR},
+		#{roadId,jdbcType=VARCHAR}, #{mileage,jdbcType=VARCHAR},
+		#{serviceTollgateId,jdbcType=VARCHAR},
+		#{serviceVideoId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.road.domain.model.highway.ServiceArea">
+		insert into T_SYS_SERVICE_AREA
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="serviceAreaId != null">
+				SERVICE_AREA_ID,
+			</if>
+			<if test="serviceAreaName != null">
+				SERVICE_AREA_NAME,
+			</if>
+			<if test="serviceAreaType != null">
+				SERVICE_AREA_TYPE,
+			</if>
+			<if test="entranceType != null">
+				ENTRANCE_TYPE,
+			</if>
+			<if test="serviceAreaGrade != null">
+				SERVICE_AREA_GRADE,
+			</if>
+			<if test="serviceDesignCapacity != null">
+				SERVICE_DESIGN_CAPACITY,
+			</if>
+			<if test="existingVehicleNum != null">
+				EXISTING_VEHICLE_NUM,
+			</if>
+			<if test="hasGasStation != null">
+				HAS_GAS_STATION,
+			</if>
+			<if test="oilTypeList != null">
+				OIL_TYPE_LIST,
+			</if>
+			<if test="roadId != null">
+				ROAD_ID,
+			</if>
+			<if test="mileage != null">
+				MILEAGE,
+			</if>
+			<if test="serviceTollgateId != null">
+				SERVICE_TOLLGATE_ID,
+			</if>
+			<if test="serviceVideoId != null">
+				SERVICE_VIDEO_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="serviceAreaId != null">
+				#{serviceAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceAreaName != null">
+				#{serviceAreaName,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceAreaType != null">
+				#{serviceAreaType,jdbcType=CHAR},
+			</if>
+			<if test="entranceType != null">
+				#{entranceType,jdbcType=CHAR},
+			</if>
+			<if test="serviceAreaGrade != null">
+				#{serviceAreaGrade,jdbcType=CHAR},
+			</if>
+			<if test="serviceDesignCapacity != null">
+				#{serviceDesignCapacity,jdbcType=VARCHAR},
+			</if>
+			<if test="existingVehicleNum != null">
+				#{existingVehicleNum,jdbcType=VARCHAR},
+			</if>
+			<if test="hasGasStation != null">
+				#{hasGasStation,jdbcType=CHAR},
+			</if>
+			<if test="oilTypeList != null">
+				#{oilTypeList,jdbcType=VARCHAR},
+			</if>
+			<if test="roadId != null">
+				#{roadId,jdbcType=VARCHAR},
+			</if>
+			<if test="mileage != null">
+				#{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceTollgateId != null">
+				#{serviceTollgateId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceVideoId != null">
+				#{serviceVideoId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.highway.ServiceArea">
+		update T_SYS_SERVICE_AREA
+		<set>
+			<if test="serviceAreaName != null">
+				SERVICE_AREA_NAME = #{serviceAreaName,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceAreaType != null">
+				SERVICE_AREA_TYPE = #{serviceAreaType,jdbcType=CHAR},
+			</if>
+			<if test="entranceType != null">
+				ENTRANCE_TYPE = #{entranceType,jdbcType=CHAR},
+			</if>
+			<if test="serviceAreaGrade != null">
+				SERVICE_AREA_GRADE = #{serviceAreaGrade,jdbcType=CHAR},
+			</if>
+			<if test="serviceDesignCapacity != null">
+				SERVICE_DESIGN_CAPACITY = #{serviceDesignCapacity,jdbcType=VARCHAR},
+			</if>
+			<if test="existingVehicleNum != null">
+				EXISTING_VEHICLE_NUM = #{existingVehicleNum,jdbcType=VARCHAR},
+			</if>
+			<if test="hasGasStation != null">
+				HAS_GAS_STATION = #{hasGasStation,jdbcType=CHAR},
+			</if>
+			<if test="oilTypeList != null">
+				OIL_TYPE_LIST = #{oilTypeList,jdbcType=VARCHAR},
+			</if>
+			<if test="roadId != null">
+				ROAD_ID = #{roadId,jdbcType=VARCHAR},
+			</if>
+			<if test="mileage != null">
+				MILEAGE = #{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceTollgateId != null">
+				SERVICE_TOLLGATE_ID = #{serviceTollgateId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceVideoId != null">
+				SERVICE_VIDEO_ID = #{serviceVideoId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.highway.ServiceArea">
+		update T_SYS_SERVICE_AREA
+		set SERVICE_AREA_NAME = #{serviceAreaName,jdbcType=VARCHAR},
+		SERVICE_AREA_TYPE = #{serviceAreaType,jdbcType=CHAR},
+		ENTRANCE_TYPE = #{entranceType,jdbcType=CHAR},
+		SERVICE_AREA_GRADE = #{serviceAreaGrade,jdbcType=CHAR},
+		SERVICE_DESIGN_CAPACITY = #{serviceDesignCapacity,jdbcType=VARCHAR},
+		EXISTING_VEHICLE_NUM = #{existingVehicleNum,jdbcType=VARCHAR},
+		HAS_GAS_STATION = #{hasGasStation,jdbcType=CHAR},
+		OIL_TYPE_LIST = #{oilTypeList,jdbcType=VARCHAR},
+		ROAD_ID = #{roadId,jdbcType=VARCHAR},
+		MILEAGE = #{mileage,jdbcType=VARCHAR},
+		SERVICE_TOLLGATE_ID = #{serviceTollgateId,jdbcType=VARCHAR},
+		SERVICE_VIDEO_ID = #{serviceVideoId,jdbcType=VARCHAR}
+		where SERVICE_AREA_ID = #{serviceAreaId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectServiceAreas" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_SYS_SERVICE_AREA V
+		<where>
+			
+			<if test="serviceAreaName != null and serviceAreaName != '' ">
+				AND SERVICE_AREA_NAME like '%' || #{serviceAreaName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="roadId != null and roadId != '' ">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="serviceAreaType != null and serviceAreaType != '' ">
+				AND SERVICE_AREA_TYPE = #{serviceAreaType,jdbcType=CHAR}
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="countServiceAreas" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_SERVICE_AREA
+		<where>
+			<if test="serviceAreaName != null and serviceAreaName != '' ">
+				AND SERVICE_AREA_NAME like '%' || #{serviceAreaName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="roadId != null and roadId != '' ">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="serviceAreaType != null and serviceAreaType != '' ">
+				AND SERVICE_AREA_TYPE = #{serviceAreaType,jdbcType=CHAR}
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteByRoadId" parameterType="java.lang.String">
+		delete from T_SYS_SERVICE_AREA
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

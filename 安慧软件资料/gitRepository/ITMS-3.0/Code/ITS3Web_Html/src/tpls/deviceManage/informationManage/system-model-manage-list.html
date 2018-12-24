@@ -1,0 +1,89 @@
+<div id="sysModel" class="easyui-layout">
+    <div data-options="region:'west',title:'型号导航',split : true" style="width:200px;">
+        <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="add">新增</a>
+        <div id="cy-tree">
+
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="dataGrid" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/informationManage/sysModelData.json"></table>
+    </div>
+    <div id="mm" class="easyui-menu" style="width:120px;">
+        <div id="mm-treeadd" data-options="iconCls:'icon-add'" cy-click="add">新增系统型号</div>
+        <div id="mm-treeclose" data-options="iconCls:'icon-remove'" cy-click="remove">删除系统型号</div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.mmForTree = null;
+
+        //页面初始化
+        $scope.load = function(){
+            //初始化列表数据
+            $scope.$search("queryData");
+            //加载树操作
+            $scope.$('#cy-tree').tree({
+                lines : true,
+                animate : true,
+                url : "data/deviceManage/informationManage/sysModelTree.json",
+                onContextMenu : $scope.showTreeMenu,
+                onClick : $scope.clickTreeMenu
+            });
+            initMenu();
+        };
+        function initMenu(){
+            //初始化节点右键菜单
+            $scope.mmForTree = $scope.$('#mm').menu().menu("hide");
+        }
+        //显示树右键菜单
+        $scope.showTreeMenu = function (e, node){
+            e.preventDefault();
+            // 查找节点
+            $scope.$('#cy-tree').tree('select', node.target);
+            // 显示快捷菜单
+            $scope.$('#mm').menu('show', {
+                left: e.pageX,
+                top: e.pageY
+            });
+        };
+        //点击选中查询该型号刷新列表
+        $scope.clickTreeMenu = function(node){
+            var text = node.text;
+            alert(text);
+        };
+        $scope.options = {
+            columns:[[
+                {field : "id",checkbox : true},
+                {field : "device_sys_model_name",title : "型号名称",align: 'center',width : 100},
+                {field : "function_name",title : "功能名称",align: 'center',width : 100},
+                {field : "function_value",title : "功能值",align: 'center',width : 100},
+                {field : "operate",title : "操作",align: 'center',width : 100,formatter : operate}
+            ]]
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        $scope.add = function(){
+           $scope.$openDialog("sysModel",{
+               title :"新增系统型号信息",
+               width : 400,
+               height : 500,
+               href : "tpls/deviceManage/informationManage/system-model-operate.html"
+           });
+        };
+    });
+</script>

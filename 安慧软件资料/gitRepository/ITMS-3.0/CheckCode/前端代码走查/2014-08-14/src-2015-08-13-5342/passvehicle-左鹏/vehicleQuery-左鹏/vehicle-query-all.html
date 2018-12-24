@@ -1,0 +1,372 @@
+﻿<div id="monitorQuery_all" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:150">
+    	 <form cy-form="formData">
+            <div class="searchPanel">
+            	<div class="panel_title">查询条件</div>
+              	<div class="table">
+                	<div class="tr">
+                        <div class="th" style="height:25px;line-height:25px;">点位：
+                        </div>
+                        <div class="td" style="width:320px;">
+                        	<input class="cy-chooseLocation" size="22" style="width:230px;height:25px;"/>
+                        </div>
+ 						<div class="th"><span class="red">* </span>过车时间：</div>
+                        <div class="td" style="width:250px;">
+                            <input name="passTimeFr" data-options="required:true" 
+                            	class="easyui-datetimebox" style="width:150px;" /> 至
+                            <input name="passTimeTo" data-options="required:true" 
+                            	class="easyui-datetimebox" style="width:150px;" />
+                        </div>
+                    </div> 
+                    <div class="tr">
+                    	<div class="th">方向：</div>
+                        <div class="td">
+                            <select class="easyui-combobox" name="directionType" style="width:120px;">
+                            	<option value="">--请选择--</option>
+                                <option value="0">上行</option>
+                                <option value="1">下行</option>
+                            </select>
+                        </div>
+                        <div class="th">车道：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="lane" style="width:120px;" />
+                        </div>
+                        <div class="th">号牌号码：</div>
+                        <div class="td">
+                            <input class="cy-vehNumberbox" name="plateNbr" style="width:120px;" />
+                        </div>
+                        <div class="th hide" style="display:none">号牌颜色：</div>
+                        <div class="td hide" style="display:none">
+                            <input class="easyui-combobox" id="PLATE_COLOR" name="plateColor" style="width:120px"
+                                 data-options="valueField:'ID',textField:'NAME',panelHeight:'auto',panelMaxWidth:'200px'" />
+                        </div>
+                        <div class="th" style="width:200px;">
+                            <a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown" 
+                            	cy-click="searchSlideDown">更多</a>
+                        	<a class="easyui-splitbutton button-search" cy-click="searchForm"  id="searchButton"
+                            	 data-options="iconCls:'icon-search'">查询</a>
+                            <div id="monitorQueryAll_searchMenu">
+                            	<div cy-click="addSearchTag" data-options="iconCls:'icon-add'">添加查询标签</div>
+                                <div cy-click="loadSearchTag" data-options="iconCls:'icon-export'">导出查询标签</div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="tr hide" style="display:none">
+                        <div class="th">车辆品牌：</div>
+                        <div class="td">
+                            <input class="cy-brandbox" name="vehBrand" style="width:120px;" />
+                        </div>
+                         <div class="th">子品牌：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="vehBrand" style="width:120px;" />
+                        </div>	
+                        <div class="th">车辆颜色：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="VEHICLE_COLOR" name="vehColor" style="width:120px"
+                                   data-options="valueField:'ID',textField:'NAME',panelHeight:'auto',panelMaxWidth:'200px'" />
+                        </div>
+                        <div class="th">车速：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="speed" style="width:120px;" />
+                        </div>
+                    </div> 
+                    <div class="tr hide" style="display:none">
+                    	<div class="th">车辆归属地：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="VEHLOCALIZATION" name="vehLocalization" style="width:120px"
+                                   data-options="valueField:'ID',textField:'NAME',panelHeight:'auto',panelMaxWidth:'200px'" />
+                        </div>
+                         <div class="th" style="width:600px;">
+                        	<a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"  
+                            	cy-click="searchSlideUp">收起</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="linkbutton_toolbar">
+                <a class="easyui-linkbutton button" data-options="iconCls:'icon-export'">勾选导出</a>
+                <a class="easyui-linkbutton button" data-options="iconCls:'icon-export'">全部导出</a>
+                <a class="easyui-linkbutton button">查看轨迹</a>
+                <a class="easyui-linkbutton button">查询视频</a>
+            </div>
+        </form>
+    </div>
+    <!--数据展示区 -->
+    <div data-options="region:'center',border:true">
+        <table cy-datagrid="options" cy-querydata="formData" cy-url="data/passvehicle/data.json"></table>
+    </div>
+     <!--图片预览区 -->
+    <div id="monitorQueryImage" data-options="region:'east',href:'tpls/public/imageView.html'" 
+    	style="width:300px;overflow:hidden;">
+        
+    </div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		//查询按钮菜单初始化
+		$scope.$("#searchButton").splitbutton({
+			menu : $scope.$("#monitorQueryAll_searchMenu")
+		})
+		$.extend($scope,{
+			/**
+			 * 设置datagrid参数
+			 * @type {Object}
+			 */
+			options : {
+				columns : [[
+					{field:"id",checkbox:true},
+					{field:"plantNbr",title:"号牌号码",width:100},
+					{field:"plantType",title:"号牌种类",width:100},
+					{field:"vehLocation",title:"归属地",width:100},
+					{field:"districtCode",title:"行政区划",width:100},
+					{field:"roadCode",title:"道路名称",width:100},
+					{field:"siteCode",title:"通行名称",width:100},
+					{field:"passTime",title:"通行时间",width:100},
+					{field:"directionType",title:"形式方向",width:100},
+					{field:"lane",title:"车道",width:100},
+					{field:"deviceNbr",title:"设备编号",width:100},
+					{field:"orgCode",title:"管理机构",width:100}
+				]],
+				onClickRow : clickRow,
+				onDblClickRow : dblClickRow			
+			},
+			/**
+			 * 初始化参数
+			 * @type {Object}
+			 */
+			formData : {
+				passTimeFr : new Date().format("yyyy-MM-dd 00:00:00"),
+				passTimeTo : new Date().format("yyyy-MM-dd hh:mm:ss"),
+				directionType : ""
+			},
+			/**
+			 * 增加查询标签
+			 */
+			addSearchTag : function(){
+
+			},
+			/**
+			 * 导出查询标签
+			 * @return {[type]} [description]
+			 */
+			loadSearchTag : function(){
+
+			},
+			/**
+			 * 收起剩余搜索项
+			 * @return {[type]} [description]
+			 */
+			searchSlideUp: function () {
+			    $scope.$(".hide").hide();
+			    $scope.$("#monitorQuery_all").layout("panel", "north").panel("resize", {
+			        height: 150
+			    });
+			    $scope.$("#monitorQuery_all").layout("resize");
+			    $scope.$("#searchSlideUp").hide();
+			    $scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" ");
+			},
+			/**
+			 * 展开剩余搜索项
+			 * @return {[type]} [description]
+			 */
+			searchSlideDown: function () {
+			    $scope.$(".hide").slideDown("fast");
+			    $scope.$("#monitorQuery_all").layout("panel", "north").panel("resize", {
+			        height: 215
+			    });
+			    $scope.$("#monitorQuery_all").layout("resize");
+			    $scope.$("#searchSlideDown").hide();
+			    $scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+			},
+			/**
+			 * 查询数据
+			 * @return {[type]} [description]
+			 */
+			searchForm : function(){
+				$scope.$search("formData");
+			}
+		});
+		var timeout;
+		/**
+		 * 点击行事件
+		 * @return {[type]} [description]
+		 */
+		function clickRow(index, data){
+			 //设定一个200毫秒延迟，如果用户操作时双击，则不触发单击事件
+	        if (timeout) {
+	            clearTimeout(timeout);
+	            timeout = null;
+	            return;
+	        }
+	        timeout = setTimeout(function () {
+	            //充值timeout标记
+	            timeout = null;
+	            if(data.IMAGE_URL_PATH){
+	            	$scope.$setParam("images",[data.IMAGE_URL_PATH]);
+	            }
+	            //显示图片，参数为url数组
+	            $scope.$("#monitorQueryImage").panel("refresh");
+	        }, 500);
+		}
+
+		/**
+		 * 双击行事件
+		 * @return {[type]} [description]
+		 */
+		function dblClickRow(index, data){
+			clearTimeout(timeout);
+			$scope.$openDialog("passDetail",{
+				width : 800,
+				height : 500,
+				title : "过车详情",
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html"
+			});
+		}
+	});
+/*
+	var monitorQueryAll = {
+		//初始化方法，自动在页面加载完毕后调用，初始方法写在此
+	    init: function () {
+	        //初始化过车查询时间
+	        $('#passTimeFr').datetimebox('setValue', new Date().format("yyyy-MM-dd hh:mm:ss"));
+	        $('#passTimeTo').datetimebox('setValue', new Date().format("yyyy-MM-dd hh:mm:ss"));
+		    AjaxRequest({
+		        url: "ITS3Web.Service.PassVehicle.VehicleQueryService/InitAllVehPageSysCode",
+		        params: {OrgCode:UserInfo.OrgCode},
+		        success: function (retData) {
+		            monitorQueryAll.sysCodeDic = retData.dicts;
+		            monitorQueryAll.initCombobox(retData.dicts);
+		        },
+		        fail: function (errTxt) {
+		            alert(errTxt);
+		        }
+		    });
+            //记录分页对象
+		    monitorQueryAll.pagination = monitorQueryAll.datagrid.datagrid("getPager");
+	    },
+	    //分页对象
+	    pagination: null,
+	    //点击行
+	    clickRow : function(index,data){
+	        //设定一个200毫秒延迟，如果用户操作时双击，则不触发单击事件
+	        if (monitorQueryAll.timeout) {
+	            clearTimeout(monitorQueryAll.timeout);
+	            monitorQueryAll.timeout = null;
+	            return;
+	        }
+	        monitorQueryAll.timeout = setTimeout(function () {
+	            //充值timeout标记
+	            monitorQueryAll.timeout = null;
+	            //显示图片，参数为url数组
+	            monitorQueryAll.$("#monitorQueryImage").cy_imageView([data.IMAGE_URL_PATH]);
+	        }, 500);
+	    },
+        //记录当前的数据，在打开查看窗口时初始化
+	    currentGridData: null,
+        //记录当前查看数据的下表，在打开查看窗口时初始化
+	    currentIndex: null,
+	    //双击行
+	    dblClickRow: function (index, data) {
+	        var detailWindow = $("#vehPassDetailWindow");
+	        if (detailWindow.length == 0) {
+	            detailWindow = $("<div id='vehPassDetailWindow'></div>");
+	        }
+	        monitorQueryAll.currentGridData = monitorQueryAll.datagrid.datagrid("getData");
+	        monitorQueryAll.currentIndex = index;
+	        $("body").data("currentVehPassPage", monitorQueryAll);
+            //清空图片展示，避免冲突
+	        monitorQueryAll.$("#monitorQueryImage").panel("clear");
+            //打开弹窗
+	        detailWindow.dialog({
+	            title: "过车详细信息",
+	            cache: false,
+	            href: "views/passvehicle/Pages/track_query/vehPassDetail.html",
+	            height: 560,
+	            width: 850,
+	            onClose: function () {
+	                //选中第一条记录
+	                monitorQueryAll.datagrid.datagrid("selectRow", 0);
+	                //重新加载第一条记录图片
+	                monitorQueryAll.$("#monitorQueryImage").cy_imageView([monitorQueryAll.currentGridData.rows[0].IMAGE_URL_PATH]);
+	            }
+	        }).dialog("center");
+	    },
+		sysCodeDic: null,
+		initCombobox: function (initData) {
+		    monitorQueryAll.$('#PLATE_COLOR').combobox('loadData', initData["T_DIC_PLATECOLOR"]);
+		    monitorQueryAll.$('#VEHICLE_COLOR').combobox('loadData', initData["T_DIC_VEHCOLOR"]);
+		    monitorQueryAll.$('#VEHLOCALIZATION').combobox('loadData', initData["T_DIC_VEH_LOCALIZATION"]);
+		},
+		//定义查询url
+		searchUrl: "ITS3Web.Service.PassVehicle.VehicleQueryService/QueryVehPassAndCount",
+		//自定义查询成功返回事件，此时数据已经加载完毕
+		searchSuccess: function (result) {
+            //此时是否处在详细页面打开状态，如果是的话则更像详细页面内的数据
+		    if (window.vehPassDetail && vehPassDetail.listener) {
+		        //详细页面启了监听器，查询后详细页面数据
+		        vehPassDetail.dataList = result.rows;
+		        //调用监听器方法
+		        vehPassDetail.listener();
+		    } else {
+		        //选中第一条记录
+		        monitorQueryAll.datagrid.datagrid("selectRow", 0);
+		        //加载第一条记录的图片
+		        monitorQueryAll.$("#monitorQueryImage").cy_imageView([monitorQueryAll.datagrid.datagrid("getData").rows[0].IMAGE_URL_PATH]);
+		    }
+		},
+		//调用查询方法实例
+		searchForm : function(){
+			//serach是查询方法，search(param,form);
+			//param  额外参数，除了ContextID、分页参数、from参数之外的参数
+			//form  需要参与查询的form，若果不提供form则默认使用页面第一个from或者上一次使用的form
+			//monitorQueryAll.search({
+			//	a : 1,
+			//	b : 2	
+			//}, "#monitorQueryAll_searchForm");
+			monitorQueryAll.search({
+			    queryType: "all",
+			    userOrgCode: UserInfo.OrgCode
+			}, "#monitorQueryAll_searchForm");
+		},
+	    //展开剩余搜索项
+		searchSlideDown: function () {
+		    monitorQueryAll.$(".hide").slideDown("fast");
+		    monitorQueryAll.$("#monitorQuery_all").layout("panel", "north").panel("resize", {
+		        height: 215
+		    });
+		    monitorQueryAll.$("#monitorQuery_all").layout("resize");
+		    monitorQueryAll.$("#searchSlideDown").hide();
+		    monitorQueryAll.$("#searchSlideUp").show().after(monitorQueryAll.$("#searchButton")).after(" ");
+		},
+	    //收起剩余搜索项
+		searchSlideUp: function () {
+		    monitorQueryAll.$(".hide").hide();
+		    monitorQueryAll.$("#monitorQuery_all").layout("panel", "north").panel("resize", {
+		        height: 150
+		    });
+		    monitorQueryAll.$("#monitorQuery_all").layout("resize");
+		    monitorQueryAll.$("#searchSlideUp").hide();
+		    monitorQueryAll.$("#searchSlideDown").show().after(monitorQueryAll.$("#searchButton")).after(" ");
+		}
+		//其他工具方法，属性
+		//monitorQueryAll.$(selecter)  查找本页面的元素，替代原来的$(selecter)方法  eg：monitorQueryAll.$(".searchFrom")
+		//monitorQueryAll.currentSearchForm 当前参与查找的form
+		//monitorQueryAll.datagrid datagrid对象
+		//monitorQueryAll.pageNumber 当前页码
+		//monitorQueryAll.pageSize 分页大小
+	};
+	//页面初始化操作
+	initPage(monitorQueryAll);*/
+</script>
+<style>
+#monitorQuery_all .th{
+	width:80px;
+	text-align:right;
+}
+#monitorQuery_all .td{
+	width:120px;	
+}
+
+</style>
+

@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DailyMaintainMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.DailyMaintain">
+		<id column="DAILY_MAINTENANCE_ID" property="dailyMaintenanceId"
+			jdbcType="VARCHAR" />
+		<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="MAINTENANCE_LEVEL" property="maintenanceLevel"
+			jdbcType="VARCHAR" />
+		<result column="DEVICE_APPEARANCE" property="deviceAppearance"
+			jdbcType="CHAR" />
+		<result column="DEVICE_BAR" property="deviceBar" jdbcType="CHAR" />
+		<result column="PROTECTION_COMPONENTS" property="protectionComponents"
+			jdbcType="CHAR" />
+		<result column="POWER" property="power" jdbcType="CHAR" />
+		<result column="CABLE" property="cable" jdbcType="CHAR" />
+		<result column="LIGHTING_PROTECTION" property="lightingProtection"
+			jdbcType="CHAR" />
+		<result column="GROUND_CONNECTION" property="groundConnection"
+			jdbcType="CHAR" />
+		<result column="COMMUNICATION_DEVICE" property="communicationDevice"
+			jdbcType="CHAR" />
+		<result column="DEVICE_TIME" property="deviceTime" jdbcType="CHAR" />
+		<result column="CLEAN_PROTECTIVE_COVER" property="cleanProtectiveCover"
+			jdbcType="CHAR" />
+		<result column="CLEAN_CAMERA_ASH" property="cleanCameraAsh"
+			jdbcType="CHAR" />
+		<result column="INSTALLATION" property="installation" jdbcType="CHAR" />
+		<result column="TRAFFIC_SIGN" property="trafficSign" jdbcType="CHAR" />
+		<result column="VEHICLE_PASS_INFO" property="vehiclePassInfo"
+			jdbcType="CHAR" />
+		<result column="VEHICLE_VIOLATION" property="vehicleViolation"
+			jdbcType="CHAR" />
+		<result column="METEOROLOGY_DATA" property="meteorologyData"
+			jdbcType="CHAR" />
+		<result column="RECENTLY_UPLOAD_TIME" property="recentlyUploadTime"
+			jdbcType="TIMESTAMP" />
+		<result column="VIDEO_QUALITY" property="videoQuality"
+			jdbcType="CHAR" />
+		<result column="PTZ_CONTROL" property="ptzControl" jdbcType="CHAR" />
+		<result column="SELF_CHECK" property="selfCheck" jdbcType="CHAR" />
+		<result column="OUT_CONTROL_POINT" property="outControlPoint"
+			jdbcType="VARCHAR" />
+		<result column="TRAFFIC_LIGHT" property="trafficLight"
+			jdbcType="CHAR" />
+		<result column="SIGNAL_DEVICE" property="signalDevice"
+			jdbcType="CHAR" />
+		<result column="MAINTENANCE_DATE" property="maintenanceDate"
+			jdbcType="TIMESTAMP" />
+		<result column="MAINTENANCE_CYCLE" property="maintenanceCycle"
+			jdbcType="VARCHAR" />
+		<result column="MAINTENANCE_ADVICE" property="maintenanceAdvice"
+			jdbcType="VARCHAR" />
+		<result column="NEXT_MAINTENANCE_DATE" property="nextMaintenanceDate"
+			jdbcType="TIMESTAMP" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="MAINTAIN_PERSON" property="maintainPerson" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="TRAFFIC_DATA_FLOW" property="trafficDataFlow" jdbcType="CHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		DAILY_MAINTENANCE_ID, DEVICE_ID, MAINTENANCE_LEVEL,
+		DEVICE_APPEARANCE, DEVICE_BAR,
+		PROTECTION_COMPONENTS, POWER, CABLE,
+		LIGHTING_PROTECTION,
+		GROUND_CONNECTION, COMMUNICATION_DEVICE,
+		DEVICE_TIME, CLEAN_PROTECTIVE_COVER, CLEAN_CAMERA_ASH, INSTALLATION,
+		TRAFFIC_SIGN,
+		VEHICLE_PASS_INFO, VEHICLE_VIOLATION, METEOROLOGY_DATA,
+		RECENTLY_UPLOAD_TIME, VIDEO_QUALITY,
+		PTZ_CONTROL, SELF_CHECK,
+		OUT_CONTROL_POINT, TRAFFIC_LIGHT, SIGNAL_DEVICE,
+		MAINTENANCE_DATE,
+		MAINTENANCE_CYCLE, MAINTENANCE_ADVICE, NEXT_MAINTENANCE_DATE,
+		CREATE_BY, CREATE_TIME,
+		REMARK,MAINTAIN_PERSON,PHONE,TRAFFIC_DATA_FLOW
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_DAILY_MAINTAIN
+		where DAILY_MAINTENANCE_ID =
+		#{dailyMaintenanceId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_DEVICE_DAILY_MAINTAIN
+		where DAILY_MAINTENANCE_ID =
+		#{dailyMaintenanceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.DailyMaintain">
+		insert into
+		T_DEVICE_DAILY_MAINTAIN (DAILY_MAINTENANCE_ID, DEVICE_ID,
+		MAINTENANCE_LEVEL,
+		DEVICE_APPEARANCE, DEVICE_BAR,
+		PROTECTION_COMPONENTS,
+		POWER, CABLE, LIGHTING_PROTECTION,
+		GROUND_CONNECTION, COMMUNICATION_DEVICE, DEVICE_TIME,
+		CLEAN_PROTECTIVE_COVER, CLEAN_CAMERA_ASH, INSTALLATION,
+		TRAFFIC_SIGN,
+		VEHICLE_PASS_INFO, VEHICLE_VIOLATION,
+		METEOROLOGY_DATA,
+		RECENTLY_UPLOAD_TIME, VIDEO_QUALITY,
+		PTZ_CONTROL, SELF_CHECK,
+		OUT_CONTROL_POINT,
+		TRAFFIC_LIGHT, SIGNAL_DEVICE, MAINTENANCE_DATE,
+		MAINTENANCE_CYCLE, MAINTENANCE_ADVICE, NEXT_MAINTENANCE_DATE,
+		CREATE_BY, CREATE_TIME, REMARK,MAINTAIN_PERSON,PHONE,TRAFFIC_DATA_FLOW
+		)
+		values
+		(#{dailyMaintenanceId,jdbcType=VARCHAR},
+		#{deviceId,jdbcType=VARCHAR},
+		#{maintenanceLevel,jdbcType=VARCHAR},
+		#{deviceAppearance,jdbcType=CHAR}, #{deviceBar,jdbcType=CHAR},
+		#{protectionComponents,jdbcType=CHAR},
+		#{power,jdbcType=CHAR},
+		#{cable,jdbcType=CHAR}, #{lightingProtection,jdbcType=CHAR},
+		#{groundConnection,jdbcType=CHAR},
+		#{communicationDevice,jdbcType=CHAR}, #{deviceTime,jdbcType=CHAR},
+		#{cleanProtectiveCover,jdbcType=CHAR},
+		#{cleanCameraAsh,jdbcType=CHAR}, #{installation,jdbcType=CHAR},
+		#{trafficSign,jdbcType=CHAR}, #{vehiclePassInfo,jdbcType=CHAR},
+		#{vehicleViolation,jdbcType=CHAR},
+		#{meteorologyData,jdbcType=CHAR},
+		#{recentlyUploadTime,jdbcType=TIMESTAMP},
+		#{videoQuality,jdbcType=CHAR},
+		#{ptzControl,jdbcType=CHAR},
+		#{selfCheck,jdbcType=CHAR}, #{outControlPoint,jdbcType=VARCHAR},
+		#{trafficLight,jdbcType=CHAR}, #{signalDevice,jdbcType=CHAR},
+		#{maintenanceDate,jdbcType=TIMESTAMP},
+		#{maintenanceCycle,jdbcType=VARCHAR},
+		#{maintenanceAdvice,jdbcType=VARCHAR},
+		#{nextMaintenanceDate,jdbcType=TIMESTAMP},
+		#{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR},#{maintainPerson,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},#{trafficDataFlow,jdbcType=CHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.DailyMaintain">
+		insert into T_DEVICE_DAILY_MAINTAIN
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="dailyMaintenanceId != null">
+				DAILY_MAINTENANCE_ID,
+			</if>
+			<if test="deviceId != null">
+				DEVICE_ID,
+			</if>
+			<if test="maintenanceLevel != null">
+				MAINTENANCE_LEVEL,
+			</if>
+			<if test="deviceAppearance != null">
+				DEVICE_APPEARANCE,
+			</if>
+			<if test="deviceBar != null">
+				DEVICE_BAR,
+			</if>
+			<if test="protectionComponents != null">
+				PROTECTION_COMPONENTS,
+			</if>
+			<if test="power != null">
+				POWER,
+			</if>
+			<if test="cable != null">
+				CABLE,
+			</if>
+			<if test="lightingProtection != null">
+				LIGHTING_PROTECTION,
+			</if>
+			<if test="groundConnection != null">
+				GROUND_CONNECTION,
+			</if>
+			<if test="communicationDevice != null">
+				COMMUNICATION_DEVICE,
+			</if>
+			<if test="deviceTime != null">
+				DEVICE_TIME,
+			</if>
+			<if test="cleanProtectiveCover != null">
+				CLEAN_PROTECTIVE_COVER,
+			</if>
+			<if test="cleanCameraAsh != null">
+				CLEAN_CAMERA_ASH,
+			</if>
+			<if test="installation != null">
+				INSTALLATION,
+			</if>
+			<if test="trafficSign != null">
+				TRAFFIC_SIGN,
+			</if>
+			<if test="vehiclePassInfo != null">
+				VEHICLE_PASS_INFO,
+			</if>
+			<if test="vehicleViolation != null">
+				VEHICLE_VIOLATION,
+			</if>
+			<if test="meteorologyData != null">
+				METEOROLOGY_DATA,
+			</if>
+			<if test="recentlyUploadTime != null">
+				RECENTLY_UPLOAD_TIME,
+			</if>
+			<if test="videoQuality != null">
+				VIDEO_QUALITY,
+			</if>
+			<if test="ptzControl != null">
+				PTZ_CONTROL,
+			</if>
+			<if test="selfCheck != null">
+				SELF_CHECK,
+			</if>
+			<if test="outControlPoint != null">
+				OUT_CONTROL_POINT,
+			</if>
+			<if test="trafficLight != null">
+				TRAFFIC_LIGHT,
+			</if>
+			<if test="signalDevice != null">
+				SIGNAL_DEVICE,
+			</if>
+			<if test="maintenanceDate != null">
+				MAINTENANCE_DATE,
+			</if>
+			<if test="maintenanceCycle != null">
+				MAINTENANCE_CYCLE,
+			</if>
+			<if test="maintenanceAdvice != null">
+				MAINTENANCE_ADVICE,
+			</if>
+			<if test="nextMaintenanceDate != null">
+				NEXT_MAINTENANCE_DATE,
+			</if>
+			<if test="createBy != null">
+				CREATE_BY,
+			</if>
+			CREATE_TIME,
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="maintainPerson != null">
+				MAINTAIN_PERSON,
+			</if>
+			<if test="phone != null">
+				PHONE,
+			</if>
+			<if test="trafficDataFlow != null">
+				TRAFFIC_DATA_FLOW,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="dailyMaintenanceId != null">
+				#{dailyMaintenanceId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="maintenanceLevel != null">
+				#{maintenanceLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceAppearance != null">
+				#{deviceAppearance,jdbcType=CHAR},
+			</if>
+			<if test="deviceBar != null">
+				#{deviceBar,jdbcType=CHAR},
+			</if>
+			<if test="protectionComponents != null">
+				#{protectionComponents,jdbcType=CHAR},
+			</if>
+			<if test="power != null">
+				#{power,jdbcType=CHAR},
+			</if>
+			<if test="cable != null">
+				#{cable,jdbcType=CHAR},
+			</if>
+			<if test="lightingProtection != null">
+				#{lightingProtection,jdbcType=CHAR},
+			</if>
+			<if test="groundConnection != null">
+				#{groundConnection,jdbcType=CHAR},
+			</if>
+			<if test="communicationDevice != null">
+				#{communicationDevice,jdbcType=CHAR},
+			</if>
+			<if test="deviceTime != null">
+				#{deviceTime,jdbcType=CHAR},
+			</if>
+			<if test="cleanProtectiveCover != null">
+				#{cleanProtectiveCover,jdbcType=CHAR},
+			</if>
+			<if test="cleanCameraAsh != null">
+				#{cleanCameraAsh,jdbcType=CHAR},
+			</if>
+			<if test="installation != null">
+				#{installation,jdbcType=CHAR},
+			</if>
+			<if test="trafficSign != null">
+				#{trafficSign,jdbcType=CHAR},
+			</if>
+			<if test="vehiclePassInfo != null">
+				#{vehiclePassInfo,jdbcType=CHAR},
+			</if>
+			<if test="vehicleViolation != null">
+				#{vehicleViolation,jdbcType=CHAR},
+			</if>
+			<if test="meteorologyData != null">
+				#{meteorologyData,jdbcType=CHAR},
+			</if>
+			<if test="recentlyUploadTime != null">
+				#{recentlyUploadTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="videoQuality != null">
+				#{videoQuality,jdbcType=CHAR},
+			</if>
+			<if test="ptzControl != null">
+				#{ptzControl,jdbcType=CHAR},
+			</if>
+			<if test="selfCheck != null">
+				#{selfCheck,jdbcType=CHAR},
+			</if>
+			<if test="outControlPoint != null">
+				#{outControlPoint,jdbcType=VARCHAR},
+			</if>
+			<if test="trafficLight != null">
+				#{trafficLight,jdbcType=CHAR},
+			</if>
+			<if test="signalDevice != null">
+				#{signalDevice,jdbcType=CHAR},
+			</if>
+			<if test="maintenanceDate != null">
+				#{maintenanceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="maintenanceCycle != null">
+				#{maintenanceCycle,jdbcType=VARCHAR},
+			</if>
+			<if test="maintenanceAdvice != null">
+				#{maintenanceAdvice,jdbcType=VARCHAR},
+			</if>
+			<if test="nextMaintenanceDate != null">
+				#{nextMaintenanceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			SYSDATE,
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="maintainPerson != null">
+				#{maintainPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="trafficDataFlow != null">
+				#{trafficDataFlow,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.DailyMaintain">
+		update T_DEVICE_DAILY_MAINTAIN
+		<set>
+			<if test="deviceId != null">
+				DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="maintenanceLevel != null">
+				MAINTENANCE_LEVEL = #{maintenanceLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceAppearance != null">
+				DEVICE_APPEARANCE = #{deviceAppearance,jdbcType=CHAR},
+			</if>
+			<if test="deviceBar != null">
+				DEVICE_BAR = #{deviceBar,jdbcType=CHAR},
+			</if>
+			<if test="protectionComponents != null">
+				PROTECTION_COMPONENTS =
+				#{protectionComponents,jdbcType=CHAR},
+			</if>
+			<if test="power != null">
+				POWER = #{power,jdbcType=CHAR},
+			</if>
+			<if test="cable != null">
+				CABLE = #{cable,jdbcType=CHAR},
+			</if>
+			<if test="lightingProtection != null">
+				LIGHTING_PROTECTION =
+				#{lightingProtection,jdbcType=CHAR},
+			</if>
+			<if test="groundConnection != null">
+				GROUND_CONNECTION = #{groundConnection,jdbcType=CHAR},
+			</if>
+			<if test="communicationDevice != null">
+				COMMUNICATION_DEVICE =
+				#{communicationDevice,jdbcType=CHAR},
+			</if>
+			<if test="deviceTime != null">
+				DEVICE_TIME = #{deviceTime,jdbcType=CHAR},
+			</if>
+			<if test="cleanProtectiveCover != null">
+				CLEAN_PROTECTIVE_COVER =
+				#{cleanProtectiveCover,jdbcType=CHAR},
+			</if>
+			<if test="cleanCameraAsh != null">
+				CLEAN_CAMERA_ASH = #{cleanCameraAsh,jdbcType=CHAR},
+			</if>
+			<if test="installation != null">
+				INSTALLATION = #{installation,jdbcType=CHAR},
+			</if>
+			<if test="trafficSign != null">
+				TRAFFIC_SIGN = #{trafficSign,jdbcType=CHAR},
+			</if>
+			<if test="vehiclePassInfo != null">
+				VEHICLE_PASS_INFO = #{vehiclePassInfo,jdbcType=CHAR},
+			</if>
+			<if test="vehicleViolation != null">
+				VEHICLE_VIOLATION = #{vehicleViolation,jdbcType=CHAR},
+			</if>
+			<if test="meteorologyData != null">
+				METEOROLOGY_DATA = #{meteorologyData,jdbcType=CHAR},
+			</if>
+			<if test="recentlyUploadTime != null">
+				RECENTLY_UPLOAD_TIME =
+				#{recentlyUploadTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="videoQuality != null">
+				VIDEO_QUALITY = #{videoQuality,jdbcType=CHAR},
+			</if>
+			<if test="ptzControl != null">
+				PTZ_CONTROL = #{ptzControl,jdbcType=CHAR},
+			</if>
+			<if test="selfCheck != null">
+				SELF_CHECK = #{selfCheck,jdbcType=CHAR},
+			</if>
+			<if test="outControlPoint != null">
+				OUT_CONTROL_POINT = #{outControlPoint,jdbcType=VARCHAR},
+			</if>
+			<if test="trafficLight != null">
+				TRAFFIC_LIGHT = #{trafficLight,jdbcType=CHAR},
+			</if>
+			<if test="signalDevice != null">
+				SIGNAL_DEVICE = #{signalDevice,jdbcType=CHAR},
+			</if>
+			<if test="maintenanceDate != null">
+				MAINTENANCE_DATE = #{maintenanceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="maintenanceCycle != null">
+				MAINTENANCE_CYCLE = #{maintenanceCycle,jdbcType=VARCHAR},
+			</if>
+			<if test="maintenanceAdvice != null">
+				MAINTENANCE_ADVICE =
+				#{maintenanceAdvice,jdbcType=VARCHAR},
+			</if>
+			<if test="nextMaintenanceDate != null">
+				NEXT_MAINTENANCE_DATE =
+				#{nextMaintenanceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createBy != null">
+				CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="maintainPerson != null">
+				MAINTAIN_PERSON = #{maintainPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				PHONE = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="trafficDataFlow != null">
+				TRAFFIC_DATA_FLOW = #{trafficDataFlow,jdbcType=CHAR},
+			</if>
+		</set>
+		where DAILY_MAINTENANCE_ID = #{dailyMaintenanceId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DailyMaintain">
+		update
+		T_DEVICE_DAILY_MAINTAIN
+		set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+		MAINTENANCE_LEVEL = #{maintenanceLevel,jdbcType=VARCHAR},
+		DEVICE_APPEARANCE = #{deviceAppearance,jdbcType=CHAR},
+		DEVICE_BAR =
+		#{deviceBar,jdbcType=CHAR},
+		PROTECTION_COMPONENTS =
+		#{protectionComponents,jdbcType=CHAR},
+		POWER = #{power,jdbcType=CHAR},
+		CABLE = #{cable,jdbcType=CHAR},
+		LIGHTING_PROTECTION =
+		#{lightingProtection,jdbcType=CHAR},
+		GROUND_CONNECTION =
+		#{groundConnection,jdbcType=CHAR},
+		COMMUNICATION_DEVICE =
+		#{communicationDevice,jdbcType=CHAR},
+		DEVICE_TIME =
+		#{deviceTime,jdbcType=CHAR},
+		CLEAN_PROTECTIVE_COVER =
+		#{cleanProtectiveCover,jdbcType=CHAR},
+		CLEAN_CAMERA_ASH =
+		#{cleanCameraAsh,jdbcType=CHAR},
+		INSTALLATION =
+		#{installation,jdbcType=CHAR},
+		TRAFFIC_SIGN =
+		#{trafficSign,jdbcType=CHAR},
+		VEHICLE_PASS_INFO =
+		#{vehiclePassInfo,jdbcType=CHAR},
+		VEHICLE_VIOLATION =
+		#{vehicleViolation,jdbcType=CHAR},
+		METEOROLOGY_DATA =
+		#{meteorologyData,jdbcType=CHAR},
+		RECENTLY_UPLOAD_TIME =
+		#{recentlyUploadTime,jdbcType=TIMESTAMP},
+		VIDEO_QUALITY =
+		#{videoQuality,jdbcType=CHAR},
+		PTZ_CONTROL =
+		#{ptzControl,jdbcType=CHAR},
+		SELF_CHECK = #{selfCheck,jdbcType=CHAR},
+		OUT_CONTROL_POINT = #{outControlPoint,jdbcType=VARCHAR},
+		TRAFFIC_LIGHT
+		= #{trafficLight,jdbcType=CHAR},
+		SIGNAL_DEVICE =
+		#{signalDevice,jdbcType=CHAR},
+		MAINTENANCE_DATE =
+		#{maintenanceDate,jdbcType=TIMESTAMP},
+		MAINTENANCE_CYCLE =
+		#{maintenanceCycle,jdbcType=VARCHAR},
+		MAINTENANCE_ADVICE =
+		#{maintenanceAdvice,jdbcType=VARCHAR},
+		NEXT_MAINTENANCE_DATE =
+		#{nextMaintenanceDate,jdbcType=TIMESTAMP},
+		CREATE_BY =
+		#{createBy,jdbcType=VARCHAR},
+		CREATE_TIME =
+		#{createTime,jdbcType=TIMESTAMP},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		MAINTAIN_PERSON = #{maintainPerson,jdbcType=VARCHAR},
+		PHONE = #{phone,jdbcType=VARCHAR},
+		TRAFFIC_DATA_FLOW = #{trafficDataFlow,jdbcType=CHAR}
+		where DAILY_MAINTENANCE_ID = #{dailyMaintenanceId,jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="selectDailyMaintains" resultType="cy.its.device.domain.model.DailyMaintain" parameterType="java.util.Map">
+		select tds.device_sys_nbr as deviceSysNbr,
+		       tds.device_name as deviceName,
+		       tds.org_id as orgId,
+		       tss.site_name as siteName,
+		       tss.road_id as roadId,
+		       A.daily_maintenance_id as dailyMaintenanceId,
+		       A.maintain_person as maintainPerson,
+		       A.maintenance_cycle as maintenanceCycle,
+		       A.maintenance_date as maintenanceDate,
+		       A.next_maintenance_date as nextMaintenanceDate
+		  from (SELECT tddm.daily_maintenance_id,
+		 			   tddm.maintain_person,
+		               tddm.maintenance_cycle,
+		               tddm.maintenance_date,
+		               tddm.next_maintenance_date,
+		               tddm.device_id
+		          FROM t_device_daily_maintain tddm
+		         <where>
+					<if test="maintenanceDateFrom != null and maintenanceDateFrom != '' ">
+					    <![CDATA[    AND tddm.MAINTENANCE_DATE >= #{maintenanceDateFrom,jdbcType=TIMESTAMP} ]]>
+					</if>
+					<if test="maintenanceDateTo != null and maintenanceDateTo != '' ">
+						<![CDATA[    AND tddm.MAINTENANCE_DATE <= #{maintenanceDateTo,jdbcType=TIMESTAMP} ]]>
+					</if>
+				</where>) A
+		  left join t_device_sys tds
+		    on A.device_id = tds.device_id
+		  left join t_sys_site tss
+		    on tds.site_id = tss.site_id
+		  <where>
+				<if test="deviceType != null and deviceType != '' ">
+				    AND tds.device_type = #{deviceType,jdbcType=VARCHAR}
+				</if>
+				<if test="siteId != null and siteId != '' ">
+				    AND tds.site_id = #{siteId,jdbcType=VARCHAR}
+				</if>
+				<if test="contractorId != null and contractorId != '' ">
+				    AND tds.contractor_id = #{contractorId,jdbcType=VARCHAR}
+				</if>
+				<if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+					AND tds.org_privilege_code like
+						#{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+				</if>
+				<if test="roadId != null and roadId != '' ">
+				    AND tss.road_id = #{roadId,jdbcType=VARCHAR}
+				</if>
+		  </where>
+	</select>
+
+	<select id="countDailyMaintains" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_DEVICE_DAILY_MAINTAIN U
+		<where>
+			<if test="maintenanceDateFrom != null and maintenanceDateFrom != '' ">
+			    <![CDATA[    AND U.MAINTENANCE_DATE <= #{maintenanceDateFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="maintenanceDateTo != null and maintenanceDateTo != '' ">
+				<![CDATA[    AND U.MAINTENANCE_DATE >= #{maintenanceDateTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</select>
+</mapper>

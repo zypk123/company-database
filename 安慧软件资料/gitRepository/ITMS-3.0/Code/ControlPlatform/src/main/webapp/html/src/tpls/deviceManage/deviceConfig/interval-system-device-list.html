@@ -1,0 +1,664 @@
+<div id="intervalSystemDevice" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<form cy-form="deptQueryRegional">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							区间编号：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" id="regional_code"
+							name="regionalCode" />
+						</div>
+						<div class="th">
+							区间名称：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" id="regional_name"
+							name="regionalName"/>
+						</div>
+						<div class="th">
+							所在道路：
+						</div>
+						<div class="td">
+							<input class="cy-road-radio" id="road_id" name="roadId" />
+						</div>
+						<div class="td">
+							<input type="checkbox" name="useStatus" value="0"
+							style="margin-left: 5px">
+							备案
+							<input type="checkbox"
+							name="useStatus" value="1" style="margin-left: 5px">
+							启用
+							<input
+							type="checkbox" name="useStatus" value="2"
+							style="margin-left: 5px">
+							停用
+							<input type="checkbox"
+							name="useStatus" value="3" style="margin-left: 5px">
+							报废
+						</div>
+						<div class="th" style="margin-left: 100px">
+							<a class="easyui-linkbutton button-search" cy-click="searchData"
+							data-options="iconCls:'icon-search'">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addRegional">添加</a>
+			<auth resourceCode="06020501">
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-enable'" cy-click="startUse">启用</a>
+			</auth>
+			<auth resourceCode="06020502">
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-disable'" cy-click="stopUse">停用</a>
+			</auth>
+			<auth resourceCode="06020503">
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-drop'"cy-click="destroyUse">报废</a>
+			</auth>
+			<span class="remark" style="color: red;float:right"> 备注：年检期止红色表示已过期，橙色表示即将过期；“--”表示无信息。 </span>
+		</div>
+	</div>
+	<!-- 数据列表 -->
+	<div data-options="region:'center'">
+		<table id="regional" cy-datagrid="optionsReglionl"
+		cy-querydata="deptQueryRegional"
+		cy-url="device/IntervalManage/queryIntervalSys"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//初始化加载
+		$scope.load = function() {
+			$scope.deptQueryRegional.orderName = "regionalCode";
+			$scope.deptQueryRegional.orderType = "asc";
+			$scope.$updateData("deptQueryRegional");
+			$scope.$search("deptQueryRegional");
+		};
+		//查询
+		$scope.searchData = function() {
+			$scope.$updateData("deptQueryRegional");
+			//获得当前第几页数
+			var count = $scope.$("#regional").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转第一页
+				$scope.$("#regional").datagrid("getPager").pagination("select", 1);
+			} else {
+				//debugger;
+				$scope.deptQueryRegional.enableFlag = $("input[name='useStatus']:checked").map(function() {
+					return $(this).val();
+				}).get().join(',');
+				$scope.$search("deptQueryRegional");
+			}
+		}, 
+		$scope.optionsReglionl = {
+			sortName : "regionalCode",
+			sortType : "asc",
+			columns : [[{
+				field : 'regionalId',
+				checkbox : true,
+				align : 'center'
+			}, {
+				field : 'enableFlag',
+				title : '使用状态',
+				align : 'center',
+				formatter : optionsEnableFlag,
+				width : 10
+			}, {
+				field : 'regionalCode',
+				title : '区间编号',
+				align : 'center',
+				formatter : regionalCodeChange,
+				width : 20,
+				sortable : true
+			}, {
+				field : 'regionalName',
+				title : '区间名称',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'orgId',
+				title : '所属机构',
+				align : 'center',
+				formatter : optionsOrgName,
+				width : 20
+			},{
+				field : 'roadId',
+				title : '所在道路',
+				align : 'center',
+				formatter : optionsRoadName,
+				width : 20
+			}, {
+				field : 'entrySiteName',
+				title : '起点位置',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'exitSiteName',
+				title : '终点位置',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'distance',
+				title : '路段长度(km)',
+				align : 'center',
+				width : 15,
+			}, {
+				field : 'expireDate',
+				title : '年检期止',
+				align : 'center',
+				formatter : expireDateFormat,
+				width : 15,
+				sortable : true
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionCz,
+				width : 15
+			}]],
+			onSortColumn : function(sortName,sortType){
+				$scope.deptQueryRegional.orderName = sortName;
+				$scope.deptQueryRegional.orderType = sortType;
+				$(this).datagrid("getPager").pagination("select",1);
+			},
+			nowrap:false,
+			/**
+			 *查看详情页面
+			 */
+			onDblClickRow : function(rowIndex, rowData) {
+				$scope.$setParam("checkRegionalData", rowData);
+				$scope.$openDialog("checked", {
+					title : "区间信息详情",
+					width : 850,
+					height : 450,
+					href : "tpls/deviceManage/deviceRecord/interval-message-check.html"
+				});
+			}
+		};
+		//显示隐藏机构名称
+		function optionsOrgName(value, row, index) {
+			var orgName = $scope.$getOrgName(value);
+			if (orgName == null) {
+				return "<span/>";
+			}
+			return "<span>" + orgName + "</span>";
+		}
+		/**
+		 *判断整数有效期是否过期
+		 * @param value 有效期止这列中的值
+		 * @param row 整形 行
+		 * @param index 整形 行下标
+		 * @returns  html样式标签及该行有效期止这列中的值
+		 */
+		function expireDateFormat(value, row, index) {
+			if (value == null) {
+				return "--";
+			} else {
+				var value = new Date(value).format("yyyy-MM-dd");
+				var format;
+				if (value) {
+					format = value.replace(/-/g, "/");
+				}
+				var nowDate = new Date().getTime();
+				//获取当前时间
+				var values = new Date(format + " 23:59:59").getTime();
+				if (values < nowDate) {
+					//过期
+					return "<span style='color:red'>" + value + "</span>";
+				} else {
+					//即将过期时间期限设置为一个月，计算过期时间和当前时间的时间间隔
+					var almost = new Date(format).getTime() - 30 * 24 * 60 * 60 * 1000;
+					
+					if (almost <= nowDate) {
+						//即将过期
+						return "<span style='color:orange'>" + value + "</span>";
+					} else {
+						//未过期
+						return value;
+					}
+				}
+			}
+		}
+		//显示启用状态
+		function optionsEnableFlag(value, row, index) {
+			if (value == 1) {
+				return "<span>" + '启用' + "</span>";
+			} else if (value == 2) {
+				return "<span>" + '停用' + "</span>";
+			} else if (value == 3) {
+				return "<span>" + '报废' + "</span>";
+			} else {
+				return "<span>" + '备案' + "</span>";
+			}
+		}
+
+		//显示隐藏行政区划名称
+		function optionsDistrictName(value, row, index) {
+			var districtName = $scope.$getDistrictName(value);
+			if (districtName == null) {
+				return "<span/>";
+			}
+			return "<span>" + districtName + "</span>";
+		}
+		//显示隐藏道路名称
+		function optionsRoadName(value, row, index) {
+			var roadName = $scope.$getRoadName(value);
+			if (roadName == null) {
+				return "<span/>";
+			}
+			return "<span>" + roadName + "</span>";
+		}
+		//编号加title
+		function regionalCodeChange(value, row, index){
+			if (value == null) {
+				return "<span> </span>";
+			}
+			return "<span title='" + value + "'>" + value + "</span>";
+		}
+
+		function optionCz(value, row, index) {
+			//var returnHtml = $("<span/>");
+			var button1 = $("<a title='编辑' class='button-edit'></a>");
+			//编辑按钮
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			}).attr('cy-click', "editRegional(" + index + ")");
+			//删除按钮
+			if ($scope.$hasAuth("06020504")) {
+				var button2 = $("<a title='删除' class='button-remove'></a>");
+				button2.linkbutton({
+					iconCls : "icon-remove-solid",
+					plain : true
+				}).attr('cy-click', "deleteRegional(" + index + ")");
+			}
+			//运行查看按钮
+			var button3 = $("<a title='运行查看' class='button-look'></a>");
+			button3.linkbutton({
+				iconCls : "icon-look-solid",
+				plain : true
+			}).attr('cy-click', "look(" + index + ")");
+
+			return $("<span/>").append(button1).append(" ").append(button2).append(" ").append(button3).html();
+		}
+
+		//添加新信息
+		$scope.addRegional = function() {
+			$scope.$setParam("remark","add");
+			$scope.$openDialog("addDialog", {
+				title : "新增区间信息",
+				width : 1050,
+				height : 600,
+				href : "tpls/deviceManage/deviceConfig/interval-config.html"
+			});
+			//关闭窗口
+			$scope.$setParam("closeSelf", function() {
+				$scope.$getDialog("addDialog").dialog("close");
+				$scope.$search("deptQueryRegional");
+			});
+			$scope.$setParam("saveRegional", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/IntervalManage/addIntervalSys",
+					params : data,
+					success : function(data) {
+						if (data == 1) {
+							$scope.$getDialog("addDialog").dialog("close");
+							//获得当前第几页数
+							var curr = $scope.$("#regional").datagrid("getPager").pagination("options").pageNumber;
+							if (curr > 1) {
+								//刷新,跳转第一页
+								$scope.$("#regional").datagrid("getPager").pagination("select", 1);
+							} else {
+								$scope.$search("deptQueryRegional");
+								$.messager.alert("提示", "添加成功！");
+							}
+						}
+					},
+					fail : function(message) {
+						$.messager.alert("提示", message);
+					}
+				});
+			});
+		};
+		//编辑区间信息
+		$scope.editRegional = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#regional").datagrid("getData").rows[index];
+			if(rowDatas.relatedLedId == null){
+				rowDatas.relatedLedId = '';
+			}
+			if(rowDatas.relatedVariableSpeed == null){
+				rowDatas.relatedVariableSpeed = '';
+			}
+			$scope.$setParam("regionalData", rowDatas);
+			$scope.$setParam("remark","edit");
+			$scope.$setParam("saveRegional", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/IntervalManage/updateIntervalSys",
+					params : data,
+					success : function(data) {
+						if (data == 1) {
+							//关闭编辑窗口
+							$scope.$getDialog("editDialog").dialog("close");
+							//刷新列表
+							$scope.$search("deptQueryRegional");
+							$.messager.alert("提示", "修改成功！");
+						}
+					},
+					fail : function(message) {
+						$.messager.alert("提示", message);
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改区间信息",
+				width : 1050,
+				height : 600,
+				href : "tpls/deviceManage/deviceConfig/interval-config.html"
+			}, true);
+			//关闭窗口
+			$scope.$setParam("closeSelf", function() {
+				$scope.$getDialog("editDialog").dialog("close");
+				$scope.$search("deptQueryRegional");
+			});
+		};
+		//批量删除
+		$scope.removeRegional = function() {
+			//获得所有的行数
+			var rows = $scope.$("#regional").datagrid("getChecked");
+
+			//var dataNum = $scope.$("#regional").datagrid("getRows").length;
+
+			//var options = $scope.$("#reglionlData").datagrid("getPager").data("pagination").options;
+			//var pageNumber = options.pageNumber;
+			if (rows.length == 0) {
+				$.messager.alert("提示", "至少选中一条信息！");
+				return false;
+			} else {
+				var regionalIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (i > 0) {
+						regionalIdStr = regionalIdStr + "," + rows[i].regionalId;
+
+					} else {
+						regionalIdStr = regionalIdStr + rows[i].regionalId;
+					}
+				}
+				$.messager.confirm("提示", "你是否删除信息？", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "device/IntervalManage/removeRegional",
+							params : {
+								regionalIdStr : regionalIdStr
+							},
+							memoth : "post",
+							success : function(data) {
+								$scope.$search("deptQueryRegional");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+		};
+		//删除当前行信息
+		$scope.deleteRegional = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#regional").datagrid("getData").rows[index];
+			//获得当前行的Id
+			var regionalId = rowDatas.regionalId;
+			if (rowDatas.enableFlag == "1") {
+				$.messager.alert("提示", "此区间为启用状态，请先关闭启用！");
+			} else {
+				$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+					if (r) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "device/IntervalManage/removeIntervalSys",
+							params : {
+								regionalId : regionalId
+							},
+							success : function(data) {
+								$.messager.alert("提示", "删除成功！");
+								$scope.$search("deptQueryRegional");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+		};
+		//运行查看
+		$scope.look = function(index){
+			//获得当前行的信息
+			var rowDatas = $scope.$("#regional").datagrid("getData").rows[index];
+			$scope.$setParam("deviceSysNbr", rowDatas.regionalCode);//区间编号
+			var res = $scope.$openDialog("violationDialog", {
+				title: "设备违法信息",
+				width: 1000,
+				height: 600,
+				href: "tpls/violationMgr/popViolation.html"
+			}, true);
+		};
+		/* 启用  */
+		$scope.startUse = function(event) {
+			//console.log("111111111111");
+			var rows = $scope.$('#regional').datagrid('getChecked');
+			//勾选选中的行数组
+			if (rows.length == 0) {
+				$.messager.alert("提示", "请选择需要启用的设备！");
+				return false;
+			} else {
+				var regionalIdStr = "";
+				//设备Id字符串
+				var userName = "";
+				//当前用户名
+				var optStatus = 1;
+				//"1"表示启用操作
+				for (var i = 0; i < rows.length; i++) {
+					if (rows[i].enableFlag == 1 || rows[i].enableFlag == 3) {
+						$.messager.alert("提示", "报废或已启用状态设备不能再启用！");
+						return false;
+					} else if (i > 0) {
+						regionalIdStr = regionalIdStr + "," + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					} else {
+						regionalIdStr = regionalIdStr + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					}
+				}
+				//保存
+				$scope.$setParam("saveData", function(data) {
+					var reason = data;
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/IntervalManage/changeDeviceRegionUseStauts',
+						params : {
+							regionalIdStr : regionalIdStr,
+							userName : userName,
+							optStatus : optStatus
+						},
+						//method : 'post',
+						success : function(data) {
+							$.messager.alert("提示", "设备启用成功！");
+							//关闭窗体
+							$scope.$getDialog("useStatusDialog").dialog("close");
+							$scope.$search("deptQueryRegional");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "设备启用失败！");
+						}
+					});
+				});
+				$scope.$openDialog("useStatusDialog", {
+					title : "更改状态",
+					width : 400,
+					height : 250,
+					href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+				}, true);
+
+			}
+
+		};
+
+		/**
+		 * 停用
+		 * @param event
+		 */
+		$scope.stopUse = function(event) {
+			//设置选择的这些行的使用状态为启用todo
+			var rows = $scope.$('#regional').datagrid('getChecked');
+			//勾选选中的行数组
+			if (rows.length == 0) {
+				$.messager.alert("提示", "请选择需要停用的设备！");
+				return false;
+			} else {
+				//debugger;
+				var regionalIdStr = "";
+				//设备Id字符串
+				var userName = "";
+				//当前用户名
+				var optStatus = 2;
+				//"2"表示停用操作
+				for (var i = 0; i < rows.length; i++) {
+
+					if (rows[i].enableFlag != 1) {
+						$.messager.alert("提示", "当前设备不是启用状态不能停用");
+						return false;
+					} else if (i > 0) {
+						regionalIdStr = regionalIdStr + "," + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					} else {
+						regionalIdStr = regionalIdStr + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					}
+				}
+				//保存
+				$scope.$setParam("saveData", function(data) {
+					var reason = data;
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/IntervalManage/changeDeviceRegionUseStauts',
+						params : {
+							regionalIdStr : regionalIdStr,
+							userName : userName,
+							optStatus : optStatus
+						},
+						//method : 'post',
+						success : function(data) {
+							$.messager.alert("提示", "设备停用成功！");
+							//关闭窗体
+							$scope.$getDialog("useStatusDialog").dialog("close");
+							$scope.$search("deptQueryRegional");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "设备停用失败！");
+						}
+					});
+				});
+				$scope.$openDialog("useStatusDialog", {
+					title : "更改状态",
+					width : 400,
+					height : 250,
+					href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+				}, true);
+
+			}
+
+		};
+
+		/**
+		 * 报废
+		 * @param event
+		 */
+		$scope.destroyUse = function(event) {
+			//设置选择的这些行的使用状态为启用todo
+			var rows = $scope.$('#regional').datagrid('getChecked');
+			//勾选选中的行数组
+			if(rows.length > 1){
+				$.messager.alert("提示", "只能选择一台要报废的设备！");
+				return false;
+			}
+			if (rows.length == 0) {
+				$.messager.alert("提示", "请选择需要报废的设备！");
+				return false;
+			} else {
+				var regionalIdStr = "";
+				//设备Id字符串
+				var userName = "";
+				//当前用户名
+				var optStatus = 3;
+				//"0"表示停用操作
+				for (var i = 0; i < rows.length; i++) {
+					if (rows[i].enableFlag != 2) {
+						$.messager.alert("提示", "当前设备不是停用状态不能报废！");
+						return false;
+					} else if (i > 0) {
+						regionalIdStr = regionalIdStr + "," + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					} else {
+						regionalIdStr = regionalIdStr + rows[i].regionalId;
+						userName = $scope.UserInfo.userName;
+					}
+				}
+				//保存
+				$scope.$setParam("saveData", function(data) {
+					var reason = data;
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/IntervalManage/changeDeviceRegionUseStauts',
+						params : {
+							regionalIdStr : regionalIdStr,
+							userName : userName,
+							optStatus : optStatus
+						},
+						//method : 'post',
+						success : function(data) {
+							$.messager.alert("提示", "设备报废设置成功！");
+							//关闭窗体
+							$scope.$getDialog("useStatusDialog").dialog("close");
+							$scope.$search("deptQueryRegional");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "设备报废设置失败！");
+						}
+					});
+				});
+				$scope.$openDialog("useStatusDialog", {
+					title : "更改状态",
+					width : 400,
+					height : 250,
+					href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+				}, true);
+
+			}
+
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#intervalSystemDevice .th {
+		width: 80px;
+		text-align: right;
+	}
+
+	#intervalSystemDevice .td {
+		width: 150px;
+	}
+
+	#intervalSystemDevice .td > input[class^='easyui-'] {
+		width: 150px;
+	}
+
+	#intervalSystemDevice .button-search {
+		float: right;
+		margin-left: 15px;
+	}
+</style>

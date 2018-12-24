@@ -1,0 +1,228 @@
+<!--发布记录信息主页面 -->
+<div  class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="releaseInfo" class="table">
+					<div class="tr">
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td" >
+							<input  name="orgId" class="cy-org-radio"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input  name="roadId"  class="cy-road-radio"/>
+						</div>
+						<div class="th">
+							诱导屏设备：
+						</div>
+						<div class="td">
+							<input id="inducedSreenDeviceName" name="gnlx" class="easyui-combobox"
+							data-options="valueField:'deviceId',textField:'deviceName'" />
+						</div>
+						<div class="th">
+							任务类型：
+						</div>
+						<div class="td">
+							<input name="" class="easyui-combobox" cy-code='617'/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							消息类型：
+						</div>
+						<div class="td">
+							<input  name="gnlx" class="easyui-combobox" cy-code='611'/>
+						</div>
+						<div class="th">
+							创建时间：
+						</div>
+						<div class="td" style="width: 300px;">
+							<input id="start" name="gnlxStart" class="easyui-datetimebox" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']" />至
+							<input id="end" name="gnlxEnd" class="easyui-datetimebox" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"/>
+						</div>
+						<div class="th">
+							执行状态：
+						</div>
+						<div class="td" style="width: 220px;">
+							<input  type="checkbox" name="issueStatus" />未下发
+							<input  type="checkbox" name="issueStatus" />执行成功
+							<input  type="checkbox" name="issueStatus" />下发失败
+						</div>
+						<div class="td" style="width: 80px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dataGrid" cy-datagrid="options" cy-querydata="formData"
+		cy-url='../html/src/tpls/informationDelivery/releaseInfoManage/release-info-manage-data.json'></table>
+	</div>
+
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['016','611','617']);
+		//初始化加载
+	 	$scope.load = function() {
+	 		// queryinducedSreenDeviceName();
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+		 };
+		 
+		function queryinducedSreenDeviceName(){
+			$scope.$ajaxRequest({
+               	url:$scope.$restRoot+"",
+                params:{userOrgId : $scope.UserInfo.orgId},
+                method:"post",
+                success:function(data){
+                	$scope.$("#inducedSreenDeviceName").combobox("loadData",data);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","诱导屏设备失败，请重新打开此页面！");
+                }
+            });
+		}
+		$scope.searchData = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				var count = $scope.$("#dataGrid").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					$scope.$("#dataGrid").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("formData");
+				}
+			};
+		};
+		// $.extend($scope, {
+			// /**
+			 // * 初始化参数
+			 // * @type {Object}
+			 // */
+			// formData : {
+				// gnlxStart : new Date().format("yyyy-MM-dd 08:00:00"),
+				// gnlxEnd : new Date().format("yyyy-MM-dd hh:mm:ss")
+			// },
+		// });
+		//列表头部信息
+		$scope.options = {
+			columns : [[{
+				field : 'Id',
+				checkbox : false,
+				align : 'center'
+			},{
+				field : 'taskId',
+				title : '任务流水号',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'taskType',
+				title : '任务类型',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'messageType',
+				title : '消息类型',
+				align : 'center',
+				width : 20
+			},{
+				field : 'deviceName',
+				title : '诱导屏设备',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'ii',
+				title : '发布内容',
+				align : 'center',
+				width : 20
+			},{
+				field : 'issueStatus',
+				title : '执行状态',
+				align : 'center',
+				width : 20
+			},{
+				field : 'zxkssj',
+				title : '执行开始时间',
+				align : 'center',
+				width : 20
+			},{
+				field : 'zxjssj',
+				title : '执行结束时间',
+				align : 'center',
+				width : 20
+			},{
+				field : 'cjsj',
+				title : '创建时间',
+				align : 'center',
+				width : 20
+			},{
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				width : 20,
+				formatter:optionCz
+			}]],
+						
+		};
+		// 操作栏按钮
+		function optionCz(value, row, index) {
+			//启用
+			var button1 = $("<a class='button-enable' title='启用' cy-click='startUse(" + index + ")'></a>");
+			//详情按钮
+			var button2 = $("<a class='button-detail' title='详情' cy-click='details(" + index + ")'></a>");
+			//删除按钮 			
+			var button3 = $("<a class='button-remove' title='删除' cy-click='deleteData(" + index + ")'></a>");
+			
+			button1.linkbutton({
+				iconCls : "icon-enable-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			button3.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).append(button3).html();
+		};
+			$scope.details=function(index){
+							
+				$scope.$openDialog("editDialog",{
+					title:'发布日志',
+					height:500,	
+					width:600,
+					href:"tpls/informationDelivery/releaseInfoManage/release-info-manage-checked.html?type=edit"
+				});
+				
+			};
+			$scope.startUse=function(index){
+				$.messager.confirm("提示","确定启用么？",function(r){
+					
+				});
+			};
+					
+	}); 
+</script>
+<style type="text/css">
+	#releaseInfo .th {
+		text-align: right;
+		width: 80px;
+	}
+	#releaseInfo .td {
+		width: 150px;
+	}
+	
+</style>

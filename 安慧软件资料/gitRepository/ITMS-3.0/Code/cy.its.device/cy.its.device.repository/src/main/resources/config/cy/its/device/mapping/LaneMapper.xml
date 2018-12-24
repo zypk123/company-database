@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.LaneMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.site.Lane" >
+    <id column="LANE_ID" property="laneId" jdbcType="VARCHAR" />
+    <result column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+    <result column="LANE_NBR" property="laneNbr" jdbcType="VARCHAR" />
+    <result column="LANE_TYPE" property="laneType" jdbcType="CHAR" />
+    <result column="IS_RESTRICT" property="isRestrict" jdbcType="CHAR" />
+    <result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+    <result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+    <result column="LIMIT_OTHERS" property="limitOthers" jdbcType="DECIMAL" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LANE_ID, SECTION_ID, LANE_NBR, LANE_TYPE, 
+    IS_RESTRICT, LIMIT_LARGE, LIMIT_SMALL, LIMIT_LOWER,LIMIT_OTHERS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_LANE
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_LANE
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.site.Lane" >
+    insert into T_SYS_LANE (LANE_ID, SECTION_ID, 
+      LANE_NBR, LIMIT_OTHERS,
+      LANE_TYPE, IS_RESTRICT, LIMIT_LARGE, 
+      LIMIT_SMALL, LIMIT_LOWER)
+    values (#{laneId,jdbcType=VARCHAR}, #{sectionId,jdbcType=VARCHAR},  
+      #{laneNbr,jdbcType=VARCHAR}, #{limitOthers,jdbcType=DECIMAL},
+      #{laneType,jdbcType=CHAR}, #{isRestrict,jdbcType=CHAR}, #{limitLarge,jdbcType=DECIMAL}, 
+      #{limitSmall,jdbcType=DECIMAL}, #{limitLower,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.site.Lane" >
+    insert into T_SYS_LANE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="laneId != null" >
+        LANE_ID,
+      </if>
+      <if test="sectionId != null" >
+        SECTION_ID,
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR,
+      </if>
+      <if test="limitOthers != null" >
+        LIMIT_OTHERS,
+      </if>
+      <if test="laneType != null" >
+        LANE_TYPE,
+      </if>
+      <if test="isRestrict != null" >
+        IS_RESTRICT,
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE,
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL,
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="laneId != null" >
+        #{laneId,jdbcType=VARCHAR},
+      </if>
+      <if test="sectionId != null" >
+        #{sectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="limitOthers != null" >
+        #{limitOthers,jdbcType=DECIMAL},
+      </if>
+      <if test="laneType != null" >
+        #{laneType,jdbcType=CHAR},
+      </if>
+      <if test="isRestrict != null" >
+        #{isRestrict,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        #{limitLower,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.site.Lane" >
+    update T_SYS_LANE
+    <set >
+      <if test="sectionId != null" >
+        SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="limitOthers != null" >
+        LIMIT_OTHERS = #{limitOthers,jdbcType=DECIMAL},
+      </if>
+      <if test="laneType != null" >
+        LANE_TYPE = #{laneType,jdbcType=CHAR},
+      </if>
+      <if test="isRestrict != null" >
+        IS_RESTRICT = #{isRestrict,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.site.Lane" >
+    update T_SYS_LANE
+    set SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+      LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      LIMIT_OTHERS = #{limitOthers,jdbcType=DECIMAL},
+      LANE_TYPE = #{laneType,jdbcType=CHAR},
+      IS_RESTRICT = #{isRestrict,jdbcType=CHAR},
+      LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL}
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </update>
+  <select id="findLaneBySectionId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  	select 
+  	 <include refid="Base_Column_List" />
+    from T_SYS_LANE
+    where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+  	</select>
+</mapper>

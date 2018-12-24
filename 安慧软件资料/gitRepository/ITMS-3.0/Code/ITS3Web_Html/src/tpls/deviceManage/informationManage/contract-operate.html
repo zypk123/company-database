@@ -1,0 +1,105 @@
+<div id="contractOperate" class="easyui-layout">
+    <form cy-form="formData">
+        <div class="searchPanel">
+            <div class="table">
+                <div class="tr">
+                    <div class="th">合同编号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="CONTRACT_NBR"/>
+                    </div>
+                    <div class="th">合同名称：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="CONTRACT_NAME"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">合同类型：</div>
+                    <div class="td">
+                        <input id="CONTRACT_TYPE" class="easyui-combobox" name="CONTRACT_TYPE"/>
+                    </div>
+                    <div class="th">招标编号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="BID_NBR"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">承建商：</div>
+                    <div class="td">
+                        <input id="CONTRACTOR_NAME" class="easyui-textbox" name="CONTRACTOR_NAME"/>
+                    </div>
+                    <div class="th">签署时间：</div>
+                    <div class="td">
+                        <input class="easyui-datebox" name="CONTRACT_TIME"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">投标联系人：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="BID_CONTACT_NAME"/>
+                    </div>
+                    <div class="th">投标联系人电话：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="BID_CONTACT_TEL"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">售后服务期始：</div>
+                    <div class="td">
+                        <input class="easyui-datebox" name="BEGIN_SERVICE_DATE"/>
+                    </div>
+                    <div class="th">售后服务期至：</div>
+                    <div class="td">
+                        <input class="easyui-datebox" name="END_SERVICE_DATE"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">售后服务联系人：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="SERVICE_PERSON"/>
+                    </div>
+                    <div class="th">售后服务联系人电话：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="SERVICE_PERSON_TEL"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">备注：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" data-options="multiline:true" name="REMARK" style="width:390px;height:100px"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th"></div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button-save" iconCls="icon-save" style="float:right; margin-right:5px" cy-click="save">保存</a>
+                    </div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button-close" iconCls="icon-close"  cy-click="closeSelf">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    /**
+     * closeSelf ：关闭弹出框的方法
+     * newData ：编辑时带过来的页面数据
+     * dicts ：传过来的数据字典数据
+     */
+    InitPage(["closeSelf","formData","dicts"],function($scope){
+        $scope.$("#CONTRACT_TYPE").combobox("loadData",$scope.dicts["437"]);
+    });
+</script>
+<style type="text/css">
+    #contractOperate .th{
+        width: 120px;
+        text-align: right;
+    }
+    #contractOperate .td{
+        width: 140px;
+    }
+    #contractOperate .easyui-combobox{
+        width: 135px;
+    }
+</style>

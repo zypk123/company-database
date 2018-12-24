@@ -1,0 +1,346 @@
+<!--路口信息主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="deptQueryCross">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="crossingMessage" class="table">
+					<div class="tr">
+						<div class="th">
+							路口编号：
+						</div>
+						<div class="td">
+							<input  name="crossCode" class="easyui-textbox"/>
+						</div>
+						<div class="th" >
+							路口名称：
+						</div>
+						<div class="td">
+							<input name="crossName" class="easyui-textbox"/>
+						</div>
+						<div class="th" >
+							所属主干道：
+						</div>
+						<div class="td">
+							<input  name="roadId" class="cy-road-radio" />
+						</div>
+						<div class="th" >
+							路口类型：
+						</div>
+						<div class="td">
+							<input  name="crossType" class="easyui-combobox" cy-code="147"/>
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+		</form>
+	</div>
+	<div class="linkbutton_toolbar">
+		<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+		cy-click="addCrossing">添加</a>
+		<a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'"
+		cy-click="removeCrossing">删除</a>
+	</div>
+</div>
+<div data-options="region:'center'">
+	<table id="cross" cy-datagrid="optionsCross" cy-querydata="deptQueryCross"
+	cy-url="road/cross/findCross"></table>
+</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['147']);
+		$scope.load = function() {
+			$scope.$updateData("deptQueryCross");
+			$scope.$search("deptQueryCross");
+		};
+		$scope.searchData = function() {
+			$scope.$updateData("deptQueryCross");
+			//获得当前第几页数
+			var count = $scope.$("#cross").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转到第一页
+				$scope.$("#cross").datagrid("getPager").pagination("select", 1);
+			} else {
+				$scope.$search("deptQueryCross");
+			}
+		};
+		$scope.optionsCross = {
+			columns : [[{
+				field : 'crossId',
+				checkbox : true,
+				align : 'center'
+			}, {
+				field : 'crossCode',
+				title : '路口编号',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'crossName',
+				title : '路口名称',
+				align : 'center',
+				formatter : getCrossName,
+				width : 20
+			}, {
+				field : 'orgId',
+				title : '管理机构',
+				align : 'center',
+				formatter : optionsOrgName,
+				width : 20
+			}, {
+				field : 'crossType',
+				title : '路口类型',
+				align : 'center',
+				formatter : crossType,
+				width : 20
+			}, {
+				field : 'roadId',
+				title : '所属主干道',
+				align : 'center',
+				formatter : optionsRoadName,
+				width : 20
+		
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionCz,
+				width : 20
+			}]],
+			/**
+			 *查看详情页面
+			 */
+			onDblClickRow : function(rowIndex, rowData) {
+				$scope.$setParam("crossingCheckedData", rowData);
+				$scope.$openDialog("checked", {
+					title : "路口信息详情",
+					width : 700,
+					height : 280,
+					href : "tpls/sysManagement/roadNetworkMessage/crossing-message-check.html"
+				});
+			}
+		};
+		/**
+		 *根据路口Code获得Name
+		 */
+		function crossType(value, row, index) {
+			return $scope.$getCodeName("147", value);
+		}
+
+		//显示隐藏路口名称
+		function getCrossName(value, row, index) {
+			if (value == null) {
+				return "<span/>";
+			} else {
+				var crossNameStr = "";
+				if (value.length > 15) {
+					crossNameStr = '' + value.substring(0, 15) + '...';
+				} else {
+					crossNameStr = '' + value + '';
+				}
+				return "<span title='" + value + "'>" + crossNameStr + "</span>";
+			}
+		}
+
+		//显示隐藏机构名称
+		function optionsOrgName(value, row, index) {
+			var orgName = $scope.$getOrgName(value);
+			if (orgName == null) {
+				return "<span/>";
+			}
+			var orgNameStr = "";
+			if (orgName && orgName.length > 13) {
+				orgNameStr = '' + orgName.substring(0, 13) + '...';
+			} else {
+				orgNameStr = '' + orgName + '';
+			}
+			return "<span title='" + orgName + "'>" + orgNameStr + "</span>";
+		};
+		//显示隐藏相交道路名称
+		// function optionsRoadName(value, row, index) {
+			// var mainRoadName = $scope.$getRoadName(value);
+			// if (mainRoadName == null) {
+				// return "<span/>";
+			// } else {
+				// var mainRoadNameStr = "";
+				// if (mainRoadName && mainRoadName.length > 13) {
+					// mainRoadNameStr = '' + mainRoadName.substring(0, 13) + '...';
+				// } else {
+					// mainRoadNameStr = '' + mainRoadName + '';
+				// }
+				// return "<span title='" + mainRoadName + "'>" + mainRoadNameStr + "</span>";
+			// }
+		// };
+		//显示隐藏所属主干道路名称
+		function optionsRoadName(value, row, index) {
+			var roadName = $scope.$getRoadName(value);
+			if (roadName == null) {
+				return "<span/>";
+			}
+			var str = "";
+			if (roadName && roadName.length > 13) {
+				str = '' + roadName.substring(0, 13) + '...';
+			} else {
+				str = '' + roadName + '';
+			}
+			return "<span title='" + roadName + "'>" + str + "</span>";
+		};
+		function optionCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='editCross(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='button-remove' cy-click='deleteCross(" + index + ")'></a>");
+			//删除按钮
+
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		};
+		//添加路口信息
+		$scope.addCrossing = function() {
+			$scope.$setParam("saveCross", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/cross/saveCross",
+					method : "post",
+					params : data,
+					success : function(data) {
+						console.log(data);
+						if (data == "success") {
+							$scope.$getDialog("crossingDialog").dialog("close");
+							//获得当前第几页数
+							var curr = $scope.$("#cross").datagrid("getPager").pagination("options").pageNumber;
+							if (curr > 1) {
+								//刷新,跳转到第一页
+								$scope.$("#cross").datagrid("getPager").pagination("select", 1);
+							} else {
+								$scope.$search("deptQueryCross");
+							}
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+
+			});
+			$scope.$openDialog("crossingDialog", {
+				title : "新增路口信息",
+				width : 750,
+				height : 330,
+				href : "tpls/sysManagement/roadNetworkMessage/crossing-message-input.html?type=add"
+			}, true);
+		};
+		//编辑路口信息
+		$scope.editCross = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#cross").datagrid("getData").rows[index];
+			$scope.$setParam("crossingData", rowDatas);
+			$scope.$setParam("editCross", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/cross/updateCross",
+					params : data,
+					success : function(data) {
+						if (data == "success") {
+							//关闭编辑窗口
+							$scope.$getDialog("editDialog").dialog("close");
+							//刷新列表
+							$scope.$search("deptQueryCross");
+						}
+					},
+					fail : function() {
+						$.messager.alert("提示", "更新失败！");
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改路口信息",
+				width : 750,
+				height : 330,
+				href : "tpls/sysManagement/roadNetworkMessage/crossing-message-input.html?type=edit"
+			}, true);
+		};
+		//批量删除
+		$scope.removeCrossing = function() {
+			//获得所有的行数
+			var rows = $scope.$("#cross").datagrid("getChecked");
+
+			if (rows.length == 0) {
+				$.messager.alert("提示", "至少选中一条信息！");
+				return false;
+			} else {
+				var crossIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (i > 0) {
+						crossIdStr = crossIdStr + "," + rows[i].crossId;
+
+					} else {
+						crossIdStr = crossIdStr + rows[i].crossId;
+					}
+				}
+				$.messager.confirm("提示", "你是否删除信息？", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "road/cross/removeCrossIds",
+							params : {
+								crossIdStr : crossIdStr
+							},
+							memoth : "post",
+							success : function(data) {
+								if (data == "success") {
+									$scope.$search("deptQueryCross");
+								}
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+		};
+		//删除当前行信息
+		$scope.deleteCross = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#cross").datagrid("getData").rows[index];
+			//获得当前行的Id
+			var crossId = rowDatas.crossId;
+			$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+				if (r) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "road/cross/deleteCrossId",
+						params : {
+							crossId : crossId
+						},
+						memoth : "post",
+						success : function(data) {
+							if (data == "success") {
+								$scope.$search("deptQueryCross");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#crossingMessage .th {
+		text-align: right;
+		width: 100px;
+	}
+</style>

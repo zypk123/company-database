@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" type="text/css" href="../../frameworks/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../frameworks/easyui/themes/icon.css">
+    <script src="../../frameworks/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../frameworks/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../frameworks/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../frameworks/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../../frameworks/slider/slider_extras.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../frameworks/slider/slider.css">
+
+    <!-- 验证配置 -->
+    <script type="text/javascript" src="../../js/validation.js"></script>
+    <!-- 自定义框架文件 -->
+    <link rel="stylesheet" type="text/css" href="../../themes/default/css/its3.css">
+    <link rel="stylesheet" type="text/css" href="../../themes/default/css/violationMgr.css">
+    <script type="text/javascript" src="../../js/rootScope.js"></script>
+    <script type="text/javascript" src="../../js/templateInit.js"></script>
+    <script type="text/javascript" src="../../js/date-util.js"></script>
+    <script type="text/javascript" src="../../js/violationMgr.js"></script>
+
+    <!--<%--视频时间轴--%>-->
+    <link rel="stylesheet" type="text/css" href="../../js/videoAxis/videoAxis.css">
+    <script type="text/javascript" src="../../js/videoAxis/videoAxis.js"></script>
+
+
+    <script type="application/javascript">
+        var allVideoLst=[
+            {
+                id:'巡航方案1',
+                text:'巡航方案1',
+                value:null,
+                children:[
+                    {
+                        id:'01',
+                        text:'昆武高速K214+100',
+                        presetDesc:'预置位1',
+                        value:30
+                    },
+                    {
+                        id:'02',
+                        text:'昆武高速K214+200',
+                        presetDesc:'预置位2',
+                        value:6
+                    },
+                    {
+                        id:'03',
+                        text:'昆武高速K214+600',
+                        presetDesc:'预置位3',
+                        value:4
+                    },{
+                        id:'04',
+                        text:'昆武高速K214+210',
+                        presetDesc:'预置位4',
+                        value:4
+                    },{
+                        id:'05',
+                        text:'昆武高速K214+320',
+                        presetDesc:'预置位4',
+                        value:4
+                    },
+                    {
+                        id:'06',
+                        text:'昆武高速K214+110',
+                        presetDesc:'预置位5',
+                        value:7
+                    }
+                ]
+            },
+            {
+                id:'巡航方案2',
+                text:'巡航方案2',
+                value:null,
+                children:[
+                    {
+                        id:'11',
+                        text:'昆武高速K214+480',
+                        presetDesc:'预置位1',
+                        value:7
+                    },
+                    {
+                        id:'12',
+                        text:'昆武高速K214+120',
+                        presetDesc:'预置位2',
+                        value:5
+                    },
+                    {
+                        id:'13',
+                        text:'昆武高速K214+e3',
+                        presetDesc:'预置位3',
+                        value:11
+                    }
+                ]
+            }
+        ];
+
+        var curCruisePlanVideoLst=allVideoLst[0].children;
+
+        var axis;
+        isClickNewAxisNode=false;
+        var cruiseTimeout=null;
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+        $(function($){
+            axis = new VideoAxis({
+                dom : $("#axis").get(0),
+                Items : allVideoLst,
+                clickEnabled:false,
+                lineTextFormat:function(item){
+                    return "<div class='value'>"+item.value+"</div>";
+                },
+                rightTextFormat:function(item){
+                    return "<div>"+item.text+"</div><div>"+item.presetDesc+"</div>";
+                },
+                onSelect : function(item){
+                    console.log('clickID'+item.id);
+                        var clickIndex=0;
+                        for(var i=0;i<curCruisePlanVideoLst.length;i++){
+                            if(curCruisePlanVideoLst[i].id==item.id){
+                                clickIndex=i;
+                            }
+                        };
+                    clearTimeout(cruiseTimeout);
+                    curCruiseVideoIndex=clickIndex;
+
+                    curCruisePlanVideo=$scope.curCruisePlanVideoLst[curCruiseVideoIndex];// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+
+                    cruiseVideo(curCruisePlanVideo);
+//                        if(curCruiseVideoIndex!=clickIndex){//巡航新视频
+//                            isClickNewAxisNode=true;
+//                            cruiseVideo();
+//                        }
+                }
+            });
+
+            $("#axis").panel({
+                onResize : function() {
+                    axis.fitSize();
+                }
+            });
+        });
+        
+        
+        function beginCruise(){
+            curCruiseVideoIndex=0;
+            axis.enable();
+            //debugger;
+            curCruisePlanVideo=curCruisePlanVideoLst[0];// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+            axis.selectItem(curCruisePlanVideo.id);
+            //cruiseVideo(curCruisePlanVideo);
+        };
+        function stopCruise(){
+            curCruiseVideoIndex=-1;
+            clearTimeout(cruiseTimeout);
+            axis.reload();
+            axis.disable();
+        };
+        function preVideo(){
+            if (curCruiseVideoIndex ==0) {
+                alert('已在最开始视频');
+                return;
+            }
+            else {
+                curCruiseVideoIndex -= 1;
+            }
+
+            curCruisePlanVideo=curCruisePlanVideoLst[curCruiseVideoIndex];// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+            axis.selectItem(curCruisePlanVideo.id);
+//            axis.chooseItem(curCruisePlanVideo.id);
+//            cruiseVideo(curCruisePlanVideo);
+        };
+        
+        function nextVideo(){
+            //点击新的巡航视频，此时返回
+//            if(isClickNewAxisNode){
+//                isClickNewAxisNode=false;
+//                return;
+//            }
+            if(curCruiseVideoIndex>-1){
+                if (curCruiseVideoIndex == curCruisePlanVideoLst.length - 1) {
+                    curCruiseVideoIndex = 0;
+                }
+                else {
+                    curCruiseVideoIndex += 1;
+                }
+            }
+
+            curCruisePlanVideo=curCruisePlanVideoLst[curCruiseVideoIndex];// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+            axis.selectItem(curCruisePlanVideo.id);
+            //axis.chooseItem(curCruisePlanVideo.id);
+            //cruiseVideo(curCruisePlanVideo);
+        };
+
+        function lockVideo(){
+            var btnName=$("#btnLockVideo").text();
+            if(btnName.indexOf("锁定视频")>-1)//触发解锁
+            {
+                $("#btnLockVideo").linkbutton({text:'解锁视频'});
+                    clearTimeout(cruiseTimeout);
+                    //$scope.axis.disable();
+                axis.stopNav();
+
+            }
+            else//触发锁定
+            {
+                $("#btnLockVideo").linkbutton({text:'锁定视频'});
+                    //$scope.axis.enable();
+                curCruisePlanVideo=curCruisePlanVideoLst[curCruiseVideoIndex];// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+                axis.selectItem(curCruisePlanVideo.id);
+                axis.continueNav();
+            }
+        };
+        function cruiseVideo(video){
+
+                //仅仅改变状态，不触发onSelect事件，不论是否锁定，都改变下一个视频的状态
+                //if($("#btnLockVideo").text().indexOf("锁定视频")>-1){
+//                    console.log('chooseItem'+curCruisePlanVideo.id);
+                    setTimeout(function(){
+                        //调用下一个视频
+                        cruiseTimeout=setTimeout(function () {
+                            nextVideo();
+                        }, curCruisePlanVideo.value * 1000);
+                    }, 500);
+               // }
+        };
+         
+    </script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'west',width:230"  id="axis">
+        &nbsp;
+    </div>
+    <div data-options="region:'center'">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'west' " id="videoAxis" style="width:120px">
+
+            </div>
+            <div data-options="region:'north',height:40,border:true">
+                <a class="easyui-linkbutton button" id="btnBeginCruise" onclick="beginCruise()"
+                   data-options="iconCls:'icon-enable'">开始</a>
+                <a class="easyui-linkbutton button " id="btnStopCruise" onclick="stopCruise()"
+                   data-options="iconCls:'icon-disable'">停止</a>
+                <a class="easyui-linkbutton button" id="btnPreVideo" onclick="preVideo()"
+                   data-options="iconCls:'icon-left'">上一个</a>
+                <a class="easyui-linkbutton button" id="btnNextVideo" onclick="nextVideo()"
+                   data-options="iconCls:'icon-right'">下一个</a>
+                <a class="easyui-linkbutton button" id="btnLockVideo" onclick="lockVideo()"
+                   data-options="iconCls:'icon-right'">锁定视频</a>
+            </div>
+            <div data-options="region:'center'">
+                <div style="width: 20%;height: 100%;float: left">
+
+                    <div class="line1" style="height:10px;width: 2px;margin-left: 30px;background-color: #76ee00"></div>
+                </div>
+                <div style="width: 20%;height: 100%;float: left">
+                    <div class="line2" style="height:10px;width: 2px;margin-left: 60px;background-color: #76ee00"></div>
+                </div>
+                <div style="width: 20%;height: 100%;float: left">
+                    <div class="line3" style="height:200px;width: 2px;margin-left: 60px;background-color: #76ee00"></div>
+                </div>
+            </div>
+            <div data-options="region:'east'" style="width: 120px">
+
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'east',width:80">
+        <ul class="newID">
+            <li>li1</li>
+            <li>li2</li>
+            <li>li3</li>
+        </ul>
+    </div>
+</div>
+</body>
+<style>
+     ul{
+    }
+
+     .newID li{
+         margin-top: 20px;
+         height: 30px;
+         cursor: pointer;
+         line-height: 100px;
+         list-style: outside none none;
+     }
+</style>
+</html>

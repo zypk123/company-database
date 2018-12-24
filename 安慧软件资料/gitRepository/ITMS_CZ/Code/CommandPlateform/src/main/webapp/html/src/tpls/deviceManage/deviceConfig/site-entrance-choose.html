@@ -1,0 +1,72 @@
+<div id="entranceChoose" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="table">
+                <div class="tr" style="margin-top: 20px;">
+                    <div class="td" style="margin-left: 40px;">
+                        <input type="radio" name="site" checked="checked" value="3"/>新增道路点位
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="margin-left: 40px;">
+                        <input type="radio" name="site" value="2"/>新增路段点位
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="margin-left: 40px;">
+                        <input type="radio" name="site" value="1"/>新增路口点位
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false" style="text-align: center">
+        <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">确认</a>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.save = function(){
+            //获取选中单选框的value值
+            var val = $scope.$("input[type='radio']:checked ").val();
+            $scope.$destroySelf();
+          /*  var url;
+            var siteName;
+            $scope.$setParam("siteType",val);
+            if(val == 3){//道路点位
+            	url = "tpls/sysManagement/roadNetworkMessage/point-segment-add.html";
+            	siteName = "道路点位";
+            }else if(val == 2){//路段点位
+            	url = "tpls/sysManagement/roadNetworkMessage/point-segment-add.html";
+            	siteName = "路段点位";
+            }else if(val == 1){//路口点位
+            	url = "tpls/sysManagement/roadNetworkMessage/point-segment-add.html";
+            	siteName = "路口点位";
+            }*/
+            $scope.$openDialog("addDialog", {
+                title : "新增点位",
+                height : 600,
+                width : 800,
+                href : 'tpls/sysManagement/roadNetworkMessage/point-segment-add.html'
+            });
+            //保存点位信息
+            $scope.$setParam("saveData", function(data) {
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "device/site/addSite",
+                    params : {jsonSitelString:JSON.stringify(data)},
+                    success : function(data) {
+                        //关闭窗口
+                        $scope.$getDialog("addDialog").dialog("close");
+                        $.messager.alert("提示","添加点位相关信息成功！");
+                    },
+                    fail : function(errMsg){
+	                	$.messager.alert("提示","添加点位相关信息失败！");
+	                }
+                });
+            });
+        };
+    });
+</script>
+<style type="text/css">
+
+</style>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceLedSpecServiceMapper" >
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.DeviceLedSpec">
+		<id column="SPEC_ID" property="specId" jdbcType="VARCHAR"/>
+		<result column="SPEC_NAME" property="specName" jdbcType="VARCHAR"/>
+		<result column="LED_DEVICE_TYPE" property="ledDeviceType" jdbcType="VARCHAR"/>
+		<result column="LED_DEVICE_MODEL" property="ledDeviceModel" jdbcType="VARCHAR"/>
+		<result column="COLOR_TYPE" property="colorType" jdbcType="VARCHAR"/>
+		<result column="PIXES_HEIGHT" property="pixesHeight" jdbcType="INTEGER"/>
+		<result column="PIXES_WIDTH" property="pixesWidth" jdbcType="INTEGER"/>
+		<result column="WIDTH" property="width" jdbcType="INTEGER"/>
+		<result column="HEIGHT" property="height" jdbcType="INTEGER"/>
+		<result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+		<result column="LED_SHAPE" property="ledShape" jdbcType="VARCHAR"/>
+	</resultMap>
+
+<sql id="Base_Column_List">
+	SPEC_ID,SPEC_NAME,LED_DEVICE_TYPE,LED_DEVICE_MODEL,COLOR_TYPE,PIXES_HEIGHT,PIXES_WIDTH,WIDTH,HEIGHT,REMARK,LED_SHAPE
+</sql>
+
+<select id="find" resultMap="BaseResultMap" parameterType="java.lang.String">
+	select <include refid="Base_Column_List"/> 
+	from T_DEVICE_LED_SPEC WHERE SPEC_ID=#{specId,jdbcType=VARCHAR}
+</select>
+<insert id="inserts" parameterType="cy.its.device.domain.model.DeviceLedSpec">
+	insert into T_DEVICE_LED_SPEC(
+	SPEC_ID,SPEC_NAME,LED_DEVICE_TYPE,LED_DEVICE_MODEL,COLOR_TYPE,PIXES_HEIGHT,PIXES_WIDTH,WIDTH,HEIGHT,REMARK,LED_SHAPE) 
+	valuse(
+	#{specId,jdbcType=VARCHAR},#{specName,jdbcType=VARCHAR},#{ledDeviceType,jdbcType=VARCHAR},#{ledDeviceModel,jdbcType=VARCHAR},
+	#{colorType,jdbcType=VARCHAR},#{pixesHeight,jdbcType=INTEGER},#{pixesWidth,jdbcType=INTEGER},#{width,jdbcType=INTEGER},#{height,jdbcType=INTEGER},
+	#{remark,jdbcType=VARCHAR},#{ledShape,jdbcType=VARCHAR});
+</insert>
+<insert id="insert" parameterType="cy.its.device.domain.model.DeviceLedSpec"> 
+	insert into T_DEVICE_LED_SPEC
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="specId !=null">
+			SPEC_ID,
+		</if>
+		<if test="specName !=null">
+			SPEC_NAME,
+		</if>
+		<if test="ledDeviceType !=null">
+			LED_DEVICE_TYPE,
+		</if>
+		<if test="ledDeviceModel !=null">
+			LED_DEVICE_MODEL,
+		</if>
+		<if test="colorType !=null">
+			COLOR_TYPE,
+		</if>
+		<if test="pixesHeight !=null">
+			PIXES_HEIGHT,
+		</if>
+		<if test="pixesWidth !=null">
+			PIXES_WIDTH,
+		</if>
+		<if test="width !=null">
+			WIDTH,
+		</if>
+		<if test="height !=null">
+			HEIGHT,
+		</if>
+		<if test="remark !=null">
+			REMARK,
+		</if>
+		<if test="ledShape !=null">
+			LED_SHAPE
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="specId != null" >
+        #{specId,jdbcType=VARCHAR},
+      </if>
+      <if test="specName != null" >
+        #{specName,jdbcType=VARCHAR},
+      </if>
+      <if test="ledDeviceType != null" >
+       #{ledDeviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="ledDeviceModel != null" >
+        #{ledDeviceModel,jdbcType=VARCHAR},
+      </if>
+      <if test="colorType != null" >
+        #{colorType,jdbcType=VARCHAR},
+      </if>
+      <if test="pixesHeight != null" >
+        #{pixesHeight,jdbcType=INTEGER},
+      </if>
+      <if test="pixesWidth != null" >
+        #{pixesWidth,jdbcType=INTEGER},
+      </if>
+      <if test="width != null" >
+        #{width,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="ledShape !=null">
+		#{ledShape,jdbcType=VARCHAR},
+	  </if>
+    </trim>
+</insert>
+<select id="findByDeviceLedSpec" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		<!-- from (SELECT V.*, ROWNUM RN -->
+		FROM T_DEVICE_LED_SPEC 
+		<where>			
+			<if test="specName != null and specName != '' ">
+				AND (SPEC_NAME like '%' || #{specName,jdbcType=VARCHAR} || '%') 
+			</if>
+			<if test="colorType != null and colorType != '' ">
+				AND COLOR_TYPE = #{colorType,jdbcType=VARCHAR}
+			</if>
+			<if test="ledDeviceType != null and ledDeviceType != '' ">
+				AND LED_DEVICE_TYPE = #{ledDeviceType,jdbcType=VARCHAR}
+			</if>
+		</where>
+</select>
+
+<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DeviceLedSpec">
+	UPDATE T_DEVICE_LED_SPEC 
+	<set>
+		<if test="specName !=null">
+			SPEC_NAME= #{specName,jdbcType=VARCHAR},
+		</if>
+		<if test="ledDeviceType !=null">
+			LED_DEVICE_TYPE=#{ledDeviceType,jdbcType=VARCHAR},
+		</if>
+		<if test="ledDeviceModel !=null">
+			LED_DEVICE_MODEL= #{ledDeviceModel,jdbcType=VARCHAR},
+		</if>
+		<if test="colorType !=null">
+			COLOR_TYPE= #{colorType,jdbcType=VARCHAR},
+		</if>
+		<if test="pixesHeight !=null">
+			PIXES_HEIGHT= #{pixesHeight,jdbcType=INTEGER},
+		</if>
+		<if test="pixesWidth !=null">
+			PIXES_WIDTH= #{pixesWidth,jdbcType=INTEGER},
+		</if>
+		<if test="width !=null">
+			WIDTH= #{width,jdbcType=INTEGER},
+		</if>
+		<if test="height !=null">
+			HEIGHT= #{height,jdbcType=INTEGER},
+		</if>
+		<if test="remark !=null">
+			REMARK= #{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="ledShape !=null">
+			LED_SHAPE= #{ledShape,jdbcType=VARCHAR},
+	   	</if>
+	</set>
+	WHERE SPEC_ID = #{specId,jdbcType=VARCHAR}
+</update>
+<delete id="removeByPrimaryKey" parameterType="java.util.Map">
+	delete from T_DEVICE_LED_SPEC where spec_id in
+	<foreach item="ids" collection="idList" open="(" separator="," close=")">
+		#{ids}
+	</foreach> 
+</delete>
+</mapper>

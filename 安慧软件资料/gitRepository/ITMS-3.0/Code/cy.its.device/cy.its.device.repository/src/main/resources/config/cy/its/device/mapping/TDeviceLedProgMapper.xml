@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.TDeviceLedProgMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.mybatis.model.TDeviceLedProg" >
+    <id column="PROGRAM_ID" property="programId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="PROGRAM_NO" property="programNo" jdbcType="VARCHAR" />
+    <result column="PER_NAME" property="perName" jdbcType="VARCHAR" />
+    <result column="SHOW_MODE" property="showMode" jdbcType="VARCHAR" />
+    <result column="PROGRAM_PRIORITY" property="programPriority" jdbcType="VARCHAR" />
+    <result column="PER_TYPE" property="perType" jdbcType="VARCHAR" />
+    <result column="PLAY_TIME" property="playTime" jdbcType="DECIMAL" />
+    <result column="PLAY_TIMES" property="playTimes" jdbcType="DECIMAL" />
+    <result column="PLAY_DELAY" property="playDelay" jdbcType="DECIMAL" />
+    <result column="TIME_MODE" property="timeMode" jdbcType="DECIMAL" />
+    <result column="START_DATE" property="startDate" jdbcType="VARCHAR" />
+    <result column="END_DATE" property="endDate" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="VARCHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="WEEK" property="week" jdbcType="VARCHAR" />
+    <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="PROGRAM_CONTENT" property="programContent" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PROGRAM_ID, DEVICE_ID, PROGRAM_NO, PER_NAME, SHOW_MODE, PROGRAM_PRIORITY, PER_TYPE, 
+    PLAY_TIME, PLAY_TIMES, PLAY_DELAY, TIME_MODE, START_DATE, END_DATE, START_TIME, END_TIME, 
+    WEEK, MESSAGE_TYPE, PROGRAM_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_PROG
+    where PROGRAM_ID = #{programId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED_PROG
+    where PROGRAM_ID = #{programId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.mybatis.model.TDeviceLedProg" >
+    insert into T_DEVICE_LED_PROG (PROGRAM_ID, DEVICE_ID, PROGRAM_NO, 
+      PER_NAME, SHOW_MODE, PROGRAM_PRIORITY, 
+      PER_TYPE, PLAY_TIME, PLAY_TIMES, 
+      PLAY_DELAY, TIME_MODE, START_DATE, 
+      END_DATE, START_TIME, END_TIME, 
+      WEEK, MESSAGE_TYPE, PROGRAM_CONTENT)
+    values (#{programId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{programNo,jdbcType=VARCHAR}, 
+      #{perName,jdbcType=VARCHAR}, #{showMode,jdbcType=VARCHAR}, #{programPriority,jdbcType=VARCHAR}, 
+      #{perType,jdbcType=VARCHAR}, #{playTime,jdbcType=DECIMAL}, #{playTimes,jdbcType=DECIMAL}, 
+      #{playDelay,jdbcType=DECIMAL}, #{timeMode,jdbcType=DECIMAL}, #{startDate,jdbcType=VARCHAR}, 
+      #{endDate,jdbcType=VARCHAR}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, 
+      #{week,jdbcType=VARCHAR}, #{messageType,jdbcType=VARCHAR}, #{programContent,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.mybatis.model.TDeviceLedProg" >
+    insert into T_DEVICE_LED_PROG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="programId != null" >
+        PROGRAM_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="programNo != null" >
+        PROGRAM_NO,
+      </if>
+      <if test="perName != null" >
+        PER_NAME,
+      </if>
+      <if test="showMode != null" >
+        SHOW_MODE,
+      </if>
+      <if test="programPriority != null" >
+        PROGRAM_PRIORITY,
+      </if>
+      <if test="perType != null" >
+        PER_TYPE,
+      </if>
+      <if test="playTime != null" >
+        PLAY_TIME,
+      </if>
+      <if test="playTimes != null" >
+        PLAY_TIMES,
+      </if>
+      <if test="playDelay != null" >
+        PLAY_DELAY,
+      </if>
+      <if test="timeMode != null" >
+        TIME_MODE,
+      </if>
+      <if test="startDate != null" >
+        START_DATE,
+      </if>
+      <if test="endDate != null" >
+        END_DATE,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="week != null" >
+        WEEK,
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE,
+      </if>
+      <if test="programContent != null" >
+        PROGRAM_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="programId != null" >
+        #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="programNo != null" >
+        #{programNo,jdbcType=VARCHAR},
+      </if>
+      <if test="perName != null" >
+        #{perName,jdbcType=VARCHAR},
+      </if>
+      <if test="showMode != null" >
+        #{showMode,jdbcType=VARCHAR},
+      </if>
+      <if test="programPriority != null" >
+        #{programPriority,jdbcType=VARCHAR},
+      </if>
+      <if test="perType != null" >
+        #{perType,jdbcType=VARCHAR},
+      </if>
+      <if test="playTime != null" >
+        #{playTime,jdbcType=DECIMAL},
+      </if>
+      <if test="playTimes != null" >
+        #{playTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="playDelay != null" >
+        #{playDelay,jdbcType=DECIMAL},
+      </if>
+      <if test="timeMode != null" >
+        #{timeMode,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="week != null" >
+        #{week,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="programContent != null" >
+         #{programContent,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.mybatis.model.TDeviceLedProg" >
+    update T_DEVICE_LED_PROG
+    <set >
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="programNo != null" >
+        PROGRAM_NO = #{programNo,jdbcType=VARCHAR},
+      </if>
+      <if test="perName != null" >
+        PER_NAME = #{perName,jdbcType=VARCHAR},
+      </if>
+      <if test="showMode != null" >
+        SHOW_MODE = #{showMode,jdbcType=VARCHAR},
+      </if>
+      <if test="programPriority != null" >
+        PROGRAM_PRIORITY = #{programPriority,jdbcType=VARCHAR},
+      </if>
+      <if test="perType != null" >
+        PER_TYPE = #{perType,jdbcType=VARCHAR},
+      </if>
+      <if test="playTime != null" >
+        PLAY_TIME = #{playTime,jdbcType=DECIMAL},
+      </if>
+      <if test="playTimes != null" >
+        PLAY_TIMES = #{playTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="playDelay != null" >
+        PLAY_DELAY = #{playDelay,jdbcType=DECIMAL},
+      </if>
+      <if test="timeMode != null" >
+        TIME_MODE = #{timeMode,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null" >
+        START_DATE = #{startDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        END_DATE = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="week != null" >
+        WEEK = #{week,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="programContent != null" >
+        PROGRAM_CONTENT = #{programContent,jdbcType=CLOB},
+      </if>
+    </set>
+    where PROGRAM_ID = #{programId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.mybatis.model.TDeviceLedProg" >
+    update T_DEVICE_LED_PROG
+    set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      PROGRAM_NO = #{programNo,jdbcType=VARCHAR},
+      PER_NAME = #{perName,jdbcType=VARCHAR},
+      SHOW_MODE = #{showMode,jdbcType=VARCHAR},
+      PROGRAM_PRIORITY = #{programPriority,jdbcType=VARCHAR},
+      PER_TYPE = #{perType,jdbcType=VARCHAR},
+      PLAY_TIME = #{playTime,jdbcType=DECIMAL},
+      PLAY_TIMES = #{playTimes,jdbcType=DECIMAL},
+      PLAY_DELAY = #{playDelay,jdbcType=DECIMAL},
+      TIME_MODE = #{timeMode,jdbcType=DECIMAL},
+      START_DATE = #{startDate,jdbcType=VARCHAR},
+      END_DATE = #{endDate,jdbcType=VARCHAR},
+      START_TIME = #{startTime,jdbcType=VARCHAR},
+      END_TIME = #{endTime,jdbcType=VARCHAR},
+      WEEK = #{week,jdbcType=VARCHAR},
+      MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      PROGRAM_CONTENT = #{programContent,jdbcType=CLOB}
+    where PROGRAM_ID = #{programId,jdbcType=VARCHAR}
+  </update>
+  <select id="countProgOfDevice" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select 
+    COUNT(1)
+    from T_DEVICE_LED_PROG
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectProgNoSEQ" resultType="java.lang.Integer" >
+    select 
+    SEQ_LED_PROG_NO.NEXTVAL
+    from DUAL
+  </select>
+  
+  <update id="updateProgNo" parameterType="java.util.Map" >
+    update T_DEVICE_LED_PROG
+    set PROGRAM_NO = #{newProgNo,jdbcType=VARCHAR}
+    where PROGRAM_ID = #{targetProgId,jdbcType=VARCHAR} and
+     PROGRAM_NO = #{oldProgNo,jdbcType=VARCHAR}
+  </update>
+         
+  <update id="updateProgNoBatch" parameterType="java.util.List" >
+    <foreach collection="changes" item="item" open="begin" close="commit; end;" separator="">
+	   <![CDATA[ update T_DEVICE_LED_PROG
+	       set PROGRAM_NO = #{item.newProgNo,jdbcType=VARCHAR}
+	     where PROGRAM_ID = #{item.targetProgId,jdbcType=VARCHAR} and
+	           PROGRAM_NO = #{item.oldProgNo,jdbcType=VARCHAR}; ]]>
+    </foreach>   
+  </update>
+</mapper>

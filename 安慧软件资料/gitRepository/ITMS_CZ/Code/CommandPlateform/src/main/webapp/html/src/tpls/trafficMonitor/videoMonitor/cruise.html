@@ -1,0 +1,877 @@
+﻿<!--视频巡航-->
+<div class="cruiseView" style="height: 100%;">
+    <div class="easyui-layout">
+        <!--视频巡航-->
+        <div data-options="region:'north'" style="height:30px;">
+            巡航方案:
+            <input class="easyui-combobox" id="comboCruisePlan" name="cruisePlan" style="width: 120px"
+                   data-options="valueField:'videoPlanId',textField:'videoPlanName',panelHeight:'auto'"/>
+
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-add'"
+               cy-click="addCruisePlan" title="新增"></a>
+
+            <input type="radio" name="autoPlay" value="0" checked="true" cy-click="chkAuto();"/>自动
+            <input type="radio" name="autoPlay" value="1" cy-click="chkAuto();"/>手动
+            <a class="easyui-linkbutton button" cy-click="beginCruise" id="btnBeginCruise"
+               data-options="iconCls:'icon-enable'">开始</a>
+            <a class="easyui-linkbutton button " cy-click="stopCruise" id="btnStopCruise"
+               data-options="iconCls:'icon-disable'">停止</a>
+            <a class="easyui-linkbutton button" cy-click="preVideo" id="btnPreVideo"
+               data-options="iconCls:'icon-left'">上一个</a>
+            <a class="easyui-linkbutton button" cy-click="nextVideo" id="btnNextVideo"
+               data-options="iconCls:'icon-right'">下一个</a>
+            <a class="easyui-linkbutton button" cy-click="lockVideo" id="btnLockVideo"
+               data-options="iconCls:'icon-lock'" width="80px">锁定视频</a>
+            <a class="easyui-linkbutton button " cy-click="addEvent" id="btnAddEvent"
+               data-options="iconCls:'icon-add'">事件登记</a>
+        </div>
+
+        <!--视频列表-->
+        <div data-options="region:'west'" style="width: 220px" id="axis">
+        </div>
+        <!--控件-->
+        <div data-options="region:'center'" id="divOcx" style="overflow:hidden;">
+            <!-- 添加预览控件（需要先在windows下注册） -->
+            <iframe id="ifVideo" style="width:100%;height: 100%">
+
+            </iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+InitPage(["jumpCruisePlanId"], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+    $scope.ChaoYuanPreviewSrc = 'tpls/video/chaoYuan/preView.html?singlePreview=1&parentUrl=cruise&ran='+Math.random();
+    $scope.Hik8600PreviewSrc = 'tpls/video/haiKang8600/preView.html?singlePreview=1&parentUrl=cruise&ran='+Math.random();
+    $scope.curCruisePlanVideoLst = {};//当前巡航视频列表
+    $scope.curCruiseVideoIndex = 0;//
+    $scope.curCruisePlanVideo = {};
+    $scope.currentPlan = {};//当前巡航方案
+    $scope.currentCruiseLog = null;//当前巡航日志
+    $scope.curCruiseVideoScreens = 1;//多屏巡航时巡航轮数
+    $scope.screenNum = 1; //巡航屏数
+    $scope.lockScreen = [];//记录多屏时锁屏状态
+    $scope.multiScreenVideo = [];//记录多屏时各屏巡航对应的视频id，以屏index作为下标
+    $scope.curScreenNum = null;
+    $scope.cruiseTimeout = null;//异步方法
+    $scope.isLeaveEnter = false;
+    $.extend($scope, {
+        curCruisePlanVideo: {
+            deviceId: "",
+            deviceSysNbr: "44020000001320000002",
+            cameraServerTypeIp: "192.168.10.39",
+            videoDeviceName: "IPdome"
+        },
+        readyCruisePlanVideo:null,
+        /**
+         * 页面加载完后一些初始化处理
+         */
+        load: function () {
+//            console.log('load');
+            //关闭左侧菜单栏
+            //$scope.$topLayout.layout("collapse", "west");
+            $scope.$("#ifVideo").attr('src', $scope.Hik8600PreviewSrc);
+            $scope.videoControl = $scope.$("#ifVideo")[0].contentWindow;
+            //$scope.videoControl.hideControl();
+
+            $scope.$("#comboCruisePlan").combobox(
+                    {
+                        onSelect: $scope.changeVideoPlan
+                    }
+            );
+
+            $scope.$("#btnBeginCruise").linkbutton('disable').removeAttr('cy-click');
+            $scope.$("#btnStopCruise").linkbutton('disable').removeAttr('cy-click');
+            $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+            $scope.$("#btnPreVideo").linkbutton('disable').removeAttr('cy-click');
+            $scope.$("#btnNextVideo").linkbutton('disable').removeAttr('cy-click');
+            $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+
+
+            $scope.$("#comboCruisePlan").combo({'editable': false});
+
+            var data = [
+                {
+                    relatedVideoId: '1',
+                    videoDeviceName: '巡航视频1',
+                    presetDesc: '预置位1',
+                    cruiseTime: 1
+                },
+                {
+                    relatedVideoId: '2',
+                    videoDeviceName: '巡航视频2',
+                    presetDesc: '预置位2',
+                    cruiseTime: 1
+                }
+            ];
+
+            $scope.loadAxis('巡航方案名称', data);
+            $scope.loadVideoPlan();
+        },
+
+        //退出
+        leave: function () {
+            var isAutoCruise = $scope.$("[name=autoPlay]:checked").val();
+            if (isAutoCruise == '0' && $scope.currentCruiseLog) {
+                clearTimeout($scope.cruiseTimeout);
+                if ($scope.screenNum == 1) {//单屏
+                    $scope.axis.pause();
+                }
+            }
+//            console.log('leave');
+        },
+        enter: function () {
+//            console.log('enter');
+            //跳转过来的因为会再执行load事件，所以不必再重启巡航操作。
+            if ($rootScope.$params.jumpCruisePlanId) {
+                return;
+            }
+            //解决控件在离开时自动刷成4屏的问题
+            $scope.isLeaveEnter = true;
+            var sqrNum = Math.sqrt($scope.screenNum);
+            $scope.videoControl.changePreviewWindowLayout(sqrNum);
+            var isAutoCruise = $scope.$("[name=autoPlay]:checked").val();
+            //继续巡航
+            //!$scope.jumpCruisePlanId&&
+            if (isAutoCruise == '0' && $scope.currentCruiseLog) {
+                if ($scope.screenNum > 1) {//多屏
+                    $scope.cruiseMultiVideo();
+                    $scope.preViewLockVideo();
+                }
+                else {
+                    $scope.axis.continueNav();//注意顺序
+                    var relatedVideoId=$scope.curCruisePlanVideo?$scope.curCruisePlanVideo.relatedVideoId:$scope.readyCruisePlanVideo.relatedVideoId;
+                    $scope.axis.selectItem(relatedVideoId);
+                }
+            }
+        },
+        close: function () {
+//          console.log('close');
+            $scope.onClose();
+        },
+        /**
+         * 执行dispose方法，close不能处理panel refresh时的情况
+         */
+        onClose: function () {
+//            console.log('onClose');
+            if ($scope.currentCruiseLog) {
+                $scope.stopCruise();
+            }
+        },
+        // 加载巡航方案下拉框
+        loadVideoPlan: function () {
+            var queryParams = {};
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/cruisePlan/getVideoCruisePlanList",
+                params: queryParams,
+                method: "post",
+                success: function (result) {
+                    $scope.$("#comboCruisePlan").combobox('clear');
+                    $scope.$("#comboCruisePlan").combobox('loadData', result.result);
+                    //页面跳转，切换巡航视频方案
+                    if ($scope.jumpCruisePlanId && result.result.length > 0) {
+                        var record = null;
+                        for (var i = 0; i < result.result.length; i++) {
+                            if (result.result[i].videoPlanId === $scope.jumpCruisePlanId) {
+                                record = result.result[i];
+                                break;
+                            }
+                        }
+                        if (record) {
+                            $scope.changeVideoPlan(record);
+                            $scope.$("#comboCruisePlan").combobox('setValue', $scope.jumpCruisePlanId);
+                        }
+                    }
+                }
+            })
+        },
+        options: {
+            columns: [
+                [
+                    {title: "序号", field: "sortIndex", width: 5},//
+                    {title: "视频名称", field: "videoDeviceName", width: 10},//
+                    {title: "预置位", field: "presetList", width: 10},//
+                    {title: "巡航时间(秒)", field: "cruiseTime", width: 10}//
+//                    {title: "顺序", field: "sortIndex", width: 10,
+//                        sorter: function (a, b) {
+//                           return true;
+//                        }
+//                    },//
+                    //  {title: "操作",field:"test", width: 10, formatter: $scope.opteratersForamt}//
+                ]
+            ],
+            singleSelect: true,
+            method: 'get',
+            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            nowarp: false,
+            pagination: false
+        },
+        /**
+         * 切换视频巡航方案
+         */
+        changeVideoPlan: function (record) {
+            $scope.currentPlan = record;
+            $scope.stopCruise(null, function () {
+                $scope.loadPlanVideoAsync();
+            });
+        },
+        //加载巡航方案视频
+        loadPlanVideoAsync: function () {
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/cruisePlan/getCruisePlanVideo",
+                params: {param: JSON.stringify($scope.currentPlan)},
+                method: "post",
+                success: function (result) {
+                    $scope.curCruiseVideoIndex = 0;
+                    if (result && result.result.length > 0) {
+                        $scope.curCruisePlanVideoLst = result.result;
+                        $scope.$("#btnBeginCruise").linkbutton('enable').attr('cy-click', 'beginCruise');
+                        $scope.loadAxis($scope.currentPlan.videoPlanName, result.result);
+                        //页面跳转参数，直接巡航
+                        if ($scope.jumpCruisePlanId) {
+                            setTimeout(function () {
+                                $scope.beginCruise();
+                                $scope.jumpCruisePlanId = null;
+                            }, 1500);
+                        }
+                    }
+                    else {
+                        $scope.showMessage('无巡航视频!');
+                        $scope.curCruisePlanVideoLst = [];
+                        $scope.$("#btnBeginCruise").linkbutton('disable').removeAttr('cy-click');
+                    }
+                }
+            });
+        },
+        //加载时间轴
+        loadAxis: function (planName, data) {
+            //////console.log(data);
+            //反序操作
+            if (data instanceof Array && data.length > 0) {
+                //提取时间信息
+                //debugger;
+                var videoPlanInfo = $scope.pickUpDateListAndTimes(planName, data);
+                //////console.log(videoPlanInfo);
+                //初始化时间轴
+                $scope.initAxis(videoPlanInfo);
+                //初始化变化窗口事件
+                $scope.initResize();
+                //初始化数据
+//                    $scope.videoInfoList = data;
+//                    $scope.$updateDom("videoInfoList");
+            }
+        },
+        /**
+         * 提取时间轴相关信息
+         */
+        pickUpDateListAndTimes: function (planName, videoInfoList) {
+            var returnObject = [];
+            var leve1Item = {
+                id: planName,
+                text: planName,
+                value: '',
+                children: []
+            };
+            for (var index = 0; index < videoInfoList.length; index++) {
+                var video = videoInfoList[index];
+                var obj = {
+                    id: video.relatedVideoId,
+                    text: video.videoDeviceName,
+                    presetDesc: video.presetDesc,
+                    value: parseInt(video.cruiseTime),
+                    children: []
+                };
+                $.extend(obj, video);
+                leve1Item.children.push(obj);
+            }
+            ;
+            returnObject.push(leve1Item);
+            return returnObject;
+        },
+        /**
+         * 初始化时间轴
+         */
+        initAxis: function (videoPlanInfo) {
+            $scope.axis = new VideoAxis({
+                dom: $scope.$("#axis").get(0),
+                Items: videoPlanInfo,
+                clickEnabled: false,
+                isAutoAsyncNext: true,
+                lineTextFormat: function (item) {
+                    return "<div class='value'>" + item.value + "</div>";
+                },
+                rightTextFormat: function (item) {
+                    return "<div>" + item.text + "</div><div>" + item.presetDesc + "</div>";
+                },
+                onSelect: function (item) {
+//                    console.log('select axis node');
+//                    console.log(item);
+                    //console.log(item);
+                    //当前已开始巡航
+                    //在onSelect时赋值是为了解决用户手工点击的问题
+                    if ($scope.currentCruiseLog && $scope.currentCruiseLog.videoPlanLogId) {
+                        for (var i = 0; i < $scope.curCruisePlanVideoLst.length; i++) {
+                            if ($scope.curCruisePlanVideoLst[i].relatedVideoId == item.id) {
+                                $scope.curCruiseVideoIndex = i;
+                            }
+                        }
+                        clearTimeout($scope.cruiseTimeout);
+                        $scope.cruiseSingleVideo($scope.curCruisePlanVideoLst[ $scope.curCruiseVideoIndex]);
+                    }
+                }
+            });
+        },
+        /**
+         * 初始化resize事件
+         */
+        initResize: function () {
+            $scope.$("#axis").panel({
+                onResize: function () {
+                    $scope.axis.fitSize();
+                }
+            });
+        },
+        //开始巡航
+        beginCruise: function () {
+            //生成巡航日志
+            $scope.PostAjax(
+                            $scope.$restRoot + "/video/cruisePlan/createVideoCruiseLog",
+                    {
+                        videoPlanId: $scope.currentPlan.videoPlanId,
+                        videoPlanName: $scope.currentPlan.videoPlanName
+                    },
+                    function (data) {
+                        if (data.errorMsg && data.errorMsg != '') {
+                            $scope.showMessage(data.errorMsg);
+                        }
+                        else {
+                            //console.log("beginCruise");
+                            $scope.currentCruiseLog = data.result;
+                            $scope.$("#btnBeginCruise").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnStopCruise").linkbutton('enable').attr('cy-click', 'stopCruise');
+                            $scope.$("#btnAddEvent").linkbutton('enable').attr('cy-click', 'addEvent');
+                            var isAutoCruise = $scope.$("[name=autoPlay]:checked").val();
+                            //
+                            if ( isAutoCruise == '1') {
+                                if($scope.screenNum == 1){
+                                    $scope.$("#btnPreVideo").linkbutton('enable').attr('cy-click', 'preVideo');
+                                    $scope.$("#btnNextVideo").linkbutton('enable').attr('cy-click', 'nextVideo');
+                                }
+                            }
+                            else{
+                                $scope.$("#btnLockVideo").linkbutton('enable').attr('cy-click', 'lockVideo');
+                            }
+                            //
+                            $scope.curCruiseVideoIndex = 0;
+                            $scope.lockScreen = new Array($scope.screenNum);
+                            $scope.multiScreenVideo = new Array($scope.screenNum);
+
+                            $scope.axis.enable();
+                            if ($scope.screenNum > 1) {
+                                $scope.axis.static();
+                                $scope.cruiseMultiVideo();
+                            }
+                            else {
+                                $scope.axis.selectItem($scope.curCruisePlanVideoLst[0].relatedVideoId);
+                            }
+                        }
+                    }
+            );
+        },
+
+        //停止巡航
+        stopCruise: function (param1, callBackFn) {
+            if (!$scope.currentCruiseLog) {
+                callBackFn();
+                return;
+            }
+            ;
+            //生成巡航日志
+            $scope.PostAjax($scope.$restRoot + "/video/cruisePlan/stopCruise",
+                    {
+                        param: JSON.stringify($scope.currentCruiseLog)
+                    },
+                    function (data) {
+
+                        if (data.errorMsg && data.errorMsg != '') {
+                            $scope.showMessage(data.errorMsg);
+                        }
+                        else {
+                            //////console.log("终止巡航");
+                            //控制按钮
+                            $scope.$("#btnBeginCruise").linkbutton('enable').attr('cy-click', 'beginCruise');
+                            $scope.$("#btnStopCruise").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnPreVideo").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnNextVideo").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                            $scope.$("#btnLockVideo").linkbutton({text: '锁定视频'});
+                            //异步控制
+                            $scope.currentCruiseLog = null;
+                            $scope.curCruisePlanVideo=null;
+                            $scope.multiScreenVideo=[];
+                            clearTimeout($scope.cruiseTimeout);
+                            $scope.axis.disable();
+                            $scope.videoControl.StopAllPreview();
+                        }
+                        if (callBackFn) {
+                            callBackFn();
+                        }
+                        ;
+                    });
+        },
+        //上一个/上一组
+        preVideo: function () {
+            if ($scope.curCruiseVideoIndex == 0) {
+                //alert('已在最开始视频');
+                return;
+            }
+            else {
+                $scope.curCruiseVideoIndex -= 1;
+            }
+            if ($scope.screenNum > 1) {
+                $scope.cruiseMultiVideo();
+            }
+            else {
+                $scope.axis.selectItem($scope.curCruisePlanVideoLst[$scope.curCruiseVideoIndex].relatedVideoId);
+            }
+
+        },
+        //下一个/下一组
+        nextVideo: function () {
+            if ($scope.curCruiseVideoIndex == $scope.curCruisePlanVideoLst.length - 1) {
+                ////console.log('重新从头开始巡航');
+                $scope.curCruiseVideoIndex = 0;
+            }
+            else {
+                $scope.curCruiseVideoIndex += 1;
+            }
+            if ($scope.screenNum > 1) {
+                $scope.cruiseMultiVideo();
+            }
+            else {
+                $scope.axis.selectItem($scope.curCruisePlanVideoLst[$scope.curCruiseVideoIndex].relatedVideoId);
+            }
+        },
+        //锁定/解锁当前视频
+        lockVideo: function () {
+            var btnName = $scope.$("#btnLockVideo").text().trim();
+            if (btnName.indexOf("锁定视频") > -1)//触发锁定
+            {
+                $scope.$("#btnLockVideo").linkbutton({text: '解锁视频'});
+                if ($scope.screenNum > 1) {//多屏
+                    //todo
+                    var video = $scope.multiScreenVideo[$scope.curScreenNum];
+                    if (video){
+                        $scope.lockScreen[$scope.curScreenNum] = video.relatedVideoId;
+                    }
+                }
+                else {
+                    clearTimeout($scope.cruiseTimeout);
+                    $scope.axis.pause();
+                }
+            }
+            else//触发解锁
+            {
+                $scope.$("#btnLockVideo").linkbutton({text: '锁定视频'});
+                if ($scope.screenNum > 1) {//多屏
+                    $scope.lockScreen[$scope.curScreenNum] = null;
+                }
+                else {
+                    $scope.axis.continueNav();//注意顺序
+                    var relatedVideoId=$scope.curCruisePlanVideo?$scope.curCruisePlanVideo.relatedVideoId:$scope.readyCruisePlanVideo.relatedVideoId;
+                    $scope.axis.selectItem(relatedVideoId);
+                }
+            }
+        },
+        /**
+         * 画面切回时，开启锁定视频
+         */
+        preViewLockVideo: function () {
+            for (var i = 0; i < $scope.screenNum; ++i) {
+                if ($scope.lockScreen[i]) {
+                    $scope.videoControl.SelWindow(i);
+                    //初始化
+                    var video = $scope.multiScreenVideo[i];
+                    var winNum = $scope.videoControl.initVideo(video);
+                    $scope.multiScreenVideo[winNum] = video;
+                    setTimeout(function () {
+                        try {
+                            $scope.videoControl.previewPresetForOutSide(video.preset);
+                        }
+                        catch (e) {
+                            ////console.log('调用预置位失败，原因:');
+                            ////console.log(e);
+                        }
+                    }, 500);
+                }
+            }
+        },
+        //注意，一定要提前设置好$scope.curCruiseVideoIndex变量的值
+        //
+        cruiseMultiVideo: function () {
+            //多屏巡航
+            var startIndex = ($scope.curCruiseVideoScreens - 1) * $scope.screenNum;
+            var endIndex = $scope.curCruiseVideoScreens * $scope.screenNum - 1;
+            endIndex = $scope.curCruisePlanVideoLst.length < (endIndex + 1) ? $scope.curCruisePlanVideoLst.length : endIndex;
+            var availableScreen = [];
+            for (var i = 0; i < $scope.screenNum; ++i) {
+                if (!$scope.lockScreen[i]) {
+                    availableScreen.push(parseInt(i));
+                }
+            }
+            if (availableScreen.length > 0) {
+                //可用屏与剩余未预览视频，取最小值
+                var leftVideoNum = $scope.curCruisePlanVideoLst.length - $scope.curCruiseVideoIndex;
+                var curCruiseVideoNum = leftVideoNum < availableScreen.length ? leftVideoNum : availableScreen.length;
+                //关闭视频
+
+                //如果有锁定视频，停止所有预览
+                for (var i = 0; i < availableScreen.length; ++i) {
+                    $scope.videoControl.StopRealPlay(availableScreen[i]);
+                    $scope.multiScreenVideo[availableScreen[i]] = null;
+                }
+                $scope.videoControl.SelWindow(availableScreen[0]);
+                for (var i = 0; i < curCruiseVideoNum; ++i) {
+                    try {
+                        var video = $scope.curCruisePlanVideoLst[$scope.curCruiseVideoIndex + i];
+                        //视频被锁定
+                        if ($scope.lockScreen.indexOf(video.relatedVideoId) > -1) {
+                            curCruiseVideoNum += 1;
+                            continue;
+                        }
+                        //如果有锁定视频，选择未被锁定的视频窗口
+                        if (availableScreen.length < $scope.screenNum) {
+                            var useWinNum = availableScreen.shift();
+                            $scope.videoControl.SelWindow(useWinNum);
+                        }
+                        //初始化
+                        var winNum = $scope.videoControl.initVideo(video);
+                        $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                        $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+                    }
+                    catch (e) {
+                        ////console.log('预览失败，原因：');
+                        ////console.log(e);
+                    }
+                }
+//                    console.log('curCruiseVideoNum:'+curCruiseVideoNum);
+//                    console.log("$scope.curCruiseVideoIndex:"+$scope.curCruiseVideoIndex);
+//                    console.log($scope.multiScreenVideo);
+//                    console.log($scope.lockScreen);
+                $scope.curCruiseVideoIndex += curCruiseVideoNum - 1;
+            }
+            $scope.cruiseTimeout = setTimeout(function () {
+                $scope.nextVideo();
+            }, $scope.currentPlan.defaultCruiseTimes * 1000 - 500);
+            //console.log('muti timeout:' + $scope.cruiseTimeout);
+        },
+        /**
+         * 单屏巡航调用方法
+         */
+        cruiseSingleVideo: function (video) {
+            try {
+                $scope.videoControl.StopRealPlay(0);//考虑到后面可能会失败，所以关闭现有视频
+                $scope.curCruisePlanVideo=null;//原因同上，为了和添加事件时同步
+                $scope.readyCruisePlanVideo=video;
+                var res = $scope.videoControl.initVideo(video, video.cruiseTime, $scope.onRealPlayTimeout);
+                $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+                if (res < 0) {//巡航失败，巡航成功的在onFireStartRealPlay里处理
+                    var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+                    if (isAutoCruise) {
+                        $scope.cruiseTimeout = setTimeout(function () {
+                            $scope.nextVideo();
+                        }, 3 * 1000);
+                    }
+                }
+                else {
+                    //等待取流成功后调用onFireStartRealPlay事件
+                }
+            }
+            catch (e) {
+                ////console.log('初始化视频失败');
+                ////console.log(e);
+            }
+        },
+        /**
+         * 巡航超时处理
+         */
+        onRealPlayTimeout: function () {
+            //console.log('onRealPlayTimeout');
+            //只对单屏有效
+            if ($scope.screenNum == 1) {
+                //调用下一个视频
+                var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+                if (isAutoCruise && $scope.currentCruiseLog) {
+                    $scope.nextVideo();
+                }
+            }
+        },
+        //添加巡航事件
+        addEvent: function () {
+            var video = null;
+            if ($scope.screenNum > 1) {
+                video = $scope.multiScreenVideo[$scope.curScreenNum];
+            }
+            else {
+                video = $scope.curCruisePlanVideo;
+            }
+            if (!video) {
+                $scope.showMessage('事件视频不能为空!');
+                return;
+            }
+
+
+            //如果自动巡航并且正在巡航，则停止巡航
+            if ($scope.currentCruiseLog) {
+                clearTimeout($scope.cruiseTimeout);
+                var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+                if ($scope.screenNum == 1 && isAutoCruise) {
+                    var btnName = $scope.$("#btnLockVideo").text().trim();
+                    if (btnName.indexOf("锁定视频") > -1)//还未锁定
+                    {
+                        $scope.axis.pause();
+                    }
+                }
+            }
+            //console.log($scope.curCruisePlanVideo);
+            var videoEventDetail = {};
+            $.extend(videoEventDetail,video);
+            videoEventDetail.videoPlanLogId = $scope.currentCruiseLog.videoPlanLogId;
+            videoEventDetail.videoPlanStartTime = $scope.currentCruiseLog.videoPlanStartTime;
+            $scope.$setParam("refresh", $scope.onEventAddComplete);
+            $scope.$setParam("videoEventDetail", videoEventDetail);
+            $scope.$openDialog("addEventDialog", {
+                title: "事件登记",
+                width: 500,
+                height: 270,
+                href: "tpls/trafficMonitor/videoMonitor/cruise-event-edit.html"
+            }, true);
+        },
+        /**
+         *
+         * @param needNext 是否执行保存，还是取消
+         */
+        onEventAddComplete: function (needNext) {
+            console.log('onEventAddComplete');
+            //如果自动巡航并且正在巡航，则停止巡航
+            if ($scope.currentCruiseLog) {
+                var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+                if ($scope.screenNum > 1) {
+                    if (needNext) {
+                        $scope.nextVideo();
+                    }
+                }
+                else if (isAutoCruise) {
+                    //单屏要考虑是否是锁定
+                    var btnName = $scope.$("#btnLockVideo").text().trim();
+                    if (btnName.indexOf("锁定视频") > -1)//还未锁定
+                    {
+                        $scope.axis.continueNav();//注意顺序
+                        //不重新调用预览，只是重新计时
+                        //$scope.axis.selectItem($scope.curCruisePlanVideo.relatedVideoId);
+                        if($scope.curCruisePlanVideo){
+                            $scope.axis.chooseItem($scope.curCruisePlanVideo.relatedVideoId);
+                            $scope.cruiseTimeout = setTimeout(function () {
+                                $scope.nextVideo();
+                            }, $scope.curCruisePlanVideo.cruiseTime * 1000 - 500);
+                            //调用axis的动画效果
+                            $scope.axis.transitionMobileLineHeight($scope.curCruisePlanVideo.relatedVideoId);
+                        }
+                    }
+                }
+            }
+        },
+        //切换手动/自动巡航，由于多屏时手动/自动被禁止，这里不考虑多屏的情况
+        chkAuto: function () {
+            $scope.$("#btnLockVideo").linkbutton({text: '锁定视频'});//这里不改会对视频播放有影响
+            $scope.axis.continueNav();//注意顺序
+            var enableVal = $scope.$("[name=autoPlay]:checked").val();
+            if (enableVal == "0") {//自动
+                $scope.$("#btnPreVideo").linkbutton('disable').removeAttr('cy-click');
+                $scope.$("#btnNextVideo").linkbutton('disable').removeAttr('cy-click');
+                if ($scope.currentCruiseLog && $scope.currentCruiseLog.videoPlanLogId) {
+                    var relatedVideoId=$scope.curCruisePlanVideo?$scope.curCruisePlanVideo.relatedVideoId:$scope.readyCruisePlanVideo.relatedVideoId;
+                    $scope.axis.selectItem(relatedVideoId);
+                }
+                if ($scope.currentCruiseLog){
+                    $scope.$("#btnLockVideo").linkbutton('enable').attr('cy-click', 'lockVideo');
+                }
+            }
+            else {//手动
+                $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                var relatedVideoId=$scope.curCruisePlanVideo?$scope.curCruisePlanVideo.relatedVideoId:$scope.readyCruisePlanVideo.relatedVideoId;
+                $scope.axis.stopTransitionMobileLineHeight(relatedVideoId);
+                if ($scope.currentCruiseLog) {
+                    $scope.$("#btnNextVideo").linkbutton('enable').attr('cy-click', 'nextVideo');
+                    $scope.$("#btnPreVideo").linkbutton('enable').attr('cy-click', 'preVideo');
+                }
+            }
+        },
+        //新增巡航方案
+        addCruisePlan: function () {
+            //console.log('add cruise plan');
+            $scope.cruisePlanDetail = {};
+            $scope.$setParam("refresh", $scope.onModifyCruisePlanComplete);
+            $scope.$openDialog("addDialog", {
+                title: "新增巡航方案",
+                width: 1000,
+                height: 600,
+                href: "tpls/trafficMonitor/videoMonitor/cruise-plan-modify.html"
+            }, true);
+        },
+        //确认新增完毕
+        onModifyCruisePlanComplete: function () {
+            $scope.loadVideoPlan();
+        },
+        /**
+         * 预览成功时处理
+         * @param winNum
+         * @param relatedVideoId
+         */
+        onFireStartRealPlay: function (winNum, previewVideo) {
+          //console.log('$scope onFireStartRealPlay：'+winNum);
+//            console.log(previewVideo);
+            $scope.curCruisePlanVideo = previewVideo;// $('#gridVideo').datagrid('getRows')[curCruiseVideoIndex];
+            $scope.readyCruisePlanVideo=null;
+            var isAutoCruise = $scope.$("[name=autoPlay]:checked").val();
+            if ( isAutoCruise == '0') {
+                $scope.$("#btnLockVideo").linkbutton('enable').attr('cy-click', 'lockVideo');
+            }
+            $scope.$("#btnAddEvent").linkbutton('enable').attr('cy-click', 'addEvent');
+            try {
+                $scope.videoControl.previewPresetForOutSide(previewVideo.preset);
+            }
+            catch (e) {
+                ////console.log('调用预置位失败，原因:');
+                ////console.log(e);
+            }
+            //只对单屏做处理
+            if ($scope.screenNum == 1) {
+                //调用下一个视频
+                var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+                if (isAutoCruise && $scope.currentCruiseLog) {
+                    $scope.cruiseTimeout = setTimeout(function () {
+                        $scope.nextVideo();
+                    }, $scope.curCruisePlanVideo.cruiseTime * 1000 - 500);
+                    //调用axis的动画效果
+                    $scope.axis.transitionMobileLineHeight(previewVideo.relatedVideoId);
+                }
+            }
+            else {
+                $scope.multiScreenVideo[winNum] = previewVideo;
+            }
+        },
+        //子控件切换窗口数
+        onFireWindowsNumber: function (num) {
+            //console.log('onVideoControlWindowsNumber' + num);
+            if ($scope.isLeaveEnter) {
+                $scope.isLeaveEnter = false;
+                return;
+            }
+
+            $scope.screenNum = num;
+            $scope.$("#btnLockVideo").linkbutton({text: '锁定视频'});
+            var isAutoCruise = $scope.$("[name=autoPlay]:checked").val() == '0';
+            clearTimeout($scope.cruiseTimeout);
+            $scope.curCruiseVideoIndex = 0;
+            if (num > 1) {//多屏
+                $("[name=autoPlay]").each(function () {
+                    $(this).attr({disabled: 'true'});
+                });
+               $scope.$("input[name=autoPlay]").eq(0).prop('checked',true);//自动选为自动
+                //静态
+                $scope.axis.static();
+                $scope.curCruiseVideoScreens = 1;
+                //禁用 上一条,下一条
+                $scope.$("#btnPreVideo").linkbutton('disable').removeAttr('cy-click');
+                $scope.$("#btnNextVideo").linkbutton('disable').removeAttr('cy-click');
+
+                $scope.multiScreenVideo = new Array(num);
+                //正在进行巡航，不考虑是否自动
+                if ($scope.currentCruiseLog) {
+                    $scope.cruiseMultiVideo();
+                }
+                $scope.lockScreen = new Array(num);
+            }
+            else {//切换为单屏，重新从最开始的节点开始巡航
+                $("[name=autoPlay]").each(function () {
+                    $(this).removeAttr('disabled');
+                });
+                $scope.axis.reload();
+                //正在进行自动巡航
+                if ($scope.currentCruiseLog) {
+                    if (isAutoCruise) {
+                        $scope.axis.selectItem($scope.curCruisePlanVideoLst[0].relatedVideoId);
+                    }
+                    else {
+                        $scope.$("#btnNextVideo").linkbutton('enable').attr('cy-click', 'nextVideo');
+                        $scope.$("#btnPreVideo").linkbutton('enable').attr('cy-click', 'preVideo');
+                    }
+                }
+            }
+        },
+        //子控件切换窗口
+        onFireSelectWindow: function (eve) {
+            //console.log('onFireSelectWindow'+eve);
+            if ($scope.screenNum > 1) {//多屏
+                $scope.curScreenNum = eve;
+                if ($scope.lockScreen[eve]) {
+                    $scope.$("#btnLockVideo").linkbutton({text: '解锁视频'});
+                }
+                else {
+                    $scope.$("#btnLockVideo").linkbutton({text: '锁定视频'});
+                }
+                if($scope.multiScreenVideo[eve]){
+                    $scope.$("#btnLockVideo").linkbutton('enable').attr('cy-click', 'lockVideo');
+                    $scope.$("#btnAddEvent").linkbutton('enable').attr('cy-click', 'addEvent');
+                }
+                else{
+                    $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                    $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+                }
+            }
+            else{
+                if($scope.curCruisePlanVideo){
+                    $scope.$("#btnLockVideo").linkbutton('enable').attr('cy-click', 'lockVideo');
+                    $scope.$("#btnAddEvent").linkbutton('enable').attr('cy-click', 'addEvent');
+                }
+                else{
+                    $scope.$("#btnLockVideo").linkbutton('disable').removeAttr('cy-click');
+                    $scope.$("#btnAddEvent").linkbutton('disable').removeAttr('cy-click');
+                }
+            }
+        },
+        showMessage: function (msg) {
+            $.messager.show({
+                title: '巡航提示',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        }
+    });
+});
+</script>
+<style>
+    .cruiseView .video-info {
+        width: 240px;
+        margin-left: 3%;
+        padding-bottom: 10px;
+        padding-top: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 5px;
+        background-color: #B5F9D0;
+        cursor: pointer;
+    }
+</style>

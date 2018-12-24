@@ -1,0 +1,465 @@
+<div class="easyui-layout" id="mainPage">
+	<div id="dvTop" class="cs-north" data-options="
+	region:'north',
+	border:true,
+	collapsible:true,
+	minHeight:0">
+		<div class="cs-north-bg">
+			<table border="0">
+				<tr>
+					<td style="vertical-align:middle;width:340px;">
+					<table border="0">
+						<tr>
+							<td class="cs-north-img" align="right" rowspan="2"><img src="themes/default/images/ghlogo.png" /></td>
+							<td class="cs-north-text" align="left" colspan="1">公安智能交通综合管控平台</td>
+						</tr>
+						<tr>
+							<td class="cs-north-text2" align="center">—— 云南省公安交警总队 ——</td>
+						</tr>
+					</table></td>
+					<td style="vertical-align:middle;" align="right" ><div id="dvMenus" style="text-align: center;">
+
+					</div></td>
+					<td style="width:100px;">
+						<div class="currentUser" style="text-align: center;padding-right: 10px;">
+							<span id="ampm"></span><br>
+							<span cy-name="UserInfo.userName"></span>
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-setup',plain:true" cy-click="userSetting"></a>
+						</div>
+					</td>
+					<td align="left" valign="bottom" style="width: 60px">
+					<div class="exit">
+						<a title="退出" href="javascript:void 0" cy-click="logout">&nbsp;</a>
+					</div></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div data-options="region:'west',split:true,title:'收起',headerCls:'head'" style="width: 200px;" id="menuArea">
+
+	</div>
+	<div data-options="region:'center'">
+		<div id="tabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+			<div title=" 首 页 " id="homePage">
+
+			</div>
+
+		</div>
+	</div>
+
+	<!-- 预警栏按钮 -->
+	<div class="alert-button">
+		<img alt="预警栏" src="themes/default/images/alert_large.png" cy-click="openAlertPanel">
+	</div>
+
+</div>
+<div id="mm" class="easyui-menu cs-tab-menu">
+	<div id="mm-tabupdate">
+		刷新
+	</div>
+	<div class="menu-sep"></div>
+	<div id="mm-tabclose">
+		关闭
+	</div>
+	<div id="mm-tabcloseother">
+		关闭其他
+	</div>
+	<div id="mm-tabcloseall">
+		关闭全部
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//初始化用到的数据字典
+		$scope.$getDefaultCode(["105","478"]);
+		//订阅类型数组
+		var localWarningSubsribeTypes = [];
+		//订阅对象集合
+		var subsribes = {};
+		//缓存页面布局对象
+		$rootScope.$topLayout = $scope.$(".easyui-layout");
+		//收缩顶部事件
+		$scope.IsCollapsed = false;
+		//标签初始化
+		tabInit();
+		//加载菜单
+		renderMenu();
+		//初始化订阅信息
+		initlocalWarningSubsribeTypes();
+		//统计在线用户数
+		$.post($scope.$servletRoot + "/LoginServlet",{loginType:4},function(data){
+			$scope.$("#userCount").text(data.usersCount);
+		});
+		//确定上午还是下午
+		var now = new Date();
+		var hours = now.getHours();
+		$scope.$("#ampm").text(hours>=12 ? "下午好！":"上午好！");
+		/**
+		 * 初始化本地存储订阅信息
+		 */
+		function initlocalWarningSubsribeTypes() {
+			//获取订阅权限
+			var localData = localStorage["its3.localWarningSubsribeTypes"];
+			if (localData) {
+				localWarningSubsribeTypes = $.parseJSON(localData);
+				//开启默认订阅
+				for (var index in localWarningSubsribeTypes) {
+					addSubsribe(localWarningSubsribeTypes[index]);
+				}
+			}
+		};
+		/**
+		 * 增加订阅信息
+		 */
+		function addSubsribe(subsribeType) {
+			var subsribe = new Subsribe({
+				type : subsribeType,
+				param : {
+					orgPrivCode : $scope.UserInfo.orgPrivCode
+				},
+				onMessage : function(message){
+					handleWarningMessage(subsribeType,message);
+				}
+			});
+			subsribes[subsribeType.messageKey] = subsribe;
+		};
+		/**
+		 * 删除订阅信息
+		 */
+		var removeSubsribe = function(subsribeType) {
+			var subsribe = subsribes[subsribeType.messageKey];
+			subsribe.remove();
+		};
+		/**
+		 * 预警信息处理路由方法
+		 */
+		function handleWarningMessage(subsribeType,message) {
+			$scope.$addAlarmInfoIntoCache(subsribeType,$.parseJSON(message));
+			//判断报警队列中已签收的报警数量
+			
+			//判断报警队列中已处理的报警数量
+			
+		}
+
+		/**
+		 * 收缩头部方法
+		 */
+		$scope.collapse = function() {
+			if ($scope.IsCollapsed) {
+				$scope.IsCollapsed = false;
+				$scope.$(".easyui-layout").layout('expand', 'north');
+				$scope.$("#ACollapse").text("隐藏顶部");
+				$scope.$("#ACollapse").removeClass("showTop").addClass("hideTop");
+			} else {
+				$scope.IsCollapsed = true;
+				$scope.$(".easyui-layout").layout('collapse', 'north');
+				$scope.$("#ACollapse").text("显示顶部");
+				$scope.$("#ACollapse").removeClass("hideTop").addClass("showTop");
+			}
+		};
+
+		/**
+		 * 弹出预警栏
+		 */
+		$scope.openAlertPanel = function() {
+			var panel = $scope.$openDialog("alertPanel", {
+				title : '预警信息',
+				iconCls : 'icon-alert-solid',
+				width : 450,
+				height : 330,
+				href : "alert.html",
+				modal : false,
+				shadow : false,
+				draggable : false,
+				resiable : false,
+				tools : [{
+					iconCls : "icon-list-solid",
+					handler : function(){
+						$scope.$openDialog("warningSet", {
+							title : "报警列表",
+							width : 980,
+							height : 570,
+							href : "alarm-list-tab.html"
+						});
+					}
+				},{
+					iconCls : "icon-setup-solid",
+					handler : function() {
+						/**
+						 * 更新订阅预警信息，addList是新增列表，deleteList是删除列表
+						 */
+						$scope.$setParam("updateWarningSubsribe", function(addList, deleteList, allList) {
+							//删除订阅信息
+							for (var index in deleteList) {
+								removeSubsribe(deleteList[index]);
+							}
+							//添加订阅信息
+							for (var index in addList) {
+								addSubsribe(addList[index]);
+							}
+							localWarningSubsribeTypes = allList;
+							//更新localstorage
+							localStorage["its3.localWarningSubsribeTypes"] = JSON.stringify(localWarningSubsribeTypes);
+							//关闭窗口
+							$scope.$getDialog("warningSet").dialog("close");
+						});
+						//传递已订阅列表
+						$scope.$setParam("subsribeList", localWarningSubsribeTypes);
+						$scope.$openDialog("warningSet", {
+							title : "报警设置",
+							width : 700,
+							height : 470,
+							href : "tpls/public/warning-set-list.html"
+						});
+					}
+				}]
+			}, false);
+			panel.dialog("dialog").css({
+				left : "",
+				top : "",
+				right : 4,
+				bottom : 5
+			});
+			//增加按钮文字，调整样式
+			panel.parent().find(".panel-tool").find("a").eq(0).text("更多").css({
+				height : 18,
+				lineHeight : "17px",
+				paddingLeft : 22,
+				width:30,
+				backgroundPosition : "3px center"
+			});
+			//增加按钮文字，调整样式
+			panel.parent().find(".panel-tool").find("a").eq(1).text("设置").css({
+				height : 18,
+				lineHeight : "17px",
+				paddingLeft : 22,
+				width:30,
+				backgroundPosition : "3px center"
+			});
+		};
+
+		//登出
+		$scope.logout = function() {
+			//定时发送ajax，保持登录状态
+			$.post($scope.$servletRoot + "/LoginServlet", {loginType : 2}, function(data) {
+				sessionStorage.removeItem("its3.userData");
+				window.location.reload();
+			});
+		};
+
+		/**
+		 * 加载菜单
+		 * @return {[type]}       [description]
+		 */
+		function renderMenu() {
+			var fm, dvMenus = $scope.$("#dvMenus");
+			$.each($scope.UserInfo.menus, function(i, firstMenuObj) {
+				if(firstMenuObj.id == "00"){
+					return true;
+				}
+				var fm = $("<span class='menuLevel1'></span>");
+				fm.attr({
+					title : firstMenuObj.text
+				});
+				var img = $("<img></img>").attr("src", firstMenuObj.attribute.image).appendTo(fm);
+				var span = $("<span></span>").text(firstMenuObj.text).appendTo(fm);
+				span.css({
+					position : "absolute",
+					marginTop : 47,
+					marginLeft : -49, 
+					color : "#fff"
+				});
+				fm.click(function() {
+					//展开左边菜单
+					if ($scope.$("#mainPage").layout("panel", "west").panel("options").closed) {
+						$scope.$("#mainPage").layout("expand", "west");
+					}
+					//修改菜单title
+					//$scope.$("#menuArea").panel("setTitle", firstMenuObj.resourceName);
+					//菜单页面切换
+					$scope.$(".menuLevel1").removeClass("current");
+					$(this).addClass("current");
+					$scope.$("#menuArea").panel("refresh", "menu.html");
+					$scope.$setParam("menus", firstMenuObj.children);
+					$scope.$setParam("addTable", addTab);
+				}).appendTo(dvMenus);
+			});
+			dvMenus.find(".menuLevel1:eq(0)").click();
+		}
+
+		//初始化tab页签
+		function tabInit() {
+			//初始化tabs事件,并存入全局变量中
+			$rootScope.$tabs = $scope.$('#tabs').tabs({
+				//为选项卡绑定右键
+				onContextMenu : function(e, title, index) {
+					e.preventDefault();
+					if (index == 0)
+						return;
+					$('#mm').menu('show', {
+						left : e.pageX,
+						top : e.pageY
+					});
+					var subtitle = $scope.$("#tabs").tabs("getTab", index).panel("options").title;
+					$('#mm').data("currtab", subtitle);
+					$scope.$('#tabs').tabs('select', index);
+				},
+				//选中事件
+				onSelect : function(title, index) {
+					var selectTab = $(this).tabs("getTab", index);
+					var scopeObject = selectTab.data("scopeObject");
+					if (scopeObject != undefined) {
+						$scope.$excute(scopeObject.enter);
+					}
+				},
+				//离开选项卡
+				onUnselect : function(title, index) {
+					var selectTab = $(this).tabs("getTab", index);
+					var scopeObject = selectTab.data("scopeObject");
+					if (scopeObject != undefined) {
+						$scope.$excute(scopeObject.leave);
+					}
+				},
+				//关闭选项卡
+				onBeforeClose : function(title, index) {
+					var selectTab = $(this).tabs("getTab", index);
+					var scopeObject = selectTab.data("scopeObject");
+					if (scopeObject != undefined) {
+						$scope.$excute(scopeObject.close);
+						//执行销毁方法
+						scopeObject.$destroy();
+					}
+				}
+			});
+			tabCloseEven();
+		}
+
+		/**
+		 * 添加新的页签
+		 * @param {[type]} title 页签标题
+		 * @param {[type]} url  页签链接
+		 */
+		function addTab(code,title, url) {//,imgSrc
+			if ($scope.$('#tabs').tabs('exists', title)) {
+				$scope.$('#tabs').tabs('select', title);
+				//选中并刷新
+			} else {
+				//获取url中的参数
+				$scope.$setParam("$params", new URL("http://" + url).searchParams);
+				$scope.$setParam("$url", url);
+				$scope.$('#tabs').tabs('add', {
+					title : title,
+					href : url,
+					closable : true
+				});
+				//记录功能使用记录
+				$.post($scope.$servletRoot + "/menuServlet",{
+					currentUserId : $scope.UserInfo.userId,
+					currentOrgId : $scope.UserInfo.orgId,
+					menuId : code,
+					menuName : title
+				});
+			}
+		}
+
+		//绑定右键菜单事件
+		function tabCloseEven() {
+			//刷新
+			$('#mm-tabupdate').click(function() {
+				var currTab = $scope.$('#tabs').tabs('getSelected');
+				var scopeObject = currTab.data("scopeObject");
+				currTab.removeData("scopeObject");
+				if (scopeObject != undefined) {
+					$scope.$excute(scopeObject.close);
+					//先执行销毁方法，再执行close方法
+					scopeObject.$destroy();
+				}
+				$scope.$setParam("$params", new URL("http://" + currTab.panel("options").href).searchParams);
+				currTab.panel('refresh');
+			});
+			//关闭当前
+			$('#mm-tabclose').click(function() {
+				var currtab_title = $('#mm').data("currtab");
+				$scope.$('#tabs').tabs('close', currtab_title);
+			});
+			//全部关闭
+			$('#mm-tabcloseall').click(function() {
+				$scope.$('.tabs-inner span').each(function(i, n) {
+					var t = $(n).text();
+					if (t != ' 首 页 ') {
+						$scope.$('#tabs').tabs('close', t);
+					}
+				});
+			});
+			//关闭除当前之外的TAB
+			$('#mm-tabcloseother').click(function() {
+				var current = $scope.$('#tabs').tabs("getSelected");
+				var prevall = $scope.$('.tabs-selected').prevAll();
+				var nextall = $scope.$('.tabs-selected').nextAll();
+				if (prevall.length > 0) {
+					prevall.each(function(i, n) {
+						var t = $(n).text();
+						if (t != ' 首 页 ') {
+							$scope.$('#tabs').tabs('close', t);
+						}
+					});
+				}
+				if (nextall.length > 0) {
+					nextall.each(function(i, n) {
+						var t = $(n).text();
+						if (t != ' 首 页 ') {
+							$scope.$('#tabs').tabs('close', t);
+						}
+					});
+				}
+				$scope.$('#tabs').tabs("select",1);
+				return false;
+			});
+			//退出
+			$("#mm-exit").click(function() {
+				$scope.$('#mm').menu('hide');
+			});
+		}
+
+		/**
+		 * 跳转到主页
+		 */
+		//setTimeout(function() {
+		//$scope.$("#homePage").panel("refresh", "tpls/deviceManage/deviceConfig/device-home-main.html");
+		$scope.$("#homePage").panel("refresh", "tpls/home/home-main.html");
+		//}, 2000);
+
+
+		/**
+		 * 打开用户设置界面 
+		 */
+		$scope.userSetting = function(){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/userAction/findUserById",
+				success : function(data){
+					//打开弹窗
+					$scope.$setParam("userInfo",data);
+					$scope.$openDialog("userSettingDialog",{
+						href : "tpls/sysManagement/user/user-setting.html",
+						title : "用户设置",
+						height : 510,
+						width : 800
+					});
+				}
+			});
+		};
+	});
+
+</script>
+<style>
+	#mainPage .head {
+		text-align: right;
+		padding-right: 25px;
+	}
+	
+	#mainPage .currentUser .l-btn-plain{
+		background: none;
+		border-color:#0081c2;
+	}
+</style>

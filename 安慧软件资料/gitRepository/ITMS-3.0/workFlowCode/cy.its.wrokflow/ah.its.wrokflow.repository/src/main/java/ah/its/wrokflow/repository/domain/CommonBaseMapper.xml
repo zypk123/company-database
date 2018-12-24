@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.CommonBaseMapper" >
+
+  <!-- <select id="selectTaskByGroup" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+    select  
+	  t.id_  queryValue1,
+	  t2.contacts||'申请设备：'||t2.device_name queryValue2,
+	  to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3  
+	from act_ru_task t 
+	inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+	inner join  t_wf_device_approve t2  on t2.device_approve_id = t1.business_key_ 
+	inner join  act_ru_identitylink  t3  on t3.task_id_ = t.id_ 
+	where  t3.group_id_ = #{groupId,jdbcType=VARCHAR} and  t.assignee_  is null 
+	order  by  t.create_time_ desc,t.id_
+  </select> -->
+  <select id="selectTaskByGroup" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+   select * from(
+   		
+   		select  
+	  t.id_  queryValue1,
+	  t2.contacts||'申请设备：'||t2.device_name queryValue2,
+	  to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3  
+	from act_ru_task t 
+	inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+	inner join  t_wf_device_approve t2  on t2.device_approve_id = t1.business_key_ 
+	inner join  act_ru_identitylink  t3  on t3.task_id_ = t.id_ 
+	where  t3.group_id_ = #{groupId,jdbcType=VARCHAR} and  t.assignee_  is null 
+   
+   union all
+   
+   		select  
+	  t.id_  queryValue1,
+	  t2.SYSTEM_NAME||'系统申请：'||t2.SYSTEM_MANAGEER queryValue2,
+	  to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3  
+	from act_ru_task t 
+	inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+	inner join  t_wf_sys_approve t2  on t2.system_approve_id = t1.business_key_ 
+	inner join  act_ru_identitylink  t3  on t3.task_id_ = t.id_ 
+	where  t3.group_id_ = #{groupId,jdbcType=VARCHAR} and  t.assignee_  is null 
+  
+  union all
+  
+	   select  
+	    t.id_  queryValue1,
+	    t4.SYSTEM_NAME||'系统验收申请：'||t4.SYSTEM_MANAGEER queryValue2,
+	    to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3  
+	  from act_ru_task t 
+	  inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+	  inner join  t_wf_sys_approve_file t2  on t2.id_ = t1.business_key_ 
+	  inner join t_wf_sys_approve t4 on t4.system_approve_id=t2.system_approve_id
+	  inner join  act_ru_identitylink  t3  on t3.task_id_ = t.id_ 
+	  where  t3.group_id_ = #{groupId,jdbcType=VARCHAR} and  t.assignee_  is null  
+   ) tt order by tt.queryValue3 desc,queryValue1
+  </select>
+  <!-- <select id="selectTaskByUser" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+    select  
+	  t.id_  queryValue1,
+	  t2.contacts||'申请设备：'||t2.device_name queryValue2,
+	  to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3,
+    t2.device_approve_id  queryValue4 
+	from act_ru_task t 
+	inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+	inner join  t_wf_device_approve t2  on t2.device_approve_id = t1.business_key_ 
+	where  t.assignee_ = #{user,jdbcType=VARCHAR} order by t.create_time_ desc,t.id_
+  </select> -->
+  <select id="selectTaskByUser" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+    
+    
+   select * from
+(
+
+ select  
+    t.id_  queryValue1,
+    t2.contacts||'申请设备：'||t2.device_name queryValue2,
+    to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3,
+    t2.device_approve_id  queryValue4,
+    '0'  queryValue5
+  from act_ru_task t 
+  inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+  inner join  t_wf_device_approve t2  on t2.device_approve_id = t1.business_key_ 
+  where  t.assignee_ = #{user,jdbcType=VARCHAR}
+   
+  union all
+
+ select  
+    t.id_  queryValue1,
+    t2.SYSTEM_NAME||'系统申请：'||t2.SYSTEM_MANAGEER queryValue2,
+    to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3,
+    t2.system_approve_id  queryValue4, 
+    '1'  queryValue5
+  from act_ru_task t 
+  inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+  inner join  t_wf_sys_approve t2  on t2.system_approve_id = t1.business_key_ 
+  where  t.assignee_ = #{user,jdbcType=VARCHAR}
+  
+   union all
+  
+  select  
+    t.id_  queryValue1,
+    t2.SYSTEM_NAME||'系统验收申请：'||t2.SYSTEM_MANAGEER queryValue2,
+    to_char(t.create_time_,'yyyy-MM-dd HH24:mi:ss')  queryValue3,
+    t3.id_  queryValue4, 
+    '2'  queryValue5
+  from act_ru_task t 
+  inner join  act_ru_execution t1  on t1.proc_inst_id_  = t.proc_inst_id_ and  t1.parent_id_ is  null 
+  inner join  t_wf_sys_approve_file t3  on t3.id_ = t1.business_key_
+  inner join t_wf_sys_approve t2 on t2.system_approve_id=t3.system_approve_id
+  where  t.assignee_ = #{user,jdbcType=VARCHAR}
+)  tt order by tt.queryValue3 desc,queryValue1
+  
+  
+  </select>
+  <select id="selectNoticeByUser" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+    select  queryValue1,queryValue2,queryValue3,queryValue4 from (
+		select  
+		t.notice_id queryValue1,
+		t.notice_tile queryValue2,
+		t.notice_content queryValue3,
+		t.notice_time queryValue4
+		from  t_wf_notice   t  where   t.notice_user  = #{user,jdbcType=VARCHAR}
+		 order  by  t.notice_time desc
+	)  where  <![CDATA[ rownum < 5 ]]>
+  </select>
+  <select id="selectDevChkByGroup" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+select 
+    a.device_approve_id queryValue1,e.name_ queryValue2,a.device_name queryValue3,a.approve_time queryValue4,
+    b.approval_comments queryValue5,b.approval_result queryValue6,c.first_ queryValue7,d.group_id_ queryValue8
+    ,'0'  queryValue9
+    from t_wf_device_approve a
+    left join t_wf_check_record b on a.device_approve_id = b.apply_id
+    left join act_id_user c on c.id_=b.approval_user
+    left join ACT_ID_MEMBERSHIP d on d.user_id_=c.id_
+    LEFT JOIN  ACT_ID_GROUP  e on e.id_ = a.unit
+    where 1=1
+  <if test="groupId!=null and groupId != ''" >
+      AND d.group_id_ like '%'||#{groupId,jdbcType=VARCHAR}||'%'
+  </if>
+ order by a.approve_time desc
+    
+    
+    
+  </select>
+  <select id="selectSysChkByGroup" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+select 
+    a.system_approve_id queryValue1,
+    e.name_ queryValue2,a.system_name queryValue3,a.approve_time queryValue4,
+    b.approval_comments queryValue5,b.approval_result queryValue6,c.first_ queryValue7,d.group_id_ queryValue8
+    ,'1'  queryValue9
+    from t_wf_sys_approve a
+    left join t_wf_check_record b on a.system_approve_id = b.apply_id
+    left join act_id_user c on c.id_=b.approval_user
+    left join ACT_ID_MEMBERSHIP d on d.user_id_=c.id_
+    LEFT JOIN  ACT_ID_GROUP  e on e.id_ = a.unit 
+    where 1=1
+  <if test="groupId!=null and groupId != ''" >
+      AND d.group_id_ like '%'||#{groupId,jdbcType=VARCHAR}||'%'
+  </if>
+ order by a.approve_time desc
+    
+  </select>
+  <select id="selectSysCompleteChkByGroup" resultType="ah.its.wrokflow.repository.dao.CommonBaseObj" parameterType="java.util.Map" >
+select 
+    a.system_approve_id queryValue1,
+    e.name_ queryValue2,a.system_name queryValue3,a.approve_time queryValue4,
+    b.approval_comments queryValue5,b.approval_result queryValue6,c.first_ queryValue7,d.group_id_ queryValue8
+    ,'2'  queryValue9
+    from t_wf_sys_approve_file f
+    left join t_wf_sys_approve a on a.system_approve_id=f.system_approve_id
+    left join t_wf_check_record b on f.id_ = b.apply_id
+    left join act_id_user c on c.id_=b.approval_user
+    left join ACT_ID_MEMBERSHIP d on d.user_id_=c.id_
+    LEFT JOIN  ACT_ID_GROUP  e on e.id_ = a.unit
+	where 1=1
+  <if test="groupId!=null and groupId != ''" >
+      AND d.group_id_ like '%'||#{groupId,jdbcType=VARCHAR}||'%'
+  </if>
+ order by a.approve_time desc
+    
+    
+    
+  </select>
+</mapper>

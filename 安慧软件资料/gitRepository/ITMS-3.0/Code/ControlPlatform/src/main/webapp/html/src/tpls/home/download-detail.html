@@ -1,0 +1,191 @@
+<div id="downloadDetail" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<form cy-form="formData" id="form">
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						文件标题：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="downloadTitle" style="width:286px;" data-options="required:true,validType:'length[0,256]'"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						文件内容：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" data-options="multiline:true,validType:'length[0,256]'" name="downloadContent" style="width:286px;height:70px"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						上传文件：
+					</div>
+					<div class="td">
+						<input id="downloadUrl" class="easyui-textbox" name="downloadUrl" style="width:246px;" disabled="disabled"  data-options="required:true,validType:'length[0,128]'"/>
+						<a id="uploadBtn" class="easyui-linkbutton">浏览</a>
+					</div>
+				</div>
+				<div class="tr" id="createTimeDiv" style="display: none">
+					<div class="th">
+						创建时间：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="createTime" style="width:286px;" disabled="disabled"/>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar"  style="text-align: center">
+			<div style="left: 2px;position: absolute;line-height:25px;color: red">
+				附件不能超过100M
+			</div>
+			<a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'"  cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["formData", "saveData", "viewMode"], function($scope) {
+		var uploadUrl = "";
+		var hasFileAdded=false;
+		$scope.load = function() {
+			//判断是编辑的标识
+			var viewMode = $scope.viewMode;
+			if (viewMode) {
+				$scope.$("#createTimeDiv").show();
+				//$scope.$("#downloadUrl").width(286);
+				//$scope.$("#uploadBtn").hide();
+			}
+			if (viewMode == "view") {
+				$scope.$("#save").hide();
+				$scope.$("#cancel").linkbutton({
+					text : "关闭"
+				});
+			}
+			//初始化文件上传组件
+			$scope.uploader = initUpload();
+			$scope.uploader.init();
+		};
+
+		/**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload() {
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : $scope.$("#uploadBtn")[0], // you can pass in id...
+				//container : $scope.$("#uploadBtn")[0], // ... or DOM Element itself
+				url : 'cosUploadServlet',
+				multi_selection : false,
+				filters : {
+					max_file_size : '100mb',
+					prevent_duplicates : true, //不允许选取重复文件
+					mime_types : [{
+						title : "上传文件",
+						extensions : "*"
+					}]
+				},
+				init : {					
+					FilesAdded : function(up, files) {
+						//up.files中的files表示这个上传组件目前总共的file数，参数files指的是本次选择的文件数
+						if (up.files && up.files.length > 0) {//把上传组件中files都删掉流下最后一个文件
+							up.splice(0, up.files.length - 1);
+						}
+						// for (var index = 0; index < files.length; index++) {
+							// var file = files[index];
+							// //请按照文件名的形式，存储文件信息到页面变量中
+							// $scope.$("#downloadUrl").textbox("setValue", file.name);
+						// }
+						//存储本次上传的最后一个文件名字
+						var file = files[files.length-1];
+							//请按照文件名的形式，存储文件信息到页面变量中
+						$scope.$("#downloadUrl").textbox("setValue", file.name);
+						hasFileAdded=true;
+					},
+					Error : function(up, err) {
+						if (err.code == -600) {
+							$scope.$("#downloadUrl").textbox("setValue", "");
+							if (up.files && up.files.length > 0) {
+								up.splice(0, up.files.length);
+							}
+							$.messager.alert("提示", "上传的附件不能大于100M！");
+						}
+					},
+					//当队列中的某一个文件上传完成后触发
+					FileUploaded : function(up, file, responseObject) {
+						uploadUrl = $.parseJSON(responseObject.response)[0].url;
+					},
+					UploadComplete : function(uploader, files) {
+						//数据加载完毕，关闭进度条
+					    $.messager.progress("close");
+						var failedNum = uploader.total.failed;
+						if (failedNum > 0) {
+							alert("文件上传失败！");
+							return;
+						}
+						$scope.saveDb();
+					}
+				}
+			});
+		}
+
+
+		$scope.save = function() {
+			if ($scope.$("#form").form("validate")) {
+				var upLoadFile = $scope.$("#downloadUrl").textbox("getValue");
+				if (upLoadFile == "") {
+					$.messager.alert("提示", "您还没有选择上传文件！");
+					return;
+				}
+				if(hasFileAdded == true)
+				{
+					$scope.uploader.start();
+				    searchProgress();					
+				}
+				else
+				{
+					$scope.saveDb();
+				}				
+			}
+		};
+		
+		/**
+		 * 显示查询进度条
+		 */
+		var searchProgress = function() {
+			$.messager.progress({
+				title : false,
+				msg : "正在上传，请稍后...",
+				interval : 1000,
+				text : "上传中..."
+			});
+		};
+
+		$scope.saveDb = function() {
+			//更新获取form中的数据
+			$scope.$updateData("formData");
+			if (uploadUrl != "") {
+				$scope.formData.downloadUrl = "http://" + uploadUrl;
+			}
+			trimObject($scope.formData);
+			//对对象中的每个元素进行trim操作
+			$scope.saveData($scope.formData);
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#downloadDetail .td {
+		height: auto;
+	}
+	#downloadDetail .th {
+		width: 80px;
+		text-align: right;
+	}
+
+</style>

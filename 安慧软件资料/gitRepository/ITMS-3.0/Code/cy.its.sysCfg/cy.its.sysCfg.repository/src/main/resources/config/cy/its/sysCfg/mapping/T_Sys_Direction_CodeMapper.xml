@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Direction_CodeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Direction_Code" >
+    <id column="DIRECTION_ID" property="directionId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DIRECTION_ID, DIRECTION_TYPE, DIRECTION_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_DIRECTION_CODE
+    where DIRECTION_ID = #{directionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_DIRECTION_CODE
+    where DIRECTION_ID = #{directionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Direction_Code" >
+    insert into T_SYS_DIRECTION_CODE (DIRECTION_ID, DIRECTION_TYPE, DIRECTION_NAME
+      )
+    values (#{directionId,jdbcType=VARCHAR}, #{directionType,jdbcType=CHAR}, #{directionName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Direction_Code" >
+    insert into T_SYS_DIRECTION_CODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="directionId != null" >
+        DIRECTION_ID,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="directionId != null" >
+        #{directionId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Direction_Code" >
+    update T_SYS_DIRECTION_CODE
+    <set >
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DIRECTION_ID = #{directionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Direction_Code" >
+    update T_SYS_DIRECTION_CODE
+    set DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR}
+    where DIRECTION_ID = #{directionId,jdbcType=VARCHAR}
+  </update>
+</mapper>

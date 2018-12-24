@@ -1,0 +1,114 @@
+<div id="zhifa" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    服务站编号：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="lawEnforceStationCode">
+                </div>
+                <div class="th">
+                    服务站名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="lawEnforceStationName" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                    <input  class="cy-org-radio" name="orgId">
+                </div>
+                <div class="th">
+                    编制人数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-numberbox" name="policeCounts" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    值守模式：
+                </div>
+                <div class="td">
+                    <input  class="easyui-combobox"  style="width: 135px" name="dutyModel" cy-code="200">
+                </div>
+                <div class="th">
+                    执法服务站等级：
+                </div>
+                <div class="td">
+                    <input  class="easyui-combobox" name="stationRating" cy-code="240">
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    服务站负责人：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="serviceStationHeader" >
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-numberbox" name="headerTel">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    进辖区卡口：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="entranceTollgateId">
+                </div>
+                <div class="th">
+                    出辖区卡口：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="exitTollgateId" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否接入公安网：
+                </div>
+                <div class="td">
+                    <input  class="easyui-combobox" name="isConnectPoliceNet" cy-code="201">
+                </div>
+
+            </div>
+
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            $scope.$updateData("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        };
+    });
+</script>
+<style type="text/css">
+    #zhifa .th{
+        width : 100px;
+        text-align: right;
+    }
+    #zhifa .td{
+        width : 150px;
+    }
+
+</style>

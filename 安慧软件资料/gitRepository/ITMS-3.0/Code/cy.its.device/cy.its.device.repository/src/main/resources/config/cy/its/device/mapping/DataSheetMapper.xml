@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DataSheetMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.DataSheet" >
+    <id column="DATA_SHEET_ID" property="dataSheetId" jdbcType="VARCHAR" />
+    <result column="SERVER_ID" property="serverId" jdbcType="VARCHAR" />
+    <result column="DATA_SHEET_NAME" property="dataSheetName" jdbcType="VARCHAR" />
+    <result column="TOTAL_SPACE" property="totalSpace" jdbcType="VARCHAR" />
+    <result column="USED_SPACE" property="usedSpace" jdbcType="VARCHAR" />
+    <result column="LATEST_EXTEND_TIME" property="latestExtendTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DATA_SHEET_ID, SERVER_ID, DATA_SHEET_NAME, TOTAL_SPACE, USED_SPACE, LATEST_EXTEND_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_DATA_SHEET
+    where DATA_SHEET_ID = #{dataSheetId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_DATA_SHEET
+    where DATA_SHEET_ID = #{dataSheetId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.DataSheet" >
+    insert into T_DEVICE_DATA_SHEET (DATA_SHEET_ID, SERVER_ID, DATA_SHEET_NAME, 
+      TOTAL_SPACE, USED_SPACE, LATEST_EXTEND_TIME
+      )
+    values (#{dataSheetId,jdbcType=VARCHAR}, #{serverId,jdbcType=VARCHAR}, #{dataSheetName,jdbcType=VARCHAR}, 
+      #{totalSpace,jdbcType=VARCHAR}, #{usedSpace,jdbcType=VARCHAR}, #{latestExtendTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.DataSheet" >
+    insert into T_DEVICE_DATA_SHEET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dataSheetId != null" >
+        DATA_SHEET_ID,
+      </if>
+      <if test="serverId != null" >
+        SERVER_ID,
+      </if>
+      <if test="dataSheetName != null" >
+        DATA_SHEET_NAME,
+      </if>
+      <if test="totalSpace != null" >
+        TOTAL_SPACE,
+      </if>
+      <if test="usedSpace != null" >
+        USED_SPACE,
+      </if>
+      <if test="latestExtendTime != null" >
+        LATEST_EXTEND_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dataSheetId != null" >
+        #{dataSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="serverId != null" >
+        #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSheetName != null" >
+        #{dataSheetName,jdbcType=VARCHAR},
+      </if>
+      <if test="totalSpace != null" >
+        #{totalSpace,jdbcType=VARCHAR},
+      </if>
+      <if test="usedSpace != null" >
+        #{usedSpace,jdbcType=VARCHAR},
+      </if>
+      <if test="latestExtendTime != null" >
+        #{latestExtendTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.DataSheet" >
+    update T_DEVICE_DATA_SHEET
+    <set >
+      <if test="serverId != null" >
+        SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSheetName != null" >
+        DATA_SHEET_NAME = #{dataSheetName,jdbcType=VARCHAR},
+      </if>
+      <if test="totalSpace != null" >
+        TOTAL_SPACE = #{totalSpace,jdbcType=VARCHAR},
+      </if>
+      <if test="usedSpace != null" >
+        USED_SPACE = #{usedSpace,jdbcType=VARCHAR},
+      </if>
+      <if test="latestExtendTime != null" >
+        LATEST_EXTEND_TIME = #{latestExtendTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where DATA_SHEET_ID = #{dataSheetId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DataSheet" >
+    update T_DEVICE_DATA_SHEET
+    set SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      DATA_SHEET_NAME = #{dataSheetName,jdbcType=VARCHAR},
+      TOTAL_SPACE = #{totalSpace,jdbcType=VARCHAR},
+      USED_SPACE = #{usedSpace,jdbcType=VARCHAR},
+      LATEST_EXTEND_TIME = #{latestExtendTime,jdbcType=TIMESTAMP}
+    where DATA_SHEET_ID = #{dataSheetId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="selectDataSheets" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_DEVICE_DATA_SHEET
+		<where>
+			<if test="serverId != null and serverId != '' ">
+				SERVER_ID = #{serverId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

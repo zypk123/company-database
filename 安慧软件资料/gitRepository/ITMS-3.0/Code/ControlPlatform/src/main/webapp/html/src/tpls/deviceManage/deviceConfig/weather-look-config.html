@@ -1,0 +1,186 @@
+<div class="easyui-layout" id="weatherLook">
+    <div id="north" data-options="region:'north',border:false">
+        <form cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							时间：
+						</div>
+						<div class="td">
+							<div class="easyui-datetimebox startTime" id="startDate" name="startDate"></div>
+							至
+							<div class="easyui-datetimebox endTime" id="endDate" name="endDate"></div>
+						</div>
+						<div class="td" style="margin-left: 15px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+    </div>
+    <div data-options="region:'center',border:true">
+		<table cy-datagrid="options" cy-querydata="formData" cy-url="trafficSituation/trafficAllEventAction/queryAllTrafficAlarmEvent">
+
+		</table>
+	</div>
+    <div data-options="region:'south',border:false">
+        <div class="linkbutton_toolbar" style="text-align: center;">
+            <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["deviceSysNbr", "alarmType"], function($scope) {
+    	$scope.$getDefaultCode(['514']);
+		$scope.load = function() {
+			//debugger;
+			//获取当前时间
+			var myDate = new Date();
+			//获取当前时间的毫秒数
+			var newTime = myDate.getTime();
+			//获取两小时前时的毫秒数
+			var oldTime = newTime - 24 * 60 * 60 * 1000;
+			//获取两小时前时的时间
+			var time = new Date(oldTime);
+			//获取两小时前时间的年
+			var year = time.getFullYear();
+			//获取两小时前时间的月
+			var month = time.getMonth() + 1;
+			if (month < 10) {
+				month = "0" + month;
+			}
+			//获取两小时前时间的日
+			var day = time.getDate();
+			if (day < 10) {
+				day = "0" + day;
+			}
+			//获取两小时前时间的时
+			var hour = time.getHours();
+			//获取两小时前时间的分
+			var minute = time.getMinutes();
+			//获取两小时前时间的秒
+			var second = time.getSeconds();
+
+			var startDate = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+			//设置默认开始时间为当前时间两小时前的时间
+			$scope.$("#startDate").datetimebox("setValue", startDate);
+			//获取当前日期的时间
+			var endDate = myDate.toLocaleTimeString();
+			//设置默认结束时间为当前时间
+			$scope.$("#endDate").datetimebox("setValue", endDate);
+			
+			$scope.$updateData("formData");
+			$scope.formData.deviceSysNbr = $scope.deviceSysNbr;
+			$scope.formData.alarmType = $scope.alarmType;
+			$scope.$search("formData");
+		};
+		
+		$scope.searchData = function(){
+			$scope.$updateData("formData");
+			$scope.formData.deviceSysNbr = $scope.deviceSysNbr;
+			$scope.formData.alarmType = $scope.alarmType;
+			$scope.$search("formData");
+		}; 
+
+		$scope.options = {
+			columns : [[{
+				align : 'center',
+				title : "记录时间",
+				field : "recordTime",
+				formatter :formatDateTimeStamp,
+				width : 100
+			}, 
+			{
+				align : 'center',
+				title : "温度（℃）",
+				field : "weatherTemperature",
+				width : 100
+			},
+			 {
+				align : 'center',
+				title : "风速（m/s）",
+				field : "windSpeed",
+				width : 100,
+				//formatter : eventTypeChange
+			}, {
+				align : 'center',
+				title : "风向（°）",
+				field : "windDirection",
+				width : 100
+			}, {
+				align : 'center',
+				title : "降雨量（mm）",
+				field : "waterFilmHeight",
+				width : 100
+			}, {
+				align : 'center',
+				title : "降雨强度（mm/h）",
+				field : "rainStrong",
+				width : 100
+			},{
+				align : 'center',
+				title : "降雨类型",
+				field : "waterType",
+				formatter : getWaterTypeName,
+				width : 100
+			}, {
+				align : 'center',
+				title : "相对湿度（%）",
+				field : "relativeHumidity",
+				width : 100
+			}, {
+				align : 'center',
+				title : "气压（hPa）",
+				field : "airPressure",
+				width : 100
+			}]]
+		};
+		
+		function getWeatherData(deviceSysNbr, alarmType, startDate, endDate) {
+			//console.log(deviceSysNbr + " " + alarmType + " " + startDate + " " + endDate);
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficAllEventAction/queryAllTrafficAlarmEvent",
+				params : {
+					alarmType : alarmType,
+					deviceSysNbr : deviceSysNbr,
+					startDate : startDate,
+					endDate : endDate,
+					pageNumber : 1,
+					pageSize : 1
+				},
+				success : function(data) {
+					console.log(data);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+		 
+		function formatDateTimeStamp(value, row, index) {
+			if (value == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(value);
+			return newDate.format('yyyy-MM-dd HH:mm:ss');
+		}
+		function getWaterTypeName(value, row, index) {
+			
+			return $scope.$getCodeName("514", value);;
+		}
+		
+		
+	}); 
+</script>
+<style type="text/css">
+	#weatherLook .th {
+		width: 70px;
+		text-align: right;
+	}
+</style>

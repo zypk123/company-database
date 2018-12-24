@@ -1,0 +1,132 @@
+<div id="cameraInfoOperate" class="easyui-layout">
+	<div data-options="region:'center', border:false">
+		<form cy-form="cameraInfo" id="form">
+        	<div class="table">
+        		<div class="tr">
+        			<div class="th">部件编号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="deviceNbr" data-options="required:true,validType:['length[0,32]','number']"/>
+        			</div>
+        			<div class="th">部件名称：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="componentName" data-options="required:true,validType:'length[0,64]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">接入方式：</div>
+        			<div class="td">
+        				<input class="easyui-combobox" name="accessMode" cy-code="403"/>
+        			</div>
+        			<div class="th">部件类型：</div>
+        			<div class="td">
+        				<input class="easyui-combobox" name="sysComponentType" cy-code="438" data-options="required:true"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">相机唯一序列号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="deviceKey" data-options="required:true,validType:'length[0,64]'"/>
+        			</div>
+        			<div class="td">
+        				<span style="color:red">（与监控服务器接入设备对应关系字段）</span>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">是否支持视频输出：</div>
+        			<div class="td" style="width:180px;">
+        				<input type="radio" cy-click="videoChecked" name="isVideoSupport" value="1" style="width: 10px" checked="checked"/>是
+                        <input type="radio" cy-click="videoChecked" name="isVideoSupport" value="0" style="width: 10px"/>否
+        			</div>
+        			<div class="th">视频接入方式：</div>
+        			<div class="td">
+        				<input class="easyui-combobox video" name="videoAccessMode" cy-code="485"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">视频平台备案编号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox video" name="cameraSn" data-options="validType:'length[0,32]'"/>
+        			</div>
+        			<div class="td">
+        				<span style="color:red">（与其它视频平台对应关系字段）</span>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">监控方向：</div>
+        			<div class="td">
+        				<input id="directionType" class="easyui-textbox" name="directionName" disabled="disabled"/>
+        			</div>
+        			<div class="th">监控车道：</div>
+        			<div class="td">
+        				<input id="laneNbr" class="easyui-textbox" name="laneNbr" disabled="disabled"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">相机IP：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="cameraIp" validType="ip"/>
+        			</div>
+        			<div class="th">端口号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="cameraPort" data-options="validType:['length[0,10]','number']"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">相机序列号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="assembleSerialNbr" data-options="validType:'length[0,32]'"/>
+        			</div>
+        			<div class="th">品    牌：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="brand" data-options="validType:'length[0,16]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">型    号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="model" data-options="validType:'length[0,16]'"/>
+        			</div>
+        			<div class="th">规    格：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="specification" data-options="validType:'length[0,64]'"/>
+        			</div>
+        		</div>
+        	</div>
+        </form>
+    </div>
+    <div data-options="region:'south', border:false">
+        <div class="linkbutton_toolbar" style="text-align: center">
+            <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	InitPage(["saveData","cameraInfo"],function($scope){
+		//保存添加相机信息
+		$scope.save = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("cameraInfo");
+				$scope.saveData($scope.cameraInfo);
+			}			
+		};
+		//根据选择是否支持视频输出判断视频接入方式与编号是否可输入
+		$scope.videoChecked = function(){
+			var thiz = $scope.$("input[name='isVideoSupport']:checked").val();
+			if(thiz == 0){
+				$scope.$(".video").textbox("disable");
+			}else{
+				$scope.$(".video").textbox("enable");
+			}
+		};
+	});
+</script>
+<style type="text/css">
+	#cameraInfoOperate .th{
+        width: 110px;
+        text-align: right;
+    }
+    #cameraInfoOperate .td>input[class^='easyui-']{
+        width: 174px;
+    }
+</style>

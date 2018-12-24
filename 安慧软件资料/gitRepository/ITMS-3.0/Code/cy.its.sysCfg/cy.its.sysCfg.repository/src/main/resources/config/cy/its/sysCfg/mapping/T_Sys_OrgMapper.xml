@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_OrgMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Org" >
+    <id column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="PARENT_ORG_ID" property="parentOrgId" jdbcType="VARCHAR" />
+    <result column="PARENT_INSTRUCT_ORG_ID" property="parentInstructOrgId" jdbcType="VARCHAR" />
+    <result column="ORG_TYPE" property="orgType" jdbcType="CHAR" />
+    <result column="IS_DEPARTMENT" property="isDepartment" jdbcType="CHAR" />
+    <result column="IS_HIGHWAY_ORG" property="isHighwayOrg" jdbcType="CHAR" />
+    <result column="ORG_LEVEL" property="orgLevel" jdbcType="CHAR" />
+    <result column="ORG_PHONE_NBR" property="orgPhoneNbr" jdbcType="VARCHAR" />
+    <result column="ORG_HEADER_NAME" property="orgHeaderName" jdbcType="VARCHAR" />
+    <result column="ORG_HEADER_PHONE" property="orgHeaderPhone" jdbcType="VARCHAR" />
+    <result column="TRACK_FLAG" property="trackFlag" jdbcType="CHAR" />
+    <result column="ENFORCEMENT_FLAG" property="enforcementFlag" jdbcType="CHAR" />
+    <result column="SPONSOR_DISTRIBUTES" property="sponsorDistributes" jdbcType="VARCHAR" />
+    <result column="ADDRESS_DESC" property="addressDesc" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="VARCHAR" />
+    <result column="ORG_LONGITUDE" property="orgLongitude" jdbcType="DECIMAL" />
+    <result column="ORG_LATITUDE" property="orgLatitude" jdbcType="DECIMAL" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="cy.its.syscfg.mybatis.model.T_Sys_OrgWithBLOBs" extends="BaseResultMap" >
+    <result column="ORG_SIGNATURE" property="orgSignature" jdbcType="BLOB" />
+    <result column="SIGNATURE_NOTIFIER" property="signatureNotifier" jdbcType="BLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ORG_ID, ORG_CODE, ORG_NAME, PARENT_ORG_ID, PARENT_INSTRUCT_ORG_ID,  
+    ORG_TYPE, IS_DEPARTMENT, IS_HIGHWAY_ORG, ORG_LEVEL, ORG_PHONE_NBR, ORG_HEADER_NAME, 
+    ORG_HEADER_PHONE, TRACK_FLAG, ENFORCEMENT_FLAG, SPONSOR_DISTRIBUTES, ADDRESS_DESC, 
+    DISTRICT_CODE, CITY, ORG_LONGITUDE, ORG_LATITUDE, CREATE_BY, CREATE_TIME, UPDATE_BY, 
+    UPDATE_TIME, REMARK
+  </sql>
+  <sql id="Blob_Column_List" >
+    ORG_SIGNATURE, SIGNATURE_NOTIFIER
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from T_SYS_ORG
+    where ORG_ID = #{orgId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_ORG
+    where ORG_ID = #{orgId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_OrgWithBLOBs" >
+    insert into T_SYS_ORG (ORG_ID, ORG_CODE, ORG_NAME, 
+      PARENT_ORG_ID, PARENT_INSTRUCT_ORG_ID,  
+      ORG_TYPE, IS_DEPARTMENT, IS_HIGHWAY_ORG, 
+      ORG_LEVEL, ORG_PHONE_NBR, ORG_HEADER_NAME, 
+      ORG_HEADER_PHONE, TRACK_FLAG, ENFORCEMENT_FLAG, 
+      SPONSOR_DISTRIBUTES, ADDRESS_DESC, DISTRICT_CODE, 
+      CITY, ORG_LONGITUDE, ORG_LATITUDE, 
+      CREATE_BY, CREATE_TIME, UPDATE_BY, 
+      UPDATE_TIME, REMARK, ORG_SIGNATURE, 
+      SIGNATURE_NOTIFIER)
+    values (#{orgId,jdbcType=VARCHAR}, #{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, 
+      #{parentOrgId,jdbcType=VARCHAR}, #{parentInstructOrgId,jdbcType=VARCHAR},  
+      #{orgType,jdbcType=CHAR}, #{isDepartment,jdbcType=CHAR}, #{isHighwayOrg,jdbcType=CHAR}, 
+      #{orgLevel,jdbcType=CHAR}, #{orgPhoneNbr,jdbcType=VARCHAR}, #{orgHeaderName,jdbcType=VARCHAR}, 
+      #{orgHeaderPhone,jdbcType=VARCHAR}, #{trackFlag,jdbcType=CHAR}, #{enforcementFlag,jdbcType=CHAR}, 
+      #{sponsorDistributes,jdbcType=VARCHAR}, #{addressDesc,jdbcType=VARCHAR}, #{districtCode,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{orgLongitude,jdbcType=DECIMAL}, #{orgLatitude,jdbcType=DECIMAL}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{orgSignature,jdbcType=BLOB}, 
+      #{signatureNotifier,jdbcType=BLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_OrgWithBLOBs" >
+    insert into T_SYS_ORG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME,
+      </if>
+      <if test="parentOrgId != null" >
+        PARENT_ORG_ID,
+      </if>
+      <if test="parentInstructOrgId != null" >
+        PARENT_INSTRUCT_ORG_ID,
+      </if>
+      <if test="orgType != null" >
+        ORG_TYPE,
+      </if>
+      <if test="isDepartment != null" >
+        IS_DEPARTMENT,
+      </if>
+      <if test="isHighwayOrg != null" >
+        IS_HIGHWAY_ORG,
+      </if>
+      <if test="orgLevel != null" >
+        ORG_LEVEL,
+      </if>
+      <if test="orgPhoneNbr != null" >
+        ORG_PHONE_NBR,
+      </if>
+      <if test="orgHeaderName != null" >
+        ORG_HEADER_NAME,
+      </if>
+      <if test="orgHeaderPhone != null" >
+        ORG_HEADER_PHONE,
+      </if>
+      <if test="trackFlag != null" >
+        TRACK_FLAG,
+      </if>
+      <if test="enforcementFlag != null" >
+        ENFORCEMENT_FLAG,
+      </if>
+      <if test="sponsorDistributes != null" >
+        SPONSOR_DISTRIBUTES,
+      </if>
+      <if test="addressDesc != null" >
+        ADDRESS_DESC,
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE,
+      </if>
+      <if test="city != null" >
+        CITY,
+      </if>
+      <if test="orgLongitude != null" >
+        ORG_LONGITUDE,
+      </if>
+      <if test="orgLatitude != null" >
+        ORG_LATITUDE,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      CREATE_TIME,
+      <if test="updateBy != null" >
+        UPDATE_BY,
+      </if>
+      UPDATE_TIME,
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="orgSignature != null" >
+        ORG_SIGNATURE,
+      </if>
+      <if test="signatureNotifier != null" >
+        SIGNATURE_NOTIFIER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrgId != null" >
+        #{parentOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentInstructOrgId != null" >
+        #{parentInstructOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgType != null" >
+        #{orgType,jdbcType=CHAR},
+      </if>
+      <if test="isDepartment != null" >
+        #{isDepartment,jdbcType=CHAR},
+      </if>
+      <if test="isHighwayOrg != null" >
+        #{isHighwayOrg,jdbcType=CHAR},
+      </if>
+      <if test="orgLevel != null" >
+        #{orgLevel,jdbcType=CHAR},
+      </if>
+      <if test="orgPhoneNbr != null" >
+        #{orgPhoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgHeaderName != null" >
+        #{orgHeaderName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgHeaderPhone != null" >
+        #{orgHeaderPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="trackFlag != null" >
+        #{trackFlag,jdbcType=CHAR},
+      </if>
+      <if test="enforcementFlag != null" >
+        #{enforcementFlag,jdbcType=CHAR},
+      </if>
+      <if test="sponsorDistributes != null" >
+        #{sponsorDistributes,jdbcType=VARCHAR},
+      </if>
+      <if test="addressDesc != null" >
+        #{addressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="orgLongitude != null" >
+        #{orgLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="orgLatitude != null" >
+        #{orgLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      SYSDATE,
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      SYSDATE,
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orgSignature != null" >
+        #{orgSignature,jdbcType=BLOB},
+      </if>
+      <if test="signatureNotifier != null" >
+        #{signatureNotifier,jdbcType=BLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_OrgWithBLOBs" >
+    update T_SYS_ORG
+    <set >
+      <if test="orgCode != null" >
+        ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrgId != null" >
+        PARENT_ORG_ID = #{parentOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentInstructOrgId != null" >
+        PARENT_INSTRUCT_ORG_ID = #{parentInstructOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgType != null" >
+        ORG_TYPE = #{orgType,jdbcType=CHAR},
+      </if>
+      <if test="isDepartment != null" >
+        IS_DEPARTMENT = #{isDepartment,jdbcType=CHAR},
+      </if>
+      <if test="isHighwayOrg != null" >
+        IS_HIGHWAY_ORG = #{isHighwayOrg,jdbcType=CHAR},
+      </if>
+      <if test="orgLevel != null" >
+        ORG_LEVEL = #{orgLevel,jdbcType=CHAR},
+      </if>
+      <if test="orgPhoneNbr != null" >
+        ORG_PHONE_NBR = #{orgPhoneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgHeaderName != null" >
+        ORG_HEADER_NAME = #{orgHeaderName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgHeaderPhone != null" >
+        ORG_HEADER_PHONE = #{orgHeaderPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="trackFlag != null" >
+        TRACK_FLAG = #{trackFlag,jdbcType=CHAR},
+      </if>
+      <if test="enforcementFlag != null" >
+        ENFORCEMENT_FLAG = #{enforcementFlag,jdbcType=CHAR},
+      </if>
+      <if test="sponsorDistributes != null" >
+        SPONSOR_DISTRIBUTES = #{sponsorDistributes,jdbcType=VARCHAR},
+      </if>
+      <if test="addressDesc != null" >
+        ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        CITY = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="orgLongitude != null" >
+        ORG_LONGITUDE = #{orgLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="orgLatitude != null" >
+        ORG_LATITUDE = #{orgLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      UPDATE_TIME = SYSDATE,
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orgSignature != null" >
+        ORG_SIGNATURE = #{orgSignature,jdbcType=BLOB},
+      </if>
+      <if test="signatureNotifier != null" >
+        SIGNATURE_NOTIFIER = #{signatureNotifier,jdbcType=BLOB},
+      </if>
+    </set>
+    where ORG_ID = #{orgId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cy.its.syscfg.mybatis.model.T_Sys_OrgWithBLOBs" >
+    update T_SYS_ORG
+    set ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      PARENT_ORG_ID = #{parentOrgId,jdbcType=VARCHAR},
+      PARENT_INSTRUCT_ORG_ID = #{parentInstructOrgId,jdbcType=VARCHAR},
+      ORG_TYPE = #{orgType,jdbcType=CHAR},
+      IS_DEPARTMENT = #{isDepartment,jdbcType=CHAR},
+      IS_HIGHWAY_ORG = #{isHighwayOrg,jdbcType=CHAR},
+      ORG_LEVEL = #{orgLevel,jdbcType=CHAR},
+      ORG_PHONE_NBR = #{orgPhoneNbr,jdbcType=VARCHAR},
+      ORG_HEADER_NAME = #{orgHeaderName,jdbcType=VARCHAR},
+      ORG_HEADER_PHONE = #{orgHeaderPhone,jdbcType=VARCHAR},
+      TRACK_FLAG = #{trackFlag,jdbcType=CHAR},
+      ENFORCEMENT_FLAG = #{enforcementFlag,jdbcType=CHAR},
+      SPONSOR_DISTRIBUTES = #{sponsorDistributes,jdbcType=VARCHAR},
+      ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      CITY = #{city,jdbcType=VARCHAR},
+      ORG_LONGITUDE = #{orgLongitude,jdbcType=DECIMAL},
+      ORG_LATITUDE = #{orgLatitude,jdbcType=DECIMAL},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      ORG_SIGNATURE = #{orgSignature,jdbcType=BLOB},
+      SIGNATURE_NOTIFIER = #{signatureNotifier,jdbcType=BLOB}
+    where ORG_ID = #{orgId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Org" >
+    update T_SYS_ORG
+    set ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      ORG_NAME = #{orgName,jdbcType=VARCHAR},
+      PARENT_ORG_ID = #{parentOrgId,jdbcType=VARCHAR},
+      PARENT_INSTRUCT_ORG_ID = #{parentInstructOrgId,jdbcType=VARCHAR},
+      ORG_TYPE = #{orgType,jdbcType=CHAR},
+      IS_DEPARTMENT = #{isDepartment,jdbcType=CHAR},
+      IS_HIGHWAY_ORG = #{isHighwayOrg,jdbcType=CHAR},
+      ORG_LEVEL = #{orgLevel,jdbcType=CHAR},
+      ORG_PHONE_NBR = #{orgPhoneNbr,jdbcType=VARCHAR},
+      ORG_HEADER_NAME = #{orgHeaderName,jdbcType=VARCHAR},
+      ORG_HEADER_PHONE = #{orgHeaderPhone,jdbcType=VARCHAR},
+      TRACK_FLAG = #{trackFlag,jdbcType=CHAR},
+      ENFORCEMENT_FLAG = #{enforcementFlag,jdbcType=CHAR},
+      SPONSOR_DISTRIBUTES = #{sponsorDistributes,jdbcType=VARCHAR},
+      ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      CITY = #{city,jdbcType=VARCHAR},
+      ORG_LONGITUDE = #{orgLongitude,jdbcType=DECIMAL},
+      ORG_LATITUDE = #{orgLatitude,jdbcType=DECIMAL},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ORG_ID = #{orgId,jdbcType=VARCHAR}
+  </update>
+</mapper>

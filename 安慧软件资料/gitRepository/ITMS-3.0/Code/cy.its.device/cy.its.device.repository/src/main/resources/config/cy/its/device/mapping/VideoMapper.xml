@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.VideoMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.Video" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="DOME_GUNLOCK" property="domeGunlock" jdbcType="CHAR" />
+    <result column="VIDEO_RESOLUTION" property="videoResolution" jdbcType="CHAR" />
+    <result column="VIDEO_SUPERVISE_TYPE" property="videoSuperviseType" jdbcType="VARCHAR" />
+    <result column="DAILY_PRESET" property="dailyPreset" jdbcType="VARCHAR" />
+    <result column="ALARM_PRESET" property="alarmPreset" jdbcType="VARCHAR" />
+    <result column="IS_BACKSTAGE_RECOVERY" property="isBackstageRecovery" jdbcType="CHAR" />
+    <result column="CAMERA_SN" property="cameraSn" jdbcType="VARCHAR" />
+    <result column="PREVIEW_PARAM" property="previewParam" jdbcType="VARCHAR" />
+    <result column="PLAYBACK_PARAM" property="playbackParam" jdbcType="VARCHAR" />
+    <result column="VIDEO_ACCESS_MODE" property="videoAccessMode" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_ID, DOME_GUNLOCK, VIDEO_RESOLUTION, VIDEO_SUPERVISE_TYPE, DAILY_PRESET, ALARM_PRESET, 
+    IS_BACKSTAGE_RECOVERY, CAMERA_SN, PREVIEW_PARAM, PLAYBACK_PARAM, VIDEO_ACCESS_MODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_VIDEO
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <select id="sysVideoOfCameraSn" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_VIDEO
+    where CAMERA_SN = #{cameraSn,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_VIDEO
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.Video" >
+    insert into T_DEVICE_VIDEO (DEVICE_ID, DOME_GUNLOCK, VIDEO_RESOLUTION, 
+      VIDEO_SUPERVISE_TYPE, DAILY_PRESET, ALARM_PRESET, 
+      IS_BACKSTAGE_RECOVERY, CAMERA_SN, PREVIEW_PARAM, 
+      PLAYBACK_PARAM, VIDEO_ACCESS_MODE)
+    values (#{deviceId,jdbcType=VARCHAR}, #{domeGunlock,jdbcType=CHAR}, #{videoResolution,jdbcType=CHAR}, 
+      #{videoSuperviseType,jdbcType=VARCHAR}, #{dailyPreset,jdbcType=VARCHAR}, #{alarmPreset,jdbcType=VARCHAR}, 
+      #{isBackstageRecovery,jdbcType=CHAR}, #{cameraSn,jdbcType=VARCHAR}, #{previewParam,jdbcType=VARCHAR}, 
+      #{playbackParam,jdbcType=VARCHAR}, #{videoAccessMode,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.Video" >
+    insert into T_DEVICE_VIDEO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="domeGunlock != null" >
+        DOME_GUNLOCK,
+      </if>
+      <if test="videoResolution != null" >
+        VIDEO_RESOLUTION,
+      </if>
+      <if test="videoSuperviseType != null" >
+        VIDEO_SUPERVISE_TYPE,
+      </if>
+      <if test="dailyPreset != null" >
+        DAILY_PRESET,
+      </if>
+      <if test="alarmPreset != null" >
+        ALARM_PRESET,
+      </if>
+      <if test="isBackstageRecovery != null" >
+        IS_BACKSTAGE_RECOVERY,
+      </if> 
+      <if test="cameraSn != null" >
+        CAMERA_SN,
+      </if>
+      <if test="previewParam != null" >
+        PREVIEW_PARAM,
+      </if>
+      <if test="playbackParam != null" >
+        PLAYBACK_PARAM,
+      </if>
+      <if test="videoAccessMode != null" >
+        VIDEO_ACCESS_MODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="domeGunlock != null" >
+        #{domeGunlock,jdbcType=CHAR},
+      </if>
+      <if test="videoResolution != null" >
+        #{videoResolution,jdbcType=CHAR},
+      </if>
+      <if test="videoSuperviseType != null" >
+        #{videoSuperviseType,jdbcType=VARCHAR},
+      </if>
+      <if test="dailyPreset != null" >
+        #{dailyPreset,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmPreset != null" >
+        #{alarmPreset,jdbcType=VARCHAR},
+      </if>
+      <if test="isBackstageRecovery != null" >
+        #{isBackstageRecovery,jdbcType=CHAR},
+      </if>
+      <if test="cameraSn != null" >
+        #{cameraSn,jdbcType=VARCHAR},
+      </if>
+      <if test="previewParam != null" >
+        #{previewParam,jdbcType=VARCHAR},
+      </if>
+      <if test="playbackParam != null" >
+        #{playbackParam,jdbcType=VARCHAR},
+      </if>
+      <if test="videoAccessMode != null" >
+        #{videoAccessMode,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Video" >
+    update T_DEVICE_VIDEO
+    <set >
+      <if test="domeGunlock != null" >
+        DOME_GUNLOCK = #{domeGunlock,jdbcType=CHAR},
+      </if>
+      <if test="videoResolution != null" >
+        VIDEO_RESOLUTION = #{videoResolution,jdbcType=CHAR},
+      </if>
+      <if test="videoSuperviseType != null" >
+        VIDEO_SUPERVISE_TYPE = #{videoSuperviseType,jdbcType=VARCHAR},
+      </if>
+      <if test="dailyPreset != null" >
+        DAILY_PRESET = #{dailyPreset,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmPreset != null" >
+        ALARM_PRESET = #{alarmPreset,jdbcType=VARCHAR},
+      </if>
+      <if test="isBackstageRecovery != null" >
+        IS_BACKSTAGE_RECOVERY = #{isBackstageRecovery,jdbcType=CHAR},
+      </if>
+      <if test="cameraSn != null" >
+        CAMERA_SN = #{cameraSn,jdbcType=VARCHAR},
+      </if>
+      <if test="previewParam != null" >
+        PREVIEW_PARAM = #{previewParam,jdbcType=VARCHAR},
+      </if>
+      <if test="playbackParam != null" >
+        PLAYBACK_PARAM = #{playbackParam,jdbcType=VARCHAR},
+      </if>
+      <if test="videoAccessMode != null" >
+        VIDEO_ACCESS_MODE = #{videoAccessMode,jdbcType=CHAR},
+      </if>
+    </set>
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Video" >
+    update T_DEVICE_VIDEO
+    set DOME_GUNLOCK = #{domeGunlock,jdbcType=CHAR},
+      VIDEO_RESOLUTION = #{videoResolution,jdbcType=CHAR},
+      VIDEO_SUPERVISE_TYPE = #{videoSuperviseType,jdbcType=VARCHAR},
+      DAILY_PRESET = #{dailyPreset,jdbcType=VARCHAR},
+      ALARM_PRESET = #{alarmPreset,jdbcType=VARCHAR},
+      IS_BACKSTAGE_RECOVERY = #{isBackstageRecovery,jdbcType=CHAR},
+      CAMERA_SN = #{cameraSn,jdbcType=VARCHAR},
+      PREVIEW_PARAM = #{previewParam,jdbcType=VARCHAR},
+      PLAYBACK_PARAM = #{playbackParam,jdbcType=VARCHAR},
+      VIDEO_ACCESS_MODE = #{videoAccessMode,jdbcType=CHAR}
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

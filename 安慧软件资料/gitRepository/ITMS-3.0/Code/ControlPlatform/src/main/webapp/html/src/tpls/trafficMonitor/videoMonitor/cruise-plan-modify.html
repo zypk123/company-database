@@ -1,0 +1,767 @@
+<div id="cruise-plan-modify" style="height: 100%">
+    <div class="easyui-layout">
+        <!--方案名称-->
+        <div data-options="region:'north'" style="height: 40px">
+            <form id="formPlanDetail" cy-form="cruisePlanDetail">
+                <div class="table">
+                    <div class="tr">
+                        <div class="td">方案名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="videoPlanName" data-options="required:true" validType="length[0,32]" style="width:200px"/>
+                        </div>
+                        <div class="td">时间间隔：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" id="textboxDefaultCruiseTime" data-options="required:true,validType:['[length[0,3]','number']"  name="defaultCruiseTimes" style="width:60px"/>
+                        </div>
+                        <div class="td">秒</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--树选择-->
+        <div data-options="region:'west'" style="width:300px">
+            <div class="easyui-layout" id="innerLayout">
+                <div data-options="region:'north'">
+                    <div>
+                        <div class="linkbutton_toolbar" >
+                            <input id="search"  class="easyui-searchbox" data-options="prompt:'请输入设备或组件名称关键字'" style="width:200px;height:26px"/>
+                            <a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back"
+                               style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="chkDome" value="0" cy-click="clickChkDome"/>
+                            <input type="checkbox" name="radioDome" value="1" cy-click="clickRadioDome"/>球机
+                            <input type="checkbox" name="radioDome" value="2" cy-click="clickRadioDome"/>枪机
+                            <input type="checkbox" name="radioDome" value="3" cy-click="clickRadioDome"/>组件
+                        </div>
+                    </div>
+                </div>
+                <div data-options="region:'west',border:false,closed:true" style="width:220px;border-top: solid 1px #ddd">
+                    <table id="searchGrid" cy-datagrid="searchGridOptions">
+
+                    </table>
+                    &nbsp;
+                </div>
+                <div data-options="region:'center'">
+
+                    <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true"
+                            >
+                        <!--高度设为100%或者不设，总会导致滚动条下方超出浏览器可见区域-->
+                        <div title="按道路">
+                            <ul id="roadTree"></ul>
+                        </div>
+                        <div title="按机构"  style="overflow: auto;margin-bottom: 5px;margin-right: 5px;height:90%">
+                            <ul id="orgTree"></ul>
+                        </div>
+                        <div title="自定义分组"  style="overflow: auto;margin-bottom: 5px;margin-right: 5px;height:90%">
+                            <ul id="userGroupTree"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div data-options="region:'east'" style="width:80px">
+                    <div style="padding:220px 0px;position: relative">
+                        <img id="btnAddToGridVideo" src="themes/default/images/arrow_right1.png" cy-click="clickAddToGridVideo" title="添加" style="display:block;margin-left: 10px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--视频列表-->
+        <div data-options="region:'center'">
+            <div class="easyui-layout">
+                <div data-options="region:'north'" style="height: 30px">
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-up'" cy-click="upVideo">向上移</a>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-down'" cy-click="downVideo">向下移</a>
+                </div>
+                <div data-options="region:'center'">
+                    <table id="gridPlanVideo" cy-datagrid="videoOptions">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--确定，取消-->
+        <div data-options="region:'south'">
+            <div class="table" style="margin-left: auto;margin-right: auto">
+                <div class="tr">
+                    <div class="td" style="text-align: center;margin-left: 40%">
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="btnSave"
+                           cy-click="savePlan">确定</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+                           cy-click="$closeSelf">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["cruisePlanDetail","refresh"], function ($scope) {
+        $scope.$getData("vio", "VioInit")($scope);
+        $scope.load=function(){
+            if(!$scope.cruisePlanDetail){
+                $scope.cruisePlanDetail={};
+            }
+            if(!$scope.cruisePlanDetail||!$scope.cruisePlanDetail.defaultCruiseTimes){
+                $scope.cruisePlanDetail.defaultCruiseTimes=30;
+            }
+            console.log($scope.cruisePlanDetail);
+            $scope.$updateDom("cruisePlanDetail");
+            $scope.$("input[name=radioDome]").attr({disabled:"disabled"});
+            $scope.loadDeviceTree('roadTree',function(){
+                if ($scope.cruisePlanDetail.videoPlanId){
+                    $scope.loadPlanVideo($scope.cruisePlanDetail);
+                }
+            });
+
+            $scope.$("#tollgateTabs").tabs({
+                onSelect:function(title,index){
+                    console.log(title);
+                    switch(title){
+                        case "按道路":
+                            $scope.loadDeviceTree('roadTree');
+                            break;
+                        case "按机构":
+                            $scope.loadDeviceTree('orgTree');
+                            break;
+                        case "自定义分组":
+                            $scope.loadDeviceTree('userGroupTree');
+                            break;
+                    }
+                }
+            });
+            $scope.initSearch();
+        };
+        $scope.close=function(){
+
+        };
+        $scope.leave=function(){
+
+        };
+        $scope.enter=function(){
+
+        };
+        $scope.curSelectVideoPresetList=[];
+        $scope.curUpdatePlan={};
+        $.extend($scope,{
+            //视频列表属性
+            videoOptions:{
+                columns: [
+                    [
+                        {title: "序号", field: "sortIndex",sortable:true
+//                            sorter:function(a,b){
+//                                if(a&b){
+//                                    return a>b;
+//                                }
+//                                else{
+//                                    return true;
+//                                }
+//                            }
+                        },//
+                        {title: "视频编号", field: "deviceSysNbr", width: 10},//
+                        {title: "视频名称", field: "videoDeviceName", width: 10},//
+                        {title: "预置位", field: "presetDesc",width:10},//
+                        {title: "巡航时间(秒)", field: "cruiseTime", width: 10},//
+//                    {title: "顺序", field: "sortIndex", width: 10,
+//                        sorter: function (a, b) {
+//                           return true;
+//                        }
+//                    },//
+                        {title: "操作", field: "test", width: 10, formatter: function (value, rowData, rowIndex) {
+                            var upBtn = $("<a  title='修改' class='button-modify'></a>");
+                            upBtn.linkbutton({
+                                iconCls: "icon-edit-solid",
+                                plain : true
+                            });
+                            upBtn.attr('cy-click', "modifyVideo('" + rowIndex + "')");
+
+                            var downBtn = $("<a  title='删除' class='button-delete'></a>");
+                            downBtn.linkbutton({
+                                iconCls: "icon-remove-solid",
+                                plain : true
+                            });
+                            downBtn.attr('cy-click', "deleteVideo('" + rowIndex + "')");
+                            return $("<span/>").append(upBtn).append("  ").append(downBtn).html();
+                        }}//
+                    ]
+                ],
+                singleSelect: true,
+                method: 'get',
+                fitColumns: true,
+                striped: true,
+                selectOnCheck: false,
+                nowarp: false,
+                pagination: false,
+                remoteSort:false
+//                onSelect:function(index,row) {
+//                    //选择时加载预置位列表
+//                    $scope.$ajaxRequest({
+//                        url: $scope.$restRoot + "/video/cruisePlan/getVideoPresetList",
+//                        params: {param: deviceId},
+//                        method: "post",
+//                        success: function (result) {
+//                            $scope.curSelectVideoPresetList=result;
+//                        },
+//                        fail: function (errMsg) {
+//                            alert('加载预置位失败，原因：' + errMsg);
+//                        }
+//                    });
+//                }
+            },
+            //加载机构树菜单
+            loadDeviceTree: function (treeId,callBackFn) {
+                var domeGun=null;
+                if($scope.$("input[name=chkDome]").prop("checked")
+                        &&$("input[name=radioDome]:checked").length!=3){
+                    domeGun='';
+                    $("input[name=radioDome]:checked").each(function(){
+                        domeGun+=$(this).val()+',';
+                    });
+                }
+                var queryParams = {
+                    id: "", //默认根节点为空，表示查询基础数据
+                    type: treeId,//默认类型为0,
+                    isDomeGun:domeGun
+                };
+                var tree=$scope.$("#"+treeId);
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/videoPlay/getVideoDeviceTrees",
+                    params: queryParams,
+                    method: "post",
+                    success: function (result) {
+                        tree.tree({
+                            data: result,
+                            onCheck:$scope.treeNodeCheck,
+                            checkbox:true,
+                            onLoadSuccess: function () {
+                                if($(this).tree("getRoots").length>0){
+                                    var root = $(this).tree("getRoots")[0];
+                                    //收起全部节点
+                                    $(this).tree("collapseAll");
+                                    //展开根节点
+                                    $(this).tree("expand", root.target);
+                                    //默认选中根节点
+                                    $(this).tree("select", root.target);
+                                }
+                            }
+                        });
+                        if(callBackFn){
+                            callBackFn();
+                        }
+                    },
+                    fail: function (errMsg) {
+                        alert('加载机构树失败，原因：' + errMsg);
+                    }
+                });
+            },
+            //树节点点击
+            treeNodeCheck:function(node,checked){
+                var tree=$($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                var nodes=tree.tree('getChecked');
+                if(nodes&&nodes.length>0){
+                    $scope.$("#btnAddToGridVideo").attr('src','themes/default/images/arrow_right2.png');
+                }
+                else{
+                    $scope.$("#btnAddToGridVideo").attr('src','themes/default/images/arrow_right1.png');
+                }
+            },
+
+            //加载巡航方案视频列表
+            loadPlanVideo:function(cruisePlan){
+                //加载巡航视频列表
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/cruisePlan/getCruisePlanVideo",
+                    params: {param: JSON.stringify(cruisePlan)},
+                    method: "post",
+                    success: function (result) {
+                        if(result.errorMsg)
+                        {
+                            alert('加载巡航视频列表失败，原因:'+result.errorMsg);
+                        }
+                        else {
+                            if (result && result.result.length > 0) {
+                                $scope.curCruiseVideoIndex = 1;
+                                $scope.$("#gridPlanVideo").datagrid('loadData', result.result);
+                                $scope.$("#gridPlanVideo").datagrid('sort', {
+                                    sortName:'sortIndex',
+                                    sortOrder:'asc'
+                                });
+                                $scope.$("#gridPlanVideo").datagrid('selectRow', 0);
+
+                            }
+                            else {
+                                $scope.curCruiseVideoIndex = 1;
+                                $scope.$("#gridPlanVideo").datagrid('loadData', []);
+                            }
+
+                        }
+                    }
+                });
+            },
+            //确定保存巡航方案
+            savePlan:function(){
+                ////console.log('save');
+                if(!$scope.$("#formPlanDetail").form('validate'))
+                {
+                    return;
+                }
+                $scope.$updateData("cruisePlanDetail");
+                ////console.log($scope.cruisePlanDetail);
+                $scope.cruisePlanDetail.videoLst= $scope.$("#gridPlanVideo").datagrid('getRows');
+                //新增
+                if (!$scope.cruisePlanDetail.videoPlanId) {
+                    $scope.PostAjax(
+                            $scope.$restRoot + "/video/cruisePlan/createCruisePlan",
+                            {param:JSON.stringify($scope.cruisePlanDetail)},
+                            function (data) {
+                                if (data.errorMsg && data.errorMsg != '') {
+                                    alert("新增巡航视频失败，原因："+data.errorMsg);
+                                }
+                                else {
+                                    ////console.log("新增巡航视频成功");
+                                    $scope.cruisePlanDetail=data.result;
+                                    $scope.refresh('add',$scope.cruisePlanDetail);
+                                    $scope.$closeSelf();
+                                }
+                            }
+                    );
+                }
+                //修改
+                else{
+                    $scope.PostAjax(
+                                    $scope.$restRoot + "/video/cruisePlan/updateCruisePlan",
+                            {param:JSON.stringify($scope.cruisePlanDetail)},
+                            function (data) {
+                                if (data.errorMsg && data.errorMsg != '') {
+                                    alert("修改巡航视频失败，原因："+data.errorMsg);
+                                }
+                                else {
+                                    //console.log("修改巡航视频成功");
+                                    $scope.cruisePlanDetail=data.result;
+                                    $scope.refresh('modify',$scope.cruisePlanDetail);
+                                    $scope.$closeSelf();
+                                }
+                            }
+                    );
+                }
+            },
+            //添加到视频列表
+            clickAddToGridVideo:function(){
+                var tree=$($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                var nodes=tree.tree('getChecked');
+                var defaultCruiseTimes=parseInt($scope.$("#textboxDefaultCruiseTime").textbox('getText'));
+                var needAddNodes=[];
+                $.extend(needAddNodes,nodes);//防止引用关联
+                ////console.log(needAddNodes);
+                //将需要添加的节点添加到列表中
+                var rowIndex=$scope.$("#gridPlanVideo").datagrid('getRows').length;
+                if(needAddNodes&&needAddNodes.length>0){
+                    var nodeLst=[];
+                    for(var i=0;i<needAddNodes.length;++i) {
+                        var node = needAddNodes[i];
+                        if (node.attribute.nodeType == "video" || node.attribute.nodeType == "component") {
+                            nodeLst.push(node);
+                        }
+                    }
+                    if(nodeLst.length>0) {
+                        $scope.loadPresetChooseFirstAddToGridVideo(nodeLst,defaultCruiseTimes,rowIndex);
+                    }
+                }
+                //取消树选择
+                var tree=$($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                var nodes=tree.tree('getChecked');
+                if(nodes&&nodes.length>0){
+                    for(var i=0;i<nodes.length;++i){
+                        tree.tree('uncheck',nodes[i].target);
+                    }
+                }
+                $scope.$("#btnAddToGridVideo").attr('src','themes/default/images/arrow_right1.png');
+            },
+            /**
+             * 循环加载预置位，并添加到列表中
+             */
+            loadPresetChooseFirstAddToGridVideo:function(nodeLst,defaultCruiseTimes,rowIndex){
+                if(nodeLst&&nodeLst.length>0){
+                    var node=nodeLst.shift();
+                    //加载预置位
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot + "/video/cruisePlan/getVideoPresetList",
+                        params: {
+                            deviceId: node.attribute.deviceId,
+                            sysComponentId:node.attribute.sysComponentId
+                        },
+                        method: "post",
+                        success: function (result) {
+                            rowIndex = rowIndex + 1;
+                            var presetList='';
+                            var presetDesc='';
+                            if(result.result.length>0){
+                                presetList=result.result[0].presetRecordId;
+                                presetDesc=result.result[0].presetDesc;
+                            }
+                            $scope.$("#gridPlanVideo").datagrid('appendRow', {
+                                videoPlanId: $scope.cruisePlanDetail.videoPlanId,
+                                deviceId: node.attribute.deviceId,
+                                sortIndex: rowIndex,
+                                videoDeviceName: node.text,
+                                deviceSysNbr: node.attribute.deviceSysNbr,
+                                sysComponentId: node.attribute.sysComponentId,
+                                presetDesc: presetDesc,
+                                presetList:presetList,
+                                cruiseTime: defaultCruiseTimes
+                            });
+                            $scope.loadPresetChooseFirstAddToGridVideo(nodeLst,defaultCruiseTimes,rowIndex);
+                        },
+                        fail: function (errMsg) {
+                            console.log('加载预置位失败，原因：' + errMsg);
+                        }
+                    });
+                }
+                else{
+                    $scope.$("#gridPlanVideo").datagrid('sort',{
+                        sortName:'sortIndex',
+                        sortOrder:'asc'
+                    });
+                }
+            },
+            //向上移
+            upVideo:function(){
+                ////console.log('upVideo');
+                var index=$scope.$("#gridPlanVideo").datagrid('getRowIndex',$scope.$("#gridPlanVideo").datagrid('getSelected'));
+                if(index>0){
+                    $scope.$("#gridPlanVideo").datagrid("updateRow", {
+                        index:index,
+                        row:{
+                            sortIndex:index
+                        }
+                    });
+                    $scope.$("#gridPlanVideo").datagrid("updateRow", {
+                        index:index-1,
+                        row:{
+                            sortIndex:index+1
+                        }
+                    }).datagrid('sort',{
+                        sortName:'sortIndex',
+                        sortOrder:'asc'
+                    }).datagrid('selectRow',index-1);
+                }
+                else{
+                    $scope.showMessage('已到第一条');
+                }
+            },
+            //向下移
+            downVideo:function(){
+                ////console.log('downVideo');
+                var index=$scope.$("#gridPlanVideo").datagrid('getRowIndex',$scope.$("#gridPlanVideo").datagrid('getSelected'));
+                var length=$scope.$("#gridPlanVideo").datagrid("getRows").length;
+                ////console.log(index);
+                if(index!=(length-1)) {
+//                    var row = $scope.$("#cruiseConfigGridVideo").datagrid("getRows")[index];
+//                    $scope.$("#cruiseConfigGridVideo").datagrid("deleteRow", index);
+//                    $scope.$("#cruiseConfigGridVideo").datagrid("insertRow", {
+//                        index: index + 1,
+//                        row: row
+//                    });
+//                    var rows = $scope.$("#cruiseConfigGridVideo").datagrid("getRows");
+//                    $scope.$("#cruiseConfigGridVideo").datagrid("loadData", rows);
+//                    $scope.$("#cruiseConfigGridVideo").datagrid("loadData", rows);
+                    $scope.$("#gridPlanVideo").datagrid("updateRow", {
+                        index:index,
+                        row:{
+                            sortIndex:index+2
+                        }
+                    });
+                    $scope.$("#gridPlanVideo").datagrid("updateRow", {
+                        index:index+1,
+                        row:{
+                            sortIndex:index+1
+                        }
+                    }).datagrid('sort',{
+                        sortName:'sortIndex',
+                        sortOrder:'asc'
+                    }).datagrid('selectRow',index+1);;
+                }
+                else{
+                    $scope.showMessage('已到最后一条');
+                }
+            },
+            //修改巡航视频
+            modifyVideo:function(rowIndex){
+                ////console.log('modifyVideo');
+                var rowData=$scope.$("#gridPlanVideo").datagrid("getRows")[parseInt(rowIndex)];
+                var curUpdateVideo={};
+                $.extend(curUpdateVideo,rowData);
+                $scope.$setParam("videoDetail",curUpdateVideo);
+                $scope.$setParam("refresh",$scope.onSelectPresetComplete);
+                $scope.$openDialog("addDialog", {
+                    title : "巡航视频修改",
+                    width : 350,
+                    height : 220,
+                    href : "tpls/trafficMonitor/videoMonitor/cruise-plan-video-modify.html"
+                }, true);
+            },
+            //删除视频
+            deleteVideo:function(rowIndex){
+                ////console.log('deleteVideo');
+                var rowData=$scope.$("#gridPlanVideo").datagrid("getRows")[parseInt(rowIndex)];
+                    $.messager.confirm("提示", "是否确认删除巡航视频？", function(flag) {
+                        if (flag) {
+                            if (rowData.relatedVideoId) {
+                            $scope.PostAjax(
+                                            $scope.$restRoot + "/video/cruisePlan/deleteCruiseVideo",
+                                    {param: rowData.relatedVideoId},
+                                    function (data) {
+                                        if (data.errorMsg && data.errorMsg != '') {
+                                            alert("删除巡航视频失败，原因：" + data.errorMsg);
+                                        }
+                                        else {
+                                            ////console.log("删除巡航视频成功");
+                                            //var rowIndex=$scope.$("#gridPlanVideo").datagrid('getRowIndex',$scope.videoDetail);
+                                            $scope.deleteVideoRow(rowIndex);
+                                        }
+                                    }
+                            );
+                        }
+                            else{
+                                $scope.deleteVideoRow(rowIndex);
+                            }
+                    }
+                });
+            },
+            deleteVideoRow:function(rowIndex){
+                $scope.$("#gridPlanVideo").datagrid('deleteRow', rowIndex);
+                var leftVideoNum=$scope.$("#gridPlanVideo").datagrid('getRows').length;
+                if ( leftVideoNum> 0) {
+                    for(var i=parseInt(rowIndex);i<leftVideoNum;++i){
+                        $scope.$("#gridPlanVideo").datagrid('updateRow', {
+                            index:i,
+                            row:{
+                                sortIndex:i+1
+                            }
+                        });
+                    }
+                    $("#gridPlanVideo").datagrid('sort',{
+                        sortName:'sortIndex',
+                        sortOrder:'asc'
+                    });
+                    if(leftVideoNum-1>=rowIndex){
+                        $scope.$("#gridPlanVideo").datagrid('selectRow', rowIndex);
+                    }
+                    else{
+                        $scope.$("#gridPlanVideo").datagrid('selectRow', leftVideoNum-1);
+                    }
+                }
+            },
+            //选择好预置位并关闭
+            onSelectPresetComplete:function(selectPreset){
+//                    var selectPreset=null;
+//                    for(var i=0;i<$scope.curSelectVideoPresetList.length;++i){
+//                        if($scope.curSelectVideoPresetList[i].presetRecordId
+//                                &&$scope.curSelectVideoPresetList[i].presetRecordId==selectRecordID){
+//                            selectPreset=$scope.curSelectVideoPresetList[i];
+//                            break;
+//                        }
+//                    };
+                if(selectPreset){
+                    //更新
+                    var rowData=$scope.$("#gridPlanVideo").datagrid("getSelected");
+                    $.extend(rowData,selectPreset);
+                    rowData.presetList=selectPreset.presetRecordId;
+                    ////console.log(rowData);
+                    $scope.PostAjax(
+                                    $scope.$restRoot + "/video/cruisePlan/updateCruiseVideo",
+                            {param:JSON.stringify(rowData)},
+                            function (data) {
+                                if (data.errorMsg && data.errorMsg != '') {
+                                    alert("修改巡航视频失败，原因："+data.errorMsg);
+                                }
+                                else {
+                                    ////console.log("修改巡航视频成功");
+                                    var rowIndex=$scope.$("#gridPlanVideo").datagrid('getRowIndex',rowData);
+                                    $scope.$("#gridPlanVideo").datagrid('updateRow',{
+                                        index:rowIndex,
+                                        row:selectPreset
+                                    }).datagrid('sort',{
+                                        sortName:'sortIndex',
+                                        sortOrder:'asc'
+                                    });
+                                }
+                            }
+                    );
+                }
+            } ,
+            /**
+             * 初始化查找
+             */
+            initSearch:function() {
+                $scope.$("#search").searchbox({
+                    searcher: function () {
+                        var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                        var searchIndex = $(this).searchbox("getValue").trim();
+                        //显示查询结果
+                        $scope.showGrid();
+                        var searchResult = [];
+                        var rootNodes = tree.tree("getRoots");
+                        for (var index = 0; index < rootNodes.length; ++index) {
+                            var data = tree.tree("getData", rootNodes[index].target);
+                            $scope.getSearchData(searchResult, data, searchIndex.toUpperCase());
+                        }
+                        //获得超找结果
+                        $scope.$("#searchGrid").datagrid("loadData", searchResult);
+                    }
+                });
+            },
+            /**
+             * 显示查询结果
+             */
+            showGrid: function () {
+                $scope.$("#innerLayout").layout("panel", "west").panel("open");
+                $scope.$("#innerLayout").layout("resize");
+                $scope.$("#back").show();
+            },
+            searchGoBack : function() {
+                // $scope.$('#devTree').show();
+                // $scope.$('#searchReuslt').hide();
+                $scope.$("#leftLayout").layout("panel", "east").panel("close");
+                $scope.$("#leftLayout").layout("resize");
+            },
+
+            /**
+             * 查找结果列表参数
+             */
+            searchGridOptions: {
+                columns: [
+                    [
+                        {
+                            field: 'id',
+                            checkbox: true
+                        },
+                        {
+                            field: 'name',
+                            title: '设备或组件名称',
+                            width: 60,
+                            formatter: $scope.initTitle
+                        }
+                    ]
+                ],
+                pagination: false,
+                onCheck: function (rowIndex, rowData) {
+                    //获取对应的树节点
+                    var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                    var node = tree.tree("find", rowData.id);
+                    //展开父节点
+                    tree.tree("expandTo", node.target);
+                    //选中节点
+                    tree.tree("check", node.target);
+                },
+                onUncheck: function (rowIndex, rowData) {
+                    //获取对应的树节点
+                    var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                    tree.tree("find", rowData.id);
+                    //选中节点
+                    tree.tree("uncheck", node.target);
+                },
+                onCheckAll: function (rows) {
+                    console.log('onCheckAll');
+                    var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                    for (var index in rows) {
+                        var row = rows[index];
+                        //获取对应的树节点
+                        var node = tree.tree("find", row.id);
+                        //展开父节点
+                        tree.tree("expandTo", node.target);
+                        //选中节点
+                        tree.tree("check", node.target);
+                    }
+                },
+                onUncheckAll: function (rows) {
+                    var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                    for (var index in rows) {
+                        var row = rows[index];
+                        //获取对应的树节点
+                        var node = tree.tree("find", row.id);
+                        //选中节点
+                        tree.tree("uncheck", node.target);
+                    }
+                }
+            },
+
+
+            /**
+             * 获得查找结果数据
+             */
+            getSearchData: function (result, tree, searchIndex) {
+                //var tree=$($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                if (tree.children && tree.children.length > 0) {
+                    for (var index in tree.children) {
+                        $scope.getSearchData(result, tree.children[index], searchIndex);
+                    }
+                } else if (tree.text&&tree.text.toUpperCase().indexOf(searchIndex) >= 0) {
+                    result.push({
+                        id: tree.id,
+                        name: tree.text
+                    });
+                }
+            },
+            clearSearch:function(){
+                $scope.$("#search").searchbox('clear');
+            },
+            //选择球机或枪机
+            clickChkDome:function(){
+                if($scope.$("input[name=chkDome]").prop("checked")){
+                    $scope.$("input[name=radioDome]").removeAttr("disabled");
+                    $scope.$("input[name=radioDome]:first").prop('checked',true);
+                }
+                else{
+                    $scope.$("input[name=radioDome]").attr({disabled:"disabled"});
+                    $scope.$("input[name=radioDome]").prop("checked",false);
+                }
+                var treeID=$($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+                $scope.loadDeviceTree(treeID);
+            },
+            clickRadioDome:function(){
+                if($scope.$("input[name=radioDome]:checked").length==0){
+                    $scope.showMessage("选择类型时请至少选择一项!");
+                    $(this).prop('checked',true);
+                }
+                else {
+                    var treeID = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+                    $scope.loadDeviceTree(treeID);
+                }
+            },
+            // 显示信息
+            showMessage: function (msg) {
+                $.messager.show({
+                    title: '用户自定义分组',
+                    msg: msg,
+                    timeout: 3 * 1000,
+                    showType: 'slide',
+                    style: {
+                        right: '',
+                        top: 220,
+                        bottom: ''
+                    }
+                });
+            },
+            /**
+             * 返回树
+             */
+            back: function () {
+                $scope.$("#innerLayout").layout("panel", "west").panel("close");
+                $scope.$("#innerLayout").layout("resize");
+                $scope.$("#back").hide();
+            },
+            showMessage:function(msg){
+            $.messager.show({
+                title:'巡航方案配置',
+                msg:msg,
+                timeout:1*1000,
+                showType:'slide',
+                style:{
+                    right:'',
+                    top:220,
+                    bottom:''
+                }
+            });
+        }
+        });
+    });
+</script>

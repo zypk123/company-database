@@ -1,0 +1,99 @@
+<div class="easyui-layout" fit="true" id="faultInfoForm">
+    <div data-options="region:'center',border:false">
+        <form method="post" cy-form="formData" id="form">
+            <div class="table">
+                <div class="tr">
+                    <div class="th">故障设备：</div>
+                    <div class="td">
+                        <input class="easyui-combobox" id="device" name="deviceId" data-options="valueField:'deviceId',textField:'deviceName',required:true"/>
+                    </div>
+                    <div class="th">故障类型：</div>
+                    <div class="td">
+                        <input class="easyui-combobox" name="faultType" cy-code="442" required="true" />
+                    </div>
+                    <div class="th">发生时间：</div>
+                    <div class="td">
+                        <input class="easyui-datebox" id="faultTime" name="startTime" required="true" validType="date"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">采集方式：</div>
+                    <div class="td">
+                    	<input class="easyui-textbox" name="collectMethod" value="3" id="collectMethod" readonly="true">
+                    </div>
+                    <div id="hide">
+	                    <div class="th">创建人：</div>
+	                    <div class="td">
+	                    	<input class="easyui-textbox" name="createBy">
+	                    </div>
+	                    <div class="th">创建时间：</div>
+	                    <div class="td">
+	                    	<input class="easyui-datebox" name="createTime" validType="date">
+	                    </div>
+	               	</div>
+                </div>
+                <div class="tr">
+                    <div class="th">故障描述：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" data-options="validType:'length[0,256]',multiline:true" style="height:80px;width:610px;" name="remark">
+                    </div>
+                </div>
+            </div>
+    	</form>
+    </div>
+    <div data-options="region:'south',border:false">
+    	<div class="linkbutton_toolbar" style="text-align: center;">
+	        <a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+	        <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+    	</div>
+    </div>
+</div>
+<script>
+    InitPage(["saveData","formData"], function ($scope) {
+    	$scope.load = function(){
+    		 $scope.$("#hide").hide();
+    		 //设置采集方式默认为人工添加
+    		 $scope.$("#collectMethod").textbox("setText","人工添加");
+    		 //加载当前用户所在机构的设备
+    		 var orgPrivilegeCode = $scope.UserInfo.orgPrivCode;//当前用户所在机构权限过滤code
+			 $scope.$ajaxRequest({
+	            url: $scope.$restRoot + "device/faultAlarmManage/findDeviceByOrgPrivilegeCode",
+	            params: {orgPrivilegeCode : orgPrivilegeCode},
+	            success: function (data) {
+	            	$scope.$("#device").combobox("loadData",data);
+	            },
+	            fail: function (errMsg) {
+	                $.messager.alert("提示","加载当前用户所属机构下设备失败！");
+	            }
+	        });
+			//故障发生时间不能大于当前时间
+    		$scope.$('#faultTime').datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+    	};
+    	//保存添加的故障信息
+    	$scope.save = function(){
+    		if($scope.$("#form").form("validate")){
+    			$scope.$updateData("formData");
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+    			$scope.saveData($scope.formData);
+    		}
+    	};
+    });
+</script>
+<style>
+    #faultInfoForm .th{
+        width : 70px;
+        text-align:right;
+    }
+    #faultInfoForm .td{
+        height:auto;
+    }
+    #faultInfoForm .td>input[class^='easyui-']{
+        width: 150px;
+    }
+</style>

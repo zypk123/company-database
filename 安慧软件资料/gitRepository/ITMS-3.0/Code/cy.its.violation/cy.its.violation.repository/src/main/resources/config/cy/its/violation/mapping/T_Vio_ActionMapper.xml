@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_ActionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_Action" >
+    <id column="VIO_ACTION_CODE" property="vioActionCode" jdbcType="VARCHAR" />
+    <result column="VIO_TYPE" property="vioType" jdbcType="CHAR" />
+    <result column="VIO_PRIOR_TYPE" property="vioPriorType" jdbcType="VARCHAR" />
+    <result column="VIO_SUMMARY" property="vioSummary" jdbcType="VARCHAR" />
+    <result column="VIO_CONETENT" property="vioConetent" jdbcType="VARCHAR" />
+    <result column="LEGAL_REFERENCE" property="legalReference" jdbcType="VARCHAR" />
+    <result column="PUNISH_LEGAL_REFERENCE" property="punishLegalReference" jdbcType="VARCHAR" />
+    <result column="FINE_SCORE" property="fineScore" jdbcType="DECIMAL" />
+    <result column="FINE_MAX" property="fineMax" jdbcType="DECIMAL" />
+    <result column="FINE_MIN" property="fineMin" jdbcType="DECIMAL" />
+    <result column="FINE_DEFAULT" property="fineDefault" jdbcType="DECIMAL" />
+    <result column="SUSPEND_MONTH_MAX" property="suspendMonthMax" jdbcType="DECIMAL" />
+    <result column="SUSPEND_MONTH_MIN" property="suspendMonthMin" jdbcType="DECIMAL" />
+    <result column="DETAIN_DAYS_MAX" property="detainDaysMax" jdbcType="DECIMAL" />
+    <result column="DETAIN_DAYS_MIN" property="detainDaysMin" jdbcType="DECIMAL" />
+    <result column="FORCE_TYPE" property="forceType" jdbcType="VARCHAR" />
+    <result column="FLAG_WARN" property="flagWarn" jdbcType="CHAR" />
+    <result column="FLAG_FINE" property="flagFine" jdbcType="CHAR" />
+    <result column="FLAG_SUSPEND" property="flagSuspend" jdbcType="CHAR" />
+    <result column="FLAG_CANCEL" property="flagCancel" jdbcType="CHAR" />
+    <result column="FLAG_DETAIN" property="flagDetain" jdbcType="CHAR" />
+    <result column="FLAG_REVOKE_VEHICLE" property="flagRevokeVehicle" jdbcType="CHAR" />
+    <result column="FLAG_REVOKE_DRIVER" property="flagRevokeDriver" jdbcType="CHAR" />
+    <result column="IS_GB" property="isGb" jdbcType="CHAR" />
+    <result column="ISSUE_DAY" property="issueDay" jdbcType="TIMESTAMP" />
+    <result column="ISSUE_END_DAY" property="issueEndDay" jdbcType="TIMESTAMP" />
+    <result column="IS_COMMON_USED" property="isCommonUsed" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIO_ACTION_CODE, VIO_TYPE, VIO_PRIOR_TYPE, VIO_SUMMARY, VIO_CONETENT, LEGAL_REFERENCE, 
+    PUNISH_LEGAL_REFERENCE, FINE_SCORE, FINE_MAX, FINE_MIN, FINE_DEFAULT, SUSPEND_MONTH_MAX, 
+    SUSPEND_MONTH_MIN, DETAIN_DAYS_MAX, DETAIN_DAYS_MIN, FORCE_TYPE, FLAG_WARN, FLAG_FINE, 
+    FLAG_SUSPEND, FLAG_CANCEL, FLAG_DETAIN, FLAG_REVOKE_VEHICLE, FLAG_REVOKE_DRIVER, 
+    IS_GB, ISSUE_DAY, ISSUE_END_DAY, IS_COMMON_USED
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_ACTION
+    where VIO_ACTION_CODE = #{vioActionCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_ACTION
+    where VIO_ACTION_CODE = #{vioActionCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_Action" >
+    insert into T_VIO_ACTION (VIO_ACTION_CODE, VIO_TYPE, VIO_PRIOR_TYPE, 
+      VIO_SUMMARY, VIO_CONETENT, LEGAL_REFERENCE, 
+      PUNISH_LEGAL_REFERENCE, FINE_SCORE, FINE_MAX, 
+      FINE_MIN, FINE_DEFAULT, SUSPEND_MONTH_MAX, 
+      SUSPEND_MONTH_MIN, DETAIN_DAYS_MAX, DETAIN_DAYS_MIN, 
+      FORCE_TYPE, FLAG_WARN, FLAG_FINE, 
+      FLAG_SUSPEND, FLAG_CANCEL, FLAG_DETAIN, 
+      FLAG_REVOKE_VEHICLE, FLAG_REVOKE_DRIVER, IS_GB, 
+      ISSUE_DAY, ISSUE_END_DAY, IS_COMMON_USED
+      )
+    values (#{vioActionCode,jdbcType=VARCHAR}, #{vioType,jdbcType=CHAR}, #{vioPriorType,jdbcType=VARCHAR}, 
+      #{vioSummary,jdbcType=VARCHAR}, #{vioConetent,jdbcType=VARCHAR}, #{legalReference,jdbcType=VARCHAR}, 
+      #{punishLegalReference,jdbcType=VARCHAR}, #{fineScore,jdbcType=DECIMAL}, #{fineMax,jdbcType=DECIMAL}, 
+      #{fineMin,jdbcType=DECIMAL}, #{fineDefault,jdbcType=DECIMAL}, #{suspendMonthMax,jdbcType=DECIMAL}, 
+      #{suspendMonthMin,jdbcType=DECIMAL}, #{detainDaysMax,jdbcType=DECIMAL}, #{detainDaysMin,jdbcType=DECIMAL}, 
+      #{forceType,jdbcType=VARCHAR}, #{flagWarn,jdbcType=CHAR}, #{flagFine,jdbcType=CHAR}, 
+      #{flagSuspend,jdbcType=CHAR}, #{flagCancel,jdbcType=CHAR}, #{flagDetain,jdbcType=CHAR}, 
+      #{flagRevokeVehicle,jdbcType=CHAR}, #{flagRevokeDriver,jdbcType=CHAR}, #{isGb,jdbcType=CHAR}, 
+      #{issueDay,jdbcType=TIMESTAMP}, #{issueEndDay,jdbcType=TIMESTAMP}, #{isCommonUsed,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Action" >
+    insert into T_VIO_ACTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vioActionCode != null" >
+        VIO_ACTION_CODE,
+      </if>
+      <if test="vioType != null" >
+        VIO_TYPE,
+      </if>
+      <if test="vioPriorType != null" >
+        VIO_PRIOR_TYPE,
+      </if>
+      <if test="vioSummary != null" >
+        VIO_SUMMARY,
+      </if>
+      <if test="vioConetent != null" >
+        VIO_CONETENT,
+      </if>
+      <if test="legalReference != null" >
+        LEGAL_REFERENCE,
+      </if>
+      <if test="punishLegalReference != null" >
+        PUNISH_LEGAL_REFERENCE,
+      </if>
+      <if test="fineScore != null" >
+        FINE_SCORE,
+      </if>
+      <if test="fineMax != null" >
+        FINE_MAX,
+      </if>
+      <if test="fineMin != null" >
+        FINE_MIN,
+      </if>
+      <if test="fineDefault != null" >
+        FINE_DEFAULT,
+      </if>
+      <if test="suspendMonthMax != null" >
+        SUSPEND_MONTH_MAX,
+      </if>
+      <if test="suspendMonthMin != null" >
+        SUSPEND_MONTH_MIN,
+      </if>
+      <if test="detainDaysMax != null" >
+        DETAIN_DAYS_MAX,
+      </if>
+      <if test="detainDaysMin != null" >
+        DETAIN_DAYS_MIN,
+      </if>
+      <if test="forceType != null" >
+        FORCE_TYPE,
+      </if>
+      <if test="flagWarn != null" >
+        FLAG_WARN,
+      </if>
+      <if test="flagFine != null" >
+        FLAG_FINE,
+      </if>
+      <if test="flagSuspend != null" >
+        FLAG_SUSPEND,
+      </if>
+      <if test="flagCancel != null" >
+        FLAG_CANCEL,
+      </if>
+      <if test="flagDetain != null" >
+        FLAG_DETAIN,
+      </if>
+      <if test="flagRevokeVehicle != null" >
+        FLAG_REVOKE_VEHICLE,
+      </if>
+      <if test="flagRevokeDriver != null" >
+        FLAG_REVOKE_DRIVER,
+      </if>
+      <if test="isGb != null" >
+        IS_GB,
+      </if>
+      <if test="issueDay != null" >
+        ISSUE_DAY,
+      </if>
+      <if test="issueEndDay != null" >
+        ISSUE_END_DAY,
+      </if>
+      <if test="isCommonUsed != null" >
+        IS_COMMON_USED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vioActionCode != null" >
+        #{vioActionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="vioType != null" >
+        #{vioType,jdbcType=CHAR},
+      </if>
+      <if test="vioPriorType != null" >
+        #{vioPriorType,jdbcType=VARCHAR},
+      </if>
+      <if test="vioSummary != null" >
+        #{vioSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="vioConetent != null" >
+        #{vioConetent,jdbcType=VARCHAR},
+      </if>
+      <if test="legalReference != null" >
+        #{legalReference,jdbcType=VARCHAR},
+      </if>
+      <if test="punishLegalReference != null" >
+        #{punishLegalReference,jdbcType=VARCHAR},
+      </if>
+      <if test="fineScore != null" >
+        #{fineScore,jdbcType=DECIMAL},
+      </if>
+      <if test="fineMax != null" >
+        #{fineMax,jdbcType=DECIMAL},
+      </if>
+      <if test="fineMin != null" >
+        #{fineMin,jdbcType=DECIMAL},
+      </if>
+      <if test="fineDefault != null" >
+        #{fineDefault,jdbcType=DECIMAL},
+      </if>
+      <if test="suspendMonthMax != null" >
+        #{suspendMonthMax,jdbcType=DECIMAL},
+      </if>
+      <if test="suspendMonthMin != null" >
+        #{suspendMonthMin,jdbcType=DECIMAL},
+      </if>
+      <if test="detainDaysMax != null" >
+        #{detainDaysMax,jdbcType=DECIMAL},
+      </if>
+      <if test="detainDaysMin != null" >
+        #{detainDaysMin,jdbcType=DECIMAL},
+      </if>
+      <if test="forceType != null" >
+        #{forceType,jdbcType=VARCHAR},
+      </if>
+      <if test="flagWarn != null" >
+        #{flagWarn,jdbcType=CHAR},
+      </if>
+      <if test="flagFine != null" >
+        #{flagFine,jdbcType=CHAR},
+      </if>
+      <if test="flagSuspend != null" >
+        #{flagSuspend,jdbcType=CHAR},
+      </if>
+      <if test="flagCancel != null" >
+        #{flagCancel,jdbcType=CHAR},
+      </if>
+      <if test="flagDetain != null" >
+        #{flagDetain,jdbcType=CHAR},
+      </if>
+      <if test="flagRevokeVehicle != null" >
+        #{flagRevokeVehicle,jdbcType=CHAR},
+      </if>
+      <if test="flagRevokeDriver != null" >
+        #{flagRevokeDriver,jdbcType=CHAR},
+      </if>
+      <if test="isGb != null" >
+        #{isGb,jdbcType=CHAR},
+      </if>
+      <if test="issueDay != null" >
+        #{issueDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueEndDay != null" >
+        #{issueEndDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isCommonUsed != null" >
+        #{isCommonUsed,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Action" >
+    update T_VIO_ACTION
+    <set >
+      <if test="vioType != null" >
+        VIO_TYPE = #{vioType,jdbcType=CHAR},
+      </if>
+      <if test="vioPriorType != null" >
+        VIO_PRIOR_TYPE = #{vioPriorType,jdbcType=VARCHAR},
+      </if>
+      <if test="vioSummary != null" >
+        VIO_SUMMARY = #{vioSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="vioConetent != null" >
+        VIO_CONETENT = #{vioConetent,jdbcType=VARCHAR},
+      </if>
+      <if test="legalReference != null" >
+        LEGAL_REFERENCE = #{legalReference,jdbcType=VARCHAR},
+      </if>
+      <if test="punishLegalReference != null" >
+        PUNISH_LEGAL_REFERENCE = #{punishLegalReference,jdbcType=VARCHAR},
+      </if>
+      <if test="fineScore != null" >
+        FINE_SCORE = #{fineScore,jdbcType=DECIMAL},
+      </if>
+      <if test="fineMax != null" >
+        FINE_MAX = #{fineMax,jdbcType=DECIMAL},
+      </if>
+      <if test="fineMin != null" >
+        FINE_MIN = #{fineMin,jdbcType=DECIMAL},
+      </if>
+      <if test="fineDefault != null" >
+        FINE_DEFAULT = #{fineDefault,jdbcType=DECIMAL},
+      </if>
+      <if test="suspendMonthMax != null" >
+        SUSPEND_MONTH_MAX = #{suspendMonthMax,jdbcType=DECIMAL},
+      </if>
+      <if test="suspendMonthMin != null" >
+        SUSPEND_MONTH_MIN = #{suspendMonthMin,jdbcType=DECIMAL},
+      </if>
+      <if test="detainDaysMax != null" >
+        DETAIN_DAYS_MAX = #{detainDaysMax,jdbcType=DECIMAL},
+      </if>
+      <if test="detainDaysMin != null" >
+        DETAIN_DAYS_MIN = #{detainDaysMin,jdbcType=DECIMAL},
+      </if>
+      <if test="forceType != null" >
+        FORCE_TYPE = #{forceType,jdbcType=VARCHAR},
+      </if>
+      <if test="flagWarn != null" >
+        FLAG_WARN = #{flagWarn,jdbcType=CHAR},
+      </if>
+      <if test="flagFine != null" >
+        FLAG_FINE = #{flagFine,jdbcType=CHAR},
+      </if>
+      <if test="flagSuspend != null" >
+        FLAG_SUSPEND = #{flagSuspend,jdbcType=CHAR},
+      </if>
+      <if test="flagCancel != null" >
+        FLAG_CANCEL = #{flagCancel,jdbcType=CHAR},
+      </if>
+      <if test="flagDetain != null" >
+        FLAG_DETAIN = #{flagDetain,jdbcType=CHAR},
+      </if>
+      <if test="flagRevokeVehicle != null" >
+        FLAG_REVOKE_VEHICLE = #{flagRevokeVehicle,jdbcType=CHAR},
+      </if>
+      <if test="flagRevokeDriver != null" >
+        FLAG_REVOKE_DRIVER = #{flagRevokeDriver,jdbcType=CHAR},
+      </if>
+      <if test="isGb != null" >
+        IS_GB = #{isGb,jdbcType=CHAR},
+      </if>
+      <if test="issueDay != null" >
+        ISSUE_DAY = #{issueDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueEndDay != null" >
+        ISSUE_END_DAY = #{issueEndDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isCommonUsed != null" >
+        IS_COMMON_USED = #{isCommonUsed,jdbcType=CHAR},
+      </if>
+    </set>
+    where VIO_ACTION_CODE = #{vioActionCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_Action" >
+    update T_VIO_ACTION
+    set VIO_TYPE = #{vioType,jdbcType=CHAR},
+      VIO_PRIOR_TYPE = #{vioPriorType,jdbcType=VARCHAR},
+      VIO_SUMMARY = #{vioSummary,jdbcType=VARCHAR},
+      VIO_CONETENT = #{vioConetent,jdbcType=VARCHAR},
+      LEGAL_REFERENCE = #{legalReference,jdbcType=VARCHAR},
+      PUNISH_LEGAL_REFERENCE = #{punishLegalReference,jdbcType=VARCHAR},
+      FINE_SCORE = #{fineScore,jdbcType=DECIMAL},
+      FINE_MAX = #{fineMax,jdbcType=DECIMAL},
+      FINE_MIN = #{fineMin,jdbcType=DECIMAL},
+      FINE_DEFAULT = #{fineDefault,jdbcType=DECIMAL},
+      SUSPEND_MONTH_MAX = #{suspendMonthMax,jdbcType=DECIMAL},
+      SUSPEND_MONTH_MIN = #{suspendMonthMin,jdbcType=DECIMAL},
+      DETAIN_DAYS_MAX = #{detainDaysMax,jdbcType=DECIMAL},
+      DETAIN_DAYS_MIN = #{detainDaysMin,jdbcType=DECIMAL},
+      FORCE_TYPE = #{forceType,jdbcType=VARCHAR},
+      FLAG_WARN = #{flagWarn,jdbcType=CHAR},
+      FLAG_FINE = #{flagFine,jdbcType=CHAR},
+      FLAG_SUSPEND = #{flagSuspend,jdbcType=CHAR},
+      FLAG_CANCEL = #{flagCancel,jdbcType=CHAR},
+      FLAG_DETAIN = #{flagDetain,jdbcType=CHAR},
+      FLAG_REVOKE_VEHICLE = #{flagRevokeVehicle,jdbcType=CHAR},
+      FLAG_REVOKE_DRIVER = #{flagRevokeDriver,jdbcType=CHAR},
+      IS_GB = #{isGb,jdbcType=CHAR},
+      ISSUE_DAY = #{issueDay,jdbcType=TIMESTAMP},
+      ISSUE_END_DAY = #{issueEndDay,jdbcType=TIMESTAMP},
+      IS_COMMON_USED = #{isCommonUsed,jdbcType=CHAR}
+    where VIO_ACTION_CODE = #{vioActionCode,jdbcType=VARCHAR}
+  </update>
+  
+  
+	<select id="selectVioActions" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+    from T_VIO_ACTION
+		<where> 
+			<if test="violationCode != null and violationCode != '' ">
+				AND VIO_ACTION_CODE = #{violationCode,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzySummary != null and fuzzySummary != '' ">
+				AND VIO_SUMMARY like #{fuzzySummary,jdbcType=VARCHAR}
+			</if>  
+			
+			<if test="violationType != null and violationType != '' ">
+				AND VIO_TYPE = #{violationType,jdbcType=VARCHAR}
+			</if>
+			
+		</where> 
+	</select>
+
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SectionMapper" >
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.site.Section" >
+		<id column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+		<result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+		<result column="LANE_NUM" property="laneNum" jdbcType="VARCHAR" />
+		<result column="HAS_EMERGENCY_LANE" property="hasEmergencyLane" jdbcType="CHAR" />
+		<result column="HAS_BICYCLE_LANE" property="hasBicycleLane" jdbcType="CHAR" />
+		<result column="HAS_PAVEMENT" property="hasPavement" jdbcType="CHAR" />
+		<result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+		<result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+		<result column="ENTER_OR_EXIT" property="enterOrExit" jdbcType="CHAR" />
+		<result column="SECTION_MAX_FLOW" property="sectionMaxFlow" jdbcType="VARCHAR" />
+		<result column="MAX_FLOW_TIME" property="maxFlowTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List" >SECTION_ID, SITE_ID, LANE_NUM, HAS_EMERGENCY_LANE, HAS_BICYCLE_LANE,
+		HAS_PAVEMENT, DIRECTION_TYPE, DIRECTION_NAME, ENTER_OR_EXIT, SECTION_MAX_FLOW, MAX_FLOW_TIME</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_SECTION
+		where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String" >delete from T_SYS_SECTION
+		where SECTION_ID = #{sectionId,jdbcType=VARCHAR}</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.site.Section" >insert into T_SYS_SECTION (SECTION_ID, SITE_ID,
+		LANE_NUM, HAS_EMERGENCY_LANE, HAS_BICYCLE_LANE,
+		HAS_PAVEMENT, DIRECTION_TYPE, DIRECTION_NAME,
+		ENTER_OR_EXIT, SECTION_MAX_FLOW, MAX_FLOW_TIME
+		)
+		values (#{sectionId,jdbcType=VARCHAR}, #{siteId,jdbcType=VARCHAR},
+		#{laneNum,jdbcType=VARCHAR}, #{hasEmergencyLane,jdbcType=CHAR}, #{hasBicycleLane,jdbcType=CHAR},
+		#{hasPavement,jdbcType=CHAR}, #{directionType,jdbcType=CHAR}, #{directionName,jdbcType=VARCHAR},
+		#{enterOrExit,jdbcType=CHAR}, #{sectionMaxFlow,jdbcType=VARCHAR}, #{maxFlowTime,jdbcType=TIMESTAMP}
+		)</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.site.Section" >
+		insert into T_SYS_SECTION
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="sectionId != null" >SECTION_ID,</if>
+			<if test="siteId != null" >SITE_ID,</if>
+			<if test="laneNum != null" >LANE_NUM,</if>
+			<if test="hasEmergencyLane != null" >HAS_EMERGENCY_LANE,</if>
+			<if test="hasBicycleLane != null" >HAS_BICYCLE_LANE,</if>
+			<if test="hasPavement != null" >HAS_PAVEMENT,</if>
+			<if test="directionType != null" >DIRECTION_TYPE,</if>
+			<if test="directionName != null" >DIRECTION_NAME,</if>
+			<if test="enterOrExit != null" >ENTER_OR_EXIT,</if>
+			<if test="sectionMaxFlow != null" >SECTION_MAX_FLOW,</if>
+			<if test="maxFlowTime != null" >MAX_FLOW_TIME,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="sectionId != null" >#{sectionId,jdbcType=VARCHAR},</if>
+			<if test="siteId != null" >#{siteId,jdbcType=VARCHAR},</if>
+			<if test="laneNum != null" >#{laneNum,jdbcType=VARCHAR},</if>
+			<if test="hasEmergencyLane != null" >#{hasEmergencyLane,jdbcType=CHAR},</if>
+			<if test="hasBicycleLane != null" >#{hasBicycleLane,jdbcType=CHAR},</if>
+			<if test="hasPavement != null" >#{hasPavement,jdbcType=CHAR},</if>
+			<if test="directionType != null" >#{directionType,jdbcType=CHAR},</if>
+			<if test="directionName != null" >#{directionName,jdbcType=VARCHAR},</if>
+			<if test="enterOrExit != null" >#{enterOrExit,jdbcType=CHAR},</if>
+			<if test="sectionMaxFlow != null" >#{sectionMaxFlow,jdbcType=VARCHAR},</if>
+			<if test="maxFlowTime != null" >#{maxFlowTime,jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.site.Section" >
+		update T_SYS_SECTION
+		<set >
+			<if test="siteId != null" >SITE_ID = #{siteId,jdbcType=VARCHAR},</if>
+			<if test="laneNum != null" >LANE_NUM = #{laneNum,jdbcType=VARCHAR},</if>
+			<if test="hasEmergencyLane != null" >HAS_EMERGENCY_LANE = #{hasEmergencyLane,jdbcType=CHAR},</if>
+			<if test="hasBicycleLane != null" >HAS_BICYCLE_LANE = #{hasBicycleLane,jdbcType=CHAR},</if>
+			<if test="hasPavement != null" >HAS_PAVEMENT = #{hasPavement,jdbcType=CHAR},</if>
+			<if test="directionType != null" >DIRECTION_TYPE = #{directionType,jdbcType=CHAR},</if>
+			<if test="directionName != null" >DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},</if>
+			<if test="enterOrExit != null" >ENTER_OR_EXIT = #{enterOrExit,jdbcType=CHAR},</if>
+			<if test="sectionMaxFlow != null" >SECTION_MAX_FLOW = #{sectionMaxFlow,jdbcType=VARCHAR},</if>
+			<if test="maxFlowTime != null" >MAX_FLOW_TIME = #{maxFlowTime,jdbcType=TIMESTAMP},</if>
+		</set>
+		where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.site.Section" >
+	update T_SYS_SECTION
+		set SITE_ID = #{siteId,jdbcType=VARCHAR},
+		LANE_NUM = #{laneNum,jdbcType=VARCHAR},
+		HAS_EMERGENCY_LANE = #{hasEmergencyLane,jdbcType=CHAR},
+		HAS_BICYCLE_LANE = #{hasBicycleLane,jdbcType=CHAR},
+		HAS_PAVEMENT = #{hasPavement,jdbcType=CHAR},
+		DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+		DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+		ENTER_OR_EXIT = #{enterOrExit,jdbcType=CHAR},
+		SECTION_MAX_FLOW = #{sectionMaxFlow,jdbcType=VARCHAR},
+		MAX_FLOW_TIME = #{maxFlowTime,jdbcType=TIMESTAMP}
+		where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+	</update>
+	<select id="selectSectionBySiteIds" resultMap="BaseResultMap" parameterType="java.util.List">
+		select
+			SECTION_ID, t.SITE_ID, LANE_NUM, HAS_EMERGENCY_LANE, HAS_BICYCLE_LANE,
+    HAS_PAVEMENT, DIRECTION_TYPE, DIRECTION_NAME, ENTER_OR_EXIT, SECTION_MAX_FLOW, MAX_FLOW_TIME
+		from T_SYS_SECTION t left join t_sys_site s
+    on t.site_id = s.site_id 		
+		<if test="siteIds != null and siteIds.size() > 0" >
+			where t.SITE_ID in
+			<foreach item="item" index="index" collection="siteIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		order by s.site_code
+	</select>
+	<select id="countSectionBySiteIds" resultType="java.lang.Integer" parameterType="java.util.List">
+		select count(1)
+		from T_SYS_SECTION
+		<if test="siteIds != null and siteIds.size() > 0" >
+		   where SITE_ID in
+		   <foreach item="item" index="index" collection="siteIds" open="(" separator="," close=")">
+			   #{item}
+		   </foreach>
+		</if>
+	</select>
+</mapper>

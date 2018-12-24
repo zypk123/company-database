@@ -1,0 +1,518 @@
+<div class="easyui-layout" id="mInfoForm">
+    <div data-options="region:'center',border:false" id="center">
+        <form method="post" cy-form="formData" id="form">
+	        <div class="searchPanel"  style="height:160px;">
+	        	<div class="panel_title">维护单信息</div>
+	        	<div class="table">
+                    <div class="tr">
+                        <div class="th">维护单编号：</div>
+                        <div class="td" id="maintenanceNbr">
+                        	<input type="hidden" name="maintenanceId"/>
+                        </div>
+                        <div class="th">分派时间：</div>
+                        <div class="td" id="assignTime">
+                        
+                        </div>
+                    </div>
+                </div>
+                <table id="faultsList" cy-datagrid="options" cy-querydata="queryData" cy-url="device/maintainManage/queryMaintainAndFaultById">
+                
+                </table>
+	        </div>
+	        <div class="searchPanel" id="dispatch">
+	        	<div class="panel_title">维护单分派</div>
+	        	<div class="table">
+                    <div class="tr">
+                        <div class="th">维护厂家：</div>
+                        <div class="td" style="width:300px;">
+                        	<input id="contractorId" name="maintenanceCompany" data-options="valueField:'contractorId',textField:'contractorName',required:true"/>    
+                        </div>
+                        <div class="th">联系人：</div>
+		               	<div class="td">
+		                    <input class="easyui-textbox" id="person" name="contactPerson" required="true" validType="length[0,16]"/>
+		                </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">联系方式：</div>
+                        <div class="td" style="width:300px;">
+                        	<input class="easyui-textbox" id="phone" name="phoneNbr" required="true" validType="phone"/>
+                        </div>
+                        <div class="th">要求完成时间：</div>
+                        <div class="th">
+                        	<input class="easyui-datebox" id="completeTime" name="finishTime" required="true" validType="date"/>
+                        </div>
+                    </div>
+                </div>
+	        </div>
+	        <div class="searchPanel" id="register">
+	        	<div class="panel_title">维护结果记录</div>
+	        	<div class="table">
+                	<div class="tr">
+                        <div class="th">故障解决情况：</div>
+                        <div class="td">
+                            <input type="radio" cy-click="maintendanceChecked" name="maintendanceResult" value="1" checked="checked"/>全部未维修好
+                            <input type="radio" cy-click="maintendanceChecked" name="maintendanceResult" value="2"/>部分未维修好
+                            <input type="radio" cy-click="maintendanceChecked" name="maintendanceResult" value="3"/>完全修好
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">解决方法：</div>
+                        <div class="td" style="width:300px;">
+                            <input class="easyui-textbox" name="solution" style="width:250px;" data-options="validType:'length[0,128]'"/>
+                        </div>
+                        <div class="th">解决时间：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" name="solutionTime" id="solutionTime" validType="date"/>
+                        </div>    
+                    </div>     
+                    <div class="tr">
+                        <div class="th">备注：</div>
+                        <div class="td" style="width:300px;">
+                        	<input class="easyui-textbox" data-options="validType:'length[0,128]',multiline:true" name="remark" style="width:250px;height:100px"/>
+                        </div>
+                        <div class="th">上传图片：</div>
+                        <div class="td">
+	                        <div id="photoDiv">
+	                        </div>
+	                        <div id="upPhotoTemDiv" class='imgDiv'>
+	                            <img id="upPhoto" src="themes/default/images/upload.png"  style="width: 100px;height:100px;">
+	                        </div>
+	                    </div>
+                    </div>
+                </div>
+	        </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">   
+        <div class="linkbutton_toolbar" style="text-align:center;">
+        	<!--<a id = "print" class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="print">打印预览</a>-->
+            <a id="save" class="easyui-linkbutton button-ok button-main" data-options="iconCls:'icon-ok'" cy-click="save">确定</a>
+            <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["remark","formData","saveData","printMaintain","deleteMaintain"], function ($scope) {
+    	$scope.$getDefaultCode(["442"]);
+    	//初始化文件上传组件k
+		$scope.uploader = initUpload();
+		$scope.uploader.init();
+		$scope.imageFiles = {};	//保存/cosUploadServlet的File对象
+		$scope.imageUrls = {};//保存文件URL
+        $scope.imageServerUrls =[];//图片在服务端的URL地址
+    	var assignTime = "";//分派时间
+    	$scope.load = function(){
+	        var now = new Date();//当前时间
+	        var year = now.getFullYear();//年
+	        var month =(now.getMonth() + 1).toString();//月
+	        var day = (now.getDate()).toString();//日
+	        var hour = (now.getHours()).toString();//时
+	        var minute = (now.getMinutes()).toString();//分
+	        var second = (now.getSeconds()).toString();//秒
+	        if (month.length == 1) {
+	            month = "0" + month;
+	        }
+	        if (day.length == 1) {
+	            day = "0" + day;
+	        }
+	        assignTime = year + "-" + month + "-" + day;
+	        $scope.$("#maintenanceNbr").text($scope.formData.maintenanceNbr);
+	      //根据厂商ID查厂商信息选择厂商后联动联系人和联系方式
+        	$scope.$("#contractorId").combobox({
+        		onChange : function(newValue, oldValue){
+        			var contractorId = $(this).combobox("getValue");
+        			$scope.$ajaxRequest({
+        				url : $scope.$restRoot + 'device/companyManage/queryCompanyDto',
+        				params : {contractorId : contractorId},
+        				success : function(data){
+        					if($scope.formData != undefined && contractorId == $scope.formData.maintenanceCompany){
+        						$scope.$("#person").textbox("setValue",$scope.formData.contactPerson);
+        						$scope.$("#phone").textbox("setValue",$scope.formData.phoneNbr);
+        					}else if(data != undefined && contractorId  != $scope.formData.maintenanceCompany){
+        						$scope.$("#person").textbox("setValue",data.contractorPerson);
+        						$scope.$("#phone").textbox("setValue",data.contractorTel);
+        					}
+        				},
+        				fail : function(errMsg){
+        					$.messager.alert("提示","查询厂商信息失败！");
+        				}
+        			});
+        		}
+        	});
+	        if($scope.formData.assignTime == null){
+		        $scope.$("#assignTime").text(assignTime);
+	        }else{
+		        $scope.$("#assignTime").text($scope.formData.assignTime);
+	        }
+    		if($scope.remark == 'dispatch'){
+    			$scope.$("#register").remove();
+    			$scope.$("#faultsList").datagrid("hideColumn","processState");//隐藏勾选框
+    		}else if($scope.remark == 'look'){
+    			$scope.$("#form input[class^='easyui-']").each(function(){
+                    $(this).textbox('readonly',true);
+                });
+    			$scope.$("#contractorId").combo('readonly', true);
+                $scope.$("#save").remove();//查看去除确定按钮
+                $scope.$("#faultsList").datagrid("hideColumn","operate");//隐藏操作栏
+    		}else{
+    			//编辑登记时禁止填写分派信息
+    			$scope.$("#dispatch input[class^='easyui-']").each(function(){
+                    $(this).textbox('readonly',true);
+                });
+    			$scope.$("#contractorId").combo('readonly', true);
+    			$scope.$("#faultsList").datagrid("hideColumn","operate");
+        		//解决时间不能大于当前时间
+        		$scope.$('#solutionTime').datebox('calendar').calendar({
+        			validator: function(date){
+        				var now = new Date();
+        				var d2 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        				return date <= d2;
+        			}
+        		});
+    		}
+    		$scope.$ajaxRequest({
+                url:$scope.$restRoot+"device/companyManage/queryCompany",
+                params:{},
+                method:"post",
+                success:function(data){
+                    $scope.$("#contractorId").combobox("loadData",data);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","初始化维护厂家失败！");
+                }
+            });
+            $scope.queryData.maintenanceId = $scope.formData.maintenanceId;//维护单ID
+            $scope.$updateData("queryData");
+    		$scope.$search("queryData");
+    		if($scope.formData.maintenancePhoto != null){
+    			createDbImg($scope.formData.maintenancePhoto);
+    			$scope.imageServerUrls.push($scope.formData.maintenancePhoto);
+    		}
+    		if($scope.formData != undefined){
+            	$scope.$("#person").textbox("setValue",$scope.formData.contactPerson);
+            	$scope.$("#phone").textbox("setValue",$scope.formData.phoneNbr);
+            }
+    		//要求完成时间不能小于当前时间
+    		$scope.$('#completeTime').datebox('calendar').calendar({
+    			validator: function(date){
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date >= d1;
+    			}
+    		});
+    	};	
+        $scope.options = {
+            columns: [
+                [//注意，此处是二维数组
+                    {align:'center',field: 'processState', checkbox: true, hidden: true},
+                    {align:'center',title: "设备名称", field: "deviceName", width: 15},
+                    {align:'center',title: "发生时间", field: "startTime", width: 10},
+                    {align:'center',title: "故障类型", field: "faultType", width: 10,formatter : queryNameByFaultType},
+                    {align:'center',title: "故障描述", field: "remark", width: 15},
+                    {align:'center',title: "安装地点", field: "siteName", width: 15},
+                    {align:'center',title: "操作", field: "operate", width: 10, formatter: operate}
+                ]
+            ],
+            nowrap:false,
+            pagination : false,
+            fit : false,
+            height : 128,
+            width : "100%",
+            onLoadSuccess:function(data){
+            	var maintendance = $scope.$("input[name='maintendanceResult']:checked").val();
+				if(maintendance == '2'){
+					$scope.$("#faultsList").datagrid("showColumn","processState");//显示勾选框
+				}
+            	for(var i = 0; i < data.rows.length; i++){
+            		if(data.rows[i].processState == '3'){//表示已解决的故障
+              			$scope.$("#faultsList").datagrid("checkRow",i);//勾选已经解决的故障
+              			//加载完成后，取出已登记故障的checkbox框
+						$scope.$("[field = processState]:eq(" + (parseInt(i+1)) + ")").find(':checkbox').remove();
+            		}
+            	}
+            }
+        };
+        function operate(value, rowData, index){
+    		var removeBtn = $("<a  title='删除' class='button-remove'></a>");
+            removeBtn.linkbutton({
+            	plain : true,
+                iconCls : "icon-remove-solid"
+            }).attr('cy-click', "removeData('" + index + "')");
+            return $("<span/>").append(removeBtn).html();
+        }
+       
+        function queryNameByFaultType(value, rowData, index){
+			var faultType = $scope.$getCodeName("442",value);//故障类型
+			return faultType;
+		}
+		
+		//删除维护单故障信息（删除维护单与故障的关联关系）
+		$scope.removeData = function(index){
+			var rowData = $scope.$("#faultsList").datagrid("getData").rows[index];
+			var faultId = rowData.faultId;//故障ID
+			var maintenanceId = $scope.formData.maintenanceId;
+			$.messager.confirm("提示","是否确认删除？",function(flag){
+	          	if(flag){
+	          		$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/maintainManage/deleteMainFaultAsso',
+						params : {faultId : faultId,maintenanceId : maintenanceId},
+						success : function(data){
+							$.messager.alert("提示","删除成功！");
+							$scope.$updateData("queryData");
+		    				$scope.$search("queryData",{},function(){
+		    					var dataNum = $scope.$("#faultsList").datagrid("getRows").length;//删除故障后所剩故障信息的行数
+								if(dataNum == 0){
+									$scope.deleteMaintain(maintenanceId);
+								}	
+		    				});
+						},
+						fail : function(){
+							$.messager.alert("提示","删除失败！");
+						}
+					});
+	          	}
+		    });
+		};
+		/**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload() {
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : $scope.$("#upPhoto")[0], // you can pass in id...
+				container : $scope.$("#upPhotoTemDiv")[0], // ... or DOM Element itself
+				url : 'cosUploadServlet',
+				filters : {
+					max_file_size : '10mb',
+					prevent_duplicates : true, //不允许选取重复文件
+					mime_types : [{
+						title : "照片文件",
+						extensions : "jpg,png,jpeg,bmp,gif"
+					}]
+				},
+				init : {
+					/**
+					 *添加文件
+					 */
+					FilesAdded : function(up, files) {
+						if (this.files.length > 1) {
+							for (var i = 0; i < files.length; i++) {
+								//删除本次选择的图片
+								this.removeFile(files[i]);
+							}
+							$.messager.alert("提示","最多只能上传1张证书图片！");
+							return;
+						}
+						if (this.files.length == 1) {
+							$scope.$("#upPhotoTemDiv").hide();
+						}
+						for (var index = 0; index < files.length; index++) {
+							var file = files[index];
+							//请按照文件名的形式，存储文件信息到页面变量中
+							parseImageFile(file);
+						}
+					},
+					/**
+					 * 删除文件
+					 */
+					FilesRemoved : function(up, files) {
+						if (this.files.length < 1) {
+							$scope.$("#upPhotoTemDiv").show();
+						}
+					},
+					Error : function(up, err) {
+						$.messager.alert("错误提示",err);
+					},
+					//当队列中的某一个文件上传完成后触发
+					FileUploaded : function(up, file, responseObject) {
+						var urlObject = $.parseJSON(responseObject.response)[0];
+						$scope.imageServerUrls.push(urlObject.url);
+					},
+					StateChanged : function(up) {
+						if (up.files.length === (up.total.uploaded + up.total.failed))//文件上传完毕
+						{	
+						    var failedNum="";	
+						    if(up.total.failed!=0){
+						        failedNum=up.total.failed+"张图片上传失败！";
+						    }	
+							$scope.saveInfo();	
+						}
+					}
+				}
+			});
+		}
+
+		/**
+		 * 获得图片文件的路径
+		 * @return {[type]} [description]
+		 */
+		function parseImageFile(file) {
+			var name = file.name;
+			$scope.imageFiles[name] = file;
+			var reader = new FileReader();
+			reader.readAsDataURL(file.getSource().getSource());
+			reader.onload = function(e) {
+				$scope.imageUrls[name] = this.result;
+				var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+				var img = $("<img style='width: 100px;height: 100px'/>");
+				img.attr("src", this.result);
+				imgDiv.append(img);
+				var deleteButton = $("<a class='deleteButton'></a>").linkbutton({
+					iconCls : "icon-cancel",
+					plain : true
+				});
+				deleteButton.click(function() {
+					//把这个div删除
+					$(this).parent().remove();
+					//把文件队列中文件删除
+					$scope.uploader.removeFile(file);
+				});
+				imgDiv.append(deleteButton);
+				$scope.$("#photoDiv").append(imgDiv);
+			};
+		}
+		/**
+		 *创建图片 
+		 */
+		function createDbImg(url){
+		    var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+            var img = $("<img style='width: 100px;height: 100px'/>");
+            img.attr("src", "http://"+url);
+            imgDiv.append(img);
+            var deleteButton = $("<a class='deleteButton'></a>").linkbutton({
+					iconCls : "icon-cancel",
+					plain : true
+				});
+            deleteButton.click(function() {
+            	//把这个div删除
+				$(this).parent().remove();
+				var src = $(this).siblings("img").attr("src");
+                //把imageServerUrl中该URL删除
+                if($scope.imageServerUrls.length != 0){
+	    			for(var i = 0; i < $scope.imageServerUrls.length; i++){
+		    			if(src == "http://"+$scope.imageServerUrls[i]){
+		    				$scope.imageServerUrls.splice(i,1);
+		    			}
+		    		}
+	    		}
+	    		$scope.$("#upPhotoTemDiv").show();
+            });
+            imgDiv.append(deleteButton);
+            $scope.$("#photoDiv").append(imgDiv);
+            $scope.$("#upPhotoTemDiv").hide();
+		}
+		
+		$scope.save = function(){
+			if($scope.remark == 'dispatch'){	
+		    	if($scope.$("#form").form("validate")){
+			    	$scope.$updateData("formData");
+			    	$scope.saveData($scope.formData);//保存
+		    	}
+		    }else if($scope.remark == 'register'){
+		    	if($.isEmptyObject($scope.imageFiles) && $scope.imageServerUrls.length != 0){
+			    	$scope.saveInfo();
+			    }else if(!$.isEmptyObject($scope.imageFiles)){
+			    	$scope.uploader.start();//上传图片
+			    }else{
+			    	$scope.saveInfo();
+			    }
+		    }
+		};
+		//根据故障解决情况判断是否加载勾选框
+		$scope.maintendanceChecked = function(){
+			var maintendance = $scope.$("input[name='maintendanceResult']:checked").val();
+			if(maintendance == '2'){
+				$scope.$("#faultsList").datagrid("showColumn","processState");//显示勾选框
+			}else if(maintendance == '1' || maintendance == '3'){
+				$scope.$("#faultsList").datagrid("hideColumn","processState");//隐藏勾选框
+			}
+		};
+		
+		//登记保存
+		$scope.saveInfo = function(){
+			$scope.$updateData("formData");
+			if($scope.formData.maintendanceResult != undefined){
+				var rows = [];
+				var dataNum = $scope.$("#faultsList").datagrid("getRows").length; //当前页行数
+				if($scope.formData.maintendanceResult == "2"){//2表示部分未维修好		
+					rows = $scope.$('#faultsList').datagrid('getChecked');//获取选中的行数组
+					if(rows.length == 0){
+		               $.messager.alert("提示","请选择维修好的故障进行登记！");
+		               return false;
+		            }else if($scope.formData.maintendanceResult == "2" && rows.length == dataNum){//2表示部分未维修好	
+		           	   $.messager.alert("提示","已全部选择故障，请正确选择故障解决情况！");
+		               return false;
+		            }else{
+		               var faultIdStr = ""; 
+		               for(var i = 0; i < rows.length; i++){
+		                   if(i > 0){
+		                       faultIdStr = faultIdStr + "," + rows[i].faultId;
+		                   }else{
+		                       faultIdStr = faultIdStr + rows[i].faultId;
+		                   }
+		               }
+		               $scope.formData.faultIdStr = faultIdStr;
+		           }
+			    }else if($scope.formData.maintendanceResult == "1"){//1表示全部未维修好	
+			     	$scope.$("#faultsList").datagrid("hideColumn","processState");//隐藏勾选框
+			    }else if($scope.formData.maintendanceResult == "3"){//3表示全部维修好	
+			     	rows = $scope.$("#faultsList").datagrid("getRows");//获取所有行数组
+			     	var faultIdStr = "";
+	                for(var i = 0; i < rows.length; i++){
+	                   if(i > 0){
+	                       faultIdStr = faultIdStr + "," + rows[i].faultId;
+	                   }else{
+	                       faultIdStr = faultIdStr + rows[i].faultId;
+	                   }
+	                }
+	                $scope.formData.faultIdStr = faultIdStr;
+			    }
+			}
+			//添加图片
+            var maintenancePhotoStr = "";
+            if($scope.imageServerUrls.length > 0){
+	            for (var i = 0; i < $scope.imageServerUrls.length; i++) {
+					if(i == 0){
+						maintenancePhotoStr = maintenancePhotoStr + $scope.imageServerUrls[i];
+					}else{
+						maintenancePhotoStr = maintenancePhotoStr + "," + $scope.imageServerUrls[i];
+					}
+				}
+            }
+            $scope.formData.maintenancePhoto = maintenancePhotoStr;
+            if($scope.$("#form").form("validate")){
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+            	$scope.saveData($scope.formData);
+            }
+		};
+    });
+</script>
+
+<style type="text/css">
+    #mInfoForm .th {
+        width: 90px;
+        text-align: right;
+    }
+    #mInfoForm .td{
+        height:auto;
+    }
+    #mInfoForm .datagrid-body{
+    	height : 105px;
+    }
+    #mInfoForm .imgDiv{
+        border: dashed 1px silver;
+        width : 100px;
+        height : 100px;
+    }
+    #mInfoForm .deleteButton{
+		position: absolute;
+		margin-left : -28px;
+		margin-top: 2px;
+		z-index: 100000;
+	}
+	#mInfoForm .panel_title {
+		position: relative;
+		width: 73px;
+	}
+</style>

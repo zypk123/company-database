@@ -1,0 +1,490 @@
+<div class="easyui-layout" id="maintainDaily">
+    <div data-options="region:'center',border:false">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title" style="width: 50px;">基础信息</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">维护设备名称：</div>
+                        <div class="td">
+                             <input id="device" name="deviceId" data-options="valueField:'deviceId',textField:'deviceName',required:true"/>
+                        </div>
+                        <div class="th">维护周期：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="maintenanceCycle" name="maintenanceCycle" cy-code="483">
+                        </div>
+                        <div class="th">下次维护时间：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" id="nextTime" name="nextMaintenanceDate" validType="date"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title" style="width: 75px;">基本维护项目</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">设备外观：</div>
+                        <div class="td">
+                            <input type="radio" name="deviceAppearance" value="1" checked="checked"/>合格
+                            <input type="radio" name="deviceAppearance" value="0"/>不合格
+                        </div>
+                        <div class="th">设备杆件：</div>
+                        <div class="td">
+                            <input type="radio" name="deviceBar" value="1" checked="checked"/>正常
+                            <input type="radio" name="deviceBar" value="0"/>不正常
+                        </div>
+                        <div class="th">防护部件：</div>
+                        <div class="td">
+                            <input type="radio" name="protectionComponents" value="1" checked="checked"/>正常
+                            <input type="radio" name="protectionComponents" value="0"/>不正常
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备电源：</div>
+                        <div class="td">
+                            <input type="radio" name="power" value="1" checked="checked"/>正常
+                            <input type="radio" name="power" value="0"/>不正常
+                        </div>
+                        <div class="th">设备电缆：</div>
+                        <div class="td">
+                            <input type="radio" name="cable" value="1" checked="checked"/>正常
+                            <input type="radio" name="cable" value="0"/>不正常
+                        </div>
+                        <div class="th">避雷设施：</div>
+                        <div class="td">
+                            <input type="radio" name="lightingProtection" value="1" checked="checked"/>正常
+                            <input type="radio" name="lightingProtection" value="0"/>不正常
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备接地：</div>
+                        <div class="td">
+                            <input type="radio" name="groundConnection" value="1" checked="checked"/>正常
+                            <input type="radio" name="groundConnection" value="0"/>不正常
+                        </div>
+                        <div class="th">通信设备：</div>
+                        <div class="td">
+                            <input type="radio" name="communicationDevice" value="1" checked="checked"/>正常
+                            <input type="radio" name="communicationDevice" value="0"/>不正常
+                        </div>
+                        <div class="th">校准时钟：</div>
+                        <div class="td">
+                            <input type="radio" name="deviceTime" value="1" checked="checked"/>是
+                            <input type="radio" name="deviceTime" value="0" style="margin-left:17px;"/> 否
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel" id="personalized_maintenance">
+                <div class="panel_title" style="width: 85px;">个性化维护项目</div>
+                <div class="table bayonet">
+                    <div class="tr">
+                        <div class="th">最近上传时间：</div>
+                        <div class="td">
+                             <input class="easyui-datetimebox" id="bayonet_recentlyUploadTime" validType="date" name="bayonet_recentlyUploadTime"/>
+                        </div>
+                        <div class="th">安装情况：</div>
+                        <div class="td">
+                            <input type="radio" name="bayonet_installation" value="1" checked="checked">合格
+                            <input type="radio" name="bayonet_installation" value="0">不合格
+                        </div>
+                        <div class="th">清理防护罩：</div>
+                        <div class="td">
+                            <input type="radio" name="bayonet_cleanProtectiveCover" value="1" checked="checked">已清理
+                            <input type="radio" name="bayonet_cleanProtectiveCover" value="0">未清理
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">清理镜头积灰：</div>
+                        <div class="td">
+                            <input type="radio" name="bayonet_cleanCameraAsh" value="1" checked="checked">已清理
+                            <input type="radio" name="bayonet_cleanCameraAsh" value="0">未清理
+                        </div>
+                        <div class="th">车辆通行信息：</div>
+                        <div class="td">
+                            <input type="radio" name="vehiclePassInfo" value="1" checked="checked"/>正常
+                            <input type="radio" name="vehiclePassInfo" value="0"/>不正常
+                        </div>
+                        <div class="th">违法记录信息：</div>
+                        <div class="td">
+                            <input type="radio" name="bayonet_vehicleViolation" value="1" checked="checked">正常
+                            <input type="radio" name="bayonet_vehicleViolation" value="0">不正常
+                        </div>
+                    </div>
+                </div>
+          		<div class="table evidence">
+            		<div class="tr">
+                        <div class="th">最近上传时间：</div>
+                        <div class="td">
+                             <input class="easyui-datetimebox" id="evidence_recentlyUploadTime" validType="date" name="evidence_recentlyUploadTime"/>
+                        </div>
+                        <div class="th">安装情况：</div>
+                        <div class="td">
+                            <input type="radio" name="evidence_installation" value="1" checked="checked">合格
+                            <input type="radio" name="evidence_installation" value="0">不合格
+                        </div>
+                        <div class="th">清理防护罩：</div>
+                        <div class="td">
+                            <input type="radio" name="evidence_cleanProtectiveCover" value="1" checked="checked">已清理
+                            <input type="radio" name="evidence_cleanProtectiveCover" value="0">未清理
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">清理镜头积灰：</div>
+                        <div class="td">
+                            <input type="radio" name="evidence_cleanCameraAsh" value="1" checked="checked">已清理
+                            <input type="radio" name="evidence_cleanCameraAsh" value="0">未清理
+                        </div>
+                        <div class="th">标志标线：</div>
+                        <div class="td">
+                            <input type="radio" name="trafficSign" value="1" checked="checked">合格
+                            <input type="radio" name="trafficSign" value="0">不合格
+                        </div>
+                        <div class="th">违法记录信息：</div>
+                        <div class="td">
+                            <input type="radio" name="evidence_vehicleViolation" value="1" checked="checked"/>正常
+                            <input type="radio" name="evidence_vehicleViolation" value="0" style="margin-left:17px;"/>不正常
+                        </div>
+                    </div>
+          		</div>
+          	    <div class="table speed">
+            		<div class="tr">
+                        <div class="th">自检情况：</div>
+                        <div class="td">
+                             <input type="radio" name="selfCheck" value="1" checked="checked">成功
+                             <input type="radio" name="selfCheck" value="0">失败
+                        </div>
+                        <div class="th">失控点：</div>
+                        	<input class="easyui-textbox" id="outControlPoint" name="outControlPoint"/>
+                        <div class="td">
+                        </div>
+                    </div>
+          		</div>
+          		<div class="table meteorological">
+            		<div class="tr">
+                        <div class="th">气象数据：</div>
+                        <div class="td">
+                             <input type="radio" name="meteorologyData" value="1" checked="checked">正常
+                            <input type="radio" name="meteorologyData" value="0">不正常
+                        </div>
+                        <div class="th">安装情况：</div>
+                        <div class="td">
+                            <input type="radio" name="meteorological_installation" value="1" checked="checked">合格
+                            <input type="radio" name="meteorological_installation" value="0">不合格
+                        </div>
+                    </div>
+          		</div>
+          		<div class="table video">
+            		<div class="tr">
+                        <div class="th">视频质量：</div>
+                        <div class="td">
+                             <input type="radio" name="videoQuality" value="1" checked="checked">好
+                            <input type="radio" name="videoQuality" value="0">差
+                        </div>
+                        <div class="th">云台和镜头控制：</div>
+                        <div class="td">
+                            <input type="radio" name="ptzControl" value="1" checked="checked">正常
+                            <input type="radio" name="ptzControl" value="0">不正常
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">清理防护罩：</div>
+                        <div class="td">
+                            <input type="radio" name="video_cleanProtectiveCover" value="1" checked="checked">已清理
+                            <input type="radio" name="video_cleanProtectiveCover" value="0">未清理
+                        </div>
+                        <div class="th">清理镜头积灰：</div>
+                        <div class="td">
+                            <input type="radio" name="video_cleanCameraAsh" value="1" checked="checked">已清理
+                            <input type="radio" name="video_cleanCameraAsh" value="0">未清理
+                        </div>
+                    </div>
+          		</div>
+          		<div class="table telemese">
+            		<div class="tr">
+                        <div class="th">信号灯工作情况：</div>
+                        <div class="td">
+                        	<input type="radio" name="trafficLight" value="1" checked="checked">正常
+                            <input type="radio" name="trafficLight" value="0">不正常
+                        </div>
+                        <div class="th">信号机工作情况：</div>
+                        <div class="td">
+                        	<input type="radio" name="signalDevice" value="1" checked="checked">正常
+                            <input type="radio" name="signalDevice" value="0">不正常
+                        </div>
+                    </div>
+          		</div>
+          		<div class="table flow">
+            		<div class="tr">
+                        <div class="th">交通流数据：</div>
+                        <div class="td">
+                            <input type="radio" name="trafficDataFlow" value="1" checked="checked">正常
+                            <input type="radio" name="trafficDataFlow" value="0">不正常
+                        </div>
+                        <div class="th">安装情况：</div>
+                        <div class="td">
+                            <input type="radio" name="flow_installation" value="1" checked="checked">合格
+                            <input type="radio" name="flow_installation" value="0">不合格
+                        </div>
+                    </div>
+          		</div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title" style="width: 50px;">其他信息</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">维护人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" id="maintenancer" name="maintainPerson" validType="length[0,16]"/>
+                        </div>
+                        <div class="th">维护时间：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" id="maintenanceTime" name="maintenanceDate" validType="date" disabled="true"/>
+                        </div>
+                        <div class="th">联系方式：</div>
+                        <div class="td">
+                        	<input class="easyui-textbox" id="phone" name="phone" validType="phone"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">维护意见：</div>
+                        <div class="td">
+                        	<input class="easyui-textbox" data-options="multiline:true,validType:'length[0,16]'" style="height:80px;width:640px;" name="maintenanceAdvice">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+	</div>
+	<div data-options="region:'south',border:true" style="height:40px;">
+		<div class="linkbutton_toolbar" style="text-align:center;">
+	        <a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+	        <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+	    </div>
+	</div>
+</div>
+<script type="text/javascript">
+    InitPage(["saveData","formData","remark"], function ($scope) {
+    	var deviceType = "";//定义维护的设备类型
+		 $scope.load = function(){
+		 	$scope.$("#personalized_maintenance").hide();
+		 	//根据当前用户所在机构和设备类型加载设备
+		 	var orgPrivilegeCode = $scope.UserInfo.orgPrivCode;//当前用户所在机构权限过滤code
+			$scope.$ajaxRequest({
+		        url: $scope.$restRoot + "device/faultAlarmManage/findDeviceByOrgPrivilegeCode",
+		        params: {orgPrivilegeCode : orgPrivilegeCode},
+		        success: function (data) {
+		       		$scope.$("#device").combobox({
+		       			data : data,
+		       			onLoadSuccess : function(){
+		       				if($scope.remark == "edit"){
+		       					var deviceIds = $scope.$("#device").combobox("getValue");
+		       					getDeviceInfoById(deviceIds);
+		       				}
+		       			}
+		       		});
+		        },
+		        fail: function (errMsg) {
+		        	$.messager.alert("提示","加载当前用户所属机构下设备失败！");
+		        }
+	        });
+	        $scope.$("#device").combobox({
+	        	onChange:function(newValue,oldValue){
+		 			if(newValue != "" && newValue != null){
+		       			//根据选择的设备加载最近上传时间
+		 				if($scope.remark == "add"){
+		        			//获取该设备的最近上传时间 time
+		        			var time;
+		        			//$scope.$(".recentlyUploadTime").datebox("setValue","2016-01-01");
+		 				}
+		 				getDeviceInfoById(newValue);
+		 			}else{
+		 				$scope.$("#personalized_maintenance").hide();
+		 			}
+		 		}
+	        });
+			//新增时
+	        if($scope.remark == "add"){
+		        //获取当前系统时间加载到维护时间
+		        var nowTime = new Date();
+		        var maintenanceTime = nowTime.getFullYear() + "-" + (nowTime.getMonth() + 1) + "-" + nowTime.getDate();
+		        $scope.$("#maintenanceTime").datebox("setValue",maintenanceTime);
+		        //根据选择的维护周期加载下次维护时间
+		      /**  $scope.$("#maintenanceCycle").combobox({
+		        	onChange : function(newValue, oldValue) {
+		        		if(newValue != "" && newValue != null){
+		        			var nextMaintenanceDate;
+		        			if(newValue == 1){//一个月
+		        				if(nowTime.getMonth() + 1 > 11){
+		        					nextMaintenanceDate = (nowTime.getFullYear() + 1) + "-" + (nowTime.getMonth() - 10) + "-" + nowTime.getDate();
+		        				}else{
+		        					nextMaintenanceDate = nowTime.getFullYear() + "-" + (nowTime.getMonth() + 2) + "-" + nowTime.getDate();
+		        				}
+		        			}else if(newValue == 2){//两个月
+		        				if(nowTime.getMonth() + 2 > 11){
+		        					nextMaintenanceDate = (nowTime.getFullYear() + 1) + "-" + (nowTime.getMonth() - 9) + "-" + nowTime.getDate();
+		        				}else{
+		        					nextMaintenanceDate = nowTime.getFullYear() + "-" + (nowTime.getMonth() + 3) + "-" + nowTime.getDate();
+		        				}
+		        			}else if(newValue == 3){//三个月
+		        				if(nowTime.getMonth() + 3 > 11){
+		        					nextMaintenanceDate = (nowTime.getFullYear() + 1) + "-" + (nowTime.getMonth() - 8) + "-" + nowTime.getDate();
+		        				}else{
+		        					nextMaintenanceDate = nowTime.getFullYear() + "-" + (nowTime.getMonth() + 4) + "-" + nowTime.getDate();
+		        				}
+		        			}else if(newValue == 4){//六个月
+		        				if(nowTime.getMonth() + 6 > 11){
+		        					nextMaintenanceDate = (nowTime.getFullYear() + 1) + "-" + (nowTime.getMonth() - 5) + "-" + nowTime.getDate();
+		        				}else{
+		        					nextMaintenanceDate = nowTime.getFullYear() + "-" + (nowTime.getMonth() + 7) + "-" + nowTime.getDate();
+		        				}
+		        			}else if(newValue == 5){//一年
+		        					nextMaintenanceDate = (nowTime.getFullYear() + 1) + "-" + (nowTime.getMonth() + 1) + "-" + nowTime.getDate();
+		        			}
+		        			$scope.$("#nextTime").datebox("setValue",nextMaintenanceDate);
+		        		}
+		        	}
+		        });**/
+	        }
+	        //根据设备ID获取设备信息
+	        function getDeviceInfoById(deviceId){
+		 		$scope.$("#personalized_maintenance").show();
+	 			$scope.$ajaxRequest({
+			        url: $scope.$restRoot + "device/deviceConfig/queryDeviceById",
+			        params: {deviceId : deviceId},
+			        success: function (datas) {
+			        	deviceType = datas.deviceType;//设备类型
+			        	//根据设备类型加载个性化维护页面
+			       		if(deviceType == '01'){//卡口
+			       			if($scope.remark == "edit"){
+								$scope.$('#bayonet_recentlyUploadTime').datetimebox('setValue',$scope.formData.recentlyUploadTime);
+								$scope.$('input[name="bayonet_installation"][value="' + $scope.formData.installation + '"]').attr("checked",'checked');
+								$scope.$('input[name="bayonet_cleanProtectiveCover"][value="' + $scope.formData.cleanProtectiveCover + '"]').attr("checked",'checked');
+								$scope.$('input[name="bayonet_cleanCameraAsh"][value="' + $scope.formData.cleanCameraAsh + '"]').attr("checked",'checked');
+								$scope.$('input[name="bayonet_vehicleViolation"][value="' + $scope.formData.vehicleViolation + '"]').attr("checked",'checked');
+			       			}
+					 		$scope.$(".bayonet").show();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '02' || deviceType == '04' || deviceType == '08' || deviceType == '11' || deviceType == '12' || deviceType == '13' || deviceType == '16'){
+					 		if($scope.remark == "edit"){
+								$scope.$('#evidence_recentlyUploadTime').datetimebox('setValue',$scope.formData.recentlyUploadTime);
+								$scope.$('input[name="evidence_installation"][value="' + $scope.formData.installation + '"]').attr("checked",'checked');
+								$scope.$('input[name="evidence_cleanProtectiveCover"][value="' + $scope.formData.cleanProtectiveCover + '"]').attr("checked",'checked');
+								$scope.$('input[name="evidence_cleanCameraAsh"][value="' + $scope.formData.cleanCameraAsh + '"]').attr("checked",'checked');
+								$scope.$('input[name="evidence_vehicleViolation"][value="' + $scope.formData.vehicleViolation + '"]').attr("checked",'checked');
+			       			}
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").show();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '06' || deviceType == '07'){
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").show();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '05'){
+					 		if($scope.remark == "edit"){
+								$scope.$('input[name="meteorological_installation"][value="' + $scope.formData.installation + '"]').attr("checked",'checked');
+			       			}
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").show();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '03'){
+					 		if($scope.remark == "edit"){
+								$scope.$('input[name="video_cleanProtectiveCover"][value="' + $scope.formData.cleanProtectiveCover + '"]').attr("checked",'checked');
+								$scope.$('input[name="video_cleanCameraAsh"][value="' + $scope.formData.cleanCameraAsh + '"]').attr("checked",'checked');
+			       			}
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").show();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '14' || deviceType == '15'){
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").show();
+							$scope.$(".flow").hide();
+					 	}else if(deviceType == '09'){
+					 		if($scope.remark == "edit"){
+								$scope.$('input[name="flow_installation"][value="' + $scope.formData.installation + '"]').attr("checked",'checked');
+			       			}
+					 		$scope.$(".bayonet").hide();
+					 		$scope.$(".evidence").hide();
+						 	$scope.$(".speed").hide();
+						 	$scope.$(".meteorological").hide();	
+						 	$scope.$(".video").hide();
+							$scope.$(".telemese").hide();
+							$scope.$(".flow").show();
+					 	}
+			        },
+			        fail: function (errMsg) {
+			        	$.messager.alert("提示","获取设备类型失败！");
+			        }
+		        });
+	        }
+		 };
+		 $scope.save = function(){
+		 	$scope.$updateData("formData");
+		 	//根据显示的设备类型个性化进行赋值
+		 	if(deviceType == '01'){
+		 		$scope.formData.recentlyUploadTime = $scope.$('#bayonet_recentlyUploadTime').datetimebox('getValue');
+		 		$scope.formData.installation = $scope.$('input[name="bayonet_installation"]:checked').val();
+		 		$scope.formData.cleanProtectiveCover = $scope.$('input[name="bayonet_cleanProtectiveCover"]:checked').val();
+		 		$scope.formData.cleanCameraAsh = $scope.$('input[name="bayonet_cleanCameraAsh"]:checked').val();
+		 		$scope.formData.vehicleViolation = $scope.$('input[name="bayonet_vehicleViolation"]:checked').val();
+		 	}else if(deviceType == '02' || deviceType == '04' || deviceType == '08' || deviceType == '11' || deviceType == '12' || deviceType == '13' || deviceType == '16'){
+		 		$scope.formData.recentlyUploadTime = $scope.$('#evidence_recentlyUploadTime').datetimebox('getValue');
+		 		$scope.formData.installation = $scope.$('input[name="evidence_installation"]:checked').val();
+		 		$scope.formData.cleanProtectiveCover = $scope.$('input[name="evidence_cleanProtectiveCover"]:checked').val();
+		 		$scope.formData.cleanCameraAsh = $scope.$('input[name="evidence_cleanCameraAsh"]:checked').val();
+		 		$scope.formData.vehicleViolation = $scope.$('input[name="evidence_vehicleViolation"]:checked').val();
+		 	}else if(deviceType == '05'){
+		 		$scope.formData.installation = $scope.$('input[name="meteorological_installation"]:checked').val();
+		 	}else if(deviceType == '03'){
+		 		$scope.formData.cleanProtectiveCover = $scope.$('input[name="video_cleanProtectiveCover"]:checked').val();
+		 		$scope.formData.cleanCameraAsh = $scope.$('input[name="video_cleanCameraAsh"]:checked').val();
+		 	}else if(deviceType == '09'){
+		 		$scope.formData.installation = $scope.$('input[name="flow_installation"]:checked').val();
+		 	}
+		 	$scope.formData.maintenanceDate = $scope.$("#maintenanceTime").datebox("getValue");
+		 	$scope.saveData($scope.formData);
+		 };
+    });
+</script>
+<style type="text/css">
+    #maintainDaily .th {
+        width: 100px;
+        text-align: right;
+    }
+
+    #maintainDaily .td {
+        height:auto;
+        width: 144px;
+    }
+    #maintainDaily .td>input[class^='easyui-']{
+        width: 144px;
+    }
+    #maintainDaily .panel_title{
+        position: relative;
+    }
+</style>

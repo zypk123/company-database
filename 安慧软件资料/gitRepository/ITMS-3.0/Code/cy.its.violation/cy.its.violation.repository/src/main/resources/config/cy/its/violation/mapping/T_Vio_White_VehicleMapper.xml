@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_White_VehicleMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    <id column="VEHICLE_ID" property="vehicleId" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_MODEL" property="vehicleModel" jdbcType="VARCHAR" />
+    <result column="VEHICLE_COLOR" property="vehicleColor" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="VEHICLE_OWNER" property="vehicleOwner" jdbcType="VARCHAR" />
+    <result column="VEHICLE_CONTACTOR" property="vehicleContactor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_CONTACTOR_TEL" property="vehicleContactorTel" jdbcType="VARCHAR" />
+    <result column="DATA_SOURCE" property="dataSource" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_FLAG" property="noPunishFlag" jdbcType="CHAR" />
+    <result column="NO_PUNISH_COUNTS" property="noPunishCounts" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_SCORE" property="noPunishScore" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_MONEY" property="noPunishMoney" jdbcType="VARCHAR" />
+    <result column="QUERY_PROTECT_FLAG" property="queryProtectFlag" jdbcType="CHAR" />
+    <result column="REG_PERSON" property="regPerson" jdbcType="VARCHAR" />
+    <result column="REG_DATE" property="regDate" jdbcType="TIMESTAMP" />
+    <result column="AUDIT_BY" property="auditBy" jdbcType="VARCHAR" />
+    <result column="VALID_END_DATE" property="validEndDate" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VEHICLE_ID, PLATE_NBR, PLATE_TYPE, PLATE_COLOR, VEHICLE_BRAND, VEHICLE_MODEL, VEHICLE_COLOR, 
+    ORG_ID, VEHICLE_OWNER, VEHICLE_CONTACTOR, VEHICLE_CONTACTOR_TEL, DATA_SOURCE, NO_PUNISH_FLAG, 
+    NO_PUNISH_COUNTS, NO_PUNISH_SCORE, NO_PUNISH_MONEY, QUERY_PROTECT_FLAG, REG_PERSON, 
+    REG_DATE, AUDIT_BY, VALID_END_DATE, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_WHITE_VEHICLE
+    where VEHICLE_ID = #{vehicleId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_WHITE_VEHICLE
+    where VEHICLE_ID = #{vehicleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    insert into T_VIO_WHITE_VEHICLE (VEHICLE_ID, PLATE_NBR, PLATE_TYPE, 
+      PLATE_COLOR, VEHICLE_BRAND, VEHICLE_MODEL, 
+      VEHICLE_COLOR, ORG_ID, VEHICLE_OWNER, 
+      VEHICLE_CONTACTOR, VEHICLE_CONTACTOR_TEL, 
+      DATA_SOURCE, NO_PUNISH_FLAG, NO_PUNISH_COUNTS, 
+      NO_PUNISH_SCORE, NO_PUNISH_MONEY, QUERY_PROTECT_FLAG, 
+      REG_PERSON, REG_DATE, AUDIT_BY, 
+      VALID_END_DATE, REMARK)
+    values (#{vehicleId,jdbcType=VARCHAR}, #{plateNbr,jdbcType=VARCHAR}, #{plateType,jdbcType=VARCHAR}, 
+      #{plateColor,jdbcType=VARCHAR}, #{vehicleBrand,jdbcType=VARCHAR}, #{vehicleModel,jdbcType=VARCHAR}, 
+      #{vehicleColor,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{vehicleOwner,jdbcType=VARCHAR}, 
+      #{vehicleContactor,jdbcType=VARCHAR}, #{vehicleContactorTel,jdbcType=VARCHAR}, 
+      #{dataSource,jdbcType=VARCHAR}, #{noPunishFlag,jdbcType=CHAR}, #{noPunishCounts,jdbcType=VARCHAR}, 
+      #{noPunishScore,jdbcType=VARCHAR}, #{noPunishMoney,jdbcType=VARCHAR}, #{queryProtectFlag,jdbcType=CHAR}, 
+      #{regPerson,jdbcType=VARCHAR}, #{regDate,jdbcType=TIMESTAMP}, #{auditBy,jdbcType=VARCHAR}, 
+      #{validEndDate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    insert into T_VIO_WHITE_VEHICLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vehicleId != null" >
+        VEHICLE_ID,
+      </if>
+      <if test="plateNbr != null and plateNbr!=''" >
+        PLATE_NBR,
+      </if>
+      <if test="plateType != null and plateType!=''"  >
+        PLATE_TYPE,
+      </if>
+      <if test="plateColor != null" >
+        PLATE_COLOR,
+      </if>
+      <if test="vehicleBrand != null" >
+        VEHICLE_BRAND,
+      </if>
+      <if test="vehicleModel != null" >
+        VEHICLE_MODEL,
+      </if>
+      <if test="vehicleColor != null" >
+        VEHICLE_COLOR,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="vehicleOwner != null" >
+        VEHICLE_OWNER,
+      </if>
+      <if test="vehicleContactor != null" >
+        VEHICLE_CONTACTOR,
+      </if>
+      <if test="vehicleContactorTel != null" >
+        VEHICLE_CONTACTOR_TEL,
+      </if>
+      <if test="dataSource != null" >
+        DATA_SOURCE,
+      </if>
+      <if test="noPunishFlag != null" >
+        NO_PUNISH_FLAG,
+      </if>
+      <if test="noPunishCounts != null" >
+        NO_PUNISH_COUNTS,
+      </if>
+      <if test="noPunishScore != null" >
+        NO_PUNISH_SCORE,
+      </if>
+      <if test="noPunishMoney != null" >
+        NO_PUNISH_MONEY,
+      </if>
+      <if test="queryProtectFlag != null" >
+        QUERY_PROTECT_FLAG,
+      </if>
+      <if test="regPerson != null" >
+        REG_PERSON,
+      </if>
+      <if test="regDate != null" >
+        REG_DATE,
+      </if>
+      <if test="auditBy != null" >
+        AUDIT_BY,
+      </if>
+      <if test="validEndDate != null" >
+        VALID_END_DATE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vehicleId != null" >
+        #{vehicleId,jdbcType=VARCHAR},
+      </if>
+      <if test="plateNbr != null" >
+        #{plateNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateType != null" >
+        #{plateType,jdbcType=VARCHAR},
+      </if>
+      <if test="plateColor != null" >
+        #{plateColor,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleBrand != null" >
+        #{vehicleBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleModel != null" >
+        #{vehicleModel,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleColor != null" >
+        #{vehicleColor,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleOwner != null" >
+        #{vehicleOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleContactor != null" >
+        #{vehicleContactor,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleContactorTel != null" >
+        #{vehicleContactorTel,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null" >
+        #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishFlag != null" >
+        #{noPunishFlag,jdbcType=CHAR},
+      </if>
+      <if test="noPunishCounts != null" >
+        #{noPunishCounts,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishScore != null" >
+        #{noPunishScore,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishMoney != null" >
+        #{noPunishMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="queryProtectFlag != null" >
+        #{queryProtectFlag,jdbcType=CHAR},
+      </if>
+      <if test="regPerson != null" >
+        #{regPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        #{regDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditBy != null" >
+        #{auditBy,jdbcType=VARCHAR},
+      </if>
+      <if test="validEndDate != null" >
+        #{validEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    update T_VIO_WHITE_VEHICLE
+    <set >
+      <if test="plateNbr != null" >
+        PLATE_NBR = #{plateNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateType != null" >
+        PLATE_TYPE = #{plateType,jdbcType=VARCHAR},
+      </if>
+      <if test="plateColor != null" >
+        PLATE_COLOR = #{plateColor,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleBrand != null" >
+        VEHICLE_BRAND = #{vehicleBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleModel != null" >
+        VEHICLE_MODEL = #{vehicleModel,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleColor != null" >
+        VEHICLE_COLOR = #{vehicleColor,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleOwner != null" >
+        VEHICLE_OWNER = #{vehicleOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleContactor != null" >
+        VEHICLE_CONTACTOR = #{vehicleContactor,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleContactorTel != null" >
+        VEHICLE_CONTACTOR_TEL = #{vehicleContactorTel,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null" >
+        DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishFlag != null" >
+        NO_PUNISH_FLAG = #{noPunishFlag,jdbcType=CHAR},
+      </if>
+      <if test="noPunishCounts != null" >
+        NO_PUNISH_COUNTS = #{noPunishCounts,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishScore != null" >
+        NO_PUNISH_SCORE = #{noPunishScore,jdbcType=VARCHAR},
+      </if>
+      <if test="noPunishMoney != null" >
+        NO_PUNISH_MONEY = #{noPunishMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="queryProtectFlag != null" >
+        QUERY_PROTECT_FLAG = #{queryProtectFlag,jdbcType=CHAR},
+      </if>
+      <if test="regPerson != null" >
+        REG_PERSON = #{regPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        REG_DATE = #{regDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditBy != null" >
+        AUDIT_BY = #{auditBy,jdbcType=VARCHAR},
+      </if>
+      <if test="validEndDate != null" >
+        VALID_END_DATE = #{validEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VEHICLE_ID = #{vehicleId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    update T_VIO_WHITE_VEHICLE
+    set PLATE_NBR = #{plateNbr,jdbcType=VARCHAR},
+      PLATE_TYPE = #{plateType,jdbcType=VARCHAR},
+      PLATE_COLOR = #{plateColor,jdbcType=VARCHAR},
+      VEHICLE_BRAND = #{vehicleBrand,jdbcType=VARCHAR},
+      VEHICLE_MODEL = #{vehicleModel,jdbcType=VARCHAR},
+      VEHICLE_COLOR = #{vehicleColor,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      VEHICLE_OWNER = #{vehicleOwner,jdbcType=VARCHAR},
+      VEHICLE_CONTACTOR = #{vehicleContactor,jdbcType=VARCHAR},
+      VEHICLE_CONTACTOR_TEL = #{vehicleContactorTel,jdbcType=VARCHAR},
+      DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+      NO_PUNISH_FLAG = #{noPunishFlag,jdbcType=CHAR},
+      NO_PUNISH_COUNTS = #{noPunishCounts,jdbcType=VARCHAR},
+      NO_PUNISH_SCORE = #{noPunishScore,jdbcType=VARCHAR},
+      NO_PUNISH_MONEY = #{noPunishMoney,jdbcType=VARCHAR},
+      QUERY_PROTECT_FLAG = #{queryProtectFlag,jdbcType=CHAR},
+      REG_PERSON = #{regPerson,jdbcType=VARCHAR},
+      REG_DATE = #{regDate,jdbcType=TIMESTAMP},
+      AUDIT_BY = #{auditBy,jdbcType=VARCHAR},
+      VALID_END_DATE = #{validEndDate,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where VEHICLE_ID = #{vehicleId,jdbcType=VARCHAR}
+  </update>
+</mapper>

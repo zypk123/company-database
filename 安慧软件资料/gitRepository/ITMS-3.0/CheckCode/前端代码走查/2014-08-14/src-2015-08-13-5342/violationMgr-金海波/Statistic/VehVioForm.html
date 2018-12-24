@@ -1,0 +1,413 @@
+﻿<div id="vioFormDiv" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style=" height: 150px">
+        <div class="toolbar" style="float:left;width:100%">
+            <form class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">
+                                采集机构：
+                            </div>
+                            <div class="td">
+                                <select id="orgLevel" class="easyui-combotree" name="OrgCode" data-options="" onselect="true" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                道路名称：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="roadCode" name="RoadID" data-options="valueField:'ID',textField:'NAME',multiple:true" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                采集点位：
+                            </div>
+                            <div class="td" style="padding-left:5px">
+                                <input class="easyui-combobox" id="siteCode" name="SiteCode" data-options="valueField:'ID',textField:'NAME',multiple:true" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                违法类型：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="violationType" name="ViolationType" style="width:150px"
+                                       data-options="valueField:'ID',textField:'NAME',multiple:true">
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">
+                                违法时间：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datebox" style="width:150px" name="VioStart" data-options="required:true,showSeconds:true">
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                            </div>
+                            <div class="th" style="width:60px">
+                                至：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datebox" style="width:150px" name="VioEnd" data-options="required:true,showSeconds:true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="linkbutton_toolbar">
+                    <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="VioFormMgr.StatsVioFormDetailInfos();">统计</a>
+                    <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="$('#vioFormDiv #dgv').pivotgrid('layout')">布局</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table id="dgv" class="easyui-datagrid"
+               data-options="
+               fit:true,
+               fitColumns:true,
+               striped:true,
+               noHeader:true,
+               rownumbers:true,
+               pagination:true,
+               showfooter:true,
+               singleSelect:true,
+               scrollbarSize:0
+               "></table>
+    </div>
+    <div data-options="region:'south'" style=" height: 400px">
+        <div id="container" title="">
+        </div>
+    </div>
+</div>
+<script>
+    $.parser.onComplete = function () {
+        $.ajax({
+            url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+            type: "POST",
+            data: {},
+            beforeSend: function (request) {
+                request.setRequestHeader("ContextID", ContextId);
+            },
+            contentType: 'application/json',
+            success: function (retData) {
+                VioFormMgr.sysCodeDic = retData;
+                VioFormMgr.initCombobox(retData);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            },
+        },
+        $('#vioFormDiv #orgLevel').combotree({
+            loadFilter: function (rows) {
+                return convert(rows);
+            }
+        }));
+        //重置加载器完成事件，防止在查询时多次运行
+        $.parser.onComplete = function () { };
+    };
+    var VioFormMgr = {
+        defaultParams: {},
+        sysCodeDic: null,
+        search: function () {
+            $.ajax({
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+                type: "POST",
+                data: {},
+                beforeSend: function (request) {
+                    request.setRequestHeader("ContextID", ContextId);
+                },
+                contentType: 'application/json',
+                success: function (retData) {
+                    VioFormMgr.sysCodeDic = retData;
+                    VioFormMgr.initCombobox(retData);
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                },
+            });
+        },
+        frmSubmit: function (param) {
+            param.ContextId = ContextId;
+            return true;
+        },
+        initCombobox: function (initData) {
+            $('#vioFormDiv #violationType').combobox('loadData', initData["T_DIC_VIOTYPE"]);
+            $('#vioFormDiv #orgLevel').combotree('loadData', initData["T_DIC_SYS_ORG"]);
+            $('#vioFormDiv #roadCode').combobox('loadData', initData["T_DIC_ROAD_INFO"]);
+            $('#vioFormDiv #siteCode').combobox('loadData', initData["T_DIC_ROAD_SITE"]);
+        },
+        StatsVioFormDetailInfos: function () {
+            $('#vioFormDiv .searchForm').form('submit', {
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/StatsVioFormDetailInfos",
+                onSubmit: function (param) {
+                    param.ContextId = parent.ContextId;
+                    return true;
+                },
+                success: function (data) {
+                    var data = eval('(' + data + ')');
+                    if (data.Error != '') {
+                        alert(data.Error);
+                    }
+                    else {
+                        if (data.Result.length == 0) {
+                            alert("没有查询出符合条件的违法采集记录！");
+                        }
+                        var gridData = {};
+                        gridData.total = data.Result.length;
+                        gridData.rows = data.Result;
+                        $('#vioFormDiv #dgv').pivotgrid({
+                            data: data.Result,
+                            method: 'get',
+                            pivot: {
+                                rows: ['ROAD_NAME', 'SITE_NAME'],
+                                columns: ['VIOTYPE_NAME', 'VIOLATION_CODE'],
+                                values: [
+                                    { field: '数量', op: 'sum' },
+                                    { field: '比率', formatter: formatProgress, op: 'sum' }
+                                ]
+                            },
+                            valueStyler: function (value, row, index) {
+                                if (/数量$/.test(this.field) && value > 3 && value < 5) {
+                                    return 'background:#D8FFD8'
+                                };
+                            }
+                        })
+                        VioFormMgr.plotBarChart(data.Result);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        },
+        plotBarChart: function (data) {
+            var value = $('#roadCode option:selected').text();
+            var obj = '';
+            if (value == '') {
+                data.sort(compare("ROAD_CODE"));//按道路编码进行排序
+                var _sersies = new Array();
+                var _categories = new Array();
+                for (var i = 0; i < data.length; i++) {
+                    _categories.push(data[i].ROAD_NAME);//添加X轴分类
+                    if (_sersies.length == 0)//如果序列无任何值，添加第一条数据
+                    {
+                        _sersies.push(data[i].ROAD_NAME);
+                        obj += "{name:'" + data[i].VIOTYPE_NAME + "',data:[['" + data[i].ROAD_NAME + "'," + data[i].数量 + "]";
+                    }
+                    else {
+                        if (_sersies[_sersies.length - 1].indexOf(data[i].VIO_TYPE) == '-1') //如果数组不包含该序列,添加新序列，如果包含该序列，则添加值至序列内
+                        {
+                            _sersies.push(data[i].ROAD_NAME);
+                            obj += "]},{name:'" + data[i].VIOTYPE_NAME + "',data:[['" + data[i].ROAD_NAME + "'," + data[i].数量 + "]"
+                        }
+                        else {
+                            obj += ",['" + data[i].ROAD_NAME + "'," + data[i].数量 + "]"
+                        }
+                    }
+                }
+                obj = '[' + obj + ']}]'; alert(obj);
+            }
+
+            $('#vioFormDiv #container').highcharts({                   //图表展示容器，与div的id保持一致
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: '违法行为构成分析'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                xAxis: {
+                    categories: []
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '采 集 违 法 (次)'
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                series: eval(obj)
+            })
+        }
+    }
+
+
+    function formatProgress(value) {
+        if (value) {
+            var s = '<div style="width:100%;">' +
+                    '<div style="width:' + value / 100 + '%;background:pink;color:black">' + value / 100 + '%' + '</div>'
+            '</div>';
+            return s;
+        } else {
+            return '';
+        }
+    };
+    //$(function () {
+    //    $('#container').highcharts({                   //图表展示容器，与div的id保持一致
+    //        chart: {
+    //            type: 'column'                         //指定图表的类型，默认是折线图（line）
+    //        },
+    //        title: {
+    //            text: '各车辆类型违法行为分布图'      //指定图表标题
+    //        },
+    //        xAxis: {
+    //            categories: ['大型车', '中型车', '小型车', '摩托车', '其他车']   //指定x轴分组
+    //            , labels: {
+    //                rotation: -45,
+    //                align: 'right',
+    //                style: {
+    //                    fontSize: '13px',
+    //                    fontFamily: 'Verdana, sans-serif'
+    //                }
+    //            }
+    //        },
+    //        yAxis: {
+    //            title: {
+    //                text: '违法数'                  //指定y轴的标题
+    //            }
+    //        },
+    //        credits: {
+    //            enabled: false,                    // 默认值，如果想去掉版权信息，设置为false即可
+    //            text: '安徽超远信息技术有限公司',               // 显示的文字
+    //            href: 'http://www.cychina.cn/',   // 链接地址
+    //            position: {                          // 位置设置
+    //                align: 'left',
+    //                x: 400,
+    //                verticalAlign: 'bottom',
+    //                y: -10
+    //            },
+    //            style: {                            // 样式设置
+    //                cursor: 'pointer',
+    //                color: 'silver',
+    //                fontSize: '5px'
+    //            }
+    //        },
+    //        series: [
+    //            {                                 //指定数据列
+    //                name: '超高速',                          //数据列名
+    //                data: [1, 0, 4, 7, 6]                        //数据
+    //            },
+    //            {
+    //                name: '超低速',
+    //                data: [1, 7, 3, 6, 9]
+    //            },
+    //            {
+    //                name: '区间超速',
+    //                data: [3, 8, 6, 6, 7]
+    //            },
+    //            {
+    //                name: '压黄线',
+    //                data: [1, 5, 6, 4, 8]
+    //            },
+    //            {
+    //                name: '逆行',
+    //                data: [1, 2, 2, 6, 7]
+    //            },
+    //            {
+    //                name: '车窗抛物',
+    //                data: [3, 2, 1, 2, 9]
+    //            },
+    //            {
+    //                name: '其他',
+    //                data: [2, 4, 6, 3, 9]
+    //            },
+    //            {
+    //                type: 'spline',
+    //                name: '合计',
+    //                data: [13, 12, 13, 16, 3],
+    //                marker: {
+    //                    lineWidth: 2,
+    //                    lineColor: Highcharts.getOptions().colors[6],
+    //                    fillColor: 'white'
+    //                }
+    //            },
+    //            {
+    //                type: 'pie',
+    //                name: '合计',
+    //                data: [
+    //                    {
+    //                        name: '超低速',
+    //                        y: 63,
+    //                        color: Highcharts.getOptions().colors[0] // Jane's color
+    //                    },
+    //                    {
+    //                        name: '区间超速',
+    //                        y: 43,
+    //                        color: Highcharts.getOptions().colors[1] // John's color
+    //                    },
+    //                    {
+    //                        name: '压黄线',
+    //                        y: 29,
+    //                        color: Highcharts.getOptions().colors[2] // Joe's color
+    //                    },
+    //                    {
+    //                        name: '逆行',
+    //                        y: 70,
+    //                        color: Highcharts.getOptions().colors[3] // Jane's color
+    //                    },
+    //                    {
+    //                        name: '车窗抛物',
+    //                        y: 64,
+    //                        color: Highcharts.getOptions().colors[4] // John's color
+    //                    },
+    //                    {
+    //                        name: '其他',
+    //                        y: 64,
+    //                        color: Highcharts.getOptions().colors[5] // John's color
+    //                    }
+    //                ],
+    //                center: [20, 20],
+    //                size: 100,
+    //                showInLegend: false,
+    //                dataLabels: {
+    //                    enabled: false
+    //                }
+    //            }
+    //        ]
+    //    })
+    //});
+    function convert(rows) {
+        function exists(rows, parentId) {
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].ID == parentId) return true;
+            }
+            return false;
+        }
+
+        var nodes = [];
+        // get the top level nodes
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (!exists(rows, row.RESERVE1)) {
+                nodes.push({
+                    id: row.ID,
+                    text: row.NAME
+                });
+            }
+        }
+
+        var toDo = [];
+        for (var i = 0; i < nodes.length; i++) {
+            toDo.push(nodes[i]);
+        }
+        while (toDo.length) {
+            var node = toDo.shift();	// the parent node
+            // get the children nodes
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                if (row.RESERVE1 == node.id) {
+                    var child = { id: row.ID, text: row.NAME };
+                    if (node.children) {
+                        node.children.push(child);
+                    } else {
+                        node.children = [child];
+                    }
+                    toDo.push(child);
+                }
+            }
+        }
+        return nodes;
+    };
+</script>

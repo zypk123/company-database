@@ -1,0 +1,440 @@
+<div class="ImageTidy" style="height: 100%;">
+    <div class="easyui-layout">
+
+        <!--<div data-options="region:'west',title:'图片列表',width:250">-->
+
+            <!--<div id="photoDiv">-->
+            <!--</div>-->
+            <!--<div id="upPhotoTemDiv" class='imgDiv'>-->
+                <!--&lt;!&ndash;<img id="upPhoto" src="themes/default/images/upload.png" style="margin: 70px">&ndash;&gt;-->
+            <!--</div>-->
+
+        <!--</div>-->
+        <div data-options="region:'center',title:'图片展示'">
+            <div id="photoDiv">
+                <!--<img class="imgDiv" style="width: 100%" src="themes/default/images/noPic.jpg" style="margin: 20px">-->
+            </div>
+            <div id="upPhotoTemDiv" class='imgDiv'>
+                <!--<img id="upPhoto" src="themes/default/images/upload.png" style="margin: 70px">-->
+            </div>
+        </div>
+
+        <div data-options="region:'east',border:false,width:450">
+            <div class="easyui-layout">
+                <div data-options="region:'north',border:false,height:37">
+                    <div class="linkbutton_toolbar">
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-add'" id="btnBrowseImages">选择文件</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-save'" cy-click="EventInputConfirm">录入保存</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-remove'" cy-click="EventDiscardImage">废弃</a>
+
+                    </div>
+                </div>
+                <div data-options="region:'center',title:'违法信息录入'">
+                    <form cy-form="VioDetail" method="post" class="detailForm">
+                        <!--车辆信息-->
+                        <div class="searchPanel">
+                            <div class="panel_title">车辆信息</div>
+
+                            <div class=" row tr">
+                                <div class="td col-2">号牌号码：</div>
+                                <div class="td col-4">
+                                    <input class="cy-vehNumberbox" name="plateNbr" type="text" style="width: 120px"
+                                           data-options="required:true"/>
+                                </div>
+                                <div class="td col-2">号牌种类：</div>
+                                <div class="td col-4" ></div>
+                                <input class="easyui-combobox" name="plateType"
+                                       cy-code="002"
+                                       data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px',required:true"/>
+                            </div>
+                            <div class=" row tr">
+                                <div class="td col-2">号牌颜色：</div>
+                                <div class="td col-4">
+                                    <input class="easyui-combobox" name="plateColor"
+                                           cy-code="003"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px',required:true"/>
+                                </div>
+                                <div class="td col-2">发证机关：</div>
+                                <div class="td col-4">
+                                    <input class="easyui-combobox" name="vehicleIssueOrg"
+                                           cy-code="008"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                                </div>
+                                <!--<input class="easyui-combobox" id="cmbVehicleIssueOrg" name="PLATE_TYPE"-->
+                                <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'"/>-->
+                            </div>
+                            <div class=" row tr">
+                                <label class="td col-2">车辆品牌：</label>
+
+                                <div class="td col-4" >
+                                    <input class="easyui-combobox" name="vehBrand"
+                                           cy-code="012"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                                </div>
+                                <label class="td col-2">车身颜色：</label>
+
+                                <div class="td col-4" >
+                                    <input class="easyui-combobox" name="vehColor"
+                                           cy-code="006"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                                </div>
+                            </div>
+                            <div class=" row tr">
+                                <label class="td col-2">使用性质：</label>
+
+                                <div class="td col-4" >
+                                    <input class="easyui-combobox" name="vehCharacter"
+                                           cy-code="010"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                                </div>
+                                <label class="td col-2">车辆类型：</label>
+
+                                <div class="td col-4" >
+                                    <input class="easyui-combobox" name="vehType"
+                                           cy-code="001"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="searchPanel">
+                            <div class="panel_title">违法证据信息</div>
+
+                            <div class="row tr">
+                                <!--<input class="easyui-datebox" type="text" name="VIOLATION_TIME" style="width: 120px"/>-->
+                                <div class="td col-2">
+                                    采集机构：
+                                </div>
+                                <div class="td col-4">
+                                    <input class="cy-org-radio" data-options="required:true" iscode="true" name="orgCode" data-options="width:'120px'">
+                                    <!--<input class="easyui-combobox" id="cmbOrg" name="ORG_CODE"-->
+                                    <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width: 120px"/>-->
+                                </div>
+                                <div class="td col-2">
+                                    采集点位：
+                                </div>
+                                <div class="td col-4">
+                                    <input class="cy-site-radio" data-options="required:true" iscode="true" name="vioSiteCode" data-options="width:'120px'">
+                                    <!--<input class="easyui-combobox" id="cmbOrg" name="ORG_CODE"-->
+                                    <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width: 120px"/>-->
+                                </div>
+                            </div>
+                            <div class="row tr">
+                                <div class="td col-2">
+                                    违法道路：
+                                </div>  
+                                <div class="td col-10" >
+                                    <input class="cy-road-radio" iscode="true"  name="roadCode"
+                                           data-options="width:'350px',required:true"/>
+                                </div>
+                            </div>
+                            <div class="rwo tr">
+                                <div class="td col-2">
+                                    路口/路段：
+                                </div>
+                                <div class="td col-5">
+                                    <input class="easyui-textbox"
+                                           name="junctionCode" data-options="width:'100%',required:true"/>
+                                </div>
+                                <div class="td col-1">
+                                    米数：
+                                </div>
+                                <div class="td col-2">
+                                    <input class="easyui-textbox" name="mileage" type="text" style="width:100%"/>
+                                </div>
+                                <div class="td col-1">
+                                    米
+                                </div>
+                            </div>
+                            <div class="row tr">
+                                <div class="td col-2">
+                                    地点描述：
+                                </div>
+                                <div class="td col-10"> 
+                                    <input class="easyui-textbox" name="addressDesc" type="text"
+                                           data-options="width:'350px',required:true"/>
+                                </div>
+                            </div>
+                            <div class="row tr">
+
+                                <div class="td col-2">
+                                    违法时间：
+                                </div>
+                                <div class="td col-4">
+                                    <input class="easyui-datetimebox" data-options="width:'130px',required:true"
+                                           type="text"
+                                           name="violationTime" />
+
+                                </div>
+                            </div>
+
+                            <div class="row tr">
+
+                                <div class="td col-2">
+                                    行政区划：
+                                </div>
+                                <div class="td col-4">
+                                    <input class="cy-district-radio"  iscode="true" name="districtCode"
+                                            data-options="required:true"/>
+
+                                </div>
+                                <!--<input class="easyui-datebox" type="text" name="VIOLATION_TIME" style="width: 120px"/>-->
+                                <div class="td col-2">
+                                    取证设备：
+                                </div>
+                                <div class="td col-4">
+                                    <input class="easyui-combobox" name="deviceSysNbr"
+                                           iscode="true" data-options="required:true,width:'120px'">
+                                    <!--<input class="easyui-combobox" id="cmbOrg" name="ORG_CODE"-->
+                                    <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width: 120px"/>-->
+                                </div>
+                            </div>
+                            <div class=" row tr">
+                                <div class="td col-2">
+                                    违法代码：
+                                </div>
+                                <div class="td col-2">
+                                    <input type="text" name="violationCode" style="width: 100%"/>
+                                </div>
+                                <div class="td col-8">
+                                    <input class="easyui-combobox" name="violationDesc"
+                                           data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'280px',required:true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!--<div data-options="region:'south',title:'已录入信息列表',height:200">-->
+
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+
+        $scope.$getData("vio", "VioInit")($scope);
+
+        $.extend($scope, {
+            //页面系统代码
+            SysCodeDic: {
+            },
+            //当前违法详细信息
+            //todo
+            VioDetail: {
+                "violationCode":'1721',
+                "violationDesc":'机动车行驶超过规定时速50%的描述',
+                "deviceSysNbr":"10003",
+                "collectionType":"2",
+                "violationType":'2'
+            },
+
+            //缓存待处理数据
+            UnConfirmViolation: {},
+            load: function () {
+                $scope.uploader.init();
+                $scope.imageFiles = {};	//保存/cosUploadServlet的File对象
+                $scope.imageUrls = {};//保存文件URL
+                $scope.imageServerUrls =[];//图片在服务端的URL地址
+
+                $scope.SysCodeTypeDic = $scope.$getData("vio", "ConstantCode").CodeTypeDic;
+
+                var codeTypeArr = $scope.$getData("vio", "ConstantCode").CodeTypeArr;
+
+                $scope.Formatter = $scope.$getData("vio", "Formatter")($scope, codeTypeArr);
+
+                $scope.ConstantSysCode = $scope.$getData("vio", "ConstantCode").ConstantSysCode;
+
+                $scope.PostAjax = $scope.$getData("vio", "PostAjax");
+
+                console.log("loadSuccess!");
+            },
+
+            enter: function () {
+                console.log("enter");
+            },
+            leave: function () {
+                console.log("leave");
+            },
+            close: function () {
+                console.log("close");
+            },
+            //录入保存
+            EventInputConfirm:function() {
+                //step1:check()
+                //step2:save image
+                console.log('EventInputConfirm');
+
+                //没有需要上传的照片
+                if($.isEmptyObject($scope.imageFiles)){
+                    alert("没有图片上传");
+                    $.messager.alert("提示","请选择需要上传的图片！");
+                }else{
+                    $scope.uploader.start();//上传图片
+                }
+            },
+            //废弃
+            EventDiscardImage:function(){
+                //remove image
+            },
+            //查询车辆信息
+            EventQueryVeh:function(){
+                //queryVeh
+            },
+            //保存违法文本信息
+            saveViolationText:function(){
+                //获取form中的数据
+                $scope.$updateData("VioDetail");
+                //添加图片
+                var imageUrl = "";
+                if($scope.imageServerUrls.length > 0){
+                    for (var i = 0; i < $scope.imageServerUrls.length; i++) {
+                            imageUrl += $scope.imageServerUrls[i]+';';
+                    }
+                }
+                imageUrl= imageUrl.substring(0,imageUrl.length-1);
+                $scope.VioDetail.image=imageUrl;
+                //保存数据
+                $scope.PostAjax( $scope.$restRoot + "violation/inputConfirmDigitalViolation",
+                        {param: JSON.stringify(
+                                {
+                                    arrayData:[$scope.VioDetail]
+                                })
+                        },
+                        function (data) {
+                            if (data.ErrorMsg) {
+                                alert(data.ErrorMsg);
+                            }
+                            else {
+                                $scope.cleanFieldOnSaveSucess();
+                            }
+                        } );
+            },
+            //清空信息，其它地址一类信息保留
+            cleanFieldOnSaveSucess:function(){
+                $scope.VioDetail.plateNbr=$scope.VioDetail.plateNbr.substring(0,1);
+                //TODO　$scope.VioDetail.violationTime='';
+                $scope.VioDetail.plateType='';
+                $scope.VioDetail.plateColor='';
+                $scope.VioDetail.vehicleIssueOrg='';
+                $scope.VioDetail.vehBrand='';
+                $scope.VioDetail.mileage='';
+                $scope.VioDetail.image='';
+                $scope.VioDetail.vehType='';
+                $scope.VioDetail.vehCharacter='';
+                $scope.VioDetail.violationCode='';
+                $scope.VioDetail.violationDesc='';
+                $scope.imageFiles = {};	//保存/cosUploadServlet的File对象
+                $scope.imageUrls = {};//保存文件URL
+                $scope.imageServerUrls =[];//图片在服务端的URL地址
+                $scope.$("#photoDiv").html('');
+                $scope.$updateDom("VioDetail");
+            }
+
+        });
+
+        /**
+         * 初始化文件上传
+         * @return {[type]} [description]
+         */
+        $scope.uploader= new plupload.Uploader({
+                runtimes : 'html5',
+                browse_button : $scope.$("#btnBrowseImages")[0], // you can pass in id...
+                container : $scope.$("#upPhotoTemDiv")[0], // ... or DOM Element itself
+                url : 'cosUploadServlet',
+                filters : {
+                    max_file_size : '10mb',
+                    prevent_duplicates : true, //不允许选取重复文件
+                    mime_types : [{
+                        title : "照片文件",
+                        extensions : "jpg,png,jpeg,bmp,gif"
+                    }]
+                },
+                init : {
+                    /**
+                     *添加文件
+                     */
+                    FilesAdded : function(up, files) {
+                        console.log("FilesAdded");
+                        console.log(up);
+                        console.log(files);
+                        if (this.files.length > 3) {
+                            for (var i = 0; i < files.length; i++) {
+                                //删除本次选择的图片
+                                this.removeFile(files[i]);
+                            }
+                            alert("最多只能上传4张违法图片！");
+                            return;
+                        }
+                        if (this.files.length == 5) {
+                            $scope.$("#upPhotoTemDiv").hide();
+                        }
+                        for (var index = 0; index < files.length; index++) {
+                            var file = files[index];
+                            //请按照文件名的形式，存储文件信息到页面变量中
+                            $scope.parseImageFile(file);
+                        }
+                    },
+                    /**
+                     * 删除文件
+                     */
+                    FilesRemoved : function(up, files) {
+                        if (this.files.length < 5) {
+                            $scope.$("#upPhotoTemDiv").show();
+                        }
+                    },
+                    Error : function(up, err) {
+                        console.log(err);
+                    },
+                    //当队列中的某一个文件上传完成后触发
+                    FileUploaded : function(up, file, responseObject) {
+                        var urlObject = $.parseJSON(responseObject.response)[0];
+                        $scope.imageServerUrls.push(urlObject.url);
+                    },
+                    StateChanged : function(up) {
+                        console.log("stateChanged");
+                        console.log(up);
+                        if (up.files.length === (up.total.uploaded + up.total.failed))//文件上传完毕
+                        {
+                            var failedNum="";
+                            if(up.total.failed!=0)
+                            {
+                                failedNum=up.total.failed+"张图片上传失败！";
+                            }
+                            $scope.saveViolationText();
+                        }
+                    }
+                }
+            });
+        /**
+         * 获得图片文件的路径
+         * @return {[type]} [description]
+         */
+       $scope.parseImageFile=function (file) {
+            var name = file.name;
+            $scope.imageFiles[name] = file;
+            var reader = new FileReader();
+            reader.readAsDataURL(file.getSource().getSource());
+            reader.onload = function(e) {
+                $scope.imageUrls[name] = this.result;
+                var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+                var img = $("<img style='width: 100%;'/>");
+                img.attr("src", this.result);
+                imgDiv.append(img);
+                var deleteButton = $("<a class='deleteButton'></a>").linkbutton({
+                    iconCls : "icon-cancel",
+                    plain : true
+                });
+                deleteButton.click(function() {
+                    //把这个div删除
+                    $(this).parent().remove();
+                    //把文件队列中文件删除
+                    $scope.uploader.removeFile(file);
+                });
+                imgDiv.append(deleteButton);
+                $scope.$("#photoDiv").append(imgDiv);
+            };
+        };
+   });
+</script>

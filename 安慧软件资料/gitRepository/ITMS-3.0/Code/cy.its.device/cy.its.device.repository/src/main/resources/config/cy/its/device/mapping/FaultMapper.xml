@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.FaultMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.Fault">
+		<id column="FAULT_ID" property="faultId" jdbcType="VARCHAR" />
+		<result column="MAINTENANCE_ID" property="maintenanceId"
+			jdbcType="VARCHAR" />
+		<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="FAULT_ALARM" property="faultAlarm" jdbcType="CHAR" />
+		<result column="FAULT_TYPE" property="faultType" jdbcType="VARCHAR" />
+		<result column="FAULT_SUB_TYPE" property="faultSubType"
+			jdbcType="VARCHAR" />
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="COLLECT_METHOD" property="collectMethod"
+			jdbcType="CHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="IS_VALIDITY" property="isValidity" jdbcType="CHAR" />
+		<result column="PROCESS_STATE" property="processState"
+			jdbcType="CHAR" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="RESOLVE_FLAG" property="resolveFlag" jdbcType="CHAR" />
+		<result column="RESOLVE_TIME" property="resolveTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		FAULT_ID, MAINTENANCE_ID, DEVICE_ID, FAULT_ALARM,
+		FAULT_TYPE, FAULT_SUB_TYPE,
+		START_TIME,
+		END_TIME, COLLECT_METHOD,
+		REMARK, IS_VALIDITY, PROCESS_STATE, CREATE_BY,
+		CREATE_TIME,
+		RESOLVE_FLAG, RESOLVE_TIME
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_FAULT
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_DEVICE_FAULT
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.Fault">
+		insert into T_DEVICE_FAULT
+		(FAULT_ID, MAINTENANCE_ID, DEVICE_ID,
+		FAULT_ALARM, FAULT_TYPE,
+		FAULT_SUB_TYPE,
+		START_TIME, END_TIME, COLLECT_METHOD,
+		REMARK,
+		IS_VALIDITY, PROCESS_STATE,
+		CREATE_BY, CREATE_TIME, RESOLVE_FLAG,
+		RESOLVE_TIME)
+		values (#{faultId,jdbcType=VARCHAR},
+		#{maintenanceId,jdbcType=VARCHAR},
+		#{deviceId,jdbcType=VARCHAR},
+		#{faultAlarm,jdbcType=CHAR}, #{faultType,jdbcType=VARCHAR},
+		#{faultSubType,jdbcType=VARCHAR},
+		#{startTime,jdbcType=TIMESTAMP},
+		#{endTime,jdbcType=TIMESTAMP},
+		#{collectMethod,jdbcType=CHAR},
+		#{remark,jdbcType=VARCHAR}, #{isValidity,jdbcType=CHAR},
+		#{processState,jdbcType=CHAR},
+		#{createBy,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{resolveFlag,jdbcType=CHAR},
+		#{resolveTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.Fault">
+		insert into T_DEVICE_FAULT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="faultId != null">
+				FAULT_ID,
+			</if>
+			<if test="maintenanceId != null">
+				MAINTENANCE_ID,
+			</if>
+			<if test="deviceId != null">
+				DEVICE_ID,
+			</if>
+			<if test="faultAlarm != null">
+				FAULT_ALARM,
+			</if>
+			<if test="faultType != null">
+				FAULT_TYPE,
+			</if>
+			<if test="faultSubType != null">
+				FAULT_SUB_TYPE,
+			</if>
+			<if test="startTime != null">
+				START_TIME,
+			</if>
+			<if test="endTime != null">
+				END_TIME,
+			</if>
+			<if test="collectMethod != null">
+				COLLECT_METHOD,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="isValidity != null">
+				IS_VALIDITY,
+			</if>
+			<if test="processState != null">
+				PROCESS_STATE,
+			</if>
+			<if test="createBy != null">
+				CREATE_BY,
+			</if>
+			CREATE_TIME,
+			<if test="resolveFlag != null">
+				RESOLVE_FLAG,
+			</if>
+			<if test="resolveTime != null">
+				RESOLVE_TIME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="faultId != null">
+				#{faultId,jdbcType=VARCHAR},
+			</if>
+			<if test="maintenanceId != null">
+				#{maintenanceId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="faultAlarm != null">
+				#{faultAlarm,jdbcType=CHAR},
+			</if>
+			<if test="faultType != null">
+				#{faultType,jdbcType=VARCHAR},
+			</if>
+			<if test="faultSubType != null">
+				#{faultSubType,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				#{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="collectMethod != null">
+				#{collectMethod,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="isValidity != null">
+				#{isValidity,jdbcType=CHAR},
+			</if>
+			<if test="processState != null">
+				#{processState,jdbcType=CHAR},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			SYSDATE,
+			<if test="resolveFlag != null">
+				#{resolveFlag,jdbcType=CHAR},
+			</if>
+			<if test="resolveTime != null">
+				#{resolveTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Fault">
+		update T_DEVICE_FAULT
+		<set>
+			<if test="maintenanceId != null">
+				MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="faultAlarm != null">
+				FAULT_ALARM = #{faultAlarm,jdbcType=CHAR},
+			</if>
+			<if test="faultType != null">
+				FAULT_TYPE = #{faultType,jdbcType=VARCHAR},
+			</if>
+			<if test="faultSubType != null">
+				FAULT_SUB_TYPE = #{faultSubType,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				START_TIME = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				END_TIME = #{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="collectMethod != null">
+				COLLECT_METHOD = #{collectMethod,jdbcType=CHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="isValidity != null">
+				IS_VALIDITY = #{isValidity,jdbcType=CHAR},
+			</if>
+			<if test="processState != null">
+				PROCESS_STATE = #{processState,jdbcType=CHAR},
+			</if>
+			<if test="createBy != null">
+				CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="resolveFlag != null">
+				RESOLVE_FLAG = #{resolveFlag,jdbcType=CHAR},
+			</if>
+			<if test="resolveTime != null">
+				RESOLVE_TIME = #{resolveTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Fault">
+		update
+		T_DEVICE_FAULT
+		set MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR},
+		DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+		FAULT_ALARM =
+		#{faultAlarm,jdbcType=CHAR},
+		FAULT_TYPE =
+		#{faultType,jdbcType=VARCHAR},
+		FAULT_SUB_TYPE =
+		#{faultSubType,jdbcType=VARCHAR},
+		START_TIME =
+		#{startTime,jdbcType=TIMESTAMP},
+		END_TIME =
+		#{endTime,jdbcType=TIMESTAMP},
+		COLLECT_METHOD =
+		#{collectMethod,jdbcType=CHAR},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		IS_VALIDITY = #{isValidity,jdbcType=CHAR},
+		PROCESS_STATE =
+		#{processState,jdbcType=CHAR},
+		CREATE_BY =
+		#{createBy,jdbcType=VARCHAR},
+		CREATE_TIME =
+		#{createTime,jdbcType=TIMESTAMP},
+		RESOLVE_FLAG =
+		#{resolveFlag,jdbcType=CHAR},
+		RESOLVE_TIME =
+		#{resolveTime,jdbcType=TIMESTAMP}
+		where FAULT_ID =
+		#{faultId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectFaults" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (SELECT U.*, ROWNUM RN
+		FROM T_DEVICE_FAULT U
+		<where>
+			<if test="maintenanceId != null and maintenanceId != '' ">
+				AND U.MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+			</if>
+			<if test="faultType != null and faultType != '' ">
+				AND U.FAULT_TYPE = #{faultType,jdbcType=VARCHAR}
+			</if>
+			<if test="startTimeFrom != null and startTimeFrom != '' ">
+				<![CDATA[    AND U.START_TIME >= #{startTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="startTimeTo != null and startTimeTo != '' ">
+				<![CDATA[    AND U.START_TIME <= #{startTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="isValidity != null and isValidity != '' ">
+				AND U.IS_VALIDITY = #{isValidity,jdbcType=CHAR}
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		           <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countFaults" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_DEVICE_FAULT U
+		<where>
+			<if test="maintenanceId != null and maintenanceId != '' ">
+				AND U.MAINTENANCE_ID = #{maintenanceId,jdbcType=VARCHAR}
+			</if>
+			<if test="faultType != null and faultType != '' ">
+				AND U.FAULT_TYPE = #{faultType,jdbcType=VARCHAR}
+			</if>
+			<if test="startTimeFrom != null and startTimeFrom != '' ">
+				<![CDATA[    AND U.START_TIME >= #{startTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="startTimeTo != null and startTimeTo != '' ">
+				<![CDATA[    AND U.START_TIME <= #{startTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="isValidity != null and isValidity != '' ">
+				AND U.IS_VALIDITY = #{isValidity,jdbcType=CHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

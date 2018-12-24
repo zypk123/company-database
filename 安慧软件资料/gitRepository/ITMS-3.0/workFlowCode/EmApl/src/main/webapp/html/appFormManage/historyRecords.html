@@ -1,0 +1,90 @@
+<div ng-controller="HistoryrecordsController">
+    <div style='display: flex; margin-top: 5px;'>
+        <div class="input-group" style='width: 220px; margin-left: 15px;'>
+            <span class="input-group-addon">设备名称</span>
+            <input type="text" class="form-control" ng-model="deviceName">
+        </div>
+        <div class="input-group" style='width:200px; margin-left: 10px;'>
+            <span class="input-group-addon">审批结果</span>
+            <select class="form-control" name="status" ng-model="status" style='width:130px;'>
+                <option value=''>全部</option>
+                <option value='2'>通过</option>
+                <option value='3'>不通过</option>
+            </select>
+        </div>
+        <div class="input-group" style='width: 240px; margin-left: 10px;'>
+            <span class="input-group-addon">申请日期</span>
+            <input id="startTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',maxDate:'#F{$dp.$D(\'endTime\') || \'%y-%M-%d\'}',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onChange="" ng-model="startTime" />
+        </div>
+        <div class="input-group" style='width: 180px; margin-left: 10px;'>
+            <span class="input-group-addon">到</span>
+            <input id="endTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onChange="" ng-model="endTime" />
+        </div>
+        <div style='margin-left: 20px; display: flex;'>
+            <button type="submit" class="btn btn-default" ng-click='getApproveList()'>查询</button>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div style="height: 75%;width:100%;margin-top:10px;overflow: auto;">
+            <table class="table table-bordered table-show table-striped" style="margin-top:5px">
+                <tbody>
+                    <tr class="active">
+                        <td>设备名称</td>
+                        <td>申报单位</td>
+                        <td>申报日期</td>
+                        <td>审批结果</td>
+                        <!-- <td>备注</td> -->
+                        <td>操作</td>
+                        <!-- <td>状态</td> -->
+                    </tr>
+                    <tr ng-repeat="info in showInfo" ng-click="userDetail(info)">
+                        <td width="20%">{{info.deviceName}}
+                        </td>
+                        <td width="15%">{{info.unit}}</td>
+                        <td width="15%">{{info.approveTime}}</td>
+                        <td width="10%">{{info.status==2?'通过':'不通过'}}</td>
+                        <!-- <td width="25%">{{info.reason}}</td> -->
+                        <td width="10%">
+                            <a ng-click="queryDetail(info)" style="cursor:pointer;">查看详情</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div style="float: left;">
+                <uib-pagination boundary-links="true" total-items="totalItems" max-size="maxSize" items-per-page="pageSize" force-ellipses="true" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+            </div>
+            <div style="float: left; line-height:70px;font-size: 13px">共{{totalItems}}条</div>
+        </div>
+    </div>
+</div>
+<style>
+.table-show > thead > tr > th,
+.table-show > tbody > tr > th,
+.table-show > tfoot > tr > th,
+.table-show > thead > tr > td,
+.table-show > tbody > tr > td,
+.table-show > tfoot > tr > td {
+    font-size: 12px;
+    padding: 5px 12px 5px 12px;
+    /*vertical-align: middle;*/
+    border: 1px solid #EEE;
+}
+
+.table-unite {
+    text-align: center;
+}
+
+.input {
+    width: 200px;
+}
+
+.form-control {
+    height: 30px;
+}
+
+.btn {
+    height: 30px;
+}
+</style>

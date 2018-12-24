@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.LedPublishLogMapper" >
+   <resultMap id="BaseResultMap" type="cy.its.device.domain.model.led.LedPublishLog" >
+    <id column="PUBLISH_LOG_ID" property="publishLogId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="PROGRAM_ID" property="programId" jdbcType="VARCHAR" />
+    <result column="PROGRAM_NO" property="programNo" jdbcType="VARCHAR" />
+    <result column="BEGIN_TIME" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="RESULT" property="result" jdbcType="VARCHAR" />
+    <result column="FAILURE_CODE" property="failureCode" jdbcType="DECIMAL" />
+    <result column="FAILURE_DESC" property="failureDesc" jdbcType="VARCHAR" />
+    <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="PUBLISH_USER" property="publishUser" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+    <result column="TASK_TYPE" property="taskType" jdbcType="VARCHAR" />
+    <result column="DATA_IDENTITY" property="dataIdentity" jdbcType="VARCHAR" />
+    <result column="PUBLISH_METHOD" property="publishMethod" jdbcType="VARCHAR" />
+    <result column="PROG_CONTENT" property="progContent" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PUBLISH_LOG_ID, DEVICE_SYS_NBR, PROGRAM_ID, PROGRAM_NO, BEGIN_TIME, END_TIME, RESULT, 
+    FAILURE_CODE, FAILURE_DESC, MESSAGE_TYPE, PUBLISH_USER, ORG_PRIVILEGE_CODE, TASK_ID, 
+    TASK_TYPE, DATA_IDENTITY, PUBLISH_METHOD, PROG_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_PUBLISH_LOG
+    where PUBLISH_LOG_ID = #{publishLogId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED_PUBLISH_LOG
+    where PUBLISH_LOG_ID = #{publishLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.led.LedPublishLog" >
+    insert into T_DEVICE_LED_PUBLISH_LOG (PUBLISH_LOG_ID, DEVICE_SYS_NBR, PROGRAM_ID, 
+      PROGRAM_NO, BEGIN_TIME, END_TIME, 
+      RESULT, FAILURE_CODE, FAILURE_DESC, 
+      MESSAGE_TYPE, PUBLISH_USER, ORG_PRIVILEGE_CODE, 
+      TASK_ID, TASK_TYPE, DATA_IDENTITY, 
+      PUBLISH_METHOD, PROG_CONTENT)
+    values (#{publishLogId,jdbcType=VARCHAR}, #{deviceSysNbr,jdbcType=VARCHAR}, #{programId,jdbcType=VARCHAR}, 
+      #{programNo,jdbcType=VARCHAR}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{result,jdbcType=VARCHAR}, #{failureCode,jdbcType=DECIMAL}, #{failureDesc,jdbcType=VARCHAR}, 
+      #{messageType,jdbcType=VARCHAR}, #{publishUser,jdbcType=VARCHAR}, #{orgPrivilegeCode,jdbcType=VARCHAR}, 
+      #{taskId,jdbcType=VARCHAR}, #{taskType,jdbcType=VARCHAR}, #{dataIdentity,jdbcType=VARCHAR}, 
+      #{publishMethod,jdbcType=VARCHAR}, #{progContent,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.led.LedPublishLog" >
+    insert into T_DEVICE_LED_PUBLISH_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="publishLogId != null" >
+        PUBLISH_LOG_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+      <if test="programId != null" >
+        PROGRAM_ID,
+      </if>
+      <if test="programNo != null" >
+        PROGRAM_NO,
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="result != null" >
+        RESULT,
+      </if>
+      <if test="failureCode != null" >
+        FAILURE_CODE,
+      </if>
+      <if test="failureDesc != null" >
+        FAILURE_DESC,
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE,
+      </if>
+      <if test="publishUser != null" >
+        PUBLISH_USER,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+      <if test="taskId != null" >
+        TASK_ID,
+      </if>
+      <if test="taskType != null" >
+        TASK_TYPE,
+      </if>
+      <if test="dataIdentity != null" >
+        DATA_IDENTITY,
+      </if>
+      <if test="publishMethod != null" >
+        PUBLISH_METHOD,
+      </if>
+      <if test="progContent != null" >
+        PROG_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="publishLogId != null" >
+        #{publishLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="programId != null" >
+        #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="programNo != null" >
+        #{programNo,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="failureCode != null" >
+        #{failureCode,jdbcType=DECIMAL},
+      </if>
+      <if test="failureDesc != null" >
+        #{failureDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="publishUser != null" >
+        #{publishUser,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null" >
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskType != null" >
+        #{taskType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataIdentity != null" >
+        #{dataIdentity,jdbcType=VARCHAR},
+      </if>
+      <if test="publishMethod != null" >
+        #{publishMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="progContent != null" >
+        #{progContent,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.led.LedPublishLog" >
+    update T_DEVICE_LED_PUBLISH_LOG
+    <set >
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="programId != null" >
+        PROGRAM_ID = #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="programNo != null" >
+        PROGRAM_NO = #{programNo,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null" >
+        RESULT = #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="failureCode != null" >
+        FAILURE_CODE = #{failureCode,jdbcType=DECIMAL},
+      </if>
+      <if test="failureDesc != null" >
+        FAILURE_DESC = #{failureDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="publishUser != null" >
+        PUBLISH_USER = #{publishUser,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null" >
+        TASK_ID = #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskType != null" >
+        TASK_TYPE = #{taskType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataIdentity != null" >
+        DATA_IDENTITY = #{dataIdentity,jdbcType=VARCHAR},
+      </if>
+      <if test="publishMethod != null" >
+        PUBLISH_METHOD = #{publishMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="progContent != null" >
+        PROG_CONTENT = #{progContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PUBLISH_LOG_ID = #{publishLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.led.LedPublishLog" >
+    update T_DEVICE_LED_PUBLISH_LOG
+    set DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      PROGRAM_ID = #{programId,jdbcType=VARCHAR},
+      PROGRAM_NO = #{programNo,jdbcType=VARCHAR},
+      BEGIN_TIME = #{beginTime,jdbcType=TIMESTAMP},
+      END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      RESULT = #{result,jdbcType=VARCHAR},
+      FAILURE_CODE = #{failureCode,jdbcType=DECIMAL},
+      FAILURE_DESC = #{failureDesc,jdbcType=VARCHAR},
+      MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      PUBLISH_USER = #{publishUser,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      TASK_ID = #{taskId,jdbcType=VARCHAR},
+      TASK_TYPE = #{taskType,jdbcType=VARCHAR},
+      DATA_IDENTITY = #{dataIdentity,jdbcType=VARCHAR},
+      PUBLISH_METHOD = #{publishMethod,jdbcType=VARCHAR},
+      PROG_CONTENT = #{progContent,jdbcType=VARCHAR}
+    where PUBLISH_LOG_ID = #{publishLogId,jdbcType=VARCHAR}
+  </update>
+  
+  <sql id="LogFindWhere">
+	  <where>
+	     <if test="orgPrivilegeCode != null" >
+	        AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR} || '%' 
+	      </if>
+	      <if test="deviceId != null or roadId != null"  >
+	        and device_sys_nbr in
+	       (select device_sys_nbr
+	          from t_device_sys s
+	          <where>
+	          	<if test="deviceId != null"  >
+	          	   AND s.device_id = #{deviceId,jdbcType=VARCHAR}
+	          	</if>
+	          	<if test="roadId != null"  >
+	          	   AND s.site_id in (select site_id from t_sys_site where road_id = #{roadId,jdbcType=VARCHAR})
+	          	</if>
+	          </where>)
+	      </if>
+	    <if test="publishMethodArr != null and publishMethodArr.length > 0" >
+	        AND publish_method in 
+			<foreach collection="publishMethodArr" index="index" item="pubMed"
+				open="(" separator="," close=")">
+				#{pubMed,jdbcType=VARCHAR}
+			</foreach>
+	    </if>	  
+	    
+	    <if test="messageType != null" >
+	      and MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR}
+	    </if>	    
+	    <if test="publishTimeFrom != null" >
+	       <![CDATA[   and begin_time > #{publishTimeFrom,jdbcType=TIMESTAMP} ]]>
+	    </if> 
+	    <if test="publishTimeTo != null" >
+	       <![CDATA[   and begin_time < #{publishTimeTo,jdbcType=TIMESTAMP} ]]>
+	    </if> 
+	    <if test="programId != null" >
+	      and program_id = #{programId,jdbcType=VARCHAR}
+	    </if> 
+	     <if test="taskType != null" >
+	      and TASK_TYPE = #{taskType,jdbcType=VARCHAR}
+	    </if> 
+	    <if test="resultArr != null and resultArr.length > 0" >
+	        AND RESULT in 
+			<foreach collection="resultArr" index="index" item="rs"
+				open="(" separator="," close=")">
+				#{rs,jdbcType=VARCHAR}
+			</foreach>
+	    </if>
+	     <if test="taskId != null" >
+	      and TASK_ID = #{taskId,jdbcType=VARCHAR}
+	    </if>	    		
+	  </where>
+  </sql>
+  
+  	<select id="selectLedPublishLogs" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (select M.*, ROWNUM RN
+		FROM (
+		select 
+	    <include refid="Base_Column_List" />
+	    from T_DEVICE_LED_PUBLISH_LOG
+	    <include refid="LogFindWhere" />
+		order by begin_time DESC) M) N
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  N.RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  N.RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+  
+  <select id="countPublishLogs" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+    select  count(1)
+    from T_DEVICE_LED_PUBLISH_LOG
+    <include refid="LogFindWhere" />
+  </select>
+</mapper>

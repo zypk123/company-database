@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_MenuMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Menu" >
+    <id column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+    <result column="SYS_CONFIG_ID" property="sysConfigId" jdbcType="VARCHAR" />
+    <result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+    <result column="TARGET_URL" property="targetUrl" jdbcType="VARCHAR" />
+    <result column="PARENT_CODE" property="parentCode" jdbcType="VARCHAR" />
+    <result column="SORT_INDEX" property="sortIndex" jdbcType="VARCHAR" />
+    <result column="MENU_ENABLE_FLAG" property="menuEnableFlag" jdbcType="CHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MENU_CODE, SYS_CONFIG_ID, MENU_NAME, TARGET_URL, PARENT_CODE, SORT_INDEX, MENU_ENABLE_FLAG, 
+    REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_MENU
+    where MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_MENU
+    where MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Menu" >
+    insert into T_SYS_MENU (MENU_CODE, SYS_CONFIG_ID, MENU_NAME, 
+      TARGET_URL, PARENT_CODE, SORT_INDEX, 
+      MENU_ENABLE_FLAG, REMARK)
+    values (#{menuCode,jdbcType=VARCHAR}, #{sysConfigId,jdbcType=VARCHAR}, #{menuName,jdbcType=VARCHAR}, 
+      #{targetUrl,jdbcType=VARCHAR}, #{parentCode,jdbcType=VARCHAR}, #{sortIndex,jdbcType=VARCHAR}, 
+      #{menuEnableFlag,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Menu" >
+    insert into T_SYS_MENU
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="menuCode != null" >
+        MENU_CODE,
+      </if>
+      <if test="sysConfigId != null" >
+        SYS_CONFIG_ID,
+      </if>
+      <if test="menuName != null" >
+        MENU_NAME,
+      </if>
+      <if test="targetUrl != null" >
+        TARGET_URL,
+      </if>
+      <if test="parentCode != null" >
+        PARENT_CODE,
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX,
+      </if>
+      <if test="menuEnableFlag != null" >
+        MENU_ENABLE_FLAG,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="menuCode != null" >
+        #{menuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sysConfigId != null" >
+        #{sysConfigId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuName != null" >
+        #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="targetUrl != null" >
+        #{targetUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null" >
+        #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sortIndex != null" >
+        #{sortIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="menuEnableFlag != null" >
+        #{menuEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Menu" >
+    update T_SYS_MENU
+    <set >
+      <if test="sysConfigId != null" >
+        SYS_CONFIG_ID = #{sysConfigId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuName != null" >
+        MENU_NAME = #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="targetUrl != null" >
+        TARGET_URL = #{targetUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null" >
+        PARENT_CODE = #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX = #{sortIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="menuEnableFlag != null" >
+        MENU_ENABLE_FLAG = #{menuEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Menu" >
+    update T_SYS_MENU
+    set SYS_CONFIG_ID = #{sysConfigId,jdbcType=VARCHAR},
+      MENU_NAME = #{menuName,jdbcType=VARCHAR},
+      TARGET_URL = #{targetUrl,jdbcType=VARCHAR},
+      PARENT_CODE = #{parentCode,jdbcType=VARCHAR},
+      SORT_INDEX = #{sortIndex,jdbcType=VARCHAR},
+      MENU_ENABLE_FLAG = #{menuEnableFlag,jdbcType=CHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectMenusByUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select distinct a.*
+    from t_sys_menu a,      
+    (select distinct substr(m.menu_code, 0, 2) lv1Code,
+                     substr(m.menu_code, 0, 4) lv2Code,
+                     m.menu_code lv3code
+          from t_sys_menu            m,
+               T_SYS_FUNCTION        f,
+               T_SYS_ROLE_PERMISSION r,
+               T_SYS_ROLE_USER       ru
+         where m.menu_code = f.menu_code
+           and f.function_code = r.function_code
+           and r.role_id = ru.role_id
+           and ru.user_id = #{userId,jdbcType=VARCHAR}
+         order by m.menu_code) b
+	 where a.menu_code = b.lv1Code or
+	       a.menu_code = b.lv2Code or
+	       a.menu_code = b.lv3Code
+	 order by a.menu_code asc
+  </select>
+</mapper>

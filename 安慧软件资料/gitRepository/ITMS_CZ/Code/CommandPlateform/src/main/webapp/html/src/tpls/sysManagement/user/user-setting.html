@@ -1,0 +1,376 @@
+<!--用户信息面板添加页面-->
+<div id="user-setting" >
+	<form cy-form="userInfo" id="form" class="easyui-form" data-options="novalidate:true">
+		<div class="searchPanel" style="width: 520px;float: left">
+			<div class="panel_title">
+				基础信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						姓名：
+					</div>
+					<div class="td" cy-name="userInfo.name"></div>
+					<div class="th">
+						警号：
+					</div>
+					<div class="td" cy-name="userInfo.police.policeCode"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						所属机构：
+					</div>
+					<div class="td" cy-name="userInfo.orgId" cy-filter="$getOrgName"></div>
+					<div class="th">
+						性别：
+					</div>
+					<div class="td" cy-name="userInfo.police.sex" cy-filter="getCodeName('105')"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						出生年月：
+					</div>
+					<div class="td" cy-name="userInfo.police.birthDate" cy-filter="formatDate"></div>
+					<div class="th">
+						身份证号：
+					</div>
+					<div class="td" cy-name="userInfo.police.personId"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						联系电话：
+					</div>
+					<div class="td" cy-name="userInfo.police.pPhoneNbr"></div>
+					<div class="th">
+						电子邮箱：
+					</div>
+					<div class="td" cy-name="userInfo.police.email"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						家庭住址：
+					</div>
+					<div class="td" cy-name="userInfo.police.familyAddress"></div>
+				</div>
+			</div>
+		</div>
+		<div class="searchPanel" id="signArea" style="width: 200px;float: left">
+			<div class="panel_title">
+				用户签章
+			</div>
+			<div class="user-sign" id="sign">
+				<img id="uploadImg" style="margin:35px;" src="themes/default/images/upload.png">
+			</div>
+		</div>
+		<div class="searchPanel" style="height:150px;float: left;">
+			<div class="panel_title">
+				登录信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						用户名：
+					</div>
+					<div class="td" cy-name="userInfo.loginName" style="width:100px;"></div>
+					<div class="th">
+						<a class="easyui-linkbutton" data-options="iconCls:'icon-edit'" cy-click="openEditPassword">修改密码</a>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						原始密码：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox password" 
+							name="oldPassword" required="true" 
+							data-options="validType:['notBlank','length[6,20]'],type:'password',width:150" />
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						新密码：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox password" 
+							name="newPassword" id="newPassword" required="true" 
+							data-options="validType:['notBlank','length[6,20]'],type:'password',width:150" />
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						确认密码：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox password" 
+							name="newPasswordValidate" required="true" 
+							data-options="validType:['notBlank','length[6,20]','passwordValidate[\'newPassword\']'],type:'password',width:150" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="linkbutton_toolbar" style="height:40px;text-align: center;float: left;">
+			<a class="easyui-linkbutton button-main" id="saveButton" data-options="iconCls:'icon-save',disabled:true"
+			cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">取消</a>
+		</div>
+	</form>
+</div>
+<script>
+	//接受数据
+	InitPage(["userInfo"], function($scope) {
+		/**
+		 * 转化数据字典方法
+		 */
+		$scope.getCodeName = function(type) {
+			return function(value) {
+				return $scope.$getCodeName(type, value);
+			};
+		};
+
+		/**
+		 * 转化日期
+		 */
+		$scope.formatDate = function(value) {
+			if (value && value != "") {
+				return new Date(parseInt(value)).format("yyyy-MM-dd");
+			}
+		};
+
+		/**
+		 * 初始化操作
+		 */
+		$scope.load = function() {
+			//初始化密码编辑
+			$scope.$(".password").textbox("disable");
+			//上传tip
+			$scope.$("#sign").tooltip({
+				position : 'bottom',
+				content : '<span style="font-weight:bold;">点击上传</span>',
+				deltaY : -50
+			});
+			//获取获取签章
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/userAction/findUserSign",
+				success : function(data) {
+					if (data.length == 0) {
+						//初始化文件上传组件
+						$scope.uploader = initUpload();
+						$scope.uploader.init();
+					} else {
+						showImage(data[0].signatureImage);
+					}
+				}
+			});
+		};
+
+		/**
+		 * 开启修改密码
+		 */
+		$scope.openEditPassword = function() {
+			$scope.$(".password").textbox("enable");
+			$scope.$("#saveButton").linkbutton("enable");
+		};
+
+		/**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload() {
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : $scope.$("#uploadImg")[0], // you can pass in id...
+				container : $scope.$("#sign")[0], // ... or DOM Element itself
+				url : 'cosUploadServlet',
+				filters : {
+					max_file_size : '10mb',
+					prevent_duplicates : true, //不允许选取重复文件
+					mime_types : [{
+						title : "照片文件",
+						extensions : "jpg,png,jpeg,bmp,gif"
+					}]
+				},
+				init : {
+					PostInit : function() {
+
+					},
+					/**
+					 *添加文件
+					 */
+					FilesAdded : function(up, files) {
+						//上传文件
+						$scope.uploader.start();
+					},
+					Error : function(up, err) {
+						$.messager.alert("提示",err.message);
+					},
+					//当队列中的某一个文件上传完成后触发
+					FileUploaded : function(up, file, responseObject) {
+						//保存签章信息
+						var response = $.parseJSON(responseObject.response);
+						saveSign(response[0].url);
+					}
+				}
+			});
+		}
+
+		/**
+		 * 保存用户签章
+		 */
+		function saveSign(url) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/userAction/saveUserSign",
+				params : {
+					imageUrl : url
+				},
+				success : function(data) {
+					if (data == "success") {
+						showImage(url);
+					}
+				}
+			});
+		}
+
+		function showImage(url) {
+			//保存成功
+			$scope.$("#uploadImg").attr("src", "http://" + url).css({
+				margin : 0,
+				height : "100%",
+				width : "100%"
+			});
+			if ($scope.uploader) {
+				//禁用上传按钮
+				$scope.uploader.disableBrowse(true);
+			}
+			//更新上传提示
+			$scope.$("#sign").tooltip("update", "<span style='font-weight:bold;'>查看预览</span>");
+			//设置预览事件
+			$scope.$("#uploadImg").unbind("click").click(function() {
+				preview("http://" + url);
+			});
+		}
+
+		/**
+		 * 查看详情
+		 */
+		function preview(image) {
+			//设置参数
+			$scope.$setParam("image", image);
+			//设置保存方法
+			$scope.$setParam("saveSign", saveSign);
+			//设置删除方法
+			$scope.$setParam("clearSign", function() {
+				//初始化文件上传组件
+				if($scope.uploader){
+					//销毁原来的上传组件
+					$scope.uploader.destroy();
+				}
+				$scope.uploader = initUpload();
+				$scope.uploader.init();
+				//上传提示更新
+				$scope.$("#sign").tooltip("update", "<span style='font-weight:bold;'>点击上传</span>");
+				//更新上传图片
+				$scope.$("#uploadImg").attr("src", "themes/default/images/upload.png").css({
+					margin : 35,
+					height : "",
+					width : ""
+				});
+				$scope.$("#uploadImg").unbind("click");
+			});
+			//打开预览界面
+			$scope.$openDialog("preview", {
+				title : "个人签章预览",
+				href : "tpls/sysManagement/user/user-sign-preview.html",
+				height : 500,
+				width : 500
+			});
+		}
+
+		/**
+		 * 保存修改的密码
+		 */
+		$scope.save = function() {
+			if ($(this).linkbutton("options").disabled) {
+				return;
+			} else {
+				$scope.$("#form").form("enableValidation");
+				if ($scope.$("#form").form("validate")) {
+					//验证原密码
+					validateLogin(function() {
+						//原密码验证通过，保存新密码
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "sysCfg/userAction/updatePassword",
+							params : {
+								password : $scope.$("#newPassword").textbox("getValue")
+							},
+							success : function(data) {
+								if (data == "success") {
+									$.messager.alert("提示", "修改成功!");
+									$scope.$destroySelf();
+								}
+							},
+							fail : function() {
+								$.messager.alert("提示", "服务器忙！");
+							}
+						});
+					});
+				}
+			}
+		};
+
+		/**
+		 * 验证用户密码
+		 */
+		function validateLogin(callback) {
+			//更新数据
+			$scope.$updateData("userInfo");
+			var param = {
+				loginName : $scope.UserInfo.loginName,
+				password : $scope.userInfo.oldPassword,
+				loginType : "0"
+			};
+			$.ajax({
+				url : $scope.$servletRoot + "/LoginServlet",
+				data : param,
+				type : "post",
+				dataType : "json",
+				success : function(result) {
+					if (result.status != "2") {
+						//登录失败
+						$.messager.alert("提示", "原始密码不正确");
+					} else {
+						callback();
+					}
+				},
+				error : function() {
+					//服务器报错
+					$.messager.progress('close');
+					$.messager.alert("提示", "服务器错误");
+				}
+			});
+		}
+
+	});
+
+</script>
+<style type="text/css">
+	#user-setting .table {
+		float: left;
+		width: 100%;
+	}
+	#user-setting .th {
+		text-align: right;
+		width: 85px;
+		font-weight: bold;
+	}
+	#user-setting .td {
+		width: 165px;
+		color: blue;
+	}
+	#user-setting .user-sign {
+		float: left;
+		width: 100%;
+		height: 190px;
+		cursor: pointer;
+	}
+</style>

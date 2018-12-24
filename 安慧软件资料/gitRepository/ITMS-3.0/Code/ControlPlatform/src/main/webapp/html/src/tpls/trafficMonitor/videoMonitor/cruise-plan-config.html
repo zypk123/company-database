@@ -1,0 +1,454 @@
+<div id="cruisePlanConfig" style="height: 100%">
+    <div class="easyui-layout">
+        <div data-options="region:'north'" style="height: 40px;">
+            <div class="linkbutton_toolbar">
+                <a class="easyui-linkbutton  button-main" data-options="iconCls:'icon-add'"
+                   cy-click="addCruisePlan">新增</a>
+            </div>
+        </div>
+        <!--巡航方案列表-->
+        <div data-options="region:'center'" style="padding: 5px">
+            <!--巡航方案列表-->
+            <table id="gridCruisePlan" cy-datagrid="cruisePlanOptions">
+            </table>
+        </div>
+        <!--巡航视频列表-->
+        <div data-options="region:'south'" style="height: 50%">
+            <div class="easyui-layout" style="height: 100%">
+                <div data-options="region:'north'" style="height: 40px">
+                    <div id="toolbarConfigGridVideo" style="height: 40px;magin-left:30px;margin-top: 20px;">
+                        当前巡航方案：
+                        <div id="divPlanName" style="display: inline-block;font-weight:bold;">
+
+                        </div>
+                    </div>
+                </div>
+                <div data-options="region:'center'">
+                    <table id="cruiseConfigGridVideo" cy-datagrid="cruiseConfigGridVideoOptions">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+InitPage([], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+    $scope.load = function () {
+        $scope.loadCruisePlan();
+        //console.log('load');
+    };
+    $scope.close = function () {
+        //console.log('close');
+    };
+    $scope.leave = function () {
+        //console.log('leave');
+    };
+    $scope.enter = function () {
+        //console.log('enter');
+    };
+
+
+    $.extend($scope, {
+        addCruisePlan: function () {
+           // console.log('add cruise plan');
+            $scope.cruisePlanDetail = {};
+            $scope.$setParam("refresh", $scope.onModifyCruisePlanComplete);
+            $scope.$openDialog("addDialog", {
+                title: "新增巡航方案",
+                width: 1000,
+                height: 600,
+                href: "tpls/trafficMonitor/videoMonitor/cruise-plan-modify.html"
+            }, true);
+
+//            $scope.$setParam('startTime','2016-05-10 16:00:00');
+//            $scope.$setParam('endTime','2016-05-10 16:10:00');
+//            $scope.$setParam("deviceIds", ['e5467b07da984d749934f0a773b98d64','30dffc422b6e43eeb75a2b4f4cda80ca']);//
+//            var res=$scope.$openDialog("videoDialog", {
+//                title: "历史视频查看",
+//                draggable:false,
+//                width: 1000,
+//                height: 600,
+//                href: "tpls/video/popPlayBack.html"
+//            }, true);
+//
+//                $scope.$setParam("deviceIds", ['3110fc3d4abc48cdb234827b3dbb17cf','be43e1533fc84e80976c7278965290fb']);//
+//                var res=$scope.$openDialog("videoDialog", {
+//                    title: "实时预览",
+//                    draggable:false,
+//                    width: 600,
+//                    height: 600,
+//                    href: "tpls/video/popPreView.html"
+//                }, true);
+
+//            $scope.$setParam("deviceSysNbr", '533604000010020010');//
+//            var res=$scope.$openDialog("violationDialog", {
+//                title: "设备违法信息",
+//                width: 1000,
+//                height: 600,
+//                href: "tpls/violationMgr/popViolation.html"
+//            }, true);
+
+        },
+        //加载巡航方案
+        loadCruisePlan: function (selectRowIndex) {
+            var queryParams = {};
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/cruisePlan/getVideoCruisePlanList",
+                params: queryParams,
+                method: "post",
+                success: function (result) {
+                    if (result.errorMsg) {
+                        alert('加载巡航方案列表失败，原因:' + result.errorMsg);
+                    }
+                    else {
+                        $scope.$("#gridCruisePlan").datagrid('loadData', result.result).datagrid('sort', {
+                            sortName: 'createTime',
+                            sortOrder: 'asc'
+                        });
+                        if (result && result.result.length > 0) {
+                            var rowIndex=0;
+                            if(selectRowIndex&&selectRowIndex>=0){
+                                rowIndex=selectRowIndex;
+                            }
+                            $scope.$("#gridCruisePlan").datagrid('selectRow', rowIndex);
+                        }
+                    }
+                }
+            });
+        },
+        //巡航方案列表属性
+        cruisePlanOptions: {
+            columns: [
+                [
+                    {title: "方案名称", field: "videoPlanName", width: 10},//
+                    {title: "添加时间", field: "createTime", width: 10},//
+                    {title: "默认巡航间隔", field: "defaultCruiseTimes", width: 10},//
+                    {title: "总时长(秒)", field: "totalCruiseTimes", width: 10},//
+                    {title: "方案已执行次数", field: "planExecuteTimes", width: 10},//
+                    {title: "视频巡航", field: "totalSeconds", width: 10, formatter: function (value, rowData, rowIndex) {
+                        var motivateBtn = $("<a  title='启动' class='button'></a>");
+                        motivateBtn.linkbutton({
+                            iconCls: "icon-video-solid",
+                            plain: true
+                        });
+                        motivateBtn.attr('cy-click', "beginCruisePlan('" + rowIndex + "')");
+                        return $("<span/>").append(motivateBtn).html();
+                    }},//
+                    {title: "操作", field: "id", width: 10, formatter: function (value, rowData, rowIndex) {
+                        var upBtn = $("<a  title='修改' class='button'></a>");
+                        upBtn.linkbutton({
+                            iconCls: "icon-edit-solid",
+                            plain: true
+                        });
+                        upBtn.attr('cy-click', "modifyCruisePlan('" + rowIndex + "')");
+
+                        var downBtn = $("<a  title='删除' class='button'></a>");
+                        downBtn.linkbutton({
+                            iconCls: "icon-remove-solid",
+                            plain: true
+                        });
+                        downBtn.attr('cy-click', "deleteCruisePlan('" + rowIndex + "')");
+                        return $("<span/>").append(upBtn).append("  ").append(downBtn).html();
+                    }}//
+                ]
+            ],
+            singleSelect: true,
+            method: 'get',
+            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            nowarp: false,
+            pagination: false,
+            remoteSort: false,
+            onSelect: function (index, row) {
+                $scope.loadPlanVideo(row);
+                $scope.$("#divPlanName").text(row.videoPlanName);
+            }
+        },
+        //加载巡航方案视频列表
+        loadPlanVideo: function (cruisePlan) {
+            //加载巡航视频列表
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/cruisePlan/getCruisePlanVideo",
+                params: {param: JSON.stringify(cruisePlan)},
+                method: "post",
+                success: function (result) {
+                    if (result.errorMsg) {
+                        alert('加载巡航视频列表失败，原因:' + result.errorMsg);
+                    }
+                    else {
+                        if (result && result.result.length > 0) {
+                            $scope.curCruiseVideoIndex = 1;
+                            $scope.$("#cruiseConfigGridVideo").datagrid('loadData', result.result);
+                            $scope.$("#cruiseConfigGridVideo").datagrid('sort', {
+                                sortName: 'sortIndex',
+                                sortOrder: 'asc'
+                            });
+                            $scope.$("#cruiseConfigGridVideo").datagrid('selectRow', 0);
+                        }
+                        else {
+                            $scope.curCruiseVideoIndex = 1;
+                            $scope.$("#cruiseConfigGridVideo").datagrid('loadData', []);
+                        }
+                    }
+                }
+            });
+        },
+        //巡航视频列表属性
+        cruiseConfigGridVideoOptions: {
+            columns: [
+                [
+                    {title: "序号", field: "sortIndex"},//,sortable:true
+                    {title: "视频编号", field: "deviceSysNbr", width: 10},//
+                    {title: "视频名称", field: "videoDeviceName", width: 10},//, width: 10
+                    {title: "预置位", field: "presetDesc", width: 10},//
+                    {title: "巡航时间(秒)", width: 10, field: "cruiseTime"},//
+                    {title: "操作", field: "test", width: 10, formatter: function (value, rowData, rowIndex) {
+                        var upBtn = $("<a  title='修改' class='button'></a>");
+                        upBtn.linkbutton({
+                            iconCls: "icon-edit-solid",
+                            plain: true
+                        });
+                        upBtn.attr('cy-click', "modifyVideo('" + rowIndex + "')");
+
+                        var downBtn = $("<a  title='删除' class='button'></a>");
+                        downBtn.linkbutton({
+                            iconCls: "icon-remove-solid",
+                            plain: true
+                        });
+                        downBtn.attr('cy-click', "deleteVideo('" + rowIndex + "')");
+                        return $("<span/>").append(upBtn).append("  ").append(downBtn).html();
+                    }}//
+                ]
+            ],
+            singleSelect: true,
+            method: 'get',
+//            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            nowarp: false,
+            pagination: false,
+            remoteSort: false,
+            onSelect: function (index, row) {
+                //console.log('onSelect gridVideo');
+            }//,
+//            toolbar: "#toolbarConfigGridVideo"
+        },
+        //修改巡航方案
+        modifyCruisePlan: function (index) {
+            //console.log("modifyPlan");
+            var data = $scope.$("#gridCruisePlan").datagrid("getRows")[parseInt(index)];
+            //console.log('add cruise plan');
+            var cruisePlanDetail = {};
+            $.extend(cruisePlanDetail, data);
+            $scope.$setParam("cruisePlanDetail", cruisePlanDetail);
+            $scope.$setParam("refresh", $scope.onModifyCruisePlanComplete);
+            $scope.$openDialog("addDialog", {
+                title: "修改巡航方案",
+                width: 1000,
+                height: 600,
+                href: "tpls/trafficMonitor/videoMonitor/cruise-plan-modify.html"
+            }, true);
+        },
+        //修改或添加巡航方案结束回调
+        onModifyCruisePlanComplete: function (mode, cruisePlan) {
+            //console.log('onMOdifyPlanComplete');
+            if (mode == 'add') {
+//                $("#gridCruisePlan").datagrid('appendRow', cruisePlan);
+//                $("#gridCruisePlan").datagrid('selectRow', $("#gridCruisePlan").datagrid('getRows').length - 1);
+                $scope.loadCruisePlan($("#gridCruisePlan").datagrid('getRows').length);
+
+            }
+            else {
+                var curIndex = $("#gridCruisePlan").datagrid("getRowIndex", $("#gridCruisePlan").datagrid("getSelected"));
+//                $("#gridCruisePlan").datagrid('updateRow', {
+//                    index: curIndex,
+//                    row: cruisePlan
+//                });
+//                $("#gridCruisePlan").datagrid('selectRow', curIndex);
+                $scope.loadCruisePlan(curIndex);
+                //$("#cruiseConfigGridVideo").datagrid('loadData',cruisePlan.videoLst);
+            }
+        },
+        //删除巡航方案
+        deleteCruisePlan: function (index) {
+            var data = $scope.$("#gridCruisePlan").datagrid("getRows")[parseInt(index)];
+            ////console.log("delete CruisePlan11");
+
+            if (data) {
+                $.messager.confirm("提示", "确认删除巡航方案？", function (flag) {
+                    if (flag) {
+                        $scope.PostAjax(
+                                        $scope.$restRoot + "/video/cruisePlan/deleteVideoCruisePlan",
+                                {param: data.videoPlanId},
+                                function (data) {
+                                    if (data.errorMsg && data.errorMsg != '') {
+                                        alert("删除巡航视频失败，原因：" + data.errorMsg);
+                                    }
+                                    else {
+                                        //console.log("删除巡航视频成功");
+                                        //console.log(index);
+                                        $scope.$("#gridCruisePlan").datagrid('deleteRow', index).datagrid('sort', {
+                                            sortName: 'createTime',
+                                            sortOrder: 'asc'
+                                        });
+                                        if ( $scope.$("#gridCruisePlan").datagrid('getRows').length - 1 >= index) {
+                                            $scope.$("#gridCruisePlan").datagrid('selectRow', index);
+                                        }
+                                        else {
+                                            $scope.$("#gridCruisePlan").datagrid('selectRow', $scope.$("#gridCruisePlan").datagrid('getRows').length - 1);
+                                        }
+
+                                    }
+                                }
+                        );
+                    }
+                });
+            }
+        },
+        //启动巡航方案
+        beginCruisePlan: function (index) {
+            var data = $scope.$("#gridCruisePlan").datagrid("getRows")[parseInt(index)];
+            try{
+                var tab=$scope.$tabs.tabs('getTab','视频巡航');
+                if(tab){
+                    var cruiseObject=tab.data('scopeObject');
+                    cruiseObject.onClose();
+                }
+            }
+            catch(e){
+                console.log(e);
+            }
+            $scope.$goto("020301",
+                    {
+                        jumpCruisePlanId: data.videoPlanId
+                    });
+        },
+        //修改视频
+        modifyVideo: function (index) {
+            //console.log("modifyVideo");
+            var rowData = $scope.$("#cruiseConfigGridVideo").datagrid("getRows")[parseInt(index)];
+            var curUpdateVideo = {};
+            $.extend(curUpdateVideo, rowData);
+            $scope.$setParam("videoDetail", curUpdateVideo);
+            $scope.$setParam("refresh", $scope.onVideoModifyComplete);
+            $scope.$openDialog("addDialog", {
+                title: "巡航视频修改",
+                width: 320,
+                height: 200,
+                href: "tpls/trafficMonitor/videoMonitor/cruise-plan-video-modify.html"
+            }, true);
+        },
+
+        onVideoModifyComplete: function (updateVideo) {
+            if (updateVideo) {
+                updateVideo.presetList = updateVideo.presetRecordId;
+                //更新
+                var planDetail = $scope.$("#gridCruisePlan").datagrid("getSelected");
+                $scope.$("#cruiseConfigGridVideo").datagrid('updateRow', {
+                    index: $scope.$("#cruiseConfigGridVideo").datagrid('getRowIndex', $scope.$("#cruiseConfigGridVideo").datagrid('getSelected')),
+                    row: updateVideo
+                }).datagrid('sort', {
+                    sortName: 'sortIndex',
+                    sortOrder: 'asc'
+                });
+                planDetail.videoLst = $scope.$("#cruiseConfigGridVideo").datagrid('getRows');
+
+                $scope.PostAjax(
+                                $scope.$restRoot + "/video/cruisePlan/updateCruisePlan",
+                        {param: JSON.stringify(planDetail)},
+                        function (data) {
+                            if (data.errorMsg && data.errorMsg != '') {
+                                alert("更新巡航视频失败，原因：" + data.errorMsg);
+                            }
+                            else {
+                                //console.log("更新巡航视频成功");
+
+                                $("#gridCruisePlan").datagrid('updateRow',
+                                        {
+                                            index: $("#gridCruisePlan").datagrid('getRowIndex', $("#gridCruisePlan").datagrid('getSelected')),
+                                            row: data.result
+                                        });
+                            }
+                        }
+                );
+
+//                var rowData = $scope.$("#gridPlanVideo").datagrid("getSelected");
+//                $.extend(rowData, selectPreset);
+//                rowData.presetList = selectPreset.presetRecordId;
+//                ////console.log(rowData);
+//                $scope.PostAjax(
+//                                $scope.$restRoot + "/video/cruisePlan/updateCruiseVideo",
+//                        {param: JSON.stringify(rowData)},
+//                        function (data) {
+//                            if (data.errorMsg && data.errorMsg != '') {
+//                                alert("修改巡航视频失败，原因：" + data.errorMsg);
+//                            }
+//                            else {
+//                                ////console.log("修改巡航视频成功");
+//                                var rowIndex = $scope.$("#gridPlanVideo").datagrid('getRowIndex', rowData);
+//                                $scope.$("#gridPlanVideo").datagrid('updateRow', {
+//                                    index: rowIndex,
+//                                    row: {
+//                                        sortIndex: i + 1
+//                                    }
+//                                });
+//                            }
+//                        }
+//                );
+            }
+        },
+        //删除视频
+        deleteVideo: function (index) {
+            var planDetail = $scope.$("#gridCruisePlan").datagrid("getSelected");
+            $.messager.confirm("提示", "是否确认删除巡航视频？", function (flag) {
+                if (flag) {
+                    $scope.$("#cruiseConfigGridVideo").datagrid('deleteRow', index);
+                    var leftVideoNum = $scope.$("#cruiseConfigGridVideo").datagrid('getRows').length;
+                    if (leftVideoNum > 0) {
+                        for (var i = parseInt(index); i < leftVideoNum; ++i) {
+                            $scope.$("#cruiseConfigGridVideo").datagrid('updateRow', {
+                                index: i,
+                                row: {
+                                    sortIndex: i + 1
+                                }
+                            });
+                        }
+                    }
+                    planDetail.videoLst = $scope.$("#cruiseConfigGridVideo").datagrid('getRows');
+
+                    $scope.PostAjax(
+                                    $scope.$restRoot + "/video/cruisePlan/updateCruisePlan",
+                            {param: JSON.stringify(planDetail)},
+                            function (data) {
+                                if (data.errorMsg && data.errorMsg != '') {
+                                    alert("删除巡航视频失败，原因：" + data.errorMsg);
+                                }
+                                else {
+                                    //console.log("删除巡航视频成功");
+
+                                    $("#gridCruisePlan").datagrid('updateRow',
+                                            {
+                                                index: $("#gridCruisePlan").datagrid('getRowIndex', $("#gridCruisePlan").datagrid('getSelected')),
+                                                row: data.result
+                                            });
+                                    $("#cruiseConfigGridVideo").datagrid('sort', {
+                                        sortName: 'sortIndex',
+                                        sortOrder: 'asc'
+                                    });
+                                    if (leftVideoNum - 1 >= index) {
+                                        $scope.$("#cruiseConfigGridVideo").datagrid('selectRow', index);
+                                    }
+                                    else {
+                                        $scope.$("#cruiseConfigGridVideo").datagrid('selectRow', leftVideoNum - 1);
+                                    }
+                                }
+                            }
+                    );
+                }
+            });
+        }
+    });
+});
+</script>

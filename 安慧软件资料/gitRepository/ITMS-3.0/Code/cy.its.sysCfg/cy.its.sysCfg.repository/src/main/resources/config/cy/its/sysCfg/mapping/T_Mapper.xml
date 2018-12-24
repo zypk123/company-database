@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Mapper">
+	<resultMap type="cy.its.syscfg.mybatis.model.TT_ROAD" id="ROADinfo">
+		<id column="ROAD_ID" property="ROAD_ID" />
+		<result column="ROAD_CODE" property="ROAD_CODE" />
+		<!-- <association property="author" column="blog_author_id"
+			javaType="com.foo.bean.Author">
+			<id column="author_id" property="authorId" />
+			<result column="user_name" property="userName" />
+			<result column="password" property="password" />
+			<result column="email" property="email" />
+			<result column="biography" property="biography" />
+		</association> -->
+		<collection property="roadSections" column="SEC_ROAD_ID" ofType="cy.its.syscfg.mybatis.model.TT_ROAD_SECTION">
+			<id column="ROAD_SECTION_ID" property="ROAD_SECTION_ID" />
+			<result column="ROAD_SECTION_CODE" property="ROAD_SECTION_CODE" />
+		</collection>
+        <collection property="roadSites" column="ST_ROAD_ID" ofType="cy.its.syscfg.mybatis.model.TT_ROAD_SITE">
+			<id column="SITE_ID" property="SITE_ID" />
+			<result column="SITE_CODE" property="SITE_CODE" />
+		</collection>
+	</resultMap>
+
+
+
+	<select id="selectRoad" resultMap="ROADinfo">
+		SELECT T.ROAD_ID,
+       T.ROAD_CODE,
+       T.ROAD_NAME,
+       SC.ROAD_ID           SEC_ROAD_ID,
+       SC.ROAD_SECTION_ID,
+       SC.ROAD_SECTION_CODE,
+       S.ROAD_ID            ST_ROAD_ID,
+       S.SITE_ID,
+       S.SITE_CODE
+	  FROM T_SYS_ROAD T
+	  LEFT JOIN T_SYS_ROAD_SECTION SC
+	    ON T.ROAD_ID = SC.ROAD_ID
+	  LEFT JOIN T_SYS_SITE S
+	    ON T.ROAD_ID = S.ROAD_ID
+	</select>
+</mapper>

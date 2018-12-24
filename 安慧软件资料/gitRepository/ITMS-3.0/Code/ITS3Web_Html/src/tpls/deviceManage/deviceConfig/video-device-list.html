@@ -1,0 +1,259 @@
+<div id="videoDevice" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">机构：</div>
+                        <div class="td">
+                            <input class="easyui-combotree" id="org" name="orgId"/>
+                        </div>
+                        <div class="th">道路：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="road" name="roadId" data-options="valueField:'roadId',textField:'roadName'"/>
+                        </div>
+                        <div class="th">点位：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="site" name="siteId" data-options="valueField:'siteId',textField:'siteName'"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">使用状态：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="deviceUseStatus" name="useStatus" data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                        <div class="th">厂家：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="contractor" name="contractor" data-options="valueField:'id',textField:'name'"/>
+                        </div>
+                        <div class="th"></div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search"cy-click="searchData" data-options="iconCls:'icon-search',plain:true">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" cy-click="addData" data-options="iconCls:'icon-add',plain:true">新增</a>
+            <a class="easyui-linkbutton button-enable" cy-click="enableData" data-options="iconCls:'icon-enable',plain:true">启用</a>
+            <a class="easyui-linkbutton button-disable" cy-click="disableData" data-options="iconCls:'icon-disable',plain:true">停用</a>
+            <a class="easyui-linkbutton button-drop" cy-click="dropData" data-options="iconCls:'icon-drop',plain:true">报废</a>
+            <a class="easyui-linkbutton button-edit button-remove" cy-click="removeSomeData" data-options="iconCls:'icon-remove',plain:true">批量删除</a>
+            <a class="easyui-linkbutton button" cy-click="importData" data-options="iconCls:'icon-import',plain:true">导入</a>
+            <a class="easyui-linkbutton button" cy-click="exportData" data-options="iconCls:'icon-export',plain:true">导出</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table  id="videoDeviceInfo" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/deviceConfig/qryTollgateRecords.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.load = function(){
+            //初始化页面
+            $scope.$ajaxRequest({
+                url: "data/deviceManage/deviceConfig/deviceConfigMgr.json",
+                success: function (retData) {
+                    if (retData.Error != "") {
+                        alert("初始化页面报错,详细：" + retData.Error);
+                    }
+                    else {
+                        $scope.initCombobox(retData.Result);
+                    }
+                },
+                fail: function (errTxt) {
+                    alert(errTxt);
+                }
+            });
+            /**
+             * 初始化选择框，查询数据字典
+             * @param retData 字典中的数据
+             */
+            $scope.initCombobox = function (retData) {
+                $scope.$("#org").combotree("loadData", retData.orgTree);
+                $scope.$('#road').combobox("loadData", retData.road);
+                $scope.$('#site').combobox('loadData', retData.site);
+                $scope.$('#deviceUseStatus').combobox('loadData', retData.dicts["405"]);
+                $scope.$('#contractor').combobox('loadData', retData.contractor);
+            };
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns:[[
+                {halign:'center',field:"DEVICE_ID",checkbox:true},
+                {halign:'center',title:"设备编号",field:"DEVICE_NBR",width:100},
+                {halign:'center',title:"设备名称",field:"DEVICE_NAME",width:250},
+                {halign:'center',title:"管辖机构",field:"ORG_NAME",width:150},
+                {halign:'center',title:"所属道路",field:"ROAD_NAME",width:100},
+                {halign:'center',title:"所在点位",field:"SITE_NAME",width:200},
+                {halign:'center',title:"厂家",field:"CONTRACTOR",width:100},
+                {halign:'center',title:"设备型号",field:"DEVICE_MODEL",width:100},
+                {halign:'center',title:"安装时间",field:"INSTALL_DATE",width:100},
+                {halign:'center',title:"使用状态",field:"USE_STATUS",width:80},
+                {halign:'center',title:"操作",field:"opt",width:100,formatter : operate}
+            ]]
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         *删除视频设备信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            alert(index);
+        };
+        /**
+         *编辑视频设备信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            alert(index);
+        };
+        //初始化查询
+        $scope.searchData = function(){
+            $scope.$search("queryData");
+        };
+
+        /**
+         * 新增视频设备信息
+         */
+        $scope.addData = function(){
+            $scope.$ajaxRequest({
+                url: "data/deviceManage/deviceConfig/deviceConfigBaseInfo.json",
+                params: { OrgCode: $scope.UserInfo.OrgCode },
+                success: function (retData) {
+                    if (retData.Error != "") {
+                        alert("初始化卡口新增页面报错,详细：" + retData.Error);
+                    }
+                    else {
+                        //用initData表示retData中的数据
+                        $scope.$setParam("initData", retData.Result);
+                        //设置访问tab页面参数
+                        $scope.$setParam("mode", "ADD");
+                        //建立新增弹出框
+                        $scope.$openDialog("addVideoDeviceDialog", {
+                            title: "视频备案",
+                            width: 910,
+                            height: 550,
+                            href: "tpls/deviceManage/deviceConfig/video-device-config.html"
+                        }, true);
+                        //关闭新增弹出框
+                        $scope.$setParam("closeDialog", function () {
+                            $scope.$getDialog("addVideoDeviceDialog").dialog("close");
+                        });
+                    }
+                },
+                fail: function (errTxt) {
+                    alert(errTxt);
+                }
+            });
+        };
+        /**
+         * 启用视频设备信息
+         */
+        $scope.enableData = function(){
+            var rows = $('#videoDeviceInfo').datagrid('getChecked');
+            if(rows.length == 0){
+//                alert("请选择需要启用的设备！");
+                $.messager.confirm("提示","请选择需要启用的设备！");
+                return false;
+            }else{
+                $.messager.confirm("提示","是否确认启用？",function(flag){
+                   if(flag) {
+                        //后台交互
+                   }
+                });
+            }
+        };
+        /**
+         * 停用视频设备信息
+         */
+        $scope.disableData = function(){
+            var rows = $('#videoDeviceInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                alert("请选择需要停用的设备！");
+                return false;
+            }else{
+                $.messager.confirm("提示","是否确认停用？",function(flag){
+                    if(flag) {
+                        //后台交互
+                    }
+                });
+            }
+        };
+        /**
+         * 报废视频设备信息
+         */
+        $scope.dropData = function(){
+            var rows = $('#videoDeviceInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                alert("请选择报废的设备！");
+                return false;
+            }else{
+//                $.messager.confirm("确认删除？")
+                alert("报废"+rows.length+"个设备成功！");
+            }
+        };
+        /**
+         * 批量删除视频设备信息
+         */
+        $scope.removeSomeData = function(){
+            var rows = $('#videoDeviceInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                alert("请选择需要删除的信息！");
+                return false;
+            }else{
+//                $.messager.confirm("确认删除？")
+                alert("删除"+rows.length+"行！");
+            }
+        };
+        /**
+         * 导入视频设备信息
+         */
+        $scope.importData = function(){
+            alert("导入成功");
+        };
+        /**
+         * 导出视频设备信息
+         */
+        $scope.exportData = function(){
+            alert("导出成功");
+        };
+    });
+</script>
+<style type="text/css">
+    #videoDevice .th{
+        width:70px;
+        text-align: right;
+    }
+    #videoDevice .td{
+        width:150px;
+    }
+    #videoDevice .td>input[class^='easyui-']{
+        width:150px;
+    }
+    #videoDevice .button-search{
+        float: right;
+        margin-left: 15px;
+    }
+</style>

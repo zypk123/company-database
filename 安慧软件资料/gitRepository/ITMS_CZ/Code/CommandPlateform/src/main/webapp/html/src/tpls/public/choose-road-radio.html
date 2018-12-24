@@ -1,0 +1,202 @@
+<div class="easyui-layout" id="choose-road-radio">
+	<div data-options="region:'north',height:40,border:false" style="line-height: 30px;">
+		<div class="linkbutton_toolbar" >
+			<input id="search" data-options="prompt:'请输入关键字'" style="width:200px;height:26px"/>
+			<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back" style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div id="tree"></div>
+	</div>
+	<div data-options="region:'east',border:false,width:'100%',closed:true" style="border-top: solid 1px #ddd">
+		<table id="searchGrid" cy-datagrid="options">
+
+		</table>
+		&nbsp;
+	</div>
+	<div data-options="region:'south',height: 40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-ok'" cy-click="chooseRoad">确定</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage(["choose","filter"], function($scope) {
+        //初始化方法
+        $scope.load = function() {
+            //初始化树
+            initTree();
+            //设置查找方法
+            initSearch();
+        };
+
+        /**
+         * 初始化树
+         */
+        var initTree = function() {
+            $scope.$("#tree").tree({
+                data : $scope.$road,
+                onLoadSuccess : function(data) {
+                	var root = $(this).tree("getRoots")[0];
+                	//执行过滤器操作
+                	var needToRemove = [];
+                	doFilter(root,needToRemove);
+                	for(var index in needToRemove){
+                		//删除过滤掉的节点
+                		$scope.$("#tree").tree("remove",$scope.$("#"+needToRemove[index].domId)[0]);
+                	}
+                	//收起全部节点
+                	$(this).tree("collapseAll");
+                    //展开根节点
+                    $(this).tree("expand", root.target);
+                    //默认选中根节点
+                    $(this).tree("select", root.target);
+                    //删除第二级节点中的空节点
+                    for (var index = 0; index < root.children.length; index++) {
+                        var item = root.children[index];
+                        if (!item.children || item.children.length == 0) {
+                            //删除空节点
+                            $(this).tree("pop", $("#" + item.domId).get(0));
+                            index--;
+                        }
+                    }
+                },
+                onDblClick : function(node) {
+                    if (!node.children || node.children.length == 0) {
+                        $scope.$excute($scope.choose, node.id,node.attribute.code, node.text);
+                        $scope.$destroySelf();
+                    }
+
+                }
+            });
+        };
+		/**
+		 * 执行过滤器操作 
+		 */
+		function doFilter(node,needToDelete){
+			if(!$scope.filter || typeof $scope.filter != "function"){
+				return;
+			}
+			var result = $scope.filter(node.id,node.text,node.attribute);
+			if(!result && typeof result == "boolean"){
+				//标记需要删除的节点
+				needToDelete.push(node);
+			}else{
+				//下级节点做过滤
+				if(node.children && node.children.length > 0){
+					for(var index in node.children){
+						doFilter(node.children[index],needToDelete);
+					}
+				}
+			}
+		}
+		
+        /**
+         * 初始化查找
+         */
+        var initSearch = function() {
+            $scope.$("#search").searchbox({
+                searcher : function() {
+
+                    var searchIndex = $(this).searchbox("getValue").trim();
+                    if (searchIndex == "") {
+                        return;
+                    }
+                    //显示查询结果
+                    showGrid();
+                    var searchResult = [];
+                    getSearchData(searchResult, $rootScope.$road[0], searchIndex);
+                    //获得查找结果
+                    $scope.$("#searchGrid").datagrid("loadData", searchResult);
+                }
+            });
+        };
+
+        /**
+         * 获得查找结果数据
+         */
+        var getSearchData = function(result, tree, searchIndex) {
+            if (tree.children && tree.children.length > 0) {
+                for (var index in tree.children) {
+                    getSearchData(result, tree.children[index], searchIndex);
+                }
+            } else if (tree.text.indexOf(searchIndex) >= 0) {
+                var node = $scope.$("#tree").tree("find", tree.id);
+                var parent = $scope.$("#tree").tree("getParent", node.target);
+                result.push({
+                    id : tree.id,
+                    name : tree.text,
+                    parentName : parent ? parent.text : ""
+                });
+            }
+        };
+
+        /**
+         * 显示查询结果
+         */
+        var showGrid = function() {
+            $scope.$("#choose-road-radio").layout("panel", "east").panel("open");
+            $scope.$("#choose-road-radio").layout("resize");
+            $scope.$("#back").show();
+        };
+
+        /**
+         * 点击确定按钮
+         */
+        $scope.chooseRoad = function() {
+            var current = $scope.$("#tree").tree("getSelected");
+            if (current && (!current.children || current.children.length == 0)) {
+                $scope.$excute($scope.choose, current.id, current.attribute ? current.attribute.code : "", current.text);
+                $scope.$closeSelf();
+            } else {
+                $.messager.alert("提示", "请选择道路!");
+            }
+        };
+
+        /**
+         * 格式化内容，增加title
+         */
+        var initTitle = function(value) {
+
+            return value && value != '' ? '<span title="' + value + '">' + value + "</span>" : "";
+        };
+
+        /**
+         * 查找结果列表参数
+         */
+        $scope.options = {
+            columns : [[{
+                field : 'name',
+                title : '道路名称',
+                width : 60,
+                formatter : initTitle
+            }, {
+                field : 'parentName',
+                title : '道路类型',
+                width : 40,
+                formatter : initTitle
+            }]],
+            pagination : false,
+            rownumbers : true,
+            onSelect : function(rowIndex, rowData) {
+                //获取对应的树节点
+                var node = $scope.$("#tree").tree("find", rowData.id);
+                //展开父节点
+                $scope.$("#tree").tree("collapseAll");
+                $scope.$("#tree").tree("expandTo", node.target);
+                //选中节点
+                $scope.$("#tree").tree("select", node.target);
+            }
+        };
+
+        /**
+         * 返回树
+         */
+        $scope.back = function() {
+            $scope.$("#choose-road-radio").layout("panel", "east").panel("close");
+            $scope.$("#choose-road-radio").layout("resize");
+            $scope.$("#back").hide();
+        };
+    }); 
+</script>

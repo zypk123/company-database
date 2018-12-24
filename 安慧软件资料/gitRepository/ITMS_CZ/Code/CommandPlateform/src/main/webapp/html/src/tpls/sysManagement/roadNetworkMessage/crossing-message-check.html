@@ -1,0 +1,87 @@
+<!--路口信息添加页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height:300px;">
+		<form cy-form="crossingCheckedData">
+			<div id="crossingCheck" class="table">
+				<div class="tr">
+					<div class="th">
+						路口编号：
+					</div>
+					<div class="td"  cy-name="crossingCheckedData.crossCode"  ></div>
+					<div class="th">
+						路口名称：
+					</div>
+					<div class="td"  cy-name="crossingCheckedData.orgId" cy-filter="$getOrgName"  style="width: 150px;"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						路口类型：
+					</div>
+					<div class="td" cy-name="crossingCheckedData.crossType" cy-filter="crossType"></div>
+					<div class="th">
+						行政区划：
+					</div>
+					<div class="td" cy-name="crossingCheckedData.districtCode" cy-filter="$getDistrictName" style="width: 140px;" ></div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 100px;">
+						路口断面数：
+					</div>
+					<div class="td" cy-name="crossingCheckedData.sectionNum" style="width: 165px;"></div>
+					<div class="th">
+						管理机构：
+					</div>
+					<div class="td" cy-name="crossingCheckedData.orgId" cy-filter="$getOrgName" style="width: 150px;"></div>
+
+				</div>
+				<div class="tr">
+					<div class="th">
+						路口经度：
+					</div>
+					<div class="td"  cy-name="crossingCheckedData.crossLongitude" ></div>
+					<div class="th">
+						路口纬度：
+					</div>
+					<div class="td"  cy-name="crossingCheckedData.crossLatitude" style="width: 140px;" ></div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 115px;">
+						路口所主干道：
+					</div>
+					<div class="td" cy-name="crossingCheckedData.roadId"  cy-filter="roadName" style="width: 150px;word-wrap: break-word"></div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 40px;">
+		<div class="tr">
+			<div class="td" style="text-align: center">
+				<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+				cy-click="$closeSelf">关闭</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["crossingCheckedData"], function($scope) {
+		$scope.$getDefaultCode(['147']);
+		$scope.crossType = function(value) {
+			return $scope.$getCodeName("147", value);
+		};
+
+		$scope.roadName = function(value) {
+			return $scope.$getRoadName(value);
+		};
+	}); 
+</script>
+<style type="text/css">
+	#crossingCheck .th {
+		text-align: right;
+		width: 90px;
+	}
+	#crossingCheck .td {
+		text-align: left;
+		width: 175px;
+	}
+
+</style>

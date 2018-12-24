@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <list-property name="userProperties">
+        <structure>
+            <property name="name">Data Cube.Data Set.x</property>
+            <property name="type">integer</property>
+            <property name="isVisible">false</property>
+        </structure>
+        <structure>
+            <property name="name">Data Cube.Data Set.y</property>
+            <property name="type">integer</property>
+            <property name="isVisible">false</property>
+        </structure>
+        <structure>
+            <property name="name">SBZLX.SBZXL.x</property>
+            <property name="type">integer</property>
+            <property name="isVisible">false</property>
+        </structure>
+        <structure>
+            <property name="name">SBZLX.SBZXL.y</property>
+            <property name="type">integer</property>
+            <property name="isVisible">false</property>
+        </structure>
+    </list-property>
+    <property name="Data Cube.Data Set.x">135</property>
+    <property name="Data Cube.Data Set.y">80</property>
+    <property name="SBZLX.SBZXL.x">135</property>
+    <property name="SBZLX.SBZXL.y">80</property>
+    <property name="units">cm</property>
+    <property name="theme">statistics-libs.defaultTheme</property>
+    <property name="layoutPreference">auto layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">statistics-libs.rptlibrary</property>
+            <property name="namespace">statistics-libs</property>
+        </structure>
+    </list-property>
+    <parameters>
+        <scalar-parameter name="maintenanceId" id="2337">
+            <property name="valueType">static</property>
+            <property name="isRequired">true</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="birtds" id="2527"
+ extends="statistics-libs.birtds"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="QueryFaultsInfoByMaintainId" id="2336">
+            <list-property name="columnHints"/>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">MAINTENANCE_ID</property>
+                    <property name="paramName">maintenanceId</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">1</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">START_TIME</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">FAULT_TYPE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">REMARK</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">DEVICE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">SITE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">START_TIME</property>
+                    <property name="nativeName">START_TIME</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">FAULT_TYPE_NAME</property>
+                    <property name="nativeName">FAULT_TYPE_NAME</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">REMARK</property>
+                    <property name="nativeName">REMARK</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">DEVICE_NAME</property>
+                    <property name="nativeName">DEVICE_NAME</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">SITE_NAME</property>
+                    <property name="nativeName">SITE_NAME</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select B.Start_Time, C.CODE_NAME as FAULT_TYPE_NAME, B.REMARK, B.DEVICE_NAME, B.SITE_NAME
+  from (select A.Start_Time,
+               A.FAULT_TYPE,
+               A.REMARK,
+               D.DEVICE_NAME,
+               S.SITE_NAME
+          from (select f.*
+                  from t_device_fault_maintain fm
+                  left join t_device_fault f
+                    on fm.fault_id = f.fault_id
+                 where fm.maintenance_id = ?) A
+          left join t_device_sys D
+            on A.Device_Id = D.Device_Id
+          left join t_sys_site S
+            on D.SITE_ID = S.SITE_ID) B
+  left join t_sys_code C
+    on B.FAULT_TYPE = C.CODE_NO
+   and C.CODE_TYPE = '442']]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="QueryMaintainInfoByMaintainId" id="2366">
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">maintenance_id</property>
+                    <property name="paramName">maintenanceId</property>
+                    <property name="dataType">string</property>
+                    <property name="position">1</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">MAINTENANCE_NBR</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">ASSIGN_TIME</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">CONTACT_PERSON</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">PHONE_NBR</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">FINISH_TIME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">CONTRACTOR_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">MAINTENANCE_NBR</property>
+                    <property name="nativeName">MAINTENANCE_NBR</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">ASSIGN_TIME</property>
+                    <property name="nativeName">ASSIGN_TIME</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">CONTACT_PERSON</property>
+                    <property name="nativeName">CONTACT_PERSON</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">PHONE_NBR</property>
+                    <property name="nativeName">PHONE_NBR</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">FINISH_TIME</property>
+                    <property name="nativeName">FINISH_TIME</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">CONTRACTOR_NAME</property>
+                    <property name="nativeName">CONTRACTOR_NAME</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select m.maintenance_nbr,
+       m.assign_time,
+       m.contact_person,
+       m.phone_nbr,
+       m.finish_time,
+       c.contractor_name 
+from t_device_maintain_register m,
+     t_device_contractor c
+where m.maintenance_company = c.contractor_id
+and m.maintenance_id = ?]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="CELL_BASE" id="243">
+            <property name="fontFamily">"@Gulim"</property>
+            <property name="fontSize">10pt</property>
+            <property name="borderBottomColor">#C7D3AD</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C7D3AD</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C7D3AD</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C7D3AD</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <structure name="numberFormat">
+                <property name="category">Unformatted</property>
+            </structure>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="canShrink">true</property>
+            <property name="bidiTextDirection">ltr</property>
+            <property name="height">0.6mm</property>
+        </style>
+        <style name="CrossTab_Cell" id="1265">
+            <property name="fontWeight">lighter</property>
+            <property name="borderBottomColor">#C7D3AD</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C7D3AD</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C7D3AD</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C7D3AD</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="bidiTextDirection">ltr</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">portrait</property>
+            <property name="rightMargin">0.21166666666666667cm</property>
+            <property name="height">8.5in</property>
+            <property name="width">11in</property>
+            <property name="showHeaderOnFirst">false</property>
+            <property name="showFooterOnLast">false</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="2406">
+            <column id="2407">
+                <property name="width">1.1145833333333333in</property>
+            </column>
+            <column id="2408">
+                <property name="width">2.0208333333333335in</property>
+            </column>
+            <column id="2409">
+                <property name="width">1.3229166666666667in</property>
+            </column>
+            <column id="2410">
+                <property name="width">3.4479166666666665in</property>
+            </column>
+            <row id="2411">
+                <cell id="2412">
+                    <text id="2416">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[维护单编号：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2413">
+                    <data id="2418">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">MAINTENANCE_NBR</property>
+                                <text-property name="displayName">MAINTENANCE_NBR</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["MAINTENANCE_NBR"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">MAINTENANCE_NBR</property>
+                    </data>
+                </cell>
+                <cell id="2414">
+                    <text id="2417">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[分派时间：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2415">
+                    <data id="2419">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">ASSIGN_TIME</property>
+                                <text-property name="displayName">ASSIGN_TIME</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["ASSIGN_TIME"]</expression>
+                                <property name="dataType">date-time</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">ASSIGN_TIME</property>
+                    </data>
+                </cell>
+            </row>
+        </grid>
+        <label id="2455"/>
+        <table id="2493">
+            <property name="dataSet">QueryFaultsInfoByMaintainId</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">DEVICE_NAME</property>
+                    <text-property name="displayName">DEVICE_NAME</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["DEVICE_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">START_TIME</property>
+                    <text-property name="displayName">START_TIME</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["START_TIME"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">FAULT_TYPE_NAME</property>
+                    <text-property name="displayName">FAULT_TYPE_NAME</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["FAULT_TYPE_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">REMARK</property>
+                    <text-property name="displayName">REMARK</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["REMARK"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">SITE_NAME</property>
+                    <text-property name="displayName">SITE_NAME</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["SITE_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="2512">
+                <property name="style">CrossTab_Cell</property>
+            </column>
+            <column id="2513">
+                <property name="style">CrossTab_Cell</property>
+            </column>
+            <column id="2514">
+                <property name="style">CrossTab_Cell</property>
+            </column>
+            <column id="2515">
+                <property name="style">CrossTab_Cell</property>
+            </column>
+            <column id="2516">
+                <property name="style">CrossTab_Cell</property>
+            </column>
+            <header>
+                <row id="2494">
+                    <property name="style">CrossTab_Cell</property>
+                    <cell id="2495">
+                        <label id="2517">
+                            <text-property name="text">设备名称</text-property>
+                        </label>
+                    </cell>
+                    <cell id="2496">
+                        <label id="2519">
+                            <text-property name="text">发生时间</text-property>
+                        </label>
+                    </cell>
+                    <cell id="2497">
+                        <label id="2521">
+                            <text-property name="text">故障类型</text-property>
+                        </label>
+                    </cell>
+                    <cell id="2498">
+                        <label id="2523">
+                            <text-property name="text">故障描述</text-property>
+                        </label>
+                    </cell>
+                    <cell id="2499">
+                        <label id="2525">
+                            <text-property name="text">安装地点</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="2500">
+                    <property name="style">CrossTab_Cell</property>
+                    <cell id="2501">
+                        <data id="2518">
+                            <property name="resultSetColumn">DEVICE_NAME</property>
+                        </data>
+                    </cell>
+                    <cell id="2502">
+                        <data id="2520">
+                            <property name="resultSetColumn">START_TIME</property>
+                        </data>
+                    </cell>
+                    <cell id="2503">
+                        <data id="2522">
+                            <property name="resultSetColumn">FAULT_TYPE_NAME</property>
+                        </data>
+                    </cell>
+                    <cell id="2504">
+                        <data id="2524">
+                            <property name="resultSetColumn">REMARK</property>
+                        </data>
+                    </cell>
+                    <cell id="2505">
+                        <data id="2526">
+                            <property name="resultSetColumn">SITE_NAME</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+        </table>
+        <label id="2454"/>
+        <grid id="2367">
+            <column id="2368">
+                <property name="width">1.1041666666666667in</property>
+            </column>
+            <column id="2369">
+                <property name="suppressDuplicates">false</property>
+                <property name="width">1.8541666666666667in</property>
+            </column>
+            <column id="2370">
+                <property name="width">1.5208333333333333in</property>
+            </column>
+            <column id="2371">
+                <property name="width">3.4270833333333335in</property>
+            </column>
+            <row id="2372">
+                <cell id="2373">
+                    <text id="2392">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[维护厂家：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2374">
+                    <data id="2396">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">CONTRACTOR_NAME</property>
+                                <text-property name="displayName">CONTRACTOR_NAME</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["CONTRACTOR_NAME"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">CONTRACTOR_NAME</property>
+                    </data>
+                </cell>
+                <cell id="2375">
+                    <text id="2393">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[联  系  人：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2376">
+                    <data id="2397">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">CONTACT_PERSON</property>
+                                <text-property name="displayName">CONTACT_PERSON</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["CONTACT_PERSON"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">CONTACT_PERSON</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="2377">
+                <cell id="2378">
+                    <text id="2394">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[联系方式：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2379">
+                    <data id="2398">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">PHONE_NBR</property>
+                                <text-property name="displayName">PHONE_NBR</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["PHONE_NBR"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">PHONE_NBR</property>
+                    </data>
+                </cell>
+                <cell id="2380">
+                    <text id="2395">
+                        <property name="textAlign">right</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[要求完成时间：]]></text-property>
+                    </text>
+                </cell>
+                <cell id="2381">
+                    <data id="2399">
+                        <property name="dataSet">QueryMaintainInfoByMaintainId</property>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">FINISH_TIME</property>
+                                <text-property name="displayName">FINISH_TIME</text-property>
+                                <expression name="expression" type="javascript">dataSetRow["FINISH_TIME"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">FINISH_TIME</property>
+                    </data>
+                </cell>
+            </row>
+        </grid>
+    </body>
+</report>

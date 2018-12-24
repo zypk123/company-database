@@ -1,0 +1,164 @@
+<div id="warning-set-list" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<div class="searchPanel"  id="deviceWarning">
+			<div class="panel_title">
+				<input type="checkbox" class="checkAll"/><span class="type-name">设备类报警</span>
+			</div>
+		</div>
+		<div class="searchPanel"  id="vehicleWarning">
+			<div class="panel_title">
+				<input type="checkbox" class="checkAll"/>车辆类报警
+			</div>
+		</div>
+		<div class="searchPanel"  id="trafficWarning">
+			<div class="panel_title">
+				<input type="checkbox" class="checkAll"/>路况类报警
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false,height:40">
+		<div class="linkbutton-toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["subsribeList","updateWarningSubsribe"],function($scope){
+		$scope.load = function(){
+			//加载所有的预警信息
+			initWarningList();
+			//checkbox全选事件
+			$scope.$(".checkAll").click(function(){
+				if(this.checked){
+					//全选
+					$(this).parent().parent().find(".checkboxItem").each(function(){
+						this.checked = true;
+					});
+				}else{
+					//全不选
+					$(this).parent().parent().find(".checkboxItem").each(function(){
+						this.checked = false;
+					});
+				}
+			});
+			//定义其他的checkbox事件
+			$scope.$(".checkboxItem").click(function(){
+				if(this.checked){
+					//判定当前状态是否为全选
+					if($(this).parent().parent().find(".checkboxItem").not(":checked").length == 0){
+						$(this).parent().parent().find(".checkAll").get(0).checked = true;
+					}
+				}else{
+					//判定当前状态是否为非全选状态
+					if($(this).parent().parent().find(".checkboxItem").not(":checked").length > 0){
+						$(this).parent().parent().find(".checkAll").get(0).checked = false;
+					}
+				}
+			});
+			//选中默认的订阅信息 
+			initChecked();
+		};
+		/**
+		 * 默认选中的订阅checkbox 
+		 */
+		var initChecked = function(){
+			if(!$scope.subsribeList && !!$scope.subsribeList instanceof Array){
+				return; 
+			}
+			for(var index in $scope.subsribeList){
+				var item = $scope.subsribeList[index];
+				if($scope.$("[value=" + item.messageKey + "]").length > 0){
+					$scope.$("[value=" + item.messageKey + "]").click();
+				}
+			}
+		};
+		
+		/**
+		 * 加载配置项 
+		 */
+		var initWarningList = function(){
+			for(var index in SubsribeType){
+				var item = SubsribeType[index];
+				if(!$scope.UserInfo.subsribePermission || inArray($scope.UserInfo.subsribePermission,index)){
+					$scope.$("#" + item.type).append(getDomBySubsribeType(index,item));
+				}
+			}
+		};
+		
+		/**
+		 * 根据订阅类型获得订阅的DOM元素 
+		 */
+		var getDomBySubsribeType = function(id,type){
+			var div = $("<div class='subsribeTypeItem'></div>");
+			var input = $("<input type='checkbox' class='checkboxItem'/>").val(id);
+			var text = $("<span class='type-name'></span>").text(type.name);
+			return div.append(input).append(text);
+		};
+		
+		/**
+		 * 保存方法 
+		 */
+		$scope.save = function(){
+			//获取全部订阅列表
+			var allList = getCheckedSubsribeTypeList();
+			//与已选的比较，获得删除的订阅信息和新增的订阅信息
+			var deleteList = $scope.subsribeList.concat();
+			//获得选中的预警订阅类型,标记为新增的订阅类型
+			var addList = allList.concat();
+			for(var i=0; i<deleteList.length; i++){
+				for(var j=0; j<addList.length; j++){
+					if(addList[j].messageKey == deleteList[i].messageKey){
+						deleteList.splice(i--,1);
+						addList.splice(j,1);
+						break;
+					} 
+				}
+			}
+			//执行订阅更新操作
+			$scope.$excute($scope.updateWarningSubsribe,addList,deleteList,allList);
+		};
+		
+		/**
+		 * 获得当前页面已经选中的订阅类型 
+		 */
+		var getCheckedSubsribeTypeList = function(){
+			var checkedSubsribeTypeList = [];
+			var checkedList = $scope.$(".checkboxItem:checked");
+			checkedList.each(function(){
+				checkedSubsribeTypeList.push(SubsribeType[$(this).val()]);
+			});
+			return checkedSubsribeTypeList;
+		};
+		
+		function inArray(array,item){
+			for(var index in array){
+				if(item == array[index]){
+					return true;
+				}
+			}
+			return false;
+		}
+	});
+	
+</script>
+<style>
+	#warning-set-list .subsribeTypeItem {
+		width : 142px;
+		float : left;
+		margin-left : 5px;
+		margin-top : 2px;
+		padding-left : 10px;
+		height : 28px;
+		line-height : 28px;
+	}
+	#warning-set-list .searchPanel{
+		padding-bottom: 3px;
+	}
+	#warning-set-list input{
+		vertical-align:middle;
+	}
+	#warning-set-list .type-name{
+		vertical-align:middle;
+	}
+</style>

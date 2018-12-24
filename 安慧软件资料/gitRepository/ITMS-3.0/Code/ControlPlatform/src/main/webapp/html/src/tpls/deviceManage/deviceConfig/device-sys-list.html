@@ -1,0 +1,1637 @@
+<div id="deviceSysMgr" class="easyui-layout">
+    <!--左边列表区 -->
+    <div data-options="region:'west',border:false, title:'导航区域'" style="width: 200px">
+        <div class="easyui-layout">
+            <div data-options="region:'center',border:false">
+                <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+                    <div title="按机构">
+                        <ul id="orgTree"></ul>
+                    </div>
+                    <div title="按道路">
+                        <ul id="roadTree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <div class="easyui-layout">
+            <!--查询条件区 -->
+            <div data-options="region:'north',border:false" style="width: 100%">
+                <form method="post" cy-form="formData">
+                    <div class="searchPanel">
+                        <div class="panel_title">查询条件</div>
+                        <div class="table">
+                            <div class="tr">
+                                <div class="td">设备类型：</div>
+                                <div class="td">
+                                    <input class="easyui-combobox" id="deviceType" name="deviceType" style="width:120px" data-options="valueField:'value',textField:'text',multiple:true"/>
+                                </div>
+                                <div class="td">使用状态：</div>
+                                <div class="td">
+                                    <input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:100px" cy-code="405"/>
+                                </div>
+                                <div class="td">设备名称：</div>
+                                <div class="td">
+                                    <input class="easyui-textbox" id="deviceSysName" name="deviceName"/>
+                                </div>
+                                <div class="td">
+                                    <a class="easyui-linkbutton" cy-click="searchData" data-options="iconCls:'icon-search'">查询</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!--一行按钮区域-->
+                <div  class="linkbutton_toolbar">
+                    <!--<a class="easyui-linkbutton button-add" cy-click="addData"
+                    data-options="iconCls:'icon-add',plain:true">新增</a>-->
+                    <a class="easyui-menubutton button-main" cy-click="addData"  id="addDeviceBtn"
+                    data-options="iconCls:'icon-add'" data-value="01" >新增卡口</a>
+                    <auth resourceCode="06020101">
+                    	<a class="easyui-linkbutton" data-options="iconCls:'icon-enable'" cy-click="startUse">启用</a>
+                    </auth>
+                    <auth resourceCode="06020103">
+                    	<a class="easyui-linkbutton" data-options="iconCls:'icon-disable'" cy-click="stopUse">停用</a>
+                    </auth>
+                    <!-- <a class="easyui-linkbutton" data-options="iconCls:'icon-import'" cy-click="importData">导入</a>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-export'" cy-click="exportData">导出</a>-->
+                    <span class="remark" style="color: red;float:right"> 备注：年检期止红色表示已过期，橙色表示即将过期；“--”表示无信息。 </span>
+                </div>
+            </div>
+
+            <!--数据展示区 -->
+            <div id="data-view-area" data-options="region:'center',border:true">
+                <table id="tollgateGrd" cy-datagrid="options" cy-querydata="formData" cy-url="device/deviceConfig/queryDeviceLst">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="addDeviceMenu">
+
+    </div>
+    <!-- 右键菜单定义如下：-->
+    <div id="mmForOrg" style="width:120px;">
+        <div  data-options="iconCls:'icon-add',name:'addMoniterCenter'" cy-click="addMoniterCenter">
+            添加监控中心
+        </div>
+    </div>
+    <div id="mmForMoniterCenter" style="width:120px;">
+        <div  data-options="iconCls:'icon-remove',name:'delMoniterCenter'">
+            删除监控中心
+
+        </div>
+    </div>
+    <div id="mmForImportFlat" style="width:120px;">
+        <div  data-options="iconCls:'icon-remove',name:'delImporFlat'">
+            删除接入平台
+        </div>
+    </div>
+    <div id="mmForRoad" style="width:120px;">
+        <div  data-options="iconCls:'icon-add',name:'addSite'">
+            添加点位
+        </div>
+    </div>
+    <div id="mmForSite" style="width:120px;">
+        <div  data-options="iconCls:'icon-remove',name:'delSite'">
+            删除点位
+        </div>
+    </div>
+
+    <diV id="deviceInfoDiv">
+        <div>
+            <div class="deviceInfoTitle">编号：</div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+        <div>
+            <div class="deviceInfoTitle" >
+               	类型：
+            </div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+        <div>
+            <div class="deviceInfoTitle" >
+             	 机构：
+            </div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+        <div>
+            <div class="deviceInfoTitle" >
+                                                 名称：
+            </div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+    </diV>
+    <!--locationInfoDiv-->
+    <diV id="locationInfoDiv">
+        <!--<div><div class="locationInfoTitle" >道路：</div><span></span></div>-->
+        <div>
+            <div class="locationInfoTitle" >
+            	点位：
+            </div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+        <div>
+            <div class="locationInfoTitle" >
+               	 安装方式：
+            </div>
+            <div style="text-align:left"><a></a></div>
+        </div>
+    </diV>
+    <!--deviceStatusDiv-->
+    <diV id="deviceStatusDiv">
+        <div class="table">
+            <div class="tr">
+                <div class="td">
+                    <div style="margin-left: 15px;" title="设备状态" class="icon-common online-icon"></div>
+                </div>
+                <div class="td">
+                   	 ：<a></a>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td">
+                    <div style="margin-left: 15px;" title="最近心跳时间" class="icon-common heart-icon"></div>
+                </div>
+                <div class="td">
+                                                           ：<a class="other-status"></a>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td">
+                    <div style="margin-left: 15px;" title="校时时间" class="icon-common timeCorrection-icon"></div>
+                </div>
+                <div class="td">
+                                                           ：<a class="other-status"></a>
+                </div>
+            </div>
+           <!-- <div class="tr">
+                <div class="td">
+                    <div style="margin-left: 15px;" title="当日抓拍数" class="icon-common snap-icon"></div>
+                </div>
+                <div class="td" style="width:30%;text-align:left">
+                                                            ：<a class="other-status"></a>条
+                </div>
+                <div class="td">
+                    <div style="margin-left: 15px;" title="累计积压" class="icon-common backlog-icon"></div>
+                </div>
+                <div class="td">
+                   	 ：<a class="other-status"></a>条
+                </div>
+            </div> --> 
+            <div class="tr" style="height:30px;">
+            	<div class="td">
+                    <div style="margin-left: 15px;" title="最近上传时间" class="icon-common latest-upload-time-icon"></div>
+                </div>
+                <div class="td" style="width:20%;text-align:left">
+                                                            ：<a class="other-status"></a>
+                </div>
+                <div class="td" style="margin-left: 90px;">
+                    <a class="easyui-linkbutton button-search view-status" style="display: none;">运行查看</a>
+                </div>
+            </div>
+        </div>
+    </diV>
+</div>
+<script type="text/javascript" >
+	InitPage([], function($scope) {
+		
+		$scope.mmForOrg = null;
+		$scope.mmForMoniterCenter = null;
+		$scope.mmForImportFlat = null;
+		$scope.mmForRoad = null;
+		$scope.mmForSite = null;
+		$scope.currentTreeNodeId = null;
+
+		//获取默认的数据字典
+		$scope.$getDefaultCode(["404","412","400","484"],function(data){
+			//将设备类型和装备类型合并
+			var types = [];
+			var deviceTypes = data["400"];
+			//添加列表
+			var equipmentType = data["484"];
+			for(i = 0; i < deviceTypes.length; i ++){
+				if(deviceTypes[i].value != "14" && deviceTypes[i].value != "15" && deviceTypes[i].value != "13" 
+					&& deviceTypes[i].value != "02" && deviceTypes[i].value != "06"){//14信号机，15匝道口信号机,13逆行，10短信基站，02电警，06可变限速牌，07诱导屏
+					types.push(deviceTypes[i]);
+				}
+			}
+			for(i = 0; i < equipmentType.length; i ++){
+				if(equipmentType[i].value == "1"){ //1酒检
+					types.push(equipmentType[i]);
+				}
+			}
+			$scope.$("#deviceType").combobox("loadData",types);
+			for(i = 0; i < types.length; i ++){
+				var div = $('<div data-value="'+ types[i].value +'" iconCls="icon-add-solid">'+ types[i].text +'</div>');
+				div.click(function(e){
+					$scope.addDataFromMenu(e);
+				});	
+				$scope.$("#addDeviceMenu").append(div);
+			}
+			//新增按钮菜单初始化
+		   	$scope.$("#addDeviceBtn").menubutton({
+            	menu : $scope.$("#addDeviceMenu")
+           	});
+		});
+
+		var text = "";
+		//定义菜单文本
+		var devStatusSubObj = null;
+		//设备状态订阅对象
+		//加载机构树菜单
+		function loadOrgTree() {
+			//加载机构树
+			$scope.$("#orgTree").tree({
+				data : $scope.$org,
+				onClick : $scope.orgTreeNodeClick,
+				onContextMenu : $scope.showTreeContextMenu,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//收起全部节点
+					$(this).tree("collapseAll");
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					$scope.formData.userOrgId = root.id;
+				}
+			});
+		}
+
+		//加载道路树点位
+		function loadRoadTree() {
+			var queryParams = {
+				id : "", //默认根节点为空，表示查询基础数据
+				type : "0",//默认类型为0
+				currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode//当前用户所在机构
+			};
+			$scope.$("#roadTree").tree({
+				url : $scope.$restRoot + "/device/site/getSiteTreeByRootId",
+				queryParams : queryParams,
+				onClick : $scope.roadTreeNodeClick,
+				onContextMenu : $scope.showTreeContextMenu,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					//展开根节点
+					$(this).tree("expand", root.target);
+					if (queryParams.type == 0) {
+						//树类型为按道路展示时，删除第二级节点中的空节点
+						for (var index = 0; index < root.children.length; index++) {
+							var item = root.children[index];
+							if (!item.children || item.children.length == 0) {
+								//删除空节点
+								$(this).tree("pop", document.getElementById(item.domId));
+								index--;
+							}
+						}
+					}
+				}
+			});
+		}
+
+		/**
+		 * 页面加载完后一些初始化处理
+		 */
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			loadOrgTree();
+			loadRoadTree();
+			$scope.initMenu();
+			//图片放大方法
+			initFancyBox();
+			$scope.$search("formData");
+			
+			//切换tab页时查询
+			$scope.$('#tollgateTabs').tabs({
+				onSelect: function(title,index){
+					if(title == '按机构'){
+						//默认选中根节点
+						var root = $scope.$("#orgTree").tree("getRoots")[0];
+						$scope.$("#orgTree").tree("select", root.target);
+						$scope.formData.userOrgId = root.id;
+						$scope.formData.roadId = null;
+						$scope.formData.roadType = null;
+						$scope.formData.siteId = null;
+						$scope.formData.pageNumber = 1;
+						$scope.$updateData("formData");
+						if($scope.$("#deviceType").combobox("getValues") != ""){
+							$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+						}
+						$scope.$search("formData");
+					}else if(title == '按道路'){
+						//默认选中根节点
+						var root = $scope.$("#roadTree").tree("getRoots")[0];
+						$scope.$("#roadTree").tree("select", root.target);
+						//获取道路树的所有道路类型
+						var roadTypes = $scope.$('#roadTree').tree('getChildren');//获取所有子节点
+						var roadType = []; 
+						for (var i = 0; i < roadTypes.length; i++) {
+						    if(roadTypes[i].attribute.nodeType == 'roadType'){
+						  		roadType.push(roadTypes[i].id);
+							}
+						};
+						$scope.formData.roadType = roadType.join(",");
+						$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+						$scope.formData.roadId = null;
+						$scope.formData.siteId = null;
+						$scope.$updateData("formData");
+						if($scope.$("#deviceType").combobox("getValues") != ""){
+							$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+						}
+						$scope.$search("formData");
+					}
+				}
+			});
+		};
+		//图片放大方法
+		function initFancyBox() {
+			$scope.$('.fancybox-thumbs').fancybox({
+				prevEffect : 'none',
+				nextEffect : 'none',
+				closeBtn : false,
+				arrows : false,
+				nextClick : true,
+				helpers : {
+					thumbs : {
+						width : 50,
+						height : 50
+					}
+				}
+			});
+		}
+
+		//给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+		$.extend($scope, {
+			/**
+			 * 初始化右键菜单
+			 */
+			initMenu : function() {
+				//初始化道路节点右键菜单
+				$scope.mmForRoad = $scope.$('#mmForRoad').menu({
+					onClick : $scope.contextMenuClick
+				}).menu("hide");
+				//初始化点位节点右键菜单
+				$scope.mmForSite = $scope.$('#mmForSite').menu({
+					onClick : $scope.contextMenuClick
+				}).menu("hide");
+			},
+			/**
+			 *显示树节点相应的上下文菜单
+			 */
+			showTreeContextMenu : function(e, node) {
+				e.preventDefault();
+				text = node.text;
+				$scope.currentTreeNodeId = node.id;
+			},
+			//左击机构树点击事件
+			orgTreeNodeClick : function(node) {
+				var id = node.id;
+				text = node.text;
+				$scope.formData.userOrgId = id;
+				$scope.formData.roadId = null;
+				$scope.formData.roadType = null;
+				$scope.formData.siteId = null;
+				$scope.formData.pageNumber = 1;
+				$scope.$updateData("formData");
+				if($scope.$("#deviceType").combobox("getValues") != ""){
+					$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+				}
+				$scope.$search("formData");
+			},
+			//左击道路点位树点击事件
+			roadTreeNodeClick : function(node) {
+				var id = node.id;
+				text = node.text;
+				var nodeType = node.attribute.nodeType;
+				$scope.formData.pageNumber = 1;
+				if (nodeType == "road") {
+					$scope.formData.roadId = id;
+					$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+					$scope.formData.roadType = null;
+					$scope.formData.siteId = null;
+				} else if (nodeType == "site") {
+					$scope.formData.siteId = id;
+					$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+					$scope.formData.roadType = null;
+					$scope.formData.roadId = null;
+				} else if (nodeType == "roadType") {
+					$scope.formData.roadType = id;
+					$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+					$scope.formData.roadId = null;
+					$scope.formData.siteId = null;
+				} else {
+					//获取道路树的所有道路类型
+					var roadTypes = $scope.$('#roadTree').tree('getChildren');//获取所有子节点
+					var roadType = []; 
+					for (var i = 0; i < roadTypes.length; i++) {
+					    if(roadTypes[i].attribute.nodeType == 'roadType'){
+					  		roadType.push(roadTypes[i].id);
+						}
+					};
+					$scope.formData.roadType = roadType.join(",");
+					$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+					$scope.formData.roadId = null;
+					$scope.formData.siteId = null;
+				}
+				$scope.$updateData("formData");
+				if($scope.$("#deviceType").combobox("getValues") != ""){
+					$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+				}
+				$scope.$search("formData");
+			},
+			contextMenuClick : function(item) {
+				//debugger;
+				switch (item.name) {
+				case "addSite":
+					alert("弹出添加点位页面！" + item.name + "&" + $scope.currentTreeNodeId);
+					break;
+				case "delSite":
+					alert("删除该点位！" + item.name + "&" + $scope.currentTreeNodeId);
+					break;
+				}
+			},
+			formData : {
+				
+			},
+			/**
+			 * 查询数据
+			 */
+			searchData : function() {
+				//点击查询按钮跳回第一页
+				$scope.$updateData("formData");
+				$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+				$scope.$("#tollgateGrd").datagrid("getPager").pagination("select", 1);
+			},
+			options : {
+				columns : [[{
+					halign : 'center',
+					field : "deviceId",
+					checkbox : true
+				}, {
+					halign : 'center',
+					title : "实景图",
+					field : "imgUrl",
+					width : 100,
+					formatter : devicePhotoFormat
+				}, {
+					halign : 'center',
+					title : "设备信息",
+					field : "deviceInfo",
+					width : 150,
+					formatter : deviceInfoFormat
+				}, {
+					align : 'center',
+					title : "位置信息",
+					field : "siteInfo",
+					width : 170,
+					formatter : locationInfoFormat
+				}, {
+					halign : 'center',
+					title : "使用状态",
+					field : "useStatusFlag",
+					width : 50,
+					formatter : useStautsFormat
+				}, {
+					align : 'center',
+					title : "运行情况",
+					field : "runCondition",
+					width : 210,
+					formatter : deviceStatusFormat
+				}, {
+					align : 'center',
+					title : "年检期止",
+					field : "expireDate",
+					width : 60,
+					formatter : expireDateFormat
+				}, {
+					align : 'center',
+					title : "操作",
+					field : "opt",
+					width : 60,
+					formatter : opteratersForamt
+				}]],
+				nowrap:false,
+				onLoadSuccess : successCallBack
+			},
+
+			/**
+			 * 新增卡口备案信息
+			 * @param event
+			 */
+			//点击按钮新增
+			addData : function(event) {
+				var ele = event.currentTarget;
+				var whichType = $(ele).attr("data-value");
+				var whichName = $(ele).text().substring(2);
+				$scope.showAddDevice(whichType, whichName);
+			},
+			//点击下拉菜单新增
+			addDataFromMenu : function(event) {
+				var ele = event.currentTarget;
+				var whichType = $(ele).attr("data-value");
+				var whichName = $(ele).text();
+				$scope.$("#addDeviceBtn").find(".l-btn-text").text("新增" + whichName);
+				$scope.$("#addDeviceBtn").attr("data-value", whichType);
+				$scope.showAddDevice(whichType, whichName);
+			},
+			//新增的方法
+			showAddDevice : function(whichType, whichName) {
+				$scope.$setParam("whichType", whichType);
+				if(whichType == "01"){
+					$scope.$openDialog("addBayonetDialog",{
+						title : "卡口备案",
+						width : 900,
+						height : 600,
+						href : "tpls/deviceManage/deviceRecord/bayonet-manage-config.html"
+					}, true);
+					$scope.$setParam("mode", "ADD");
+					$scope.$setParam("closeSelf", function() {
+						$scope.$getDialog("addBayonetDialog").dialog("close");
+						$scope.$search("formData");
+					});
+				}else{
+					//弹出页面要增加的设备类型
+					var href = '';//跳转页面链接
+					var url = '';//保存的方法链接 
+					if(whichType == "1" || whichType == "2" || whichType == "3"){
+						href = 'tpls/deviceManage/deviceConfig/device-equipment-config.html';
+						url = 'device/equipment/addEquipment';
+					}else{
+						href = 'tpls/deviceManage/deviceConfig/device-sys-config.html';
+						url = 'device/deviceConfig/addDeviceInfo';
+					}
+					//弹出页面要增加的设备名称
+					$scope.$setParam("mode", "ADD");
+					$scope.$setParam("closeDialog", $scope.closeTollgateConfig);
+					$scope.$setParam("deviceInfoDto", {});
+					$scope.$openDialog("addDialog", {
+						title : whichName + "备案",
+						width : 900,
+						height : 600,
+						href : href
+					}, true);
+					$scope.$setParam("saveData", function(data) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + url,
+							params : data,
+							success : function(data) {
+								if(data != "nbrError" && data != "keyError"){
+									$.messager.alert("提示", "添加基本信息成功！");
+									//关闭窗体
+									$scope.$getDialog("addDialog").dialog("close");
+									$scope.$search("formData");
+								}else if(data == "nbrError"){
+									$.messager.alert("提示","设备编号已存在，请重新输入！");
+	        	       	   	   		return false;
+								}else if(data == "keyError"){
+									$.messager.alert("提示","唯一性标识已存在，请重新输入！");
+	        	       	   	   		return false;
+								}
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "添加基本信息失败！");
+							}
+						});
+					});
+					$scope.$setParam("closeSelf", function() {
+						$scope.$getDialog("addDialog").dialog("close");
+						$scope.$search("formData");
+					});	
+				}
+			},
+			/**
+			 * 新增窗体关闭回调事件，如果是通过点击保存关闭的，则要刷新该页面的列表信息，否则直接关闭
+			 */
+			closeTollgateConfig : function() {
+				//刷新列表记录todo
+
+				//关闭窗体
+				$scope.$getDialog("detailDailog").dialog("destroy");
+				delete $scope.$dialog["detailDailog"];
+			},
+			/**
+			 * 启用
+			 * @param event
+			 */
+			startUse : function() {
+				var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+				//勾选选中的行数组
+				if (rows.length == 0) {
+					$.messager.alert("提示", "请选择需要启用的设备！");
+					return false;
+				} else {
+					var deviceIdStr = "";//设备Id字符串
+					var recordTypeStr = "";//记录类型字符串，1表示电子监控设备，0表示装备
+					for (var i = 0; i < rows.length; i++) {
+						if(rows[i].useStatusFlag == 3){
+							$.messager.alert("提示","设备已报废不能启用！");
+							return false;
+						}else if(rows[i].useStatusFlag == 1){
+							$.messager.alert("提示","设备已是启用状态！");
+							return false;
+						}
+						if (i > 0) {
+							deviceIdStr = deviceIdStr + "," + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + "," + rows[i].recordType;
+						} else {
+							deviceIdStr = deviceIdStr + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + rows[i].recordType;
+						}
+					}
+					$scope.$openDialog("useStatusDialog", {
+						title : "更改状态",
+						width : 400,
+						height : 250,
+						href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+					}, true);
+					//保存
+					$scope.$setParam("saveData", function(data) {
+						var reason = data;
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + 'device/deviceConfig/enableDevice',
+							params : {
+								reason : reason,
+								deviceIdStr : deviceIdStr,
+								recordTypeStr : recordTypeStr
+							},
+							method : 'post',
+							success : function(data) {
+								$.messager.alert("提示", "启用成功！");
+								//关闭窗体
+								$scope.$getDialog("useStatusDialog").dialog("close");
+								$scope.searchData();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", errMsg + "，启用失败！");
+							}
+						});
+					});
+				}
+			},
+			/**
+			 * 停用
+			 * @param event
+			 */
+			stopUse : function() {
+				//设置选择的这些行的使用状态为启用todo
+				var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+				//勾选选中的行数组
+				if (rows.length == 0) {
+					$.messager.alert("提示", "请选择需要停用的设备！");
+					return false;
+				} else {
+					var deviceIdStr = "";//设备Id字符串
+					var recordTypeStr = "";//记录类型字符串，1表示电子监控设备，0表示装备
+					for (var i = 0; i < rows.length; i++) {
+						if(rows[i].useStatusFlag != 1){
+							$.messager.alert("提示","设备不是启用状态不能停用！");
+							return false;
+						}
+						if (i > 0) {
+							deviceIdStr = deviceIdStr + "," + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + "," + rows[i].recordType;
+						} else {
+							deviceIdStr = deviceIdStr + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + rows[i].recordType;
+						}
+					}
+					$scope.$openDialog("stopStatusDialog", {
+						title : "更改状态",
+						width : 400,
+						height : 250,
+						href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+					}, true);
+					//保存
+					$scope.$setParam("saveData", function(data) {
+						var reason = data;
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + 'device/deviceConfig/stopDevice',
+							params : {
+								reason : reason,
+								deviceIdStr : deviceIdStr,
+								recordTypeStr : recordTypeStr
+							},
+							method : 'post',
+							success : function(data) {
+								$.messager.alert("提示", "停用成功！");
+								//关闭窗体
+								$scope.$getDialog("stopStatusDialog").dialog("close");
+								$scope.searchData();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", errMsg + "，停用失败！");
+							}
+						});
+					});
+				}
+			},
+			
+			/**
+			 * 报废
+			 * @param event
+			 */
+			destroyUse : function(event) {
+				//设置选择的这些行的使用状态为启用todo
+				var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+				//勾选选中的行数组
+				if (rows.length == 0) {
+					$.messager.alert("提示", "请选择需要报废的设备！");
+					return false;
+				} else {
+					var deviceIdStr = "";//设备Id字符串
+					var recordTypeStr = "";//记录类型字符串，1表示电子监控设备，0表示装备
+					for (var i = 0; i < rows.length; i++) {
+						if (i > 0) {
+							deviceIdStr = deviceIdStr + "," + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + "," + rows[i].recordType;
+						} else {
+							deviceIdStr = deviceIdStr + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + rows[i].recordType;
+						}
+					}
+					$scope.$openDialog("breakStatusDialog", {
+						title : "更改状态",
+						width : 400,
+						height : 250,
+						href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+					}, true);
+					//保存
+					$scope.$setParam("saveData", function(data) {
+						var reason = data;
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + 'device/deviceConfig/breakDevice',
+							params : {
+								reason : reason,
+								deviceIdStr : deviceIdStr,
+								recordTypeStr : recordTypeStr
+							},
+							method : 'post',
+							success : function(data) {
+								$.messager.alert("提示", "设备报废成功！");
+								//关闭窗体
+								$scope.$getDialog("breakStatusDialog").dialog("close");
+								$scope.searchData();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "设备报废失败！");
+							}
+						});
+					});
+				}
+			},
+			/**
+			 * 编辑设备备案基本信息
+			 * @param deviceId
+			 */
+			editDevice : function(rowIndex) {			
+				var rowData = $scope.$("#tollgateGrd").datagrid("getData").rows[rowIndex];
+		
+				if(rowData.deviceType == '01'){
+					var oldDeviceSysNbr = rowData.deviceSysNbr;//编辑时原先的卡口设备编号
+					var deviceId = rowData.deviceId;
+					//根据deviceId查询相关的卡口信息
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/bayonetManage/queryBayonetByDeviceId",
+						params : {deviceId:deviceId},
+						method : 'post',
+						success : function(data) {
+							$scope.$setParam("deviceInfoDto", data);
+							$scope.$setParam("deviceId", deviceId);
+							$scope.$setParam("mode", "update");
+							$scope.$openDialog("editDialog",{
+								title : "编辑卡口信息",
+								width : 900,
+								height : 550,
+								href : 'tpls/deviceManage/deviceRecord/bayonet-manage-config.html'
+							}, true);
+							$scope.$setParam("saveData", function(data) {
+								data.oldDeviceSysNbr = oldDeviceSysNbr;
+								$scope.$ajaxRequest({
+									url : $scope.$restRoot + "device/bayonetManage/updateBayonet",
+									params : data,
+									method : 'post',
+									success : function(data) {
+										if (data == 1) {
+											$.messager.alert("提示", "修改成功!");
+											$scope.$search("formData");
+										} else if (data == 0) {
+											$.messager.alert("提示", "设备编号已存在，请重新输入！");
+											return false;
+										}
+									},
+									fail : function(errMsg) {
+										$.messager.alert("提示", "修改失败!");
+									}
+								});
+							});
+							//关闭窗口
+							$scope.$setParam("closeSelf", function() {
+								$scope.$getDialog("editDialog").dialog("close");
+								$scope.$search("formData");
+							});
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "查询卡口相关信息失败!");
+						}
+					});
+				}else{
+					var deviceName = '';
+					var url = '';
+					var href = '';
+					var updateUrl = '';
+					if(rowData.deviceType == '1' || rowData.deviceType == '2' || rowData.deviceType == '3'){
+						deviceName = $scope.$getCodeName("484", rowData.deviceType);
+						url = 'device/equipment/queryEquipment';
+						href = 'tpls/deviceManage/deviceConfig/device-equipment-config.html';
+						updateUrl = 'device/equipment/updateEquipment';
+					}else{
+						deviceName = $scope.$getCodeName("400", rowData.deviceType);
+						url = 'device/deviceConfig/lookDeviceInfo';
+						href = 'tpls/deviceManage/deviceConfig/device-sys-config.html';
+						updateUrl = 'device/deviceConfig/updateDeviceInfo';
+					}
+					$scope.$setParam("whichType", rowData.deviceType);
+					var deviceId = rowData.deviceId;
+					$scope.$setParam("deviceId", deviceId);
+					var oldDeviceSysNbr = rowData.deviceSysNbr;//编辑时原先的设备编号
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + url,
+						params : {deviceId : deviceId},
+						method : "post",
+						success : function(data) {
+							$scope.$setParam("deviceInfoDto", data);
+							$scope.$setParam("mode", "update");
+							$scope.$openDialog("editDialog", {
+								title : deviceName + "设备编辑",
+								width : 900,
+								height : 550,
+								href : href
+							}, true);
+							$scope.$setParam("saveData", function(data) {
+								data.oldDeviceSysNbr = oldDeviceSysNbr;
+								$scope.$ajaxRequest({
+									url : $scope.$restRoot + updateUrl,
+									params : data,
+									method : 'post',
+									success : function(data) {
+										if(data == 1 || data == "success"){
+											$.messager.alert("提示", "修改成功!");
+											$scope.$getDialog("editDialog").dialog("close");
+											$scope.$search("formData");
+										}else if(data == 0){
+											$.messager.alert("提示","设备编号已存在，请重新输入！");
+	        	       	   	   				return false;
+										}else if(data == 2){
+											$.messager.alert("提示","唯一性标识已存在，请重新输入！");
+	        	       	   	   				return false;
+										}
+									},
+									fail : function(errMsg) {
+										$.messager.alert("提示", "修改失败!");
+									}
+								});
+							});
+							$scope.$setParam("closeSelf", function() {
+								$scope.$getDialog("editDialog").dialog("close");
+								$scope.$search("formData");
+							});
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "查看获取信息失败！");
+						}
+					});	
+				}
+			},
+			/**
+			 * 删除备案记录
+			 * @param deviceId
+			 */
+			deleteDevice : function(rowIndex) {
+				var rowData = $scope.$("#tollgateGrd").datagrid("getData").rows[rowIndex];
+				var deviceId = rowData.deviceId;
+				var dataNum = $scope.$("#tollgateGrd").datagrid("getRows").length;
+				//当前页行数
+				var options = $scope.$("#tollgateGrd").datagrid("getPager").data("pagination").options;
+				var pageNumber = options.pageNumber;//获取当前页var 
+				var url = '';
+				if(rowData.deviceType == '1' || rowData.deviceType == '2' || rowData.deviceType == '3'){
+					url = 'device/equipment/deleteEquipment';
+				}else{
+					url = 'device/deviceConfig/deleteDeviceInfo';
+				}
+				$.messager.confirm("提示", "是否确认删除信息？", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + url,
+							params : {
+								deviceId : deviceId
+							},
+							method : "post",
+							success : function(data) {
+								if (dataNum == 1) {
+									$scope.$("#tollgateGrd").datagrid("getPager").pagination("select", pageNumber - 1);
+									//跳转大当前页的前一页
+								} else {
+									$scope.$search("formData");
+								}
+								$.messager.alert("提示", "删除成功！");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			},
+			/**
+			 *单个报废设备 
+			 */
+			breakDevice : function(index){
+				var rowData = $scope.$("#tollgateGrd").datagrid("getData").rows[index];
+				if(rowData.useStatusFlag != 2){
+					$.messager.alert("提示","设备不是停用状态不能报废！");
+					return false;
+				}
+				$.messager.confirm("提示", "是否确认报废设备？", function(flag) {
+					if (flag) {
+						var deviceIdStr = rowData.deviceId;//设备Id字符串
+						var recordTypeStr = rowData.recordType;//记录类型字符串，1表示电子监控设备
+						$scope.$openDialog("breakStatusDialog",{
+							title : "更改状态",
+							width : 400,
+							height : 250,
+							href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+						}, true);
+						//保存
+						$scope.$setParam("saveData", function(data) {
+							var reason = data;
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/bayonetManage/breakDevice',
+								params : {
+									reason : reason,
+									deviceIdStr : deviceIdStr,
+									recordTypeStr : recordTypeStr
+								},
+								method : 'post',
+								success : function(data) {
+									$.messager.alert("提示", "设备报废成功！");
+									//关闭窗体
+									$scope.$getDialog("breakStatusDialog").dialog("close");
+									$scope.$search("formData");
+								},
+								fail : function(errMsg) {
+									$.messager.alert("提示", "设备报废失败！");
+								}
+							});
+						});
+					}
+				});
+			},
+			/**
+			 * 批量删除
+			 * @param event
+			 */
+			deleteTollgate : function(event) {
+				var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+				//勾选选中的行数组
+				var dataNum = $scope.$("#tollgateGrd").datagrid("getRows").length;
+				//当前页行数
+				var options = $scope.$("#tollgateGrd").datagrid("getPager").data("pagination").options;
+				var pageNumber = options.pageNumber;
+				//获取当前页
+				if (rows.length == 0) {
+					$.messager.alert("提示", "请选择需要删除的信息！");
+					return false;
+				} else {
+					var deviceIdStr = "";//设备Id字符串
+					var recordTypeStr = "";//记录类型字符串，1表示电子监控设备，0表示装备
+					for (var i = 0; i < rows.length; i++) {
+						if (i > 0) {
+							deviceIdStr = deviceIdStr + "," + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + "," + rows[i].recordType;
+						} else {
+							deviceIdStr = deviceIdStr + rows[i].deviceId;
+							recordTypeStr = recordTypeStr + rows[i].recordType;
+						}
+					}
+					$.messager.confirm("提示", "是否确认删除信息？", function(flag) {
+						if (flag) {
+							//设置选择的这些行的使用状态为启用todo
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + "device/deviceConfig/deleteDeviceInfoAll",
+								params : {
+									deviceIdStr : deviceIdStr,
+									recordTypeStr : recordTypeStr
+								},
+								success : function(data) {
+									if (rows.length == dataNum) {
+										$scope.$("#tollgateGrd").datagrid("getPager").pagination("select", pageNumber - 1);
+										//跳转大当前页的前一页
+									} else {
+										$scope.$search("formData");
+									}
+									$.messager.alert("提示", "删除成功！");
+								},
+								error : function(errMsg) {
+									$.messager.alert("提示", "删除失败！");
+								}
+							});
+						}
+					});
+				}
+			},
+			
+			
+			/**
+			 *查看设备运行情况
+			 */
+			viewStatus : function(devId, devSysNbr, devType) {
+				var url;
+				var devName = $scope.$getCodeName("400", devType);
+				if (devType == "01") {
+		         	$scope.$setParam("deviceSysNbr",devSysNbr);
+		         	$scope.$openDialog("deviceVehicleMonitor", {
+	                	title : "设备过车监控",
+	                	width : 700, 
+	                	height : 400,
+	                	href : "tpls/public/device-vehicle-monitor.html",
+	                	onClose : function(){
+	                    	$scope.$getDialog("deviceVehicleMonitor").data("winScope").subsribe.remove();
+	                	}
+		         	});
+				} else if (devType == "11" || devType == "12" || devType == "04" || devType == "16") {//11违停,12大车占道,04固定测速，16车载
+					$scope.$setParam("deviceSysNbr", devSysNbr);
+					var res = $scope.$openDialog("violationDialog", {
+						title: "设备违法信息",
+						width: 1000,
+						height: 600,
+						href: "tpls/violationMgr/popViolation.html"
+					}, true);
+				} else if (devType == "04") {
+					url = "tpls/deviceManage/deviceConfig/speed-measure-look-config.html";
+				} else if (devType == "05") {
+					//根据气象设备deviceId查气象设备的参数
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/deviceConfig/lookDeviceInfo",
+						params : {deviceId : devId},
+						success : function(data) {
+							$scope.$setParam("deviceSysNbr", devSysNbr);
+							var alarmType="";			
+							var url = "";
+							if (data.isWeatherSupport && data.isWeatherSupport == "1") {
+								alarmType="1";
+								url = "tpls/deviceManage/deviceConfig/weather-look-config.html";
+							} else if (data.isVisibilitySupport && data.isVisibilitySupport == "1") {
+								alarmType="2";
+								url = "tpls/deviceManage/deviceConfig/weather-visibility.html";
+							} else if (data.isRoadsensorSupport && data.isRoadsensorSupport == "1") {
+								alarmType="3";
+								url = "tpls/deviceManage/deviceConfig/weather-road-feel.html";
+							}
+							$scope.$setParam("alarmType", alarmType);			
+							$scope.$openDialog("meteorologicDialog", {
+								title : "气象查看",
+								height : 500,
+								width : 1000,
+								href : url
+							}, true);
+						},
+						error : function(errMsg) {
+							$.messager.alert("提示", "获取参数失败！");
+						}
+					});
+				} else if (devType == "09") {
+					$scope.$setParam("deviceSysNbr", devSysNbr);
+					$scope.$openDialog("flowDialog", {
+						title : "流量查看",
+						height : 560,
+						width : 1000,
+						href : "tpls/deviceManage/deviceConfig/flow-detection-look-config.html"
+					}, true);
+				} else if (devType == "08") {
+					$scope.$setParam("deviceSysNbr", devSysNbr);
+					$scope.$setParam("alarmType", "4");
+					$scope.$openDialog("eventDialog", {
+						title : "事件查看",
+						height : 500,
+						width : 800,
+						href : "tpls/deviceManage/deviceConfig/event-detection-look-config.html"
+					}, true);
+				} else if (devType == "03") {
+					//url = "tpls/deviceManage/deviceConfig/video-look-config.html";var devNbr=devTipInfo.devNbr;
+					var devIds = [];
+					devIds.push(devId);
+					$scope.$setParam("deviceIds",devIds);
+		          	$scope.$openDialog("videoDialog", {
+		                title : "查看视频",
+		                draggable : false,
+		                height : 600,
+		                width : 600,
+		                href : "tpls/video/popPreView.html"
+		            },true);
+				} else if (devType == "07") {
+					url = "tpls/deviceManage/deviceConfig/LED-board-look.html";
+				} else if (devType == "06") {
+					url = "tpls/deviceManage/deviceConfig/speed-limit-look.html";
+				}
+				/*$scope.$openDialog("runLook", {
+					title : devName + "设备运行查看",
+					width : 500,
+					height : 500,
+					href : url
+				}, true);*/
+			},
+			/**
+			 *查看设备抓拍数
+			 * devType : 设备类型
+			 * devId ： 设备id
+			 */
+			viewSnapTotal : function(devId, devType) {
+				var devName = $scope.$getCodeName("400", devType);
+				if (devType == "01" || devType == "02" || devType == "03" || devType == "04") {
+					$scope.$openDialog("captureDialog", {
+						title : devName + "抓拍详情",
+						width : 800,
+						height : 500,
+						href : "tpls/deviceManage/deviceConfig/capture-config.html"
+					}, true);
+				} else {
+					alert("不支持抓拍数记录！");
+				}
+			},
+			/**
+			 *查看设备上传的数据
+			 * devType : 设备类型
+			 * devId ： 设备id
+			 */
+			viewDevMoniterData : function(devId, devType) {
+				
+				var devName = $scope.$getCodeName("400", devType);
+				$scope.$openDialog("upDataDialog", {
+					title : devName + "最近上传数据详情",
+					width : 800,
+					height : 550,
+					href : "tpls/deviceManage/deviceConfig/upload-time-config.html"
+				}, true);
+			}
+		});
+		$scope.close = function() {
+			if (devStatusSubObj != null) {
+				devStatusSubObj.remove();
+			}
+		};
+		$scope.leave = function() {
+			if (devStatusSubObj != null) {
+				devStatusSubObj.remove();
+			}
+		};
+		$scope.enter = function() {
+			subscribeDevStatus();
+		};
+		function successCallBack(data) {
+
+			if (devStatusSubObj == null)//如果为空，则是第一次订阅设备状态
+			{
+				subscribeDevStatus();
+			} else//否则，则是再次点击查询按钮，查询出设备列表，需要更改要订阅的设备列表
+			{
+				changeDevForStatusSubscribe();
+			}
+		}
+
+		function getAllDevSysNbrLst() {
+			var devLst = $scope.$("#tollgateGrd").datagrid("getRows");
+			var devSysNbrArry = [];
+			if (devLst != null || devLst.length > 0) {
+				for (var i = 0; i < devLst.length; i++) {
+					devSysNbrArry.push(devLst[i].deviceSysNbr);
+				}
+			}
+			return devSysNbrArry;
+		}
+
+		function subscribeDevStatus() {
+			var devSysNbrLst = getAllDevSysNbrLst();
+			if (devSysNbrLst == null || devSysNbrLst.length == 0) {
+				return;
+			}
+			//订阅设备状态
+			devStatusSubObj = new Subsribe({
+				type : SubsribeType.deviceConfigMonitor,
+				onMessage : onReceiveDevStatus,
+				param : {
+					devSysNbrs : devSysNbrLst
+				}
+			});
+		}
+
+		function changeDevForStatusSubscribe() {
+			var devSysNbrLst = getAllDevSysNbrLst();
+			devStatusSubObj.addParam({
+				devSysNbrs : devSysNbrLst
+			});
+		}
+
+		function onReceiveDevStatus(data)//接收到状态消息
+		{
+			var data = $.parseJSON(data);
+			var devSysNbr = data.deviceSysNbr;
+			var devRows = $scope.$("#tollgateGrd").datagrid("getRows");
+			var currentRow = null;
+			for (var i = 0; i < devRows.length; i++) {
+				if (devRows[i].deviceSysNbr == devSysNbr) {
+					currentRow = devRows[i];
+					break;
+				}
+			}
+			if( currentRow == null)
+			{
+			    return;
+			}			
+			var rowIndex=$scope.$("#tollgateGrd").datagrid("getRowIndex",currentRow);
+			currentRow.statusType=data.statusType;//设备状态
+			currentRow.latestHeartTime=formatDateTimeStamp(data.statusUpdateTime);//设备最近心跳时间
+			currentRow.timeDiff=data.timeDiff;//校时时间（秒）
+			//currentRow.snapTotal=data.vehicleTotal;//设备抓拍数
+			//currentRow.backlog=data.backlog;//设备积压数，服务暂不提供该信息
+			currentRow.latestUploadTime=formatDateTimeStamp(data.lastUploadTime);//设备最近上传数据时间
+			//currentRow.correctionTime=data.correctionTime;//设备校时时间，服务暂不提供该信息
+			$scope.$("#tollgateGrd").datagrid("updateRow",{
+			    index: rowIndex,
+                row: currentRow
+			});
+			$scope.$eventProxy();//重新做事件代理
+			
+		}
+        /**
+         *把时间戳转化为yyyy-MM-dd HH:mm:ss格式
+         */
+        function formatDateTimeStamp(dateTimeStamp) {
+            if (dateTimeStamp == undefined) {
+                return "";
+            }
+            var newDate = new Date();
+            newDate.setTime(dateTimeStamp);
+            return newDate.format('yyyy-MM-dd HH:mm:ss');
+        }
+		/**
+		 * 设备照片格式化单元格
+		 */
+		function devicePhotoFormat(value, rowData, rowIndex) {
+			var deviceId = rowData.deviceId;
+			var img = $("<img src='' style='height: 90px;width: 100%;cursor: pointer;'cy-click='lookPic(\"" + value + "\"," + rowIndex + ",\"" + deviceId + "\")'></img>");
+			if (value == null) {
+				img.attr('src', "themes/default/images/noPic.jpg");
+			} else {
+				img.attr('src', "http://" + value);
+			}
+			return $("<span class='fancybox-thumbs'/>").append(img).html();
+		}
+
+		/**
+		 * 设备信息格式化单元格
+		 */
+		function deviceInfoFormat(value, rowData, rowIndex) {
+			var deviceType = '';
+			if(rowData.deviceType == '1' || rowData.deviceType == '2' || rowData.deviceType == '3'){
+				deviceType = $scope.$getCodeName("484", rowData.deviceType);
+			}else{
+				deviceType = $scope.$getCodeName("400", rowData.deviceType);
+			} 
+			var orgName = $scope.$getOrgName(rowData.orgId);
+			var divs = $scope.$("#deviceInfoDiv").clone();
+			divs.removeAttr("id");
+			var spans = divs.find("a");
+			spans.eq(0).text(rowData.deviceSysNbr);
+			spans.eq(1).text(deviceType);
+			spans.eq(2).text(orgName);
+			if(rowData.deviceName == null || rowData.deviceName ==''){
+				rowData.deviceName = '--';
+			}
+			spans.eq(3).text(rowData.deviceName);
+			return divs.html();
+		}
+
+		/**
+		 * 位置信息格式化单元格
+		 */
+		function locationInfoFormat(value, rowData, rowIndex) {
+			if(rowData.deviceType == '1' || rowData.deviceType == '2' || rowData.deviceType == '3'){
+				return "--";
+			}else{//if(rowData.deviceType == '1')
+				var divs = $scope.$("#locationInfoDiv").clone();
+				divs.removeAttr("id");
+				var spans = divs.find("a");
+				var installationWay = $scope.$getCodeName("404", rowData.mountingFacilityType);
+				//安装方式
+				//spans.eq(0).text(rowData.ROAD_NAME);
+				var siteName = rowData.siteName;
+				if(siteName == null || siteName == ''){
+					siteName = '--';
+				}
+				spans.eq(0).text(siteName);
+				if(installationWay == null || installationWay ==''){
+					installationWay = '--';
+				}
+				spans.eq(1).text(installationWay);
+				return divs.html();
+			}
+		}
+
+		function useStautsFormat(value, rowData, rowIndex) {
+			var div = $("<div class='no-use'></div>");
+			var useStatus = $scope.$getCodeName("405", rowData.useStatusFlag);
+			var className = "no-use";
+			switch(useStatus) {
+			case "启用":
+				className = "used";
+				break;
+			case "停用":
+				className = "stopped";
+				break;
+			case "报废":
+				className = "broked";
+				break;
+			}
+			div.addClass(className);
+			return $("<span/>").append(div).html();
+		};
+		/**
+		 * 运行状况格式化单元格
+		 */
+		function deviceStatusFormat(value, rowData, rowIndex) {
+			if(rowData.deviceType == '1' || rowData.deviceType == '2' || rowData.deviceType == '3'){
+				return "--";
+			}else{//if(rowData.deviceType == '1')
+				var divs = $scope.$("#deviceStatusDiv").clone();
+				divs.removeAttr("id");
+				var spans = divs.find("a");
+				var statusType = $scope.$getCodeName("412", rowData.statusType);//设备状态
+				if(statusType == null || statusType ==''){
+					statusType = '--';
+				}
+				spans.eq(0).text(statusType);
+				if (rowData.statusType == "1") {//1表示正常
+					spans.eq(0).attr("class", "online-status");
+				} else if (rowData.statusType == "2") {//2表示脱机
+					spans.eq(0).attr("class", "offline-status");
+				} else if (rowData.statusType == "3") {//3表示故障
+					spans.eq(0).attr("class", "fault-status");
+				} else if (rowData.statusType == "4") {//异常
+					spans.eq(0).attr("class", "abnormal-status");
+				}
+				
+				if(rowData.latestHeartTime == null || rowData.latestHeartTime ==''){
+					rowData.latestHeartTime = '--';
+				}
+				spans.eq(1).text(rowData.latestHeartTime);//状态更新时间
+				
+				//spans.eq(2).text(rowData.bug);
+				//var snapTotal = spans.eq(2);
+				//snapTotal.text(rowData.snapTotal);//当日抓拍数
+				//snapTotal.attr('cy-click', "viewSnapTotal('" + rowData.deviceId + "','" + rowData.deviceType + "')");
+				//spans.eq(3).text(rowData.backlog);//累计积压
+				var timeDiffData = spans.eq(2);
+				var timeDiff = '';
+				if(!rowData.timeDiff || rowData.timeDiff ==''){
+					timeDiff = '--';
+				}else{
+					timeDiff = rowData.timeDiff + ' 秒';
+				}
+				timeDiffData.text(timeDiff);//校时时间
+				var devMoniterData = spans.eq(3);
+				if(rowData.latestUploadTime == null || rowData.latestUploadTime ==''){
+					rowData.latestUploadTime = '--';
+				}
+				devMoniterData.text(rowData.latestUploadTime);//最近上传时间
+				//devMoniterData.attr('cy-click', "viewDevMoniterData('" + rowData.deviceId + "','" + rowData.deviceType + "')");
+				//spans.eq(5).text(rowData.correctionTime);
+				if(rowData.deviceType == '01' || rowData.deviceType == '03' || rowData.deviceType == '08' || rowData.deviceType == '05'|| rowData.deviceType == '11'|| rowData.deviceType == '12'|| rowData.deviceType == '04'|| rowData.deviceType == '16'|| rowData.deviceType == '09'){
+					var viewStatusBtn = divs.find(".view-status");
+					viewStatusBtn.attr('cy-click', "viewStatus('" + rowData.deviceId + "','" + rowData.deviceSysNbr + "','" + rowData.deviceType + "')").attr("style", "display:false;");
+				}
+				//var viewStatusBtn = divs.find(".view-status");
+				//viewStatusBtn.attr('cy-click', "viewStatus('" + rowData.deviceId + "','" + rowData.deviceType + "')").attr("style", "display:false;");
+				return divs.html();
+			}
+		}
+
+		/**
+		 *判断整数有效期是否过期
+		 * @param value 有效期止这列中的值
+		 * @param row 整形 行
+		 * @param index 整形 行下标
+		 * @returns  html样式标签及该行有效期止这列中的值
+		 */
+		function expireDateFormat(value, row, index) {
+			if (value == null) {
+				return "--";
+			} else {
+				var value = new Date(value).format("yyyy-MM-dd");
+				var format;
+				if (value) {
+					format = value.replace(/-/g, "/");
+				}
+				var nowDate = new Date().getTime();
+				//获取当前时间
+				var values = new Date(format + " 23:59:59").getTime();
+				if (values < nowDate) {
+					//过期
+					return "<span style='color:red'>" + value + "</span>";
+				} else {
+					//即将过期时间期限设置为一个月，计算过期时间和当前时间的时间间隔
+					var almost = new Date(format).getTime() - 30 * 24 * 60 * 60 * 1000;
+					
+					if (almost <= nowDate) {
+						//即将过期
+						return "<span style='color:orange'>" + value + "</span>";
+					} else {
+						//未过期
+						return value;
+					}
+				}
+			}
+		}
+
+		/**
+		 * grid列表中最后一列格式化
+		 * @param value  当前单元格值
+		 * @param rowData 当前行
+		 * @param rowIndex 当前行所在索引值
+		 * @returns {*|jQuery}
+		 */
+		function opteratersForamt(value, rowData, rowIndex) {
+			var returnHtml = $("<span/>");
+			if($scope.$hasAuth("06020105")){
+				var editBtn = $("<a  title='编辑' class='button-edit'></a>");
+				editBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-edit-solid"
+				});
+				editBtn.attr('cy-click', "editDevice('" + rowIndex + "')");
+				returnHtml.append(editBtn).append("  ");
+			}
+			if($scope.$hasAuth("06020102")){
+				var deleteBtn = $("<a  title='删除' class='button-remove'></a>");
+				deleteBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-remove-solid"
+				}).attr('cy-click', "deleteDevice('" + rowIndex + "')");
+				returnHtml.append(deleteBtn).append("  ");
+			}
+			if($scope.$hasAuth("06020104")){
+				var breakBtn = $("<a  title='报废' class='button-drop'></a>");
+				breakBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-drop-solid"
+				}).attr('cy-click', "breakDevice('" + rowIndex + "')");
+				returnHtml.append(breakBtn);
+			}
+			return returnHtml.html();
+		}
+
+		/**
+		 * 查看图片
+		 */
+		$scope.lookPic = function(value, rowIndex, deviceId) {
+			if (value == "null") {
+				$.messager.alert("提示", "暂无实景图！");
+			} else {
+				//根据设备Id查询所有图片
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/photoInfoManage/queryPhotoByDeviceId",
+					params : {
+						deviceId : deviceId
+					},
+					success : function(data) {
+						var picUrl = [];
+						//该设备的所有图片数组
+						for (var i = 0; i < data.length; i++) {
+							var photo = "http://" + data[i].photo;
+							picUrl.push(photo);
+						}
+						$.fancybox.open(picUrl, {
+							helpers : {
+								thumbs : {
+									width : 75,
+									height : 50
+								}
+							}
+						});
+					},
+					error : function(errMsg) {
+						$.messager.alert("提示", "获取图片失败！");
+					}
+				});
+			}
+		};
+	}); 
+</script>
+<style>
+	#deviceSysMgr .td > input[class^='easyui-'] {
+		width: 150px;
+	}
+	#deviceSysMgr .searchPanel .td:nth-child(odd) {
+		margin-left: 15px;
+	}
+	#deviceSysMgr .deviceInfoTitle {
+		float: left;
+		text-align: right;
+		color: #888888;
+	}
+	#deviceSysMgr .locationInfoTitle {
+		float: left;
+		color: #888888;
+	}
+	#deviceSysMgr .statusTitle {
+		float: left;
+	}
+	#deviceSysMgr .title-width {
+		width: 110px;
+	}
+	#deviceSysMgr .title-margin {
+		margin-left: 25px;
+	}
+	#deviceSysMgr .online-status {
+		color: green;
+	}
+	#deviceSysMgr .offline-status {
+		color: silver;
+	}
+	#deviceSysMgr .fault-status {
+		color: red;
+	}
+	#deviceSysMgr .abnormal-status {
+		color: orange;
+	}
+	#deviceSysMgr .bug-status {
+		color: red;
+	}
+	#deviceSysMgr .other-status {
+		color: #0000ff;
+	}
+	#deviceStatusDiv .td:first-child {
+		margin-left: 15px;
+	}
+	#deviceSysMgr .no-use {
+		height: 46px;
+		width: 60px;
+		background: url('themes/default/images/device/no-use.png') no-repeat center center;
+	}
+	#deviceSysMgr .used {
+		height: 46px;
+		width: 60px;
+		background: url('themes/default/images/device/used.png') no-repeat center center;
+	}
+	#deviceSysMgr .stopped {
+		height: 46px;
+		width: 60px;
+		background: url('themes/default/images/device/stoped.png') no-repeat center center;
+	}
+	#deviceSysMgr .broked {
+		height: 46px;
+		width: 60px;
+		background: url('themes/default/images/device/broked.png') no-repeat center center;
+	}
+	#deviceSysMgr .icon-common {
+		height: 16px;
+		width: 16px;
+		margin: 0 auto;
+		height: 100%
+	}
+	#deviceSysMgr .online-icon {
+		background: url('themes/default/images/device/online.png') no-repeat center center;
+	}
+	#deviceSysMgr .heart-icon {
+		background: url('themes/default/images/device/heart.png') no-repeat center center;
+	}
+	#deviceSysMgr .timeCorrection-icon {
+		background: url('themes/default/images/device/timeCorrection.png') no-repeat center center;
+	}
+	#deviceSysMgr .backlog-icon {
+		background: url('themes/default/images/device/backlog.png') no-repeat center center;
+	}
+	#deviceSysMgr .latest-upload-time-icon {
+		background: url('themes/default/images/device/latest-upload-time.png') no-repeat center center;
+	}
+	#deviceSysMgr .bug-icon {
+		background: url('themes/default/images/device/bug.png') no-repeat center center;
+	}
+	#deviceSysMgr .snap-icon {
+		background: url('themes/default/images/device/snap.png') no-repeat center center;
+	}
+	#deviceSysMgr .timer-icon {
+		background: url('themes/default/images/device/timer.png') no-repeat center center;
+	}
+	#deviceSysMgr #data-view-area .td {
+		padding: 0px;
+		line-height: 20px;
+		height: 20px;
+	}
+</style>
+

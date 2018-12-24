@@ -1,0 +1,254 @@
+<style type="text/css">
+    body {
+        font: 12px/20px "微软雅黑", "宋体", Arial, sans-serif, Verdana, Tahoma;
+        padding: 0;
+        margin: 0;
+    }
+
+    fieldset {
+        border: #ddd solid 1px;
+        padding: 0px 10px 0px 10px;
+        margin-bottom: 10px;
+    }
+
+    fieldset legend {
+        color: #2A6496;
+        font-size: 12px;
+        background: #fff;
+        border-bottom: 0px;
+        width: auto;
+        margin-bottom: 0px;
+    }
+</style>
+<div class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData" id="fcomboInfo">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        &nbsp;&nbsp;&nbsp;所属机构:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-combotree" id="orgCode" name="orgCode" data-options="" panelHeight="auto"
+                                style="width:150px">
+                        </div>
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        维护厂家:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-combobox" id="devComp" name="devComp"
+                               data-options="valueField:'id',textField:'text'"
+                               style="width:150px"/></div>
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        分派时间:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-datetimebox" style="width:150px"></div>
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        至:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <input class="easyui-datetimebox" style="width:150px">
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        维护单状态:
+                    </div>
+                    <div class="td" style="width: 150px; text-align: left;padding-left: 5px">
+                        <input type="checkbox" name="checkbox" checked="true" value="checkbox1">
+                        已分派
+                        <input type="checkbox" name="checkbox" checked="true" value="checkbox2">
+                        未分派
+                    </div>
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        维护结论:
+                    </div>
+                    <div class="td" style="text-align: left;padding-left: 5px">
+                        <input type="checkbox" name="checkbox" value="checkbox1">
+                        已解决
+                        <input type="checkbox" name="checkbox" checked="true" value="checkbox2">
+                        未解决
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-search" style="width:60px" iconCls="icon-search"
+                           cy-click="searchData">查询</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add',plain:true"
+                           cy-click="addData">新增</a>
+                    </div>
+<!--                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-edit"
+                           data-options="iconCls:'icon-edit',plain:true"
+                           cy-click="addData">修改</a>
+                    </div>-->
+                    <div class="td" style="padding-left: 5px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton button-drop"
+                           data-options="iconCls:'icon-clear',plain:true"
+                           cy-click="regInfo">删除</a>
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        <a class="easyui-linkbutton button-enable" style="width:90px" cy-click="maintenance">分派维护单</a>
+                    </div>
+                </div>
+            </div>
+    </form>
+        </div>
+    <div data-options="region:'center',border:true">
+        <table cy-datagrid="options" id="dgv"  cy-querydata="formData" cy-url="data/deviceManage/maintenancedata.json">
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        //给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+        var sysCodeDic = [];
+        //查询数据
+        $scope.$ajaxRequest({
+            url: "data/deviceManage/chooseInit.json",
+            params: { OrgCode: $scope.UserInfo.OrgCode },
+            success: function (retData) {
+                sysCodeDic = retData.dicts;
+                $scope.$('#devComp').combobox('loadData', sysCodeDic["T_DIC_COMP"]);
+                $scope.$("#orgCode").combotree("loadData", retData.district_tree);
+                $scope.$('.easyui-datetimebox').datetimebox('setValue', new Date().format("yyyy-MM-dd hh:mm:ss"));
+            },
+            fail: function (errTxt) {
+                alert(errTxt);
+            }
+        });
+        $.extend($scope, {
+            formData: {
+                /*                username: "admin1231312",
+                 password: "123456",
+                 combo: 4,
+                 code: 1234*/
+            },
+            changeData: function (value) {
+                return value = value + 1;
+            },
+            searchData: function () {
+                $scope.$search("formData", {
+
+                }, function (data) {
+
+                });
+            },
+            options: {
+                columns: [
+                    [//注意，此处是二维数组
+                        {field: 'id', checkbox: true},
+                        {title: "维护单号", field: "MAINTENANCE_NBR", width: 10},
+                        {title: "维护厂家", field: "MAINTENANCE_COMPANY", width: 10},
+                        {title: "联系方式", field: "PHONE_NBR", width: 10},
+                        {title: "维护单状态", field: "STATUS", width: 10},
+                        {title: "分派时间", field: "CREATE_TIME", width: 10},
+                        {title: "要求完成时间", field: "FINISH_TIME", width: 10},
+                        {title: "维护结论", field: "MAINTENDANCE_RESULT", width: 10},
+                        {title: "解决方法", field: "SOLUTION", width: 10},
+                        {title: "解决时间", field: "SOLUTION_TIME", width: 10}
+                    ]
+                ],
+                onDblClickRow:function (rowIndex, rowData) {
+                    console.log(event.target);
+                    var paramData = {
+                        orgCode: "d",
+                        roadCode: "123456",
+                        faultType: 1
+                    }
+                    $scope.$setParam("paramData", rowData);
+                    $scope.$setParam("devComp",sysCodeDic["T_DIC_COMP"]);
+                    $scope.$setParam("close_maintenanceAssign", close_maintenanceAssign);
+                    if(rowData.STATUS == "未分派") {
+                        $scope.$openDialog("maintenanceAssign", {
+                            width: 800,
+                            height: 450,
+                            title: "分派维护单",
+                            href: "tpls/deviceManage/deviceMaintenance/maintenanceAssign[分派维护单详细].html"
+                        });
+                    }
+                    else
+                    {
+                        $scope.$openDialog("maintenanceAssign", {
+                            width: 800,
+                            height: 620,
+                            title: "分派维护单",
+                            href: "tpls/deviceManage/deviceMaintenance/maintenanceAssign[分派维护单详细].html"
+                        });
+                    }
+                }
+            },
+            addData: function (event) {
+                console.log(event.target);
+                var paramData = {
+                    orgCode: "d",
+                    roadCode: "123456",
+                    faultType: 1
+                }
+                $scope.$setParam("paramData", paramData);
+                $scope.$setParam("close_addMaintenance", close_addMaintenance);
+                $scope.$openDialog("addMaintenance", {
+                    width: 755,
+                    height: 450,
+                    title: "生成维护单",
+                    href: "tpls/deviceManage/deviceMaintenance/addMaintenance[新增维护单].html"
+                });
+            },
+            regInfo: function (event) {
+                var checkedRows = $scope.$('#dgv').datagrid('getChecked');
+                if($.isEmptyObject(checkedRows))
+                {
+                    console.log("您未选中任何记录");
+                }
+                else {
+                    //后台删除
+                    for (var i = 0; i < checkedRows.length; i++) {
+                        console.log(checkedRows[i].DEVICE_NAME);
+                    }
+                    //刷新列表
+                    $scope.searchData();
+                }
+            },
+            maintenance:function (event) {
+                console.log(event.target);
+                var paramData = {
+                    orgCode: "d",
+                    roadCode: "123456",
+                    faultType: 1
+                }
+                $scope.$setParam("paramData", paramData);
+                $scope.$setParam("close_maintenanceInfo", close_maintenanceInfo);
+                $scope.$openDialog("maintenanceInfo", {
+                    width: 400,
+                    height: 210,
+                    title: "分派维护单",
+                    href: "tpls/deviceManage/deviceMaintenance/maintenanceInfo[分派维护单].html"
+                });
+            }
+        });
+
+        function fmt(value) {
+            return 123;
+        }
+        function close_addMaintenance(){
+            $scope.$getDialog("addMaintenance").dialog("close");
+        }
+        function close_maintenanceInfo(){
+            $scope.$getDialog("maintenanceInfo").dialog("close");
+        }
+        function close_maintenanceAssign(){
+            $scope.$getDialog("maintenanceAssign").dialog("close");
+        }
+    }, function ($scope) {
+
+    });
+</script>
+<style>
+    #fcomboInfo .th{
+        width : 80px;
+        text-align:right;
+    }
+</style>

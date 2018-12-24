@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.SysGroupMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.SysGroup" >
+    <id column="ID_" property="id" jdbcType="OTHER" />
+    <result column="REV_" property="rev" jdbcType="DECIMAL" />
+    <result column="NAME_" property="name" jdbcType="OTHER" />
+    <result column="TYPE_" property="type" jdbcType="OTHER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID_, REV_, NAME_, TYPE_
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Object" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACT_ID_GROUP
+    where ID_ = #{id,jdbcType=OTHER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Object" >
+    delete from ACT_ID_GROUP
+    where ID_ = #{id,jdbcType=OTHER}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+    insert into ACT_ID_GROUP (ID_, REV_, NAME_, TYPE_
+      )
+    values (#{id,jdbcType=OTHER}, #{rev,jdbcType=DECIMAL}, #{name,jdbcType=OTHER}, #{type,jdbcType=OTHER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+    insert into ACT_ID_GROUP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID_,
+      </if>
+      <if test="rev != null" >
+        REV_,
+      </if>
+      <if test="name != null" >
+        NAME_,
+      </if>
+      <if test="type != null" >
+        TYPE_,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=OTHER},
+      </if>
+      <if test="rev != null" >
+        #{rev,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=OTHER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=OTHER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+    update ACT_ID_GROUP
+    <set >
+      <if test="rev != null" >
+        REV_ = #{rev,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        NAME_ = #{name,jdbcType=OTHER},
+      </if>
+      <if test="type != null" >
+        TYPE_ = #{type,jdbcType=OTHER},
+      </if>
+    </set>
+    where ID_ = #{id,jdbcType=OTHER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+    update ACT_ID_GROUP
+    set REV_ = #{rev,jdbcType=DECIMAL},
+      NAME_ = #{name,jdbcType=OTHER},
+      TYPE_ = #{type,jdbcType=OTHER}
+    where ID_ = #{id,jdbcType=OTHER}
+  </update>
+  <!-- <select id="querygroups" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+   select 
+    <include refid="Base_Column_List" />
+    from ACT_ID_GROUP
+    where 1 = 1
+    <if test="id != null and id !=''" >
+     and ID_ LIKE CONCAT(CONCAT('%', #{id,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="rev != null and rev !=''" >
+     and REV_ LIKE CONCAT(CONCAT('%', #{rev,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="name != null and name !=''" >
+     and NAME_ LIKE CONCAT(CONCAT('%', #{name,jdbcType=OTHER}),'%') 
+     </if>
+     <if test="type != null and type !=''" >
+     and TYPE_ LIKE CONCAT(CONCAT('%', #{type,jdbcType=OTHER}),'%') 
+     </if>
+  </select> -->
+  <select id="querygroups" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.SysGroup" >
+   select 
+    <include refid="Base_Column_List" />
+    from act_id_group where id_=#{id,jdbcType=VARCHAR}
+    <if test="name != null and name !=''" >
+     and name_ LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}),'%') 
+     </if>
+	UNION
+	select 
+	<include refid="Base_Column_List" />
+	 from act_id_group ag where  exists (select 1 from t_wf_group tg where tg.GROUP_PARENT_ID=#{id,jdbcType=VARCHAR} and ag.id_=tg.group_id 
+		 <if test="name != null and name !=''" >
+	     and ag.name_ LIKE CONCAT(CONCAT('%', #{name,jdbcType=VARCHAR}),'%') 
+	     </if>
+	 )
+  </select>
+</mapper>

@@ -1,0 +1,202 @@
+<div id="sectionflowchart" class="easyui-panel" data-options="fit:true" >
+    <div id="tt" class="easyui-tabs" >
+        <div title="上行速度" data-options="fit:true">
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="mainUp"  style="height:380px;padding:20px"></div>
+        </div>
+
+        <div title="下行速度" >
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="mainDown"  style="height:380px;padding:20px"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+
+    InitPage(["dmbmData"],function($scope){
+        //上行速度数组
+        var upDataSpeed=[];
+        //上行车头时距数组
+        var upDataCtsj=[];
+        //下行速度数组
+        var downDataSpeed=[];
+        //下行车头时距
+        var downDataCtsj=[];
+        //时间横轴
+        var tims =['0:00','1:00','2:00','3:00','4:00','5:00','6:00','7:00','8:00','9:00','10:00','11:00',
+            '12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'];
+
+        var optionUp,optionDown;
+        //页面登录时调用初始化方法
+        $scope.load = function(){
+            //$scope.initData();
+            initData();
+        };
+        //定义echarts入口
+       function initData(){
+           require.config({
+               paths: {
+                   echarts: 'frameworks/echarts/js'
+               }
+           });
+           require(
+                   [
+                       'echarts',
+                       'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                       'echarts/chart/bar'
+                   ],
+                   function (ec) {
+                       showEcharts(ec,$scope.$("#mainUp").get(0));
+                   }
+           );
+       }
+        //读取Json数据初始化echarts
+        function showEcharts(ec,dom){
+           var myChart = ec.init(dom);
+           $scope.$ajaxRequest({
+               url : "data/trafficMonitor/trafficState/section-flow-history.json",
+               success : function(data) {
+                   var dataByDmbm=[];
+                   //根据断面代码过滤数据
+                   for(var index in data){
+                       if(data[index].dmbm==$scope.dmbmData.dmbm){
+                           dataByDmbm.push(data[index]);
+                       }
+                   }
+                   //填充速度及车头时距数组
+                   if(dataByDmbm.length>0){
+                       for(var tim in tims){
+                           var ishave=false;
+                           for(var ind in dataByDmbm){
+                               if(dataByDmbm[ind].gxsj==tims[tim]){
+                                   upDataSpeed.push(parseFloat(dataByDmbm[ind].speed));
+                                   upDataCtsj.push(parseFloat(dataByDmbm[ind].ctsj));
+                                   downDataSpeed.push(parseFloat(dataByDmbm[ind].speedx));
+                                   downDataCtsj.push(parseFloat(dataByDmbm[ind].ctsjx));
+                                   ishave=true;
+                               }
+                           }
+                           if(!ishave){
+                               upDataSpeed.push("-");
+                               upDataCtsj.push("-");
+                               downDataSpeed.push("-");
+                               downDataCtsj.push("-");
+                           }
+                       }
+                   }
+                   //上行折线图的配置
+                   myChart.setOption(getOptions(upDataSpeed));
+               }
+           });
+       }
+        //根据速度值配置echarts折线图的参数配置
+        function getOptions(speedData){
+            return {
+                title : {
+                    text: '24小时平均速度变化' //subtext: '纯属虚构'
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['当前速度','历史同期速度']
+                },
+                toolbox: {
+                    show : true,
+                            feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                        xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    data : tims
+                }
+            ],
+                    yAxis : [
+                {
+                    type : 'value',
+                    axisLabel : {
+                        formatter: '{value} km/h'
+                    },
+                    splitArea : {
+                        show: true,
+                        areaStyle:{
+                            color:[
+                                'green',
+                                'red',
+                                'yellow',
+                                'green',
+                                'green'
+                                ]
+
+                        }
+                    }
+                }
+            ],
+                    series : [
+                        {
+                            name:'当前速度',
+                            type:'line',
+                            data:speedData,//[40,50,80,50,40,60, 60, 23, 31, 40, 72, 60,40,30,'-','-','-','-','-','-','-','-','-','-'],
+                            markPoint : {
+                                data : [
+                                    {type : 'max', name: '最大值'},
+                                    {type : 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine : {
+                                data : [
+                                    {type : 'average', name : '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                    name:'历史同期速度',
+                    type:'line',
+                    data:[60, 60, 60, 65, 75, 72, 60,40,20,30,40,50,50,30,50,40,30,10,20,40,50,60,70,75],
+                    markPoint : {
+                        data : [
+                            // {type : 'max', name: '最大值'},
+                            // {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            //{type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+            };
+        }
+        //根据tab变化显示上行或者下行折线图
+        $scope.$('#tt').tabs({
+            border:false,
+            onSelect:function(title){
+                if(title == "上行速度"){
+                    var myChartDown = require('echarts').init($scope.$("#mainUp").get(0));
+                    myChartDown.setOption(getOptions(upDataSpeed));
+                }else{
+                    var myChartDown = require('echarts').init($scope.$("#mainDown").get(0));
+                    myChartDown.setOption(getOptions(downDataSpeed));
+                }
+            }
+        });
+    });
+</script>
+
+<style type="text/css">
+
+
+</style>

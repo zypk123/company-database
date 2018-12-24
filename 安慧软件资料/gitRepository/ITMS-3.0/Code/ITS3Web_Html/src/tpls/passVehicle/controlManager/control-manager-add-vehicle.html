@@ -1,0 +1,104 @@
+<div class="easyui-layout" id="control-manager-add-vehicle">
+	<div data-options="region:'center',border:false">
+		<form cy-form="vehData">
+			<div class="table">
+				<div class="tr">
+					<div class="th">号牌号码：</div>
+					<div class="td">
+						<input name="plateNumber" id="plateNumber" class="cy-vehNumberbox" data-options="required:true">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">号牌种类：</div>
+					<div class="td">
+						<input name="plateType" id="plateType" class="easyui-combobox">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">车辆品牌：</div>
+					<div class="td">
+						<input name="vehBrand" id="vehBrand" class="cy-brandbox">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">车身颜色：</div>
+					<div class="td">
+						<input name="vehColor" id="vehColor"  class="easyui-combobox">
+					</div>
+				</div>
+			</div>
+		<form>
+	</div>
+	<div data-options="region:'south',border:false,height:50">
+		<div class="linkbutton_toolbar" style="text-align:center;">
+			<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="addNew(true)">添加</a>
+			<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="addNew(false)">添加并继续</a>
+			<a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	/**
+	 * addVehicle  添加车辆方法
+	 */
+	InitPage(["addVehicle","dicts"],function($scope){		
+		
+		/**
+		 * 初始化方法
+		 * @return {[type]} [description]
+		 */
+		$scope.load = function(){
+			//根据父页面你传来的数据字典，填充选项
+			initCombobox();
+		};
+
+		/**
+		 * 初始化选项
+		 */
+		var initCombobox = function(){
+			$scope.$("#plateType").combobox("loadData",$scope.dicts["002"]);
+			$scope.$("#vehColor").combobox("loadData",$scope.dicts["006"]);
+		};
+		/**
+		 * 保存添加的记录
+		 */
+		$scope.addNew = function(closeSelf){
+			//更新表单数据
+			$scope.$updateData("vehData");
+			//执行父页面的添加方法，并将表单数据作为参数传递之
+			$scope.addVehicle($scope.vehData);
+			if(closeSelf){
+				//关闭页面
+				$scope.$destroySelf();
+			}else{
+				//清空页面数据
+				clearData()
+			}
+		};
+
+		/**
+		 * 清空数据方法
+		 */
+		function clearData(){
+			//清空form绑定的数据
+			for(var index in $scope.vehData){
+				$scope.vehData[index] = null;
+			}
+			//更新表单中的值
+			$scope.$updateDom("vehData");
+		}
+	})
+</script>
+<style>
+	#control-manager-add-vehicle .th{
+		text-align: right;
+		width: 100px;
+		height: 40px;
+		line-height: 40px;
+	}
+	#control-manager-add-vehicle .td{
+		width: 170px;
+		height: 40px;
+		line-height: 40px;
+	}
+</style>

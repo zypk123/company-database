@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SurveySysMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.SurveySys">
+		<id column="SURVEY_SYSTEM_ID" property="surveySystemId" jdbcType="VARCHAR" />
+		<result column="SURVEY_SYSTEM_NAME" property="surveySystemName"
+			jdbcType="VARCHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SURVEY_SYSTEM_ID, SURVEY_SYSTEM_NAME, ORG_ID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_SURVEY_SYS
+		where SURVEY_SYSTEM_ID =
+		#{surveySystemId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_DEVICE_SURVEY_SYS
+		where SURVEY_SYSTEM_ID =
+		#{surveySystemId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.SurveySys">
+		insert into
+		T_DEVICE_SURVEY_SYS (SURVEY_SYSTEM_ID, SURVEY_SYSTEM_NAME,
+		ORG_ID)
+		values (#{surveySystemId,jdbcType=VARCHAR},
+		#{surveySystemName,jdbcType=VARCHAR},
+		#{orgId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.SurveySys">
+		insert into T_DEVICE_SURVEY_SYS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="surveySystemId != null">
+				SURVEY_SYSTEM_ID,
+			</if>
+			<if test="surveySystemName != null">
+				SURVEY_SYSTEM_NAME,
+			</if>
+			<if test="orgId != null">
+				ORG_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="surveySystemId != null">
+				#{surveySystemId,jdbcType=VARCHAR},
+			</if>
+			<if test="surveySystemName != null">
+				#{surveySystemName,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				#{orgId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.SurveySys">
+		update T_DEVICE_SURVEY_SYS
+		<set>
+			<if test="surveySystemName != null">
+				SURVEY_SYSTEM_NAME =
+				#{surveySystemName,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				ORG_ID = #{orgId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.SurveySys">
+		update
+		T_DEVICE_SURVEY_SYS
+		set SURVEY_SYSTEM_NAME =
+		#{surveySystemName,jdbcType=VARCHAR},
+		ORG_ID =
+		#{orgId,jdbcType=VARCHAR}
+		where SURVEY_SYSTEM_ID =
+		#{surveySystemId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectSurveySyses" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (SELECT U.*, ROWNUM RN
+		FROM T_DEVICE_SURVEY_SYS U
+		<where>
+			<if test="surveySystemName != null and surveySystemName != '' ">
+				AND SURVEY_SYSTEM_NAME like
+				'%'||#{surveySystemName,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+				AND ORG_ID IN (SELECT O.ORG_ID
+                      FROM T_SYS_ORG O
+                     WHERE O.ORG_PRIVILEGE_CODE LIKE 
+                           #{orgPrivilegeCode,jdbcType=VARCHAR}||'%')
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countSurveySystems" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_DEVICE_SURVEY_SYS
+		<where>
+			<if test="surveySystemName != null and surveySystemName != '' ">
+				AND SURVEY_SYSTEM_NAME like
+				'%'||#{surveySystemName,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+				AND ORG_ID IN (SELECT O.ORG_ID
+                      FROM T_SYS_ORG O
+                     WHERE O.ORG_PRIVILEGE_CODE LIKE 
+                           #{orgPrivilegeCode,jdbcType=VARCHAR}||'%')
+			</if>
+		</where>
+	</select>
+</mapper>

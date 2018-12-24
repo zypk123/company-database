@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.vehTrack.mybatis.client.CloneCarMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.vehTrack.mybatis.model.CloneCar" >
+    <id column="CLONE_VEHICLE_ID" property="cloneVehicleId" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_COLOR" property="vehicleColor" jdbcType="VARCHAR" />
+    <result column="REGISTER_VEHICLE_BRAND" property="registerVehicleBrand" jdbcType="VARCHAR" />
+    <result column="REGISTER_VEHICLE_COLOR" property="registerVehicleColor" jdbcType="VARCHAR" />
+    <result column="DEVICE_NBR1" property="deviceNbr1" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR1" property="snapNbr1" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR1" property="plateColor1" jdbcType="VARCHAR" />
+    <result column="SITE_CODE1" property="siteCode1" jdbcType="VARCHAR" />
+    <result column="PASS_TIME1" property="passTime1" jdbcType="TIMESTAMP" />
+    <result column="DEVICE_NBR2" property="deviceNbr2" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR2" property="snapNbr2" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR2" property="plateColor2" jdbcType="VARCHAR" />
+    <result column="PASS_TIME2" property="passTime2" jdbcType="TIMESTAMP" />
+    <result column="SITE_CODE2" property="siteCode2" jdbcType="VARCHAR" />
+    <result column="BETWEEN_DISTANCE" property="betweenDistance" jdbcType="FLOAT" />
+    <result column="COUNT_FORM" property="countForm" jdbcType="CHAR" />
+    <result column="CONFIRM_REASON" property="confirmReason" jdbcType="VARCHAR" />
+    <result column="CLONE_FLAG" property="cloneFlag" jdbcType="CHAR" />
+    <result column="CONFIRM_DESC" property="confirmDesc" jdbcType="VARCHAR" />
+    <result column="CONFIRMOR" property="confirmor" jdbcType="VARCHAR" />
+    <result column="CONFIRM_TIME" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="VEHICLE_TYPE" property="vehicleType" jdbcType="VARCHAR" />
+    <result column="REGISTER_VEHICLE_TYPE" property="registerVehicleType" jdbcType="VARCHAR" />
+    <result column="REGISTER_PLATE_COLOR" property="registerPlateColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_SHAPE" property="vehicleShape" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL1" property="imageUrl1" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL2" property="imageUrl2" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CLONE_VEHICLE_ID, PLATE_NBR, PLATE_COLOR, VEHICLE_BRAND, VEHICLE_COLOR, REGISTER_VEHICLE_BRAND, 
+    REGISTER_VEHICLE_COLOR, DEVICE_NBR1, SNAP_NBR1, PLATE_COLOR1, SITE_CODE1, PASS_TIME1, 
+    DEVICE_NBR2, SNAP_NBR2, PLATE_COLOR2, PASS_TIME2, SITE_CODE2, BETWEEN_DISTANCE, COUNT_FORM, 
+    CONFIRM_REASON, CLONE_FLAG, CONFIRM_DESC, CONFIRMOR, CONFIRM_TIME, CREATE_TIME, VEHICLE_TYPE, 
+    REGISTER_VEHICLE_TYPE, REGISTER_PLATE_COLOR, VEHICLE_SHAPE, IMAGE_URL1, IMAGE_URL2, 
+    PLATE_TYPE, ORG_AUTHORITY_CODE
+  </sql>
+  
+  <select id="findCloneCarInfor" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VEHTRACK_CLONE_VEHICLE
+    where 
+  	<if test="startTime != null and startTime != ''" >
+  		 PASS_TIME2 &gt; to_date(#{startTime},'yyyy-mm-dd-hh24:mi:ss') 
+  	</if> 
+  	<if test="endTime != null and endTime != ''" >
+  	 and PASS_TIME2 &lt;=  to_date(#{endTime},'yyyy-mm-dd-hh24:mi:ss')
+  	 </if>
+  	<if test="plate_nbr != '' and plate_nbr != null">
+  		and PLATE_NBR like '%'|| #{plate_nbr,jdbcType=VARCHAR} || '%'
+  	</if>
+  	<if test="clone_flag != null" >
+  		and CLONE_FLAG in
+  		<foreach item="item" index="index" collection="clone_flag" 
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  </select>
+  
+	<update id="updateConfirmFlag" parameterType="java.util.Map">
+  	update T_VEHTRACK_CLONE_VEHICLE
+    set CLONE_FLAG = #{clone_flag,jdbcType=VARCHAR},
+    CONFIRMOR = #{confirmor,jdbcType=VARCHAR},
+    CONFIRM_TIME = #{confirm_time,jdbcType=DATE}
+    <if test ="confirm_desc != null and confirm_desc !=''" >
+    , CONFIRM_DESC = #{confirm_desc,jdbcType=VARCHAR}
+    </if>
+    where CLONE_VEHICLE_ID = #{clone_vehicle_id,jdbcType=VARCHAR}
+  </update>
+</mapper>

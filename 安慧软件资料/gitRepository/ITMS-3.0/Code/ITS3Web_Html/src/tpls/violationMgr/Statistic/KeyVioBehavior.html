@@ -1,0 +1,319 @@
+﻿<!--$(function () {
+    $('#container').highcharts({                   //图表展示容器，与div的id保持一致
+        chart: {
+            type: 'column'                         //指定图表的类型，默认是折线图（line）
+        },
+        title: {
+            text: '各重点违法行为分布图'      //指定图表标题
+        },
+        xAxis: {
+            categories: ['合肥市交警支队', '芜湖市交警支队', '铜陵市交警支队', '六安市交警支队', '淮南市交警支队']   //指定x轴分组
+            , labels: {
+                rotation: -45,
+                align: 'right',
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: '违法数'                  //指定y轴的标题
+            }
+        },
+        credits: {
+            enabled: false,                    // 默认值，如果想去掉版权信息，设置为false即可
+            text: '安徽超远信息技术有限公司',               // 显示的文字
+            href: 'http://www.cychina.cn/',   // 链接地址
+            position: {                          // 位置设置
+                align: 'left',
+                x: 400,
+                verticalAlign: 'bottom',
+                y: -10
+            },
+            style: {                            // 样式设置
+                cursor: 'pointer',
+                color: 'silver',
+                fontSize: '5px'
+            }
+        },
+        series: [
+            {                                 //指定数据列
+                name: '超高速',                          //数据列名
+                data: [1, 0, 4, 7, 6]                        //数据
+                /*  dataLabels: {
+                 enabled: true,
+                 rotation: -90,
+                 color: '#FFFFFF',
+                 align: 'right',
+                 x: 4,
+                 y: 10,
+                 style: {
+                 fontSize: '9px',
+                 fontFamily: 'Verdana, sans-serif',
+                 textShadow: '0 0 3px black'
+                 }
+                 }*/
+            },
+            {
+                name: '酒后驾驶',
+                data: [1, 7, 3, 6, 9]
+            },
+            {
+                name: '超速',
+                data: [3, 8, 6, 6, 7]
+            },
+            {
+                name: '超载',
+                data: [1, 5, 6, 4, 8]
+            },
+            {
+                name: '疲劳驾驶',
+                data: [1, 2, 2, 6, 7]
+            },
+            {
+                name: '不按规定使用灯光',
+                data: [3, 2, 1, 2, 9]
+            },
+            {
+                name: '病车上路',
+                data: [2, 4, 6, 3, 9]
+            },
+            {
+                name: '危化品车',
+                data: [2, 4, 6, 3, 9]
+            },
+            {
+                name: '红眼客车',
+                data: [2, 4, 6, 3, 9]
+            },
+            {
+                type: 'spline',
+                name: '合计',
+                data: [13, 12, 13, 16, 3],
+                marker: {
+                    lineWidth: 2,
+                    lineColor: Highcharts.getOptions().colors[8],
+                    fillColor: 'white'
+                }
+            },
+            {
+                type: 'pie',
+                name: '合计',
+                data: [
+                    {
+                        name: '酒后驾驶',
+                        y: 63,
+                        color: Highcharts.getOptions().colors[0] // Jane's color
+                    },
+                    {
+                        name: '超速',
+                        y: 43,
+                        color: Highcharts.getOptions().colors[1] // John's color
+                    },
+                    {
+                        name: '超载',
+                        y: 29,
+                        color: Highcharts.getOptions().colors[2] // Joe's color
+                    },
+                    {
+                        name: '疲劳驾驶',
+                        y: 70,
+                        color: Highcharts.getOptions().colors[3] // Jane's color
+                    },
+                    {
+                        name: '不按规定使用灯光',
+                        y: 64,
+                        color: Highcharts.getOptions().colors[4] // John's color
+                    },
+                    {
+                        name: '病车上路',
+                        y: 64,
+                        color: Highcharts.getOptions().colors[5] // John's color
+                    },
+                    {
+                        name: '危化品车',
+                        y: 64,
+                        color: Highcharts.getOptions().colors[6] // John's color
+                    },
+                    {
+                        name: '红眼客车',
+                        y: 64,
+                        color: Highcharts.getOptions().colors[7] // John's color
+                    }
+                ],
+                center: [20, 20],
+                size: 100,
+                showInLegend: false,
+                dataLabels: {
+                    enabled: false
+                }
+            }
+        ]
+    })
+});-->
+<div data-options="region:'north'">
+    <div id="stkeyviodiv" class="easyui-tabs" style="height:auto">
+        <div id="orgkeyviodiv" title="按机构" style="padding:10px">
+            <div data-options="region:'north'" style=" height: 100px">
+                <div class="toolbar" style="float:left;width:100%">
+                    <form class="searchForm" method="post">
+                        <div class="searchPanel">
+                            <div class="panel_title">查询条件</div>
+                            <div class="table">
+                                <div class="tr">
+                                    <div class="th">
+                                        采集机关：
+                                    </div>
+                                    <div class="td">
+                                        <select class="easyui-combotree" data-options="" style="width:150px"></select>
+                                    </div>
+                                    <div class="th">
+                                        违法类型：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-combobox" style="width:150px" name="language"
+                                               data-options="method:'get',valueField:'id',textField:'text',multiple:true,panelHeight:'auto'">
+                                    </div>
+                                    <div class="th">
+                                        违法时间：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                    <div class="th">
+                                        至：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="linkbutton_toolbar">
+                        <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="">统计</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="districtkeyviodiv" title="按区划" style="padding:10px">
+            <div data-options="region:'north'" style=" height: 100px">
+                <div class="toolbar" style="float:left;width:100%">
+                    <form class="searchForm" method="post">
+                        <div class="searchPanel">
+                            <div class="panel_title">查询条件</div>
+                            <div class="table">
+                                <div class="tr">
+                                    <div class="td" style="padding-left:5px">
+                                        行政区划：
+                                    </div>
+                                    <div class="th">
+                                        <select class="easyui-combotree" data-options="panelheight:'auto'" style="width:150px"></select>
+                                    </div>
+                                    <div class="td" style="padding-left:5px">
+                                        违法类型：
+                                    </div>
+                                    <div class="th">
+                                        <input class="easyui-combobox" style="width:150px" name="language"
+                                               data-options="method:'get',valueField:'id',textField:'text',multiple:true,panelHeight:'auto'">
+                                    </div>
+                                    <div class="td" style="padding-left:5px">
+                                        违法时间：
+                                    </div>
+                                    <div class="th">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                    <div class="td" style="padding-left:5px">
+                                        至：
+                                    </div>
+                                    <div class="th">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="linkbutton_toolbar">
+                        <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="">统计</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="roadkeyviodiv" title="按道路" style="padding:10px">
+            <div data-options="region:'north'" style=" height: 100px">
+                <div class="toolbar" style="float:left;width:100%">
+                    <form class="searchForm" method="post">
+                        <div class="searchPanel">
+                            <div class="panel_title">查询条件</div>
+                            <div class="table">
+                                <div class="tr">
+                                    <div class="th" style="padding-left:5px">
+                                        行政区划：
+                                    </div>
+                                    <div class="td">
+                                        <select class="easyui-combotree" data-options="panelheight:'auto'" style="width:150px"></select>
+                                    </div>
+                                    <div class="th" style="padding-left:5px">
+                                        道路类型：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-combobox" data-options="method:'get',valueField:'id',textField:'text',multiple:true" style="width:150px" />
+                                    </div>
+                                    <div class="th" style="padding-left:5px">
+                                        道路名称：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-combobox" data-options="method:'get',valueField:'id',textField:'text',multiple:true" style="width:150px" />
+                                    </div>
+                                    <div class="th" style="padding-left:5px">
+                                        违法类型：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-combobox" style="width:150px" name="language"
+                                               data-options="method:'get',valueField:'id',textField:'text',multiple:true,panelHeight:'auto'">
+                                    </div>
+                                </div>
+                                <div class="tr">
+                                    <div class="th" style="padding-left:5px">
+                                        违法时间：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                    <div class="th" style="padding-left:5px">
+                                    </div>
+                                    <div class="th" style="width:60px">
+                                        至：
+                                    </div>
+                                    <div class="td">
+                                        <input class="easyui-datebox" style="width:150px">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="linkbutton_toolbar">
+                        <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="">统计</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div data-options="region:'center'">
+    <table id="dgv_keyvio" class="easyui-datagrid" style="height:auto;" title=""
+           data-options="
+           fitColumns:true,
+           noHeader:true,
+           rownumbers:true,
+           pagination:true,
+           showFooter:true,
+           singleSelect:true
+           "></table>
+</div>
+<div id="keychart" data-options="region:'south'" style=" height: 400px">
+    <div id="container" title="">
+    </div>
+</div>

@@ -1,0 +1,245 @@
+<style>
+.ahref{
+	margin-left:10px;
+	margin-bottom:8px;
+}
+.frons{
+font-size: 13px;
+font-family:'"Microsoft YaHei" ! important;
+color:#333333;
+width:130px;
+}
+</style>
+<div ng-controller="checkApproveController">
+	<div>
+
+	     <table class="table table-striped">
+	        <thead style='font-size: 14px;font-family:'"Microsoft YaHei" ! important;color:#333333'>
+		      <tr>
+		      	 <th>任务ID</th>
+		         <th>任务名称</th>
+		         <th>任务时间</th>
+		         <th>操作</th>
+		      </tr>
+		    </thead>
+		      <tr ng-repeat="item in items" style='font-size: 13px;font-family:'"Microsoft YaHei" ! important;color:#333333'>
+		         <td>
+		              {{item.queryValue1}}
+				 </td>
+				 <td>
+		              {{item.queryValue2}}
+				 </td>
+				  <td>
+		              {{item.queryValue3}}
+				 </td>
+				 <td>
+		             <button type="submit" class="btn btn-info" ng-click='tackClaim(item.queryValue1,item.queryValue4,item.queryValue5)'>审批</button>
+				 </td>
+		      </tr>
+		</table>
+	</div>
+ </div>
+ <div>
+      <script type="text/ng-template" id="examine" >
+ 		 <div style="width:100%; height:2px;border-top:1px dashed #999999; clear:both;margin-top:5px;"></div>
+		  <table class="table table-striped">
+				<thead style='font-size: 14px;font-family:'"Microsoft YaHei" ! important;color:#333333'>
+		      <tr>
+		      	 <th>审批人</th>
+		         <th>审批结果</th>
+		         <th>审批意见</th>
+		         <th>审批时间</th>
+		      </tr>
+		    </thead>
+ 			 <tr ng-repeat="node in records" style='font-size: 13px;font-family:'"Microsoft YaHei" ! important;color:#333333'>
+				<td>{{node.approvalUser}}</td><td>{{node.approvalResult}}</td>
+				<td>{{node.approvalComments}}</td><td>{{node.approvalTime}}</td>
+			 </tr>
+		   </table>
+           <table style="width:100%;">
+  			       <tr>
+		                <td style='width:40%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">申请单位&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.unitName}}"  disabled> </input>
+		        			</div>
+						</td>
+						<td style='width:30%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">&nbsp;申&nbsp;请&nbsp;人&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.contacts}}"  disabled> </input>
+		        			</div></td>
+						<td style='width:30%'><span class='frons'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">申请时间&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.approveTime}}"  disabled> </input>
+		        			</div>
+						</td>
+				   </tr>
+				   <tr style='height: 6px;'></tr>
+					<tr>
+		                <td style='width:40%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">联系电话&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.phone}}"  disabled> </input>
+		        			</div>
+						</td>
+						<td style='width:30%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">申请内容&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value=" {{approveDevice.content}}"  disabled> </input>
+		        			</div></td>
+						<td style='width:30%'><span class='frons'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">申请类型&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.approveType}}"  disabled> </input>
+		        			</div>
+						</td>
+				   </tr>
+				  <tr style='height: 6px;'></tr>
+				  <tr>
+		                <td style='width:40%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">所属项目&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.approveSys}}"  disabled> </input>
+		        			</div>
+						</td>
+						<td  colspan='2' style='width:60%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">设备名称&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.deviceName}}"  disabled> </input>
+		        		</div></td>
+				   </tr>
+				   <tr style='height: 6px;'></tr>
+				   <tr>
+		                 <td colspan='3' style='width:100%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">位置满足&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.devicePosition}}"  disabled> </input>
+		        			</div>
+						</td>
+				   </tr>
+				   <tr style='height: 6px;' ng-show="approveDevice.approveType != '移动(移动点,车载)设备'"></tr>
+				   <tr ng-show="approveDevice.approveType != '移动(移动点,车载)设备'">
+		                <td style='width:40%' >
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">限速km/h&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.vehicleLimit}}(大),{{approveDevice.carLimit}}(小),{{approveDevice.otherLimit}}(其他)"  disabled> </input>
+		        			</div>
+						</td>
+						<td style='width:30%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">道路类型&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.roadType}}"  disabled> </input>
+		        		</div></td>
+						<td style='width:30%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">行政等级&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value=" {{approveDevice.roadLevel}}"  disabled> </input>
+		        		</div></td>
+				   </tr>
+				   <tr style='height: 6px;' ng-show="approveDevice.approveType != '移动(移动点,车载)设备'"></tr>
+				   <tr ng-show="approveDevice.approveType != '移动(移动点,车载)设备'">
+		                <td style='width:40%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">路面等级&nbsp;&nbsp;</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.pavementLevel}}"  disabled> </input>
+		        			</div>
+						</td>
+						<td style='width:30%'><span class='frons'>
+								<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">线形或地形</span>
+								<input type="text"
+								class="form-control" value="{{approveDevice.terrain}}"  disabled> </input>
+		        		</div></td>
+				    </tr>
+					<tr style='height: 6px;'></tr>
+					<tr>
+		                 <td colspan='3' style='width:100%'>
+							<div class="input-group" style="margin-left:10px;">
+		         				<span class="input-group-addon">设置理由&nbsp;&nbsp;</span>
+								<textarea name="reason" ng-model="approveDevice.reason"
+								class="form-control" rows="1" disabled></textarea>
+		        			</div>
+						</td>
+				   </tr>
+				   <tr style='height: 6px;'></tr>
+		</table>
+		<table>
+		    <tr>
+	         <td ng-show="approveDevice.approveType != '移动(移动点,车载)设备'"  style='text-align:center' >
+	            <div  style='margin-left:10px;width:440px;height:200px;border:1px dashed #999999;display:flex;'>
+	             	<div style='width:440px;height:200px;border-left:1px dashed #999999;'>
+					    <uib-carousel active="active" interval="myInterval" no-wrap="noWrapSlides">
+					      <uib-slide ng-repeat="slide in slides track by slide.id" index="slide.id">
+					        <img ng-src="{{slide.image}}" style="width:480px;height:200px;">
+					        <div class="carousel-caption">
+					          <h4>道路概况图 {{slide.id}}</h4>
+					          <p>{{slide.text}}</p>
+					        </div>
+					      </uib-slide>
+					    </uib-carousel>
+	             	</div>
+		        </div>
+	         </td>
+	         <td style='text-align:center'>
+	                <div  style='margin-left:5px;width:440px;height:200px;border:1px dashed #999999;display:flex;'>
+	             	<div style='width:440px;height:200px;border-left:1px dashed #999999;position: relative;'>
+						<img id="img2" ng-src='{{signatureImgFile}}' style="width:99%;height:99%;"></img>
+						<span style="position: absolute;top:120;left:150;color:#FFFFFF;font-size:18">单位签章</span>
+	             	</div>
+		        </div>
+	         </td>
+	        </tr>
+			</table>
+			<table  style="width:100%;margin-top:5px;">
+	        <tr>
+	         <td>
+	             	<div class="input-group" style='width:99%; height:35px;'>
+						<span class="input-group-addon">技术方案</span>
+							<div style='display:flex; margin-top:15px;border-bottom:1px dashed #999999;'>
+							<div ng-repeat="solide in solides">
+								<a class='ahref'
+								href='{{solide.value}}'>{{solide.name}}</a>&nbsp;&nbsp;
+							</div>
+							</div>
+					</div>
+	         </td>
+			</tr>
+		  </table>
+		 <table style="width:100%;margin-top:5px;">
+ 			<tr>
+				<td style="width:25%">
+				  <div class="input-group">
+		           <span class="input-group-addon">审批结果：</span>
+		            <select name="result" ng-model="result"  ng-options="m.value as m.name for m in results"
+					 class="form-control" style="width:120px;" >
+		            </select>
+		          </div>
+				</td>
+				<td style="width:70%">
+					<div class="input-group" style="margin-left:10px;">
+		         	<span class="input-group-addon">审批意见：</span>
+		         	<textarea  name="reason" ng-model="reason"  class="form-control"  rows="1"></textarea>
+		        	</div>
+				</td>
+			</tr>
+		</table>
+			<div style="text-align:center;margin:5px;">
+				<button type="submit" class="btn btn-info" ng-click='chkApprove()'>提交</button>
+		    </div>
+      </script>
+ </div>

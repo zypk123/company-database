@@ -1,0 +1,73 @@
+<div class="easyui-layout" id="roadLane">
+	<form cy-form="formData" id="form">	
+		<div data-options="region:'north',border:true" style="height:40px;">
+			<div class="linkbutton_toolbar">
+				<a id="add" class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="add">添加</a>
+				<a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save" >确定</a>
+				<a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >关闭</a>
+			</div>
+		</div>
+		<div data-options="region:'center',border:true">
+			<div id="laneParent">
+			</div>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+    InitPage(["getLanes","lanes"], function($scope) {
+    	$scope.load = function(){
+    		if($scope.lanes != undefined && $scope.lanes.length != 0){
+				var i = 0;
+    			var interval = setInterval(function(){
+    				$scope.$setParam("formData",$scope.lanes[i]);
+    				$scope.add();
+    				if(++i == $scope.lanes.length){
+    					clearInterval(interval);
+    				}
+				},100);
+    		}else{
+    			$scope.add();
+    		}
+		};
+    	//添加车道;
+		$scope.add = function(){
+			var panel = $("<div></div>");
+			$scope.$("#laneParent").append(panel);
+			panel.panel({
+				href : "tpls/sysManagement/roadNetworkMessage/lane.html",
+				height : 118,
+				width : "97%",
+				title : false,
+				border: false
+			});
+			//删除车道
+			$scope.$setParam("removeLane",function(){
+				panel.panel("destroy");
+			});
+		};
+		//保存车道信息
+		$scope.save = function(){
+			if ($scope.$("#form").form("validate")) {
+				var lanes = [];//存放车道信息的数组
+				$scope.$("form .laneForm").each(function(){
+					var lane = $(this).getParams();//获取form表单对象
+					lanes.push(lane);
+				});
+				$scope.getLanes(lanes);
+				$scope.$closeSelf();
+			}
+		};
+    });
+</script>
+<style type="text/css">
+    #roadLane .th {
+        text-align: right;
+        width: 80px;
+    }
+    #roadLane .td{
+        height:auto;
+    }
+    #roadLane .td>input[class^='easyui-'] {
+        width: 130px;
+    }
+</style>

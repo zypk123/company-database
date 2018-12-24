@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.vehTrack.mybatis.client.VehtrackPassToVioMapper" >
+	<resultMap id="BaseResultMap" type="cy.its.vehTrack.mybatis.model.VehtrackPassToVio" >
+    <result column="VIO_SUSPECTED_ID" property="vioSuspectedId" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR" property="snapNbr" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="LANE" property="lane" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="VEHICLE_TYPE" property="vehicleType" jdbcType="VARCHAR" />
+    <result column="VEH_CHARCTER" property="vehCharcter" jdbcType="VARCHAR" />
+    <result column="DETECTION_TIME" property="detectionTime" jdbcType="TIMESTAMP" />
+    <result column="SPEED" property="speed" jdbcType="DECIMAL" />
+    <result column="IMAGE_URL_PATH" property="imageUrlPath" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL1" property="imageUrl1" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL2" property="imageUrl2" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL3" property="imageUrl3" jdbcType="VARCHAR" />
+    <result column="IDENTIFY_TYPE" property="identifyType" jdbcType="VARCHAR" />
+    <result column="VIO_CODE" property="vioCode" jdbcType="CHAR" />
+    <result column="CONFIRM_FLAG" property="confirmFlag" jdbcType="CHAR" />
+    <result column="IS_CHANGE_VIO" property="isChangeVio" jdbcType="CHAR" />
+    <result column="CONFIRM_TIME" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="CONFIRM_PERSON" property="confirmPerson" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="VEHICLE_SHAPE" property="vehicleShape" jdbcType="VARCHAR" />
+    <result column="VIO_SITE_CODE" property="vioSiteCode" jdbcType="VARCHAR" />
+    <result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_CODE" property="roadSectionCode" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="VEHICLE_COLOR" property="vehicleColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_SUB_BRAND" property="vehicleSubBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="CONFIRM_RESULT" property="confirmResult" jdbcType="VARCHAR" />
+    <result column="VIO_SUSPECTED_DESC" property="vioSuspectedDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="cy.its.vehTrack.mybatis.model.VehtrackPassToVio" extends="BaseResultMap" >
+   <result column="IDENTIFY_ACCORDANCE" property="identifyAccordance" jdbcType="CLOB" />
+  </resultMap>
+
+    <sql id="Base_Column_List" >
+    VIO_SUSPECTED_ID, SNAP_NBR, DEVICE_SYS_NBR, ORG_AUTHORITY_CODE, DIRECTION_TYPE, DIRECTION_NAME, 
+    LANE, PLATE_NBR, PLATE_COLOR, PLATE_TYPE, VEHICLE_TYPE, VEH_CHARCTER, DETECTION_TIME, 
+    SPEED, IMAGE_URL_PATH, IMAGE_URL1, IMAGE_URL2, IMAGE_URL3, IDENTIFY_TYPE, VIO_CODE, 
+    CONFIRM_FLAG, IS_CHANGE_VIO, CONFIRM_TIME, CONFIRM_PERSON, CREATE_TIME, VEHICLE_SHAPE, 
+    VIO_SITE_CODE, ROAD_CODE, ROAD_SECTION_CODE, DISTRICT_CODE, ORG_CODE, VEHICLE_COLOR, 
+    VEHICLE_SUB_BRAND, VEHICLE_BRAND, CONFIRM_RESULT, VIO_SUSPECTED_DESC
+  </sql>
+  <sql id="Blob_Column_List" >
+   IDENTIFY_ACCORDANCE
+  </sql>
+	<select id="selectVioList" resultMap="ResultMapWithBLOBs" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+       ,
+    <include refid="Blob_Column_List" />
+    from T_VEHTRACK_PASS_TO_VIO
+    where 
+  	<if test="startDateTime != null and startDateTime != ''" >
+  		 DETECTION_TIME &gt; to_date(#{startDateTime},'yyyy-mm-dd-hh24:mi:ss') 
+  	</if> 
+  	<if test="endDateTime != null and endDateTime != ''" >
+  	 and DETECTION_TIME &lt;=  to_date(#{endDateTime},'yyyy-mm-dd-hh24:mi:ss')
+  	 </if>
+  	 
+  	 <if test="orgAuthorityCode != null and orgAuthorityCode != ''" >
+  	 	and ORG_AUTHORITY_CODE like '%'|| #{orgAuthorityCode,jdbcType=VARCHAR} || '%'
+  	 </if>
+  	 
+  	 <if test="plateNbr != null and plateNbr !=''">
+		<if test="justNonlocalVeh != null and justNonlocalVeh !=''">
+		  <foreach item="item" index="index" collection="plateNbrs" >
+			and PLATE_NBR not like '%'|| #{item,jdbcType=VARCHAR} || '%'
+			</foreach>
+		</if>
+		<if test="justNonlocalVeh == null or justNonlocalVeh ==''">
+			and ( PLATE_NBR like
+			<foreach item="item" index="index" collection="plateNbrs" >
+			<if test="index == 0">
+			 '%'|| #{item,jdbcType=VARCHAR} || '%'
+			 </if>
+			 <if test="index != 0">
+  				or PLATE_NBR like '%'|| #{item,jdbcType=VARCHAR} || '%'
+  			</if>
+			</foreach>
+			)
+		</if>
+	</if>
+  	
+  	<if test="distritCodes != null and distritCodes !=''" >
+  		and ( DISTRICT_CODE like
+  		<foreach item="item" index="index" collection="distritCodes" >
+  		<if test="index == 0">
+  			'%'|| #{item,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="index != 0">
+  			or DISTRICT_CODE like '%'|| #{item,jdbcType=VARCHAR} || '%'
+  		</if>
+  		</foreach>
+  		)
+  	</if>
+  	<if test="roadCodes != null and roadCodes !=''" >
+  		and ROAD_CODE in
+  		<foreach item="item" index="index" collection="roadCodes" 
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  	<if test="identifyType != null and identifyType !=''" >
+  			and IDENTIFY_TYPE like '%'|| #{identifyType,jdbcType=VARCHAR} || '%'
+  	</if>
+  	<if test="confirmFlags != null and confirmFlags !=''" >
+  		and CONFIRM_FLAG in
+  		<foreach item="item" index="index" collection="confirmFlags" 
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  	order by CREATE_TIME desc,VIO_SUSPECTED_DESC
+  </select>
+  	<update id="updateByExampleSelective" parameterType="java.util.Map">
+  	update T_VEHTRACK_PASS_TO_VIO
+    set CONFIRM_FLAG = #{confirmFlag,jdbcType=VARCHAR},
+    CONFIRM_PERSON = #{confirmPerson,jdbcType=VARCHAR},
+    CONFIRM_TIME = #{confirmTime,jdbcType=DATE}
+    <if test ="confirmResult != null and confirmResult !=''" >
+    , CONFIRM_RESULT = #{confirmResult,jdbcType=VARCHAR}
+    </if>
+    where VIO_SUSPECTED_ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

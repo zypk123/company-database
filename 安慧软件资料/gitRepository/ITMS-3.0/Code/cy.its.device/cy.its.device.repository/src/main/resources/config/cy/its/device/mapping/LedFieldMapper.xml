@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.LedFieldMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.led.LedField" >
+    <id column="FIELD_ID" property="fieldId" jdbcType="VARCHAR" />
+    <result column="DATA_TYPE" property="dataType" jdbcType="VARCHAR" />
+    <result column="FILED_KEY" property="filedKey" jdbcType="VARCHAR" />
+    <result column="FIELD_NAME" property="fieldName" jdbcType="VARCHAR" />
+    <result column="FIELD_TYPE" property="fieldType" jdbcType="VARCHAR" />
+    <result column="FIELD_EXAMPLE_VALUE" property="fieldExampleValue" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FIELD_ID, DATA_TYPE, FILED_KEY, FIELD_NAME, FIELD_TYPE, FIELD_EXAMPLE_VALUE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_FIELD
+    where FIELD_ID = #{fieldId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED_FIELD
+    where FIELD_ID = #{fieldId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.led.LedField" >
+    insert into T_DEVICE_LED_FIELD (FIELD_ID, DATA_TYPE, FILED_KEY, 
+      FIELD_NAME, FIELD_TYPE, FIELD_EXAMPLE_VALUE
+      )
+    values (#{fieldId,jdbcType=VARCHAR}, #{dataType,jdbcType=VARCHAR}, #{filedKey,jdbcType=VARCHAR}, 
+      #{fieldName,jdbcType=VARCHAR}, #{fieldType,jdbcType=VARCHAR}, #{fieldExampleValue,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.led.LedField" >
+    insert into T_DEVICE_LED_FIELD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fieldId != null" >
+        FIELD_ID,
+      </if>
+      <if test="dataType != null" >
+        DATA_TYPE,
+      </if>
+      <if test="filedKey != null" >
+        FILED_KEY,
+      </if>
+      <if test="fieldName != null" >
+        FIELD_NAME,
+      </if>
+      <if test="fieldType != null" >
+        FIELD_TYPE,
+      </if>
+      <if test="fieldExampleValue != null" >
+        FIELD_EXAMPLE_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fieldId != null" >
+        #{fieldId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null" >
+        #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="filedKey != null" >
+        #{filedKey,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldName != null" >
+        #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldType != null" >
+        #{fieldType,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldExampleValue != null" >
+        #{fieldExampleValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.led.LedField" >
+    update T_DEVICE_LED_FIELD
+    <set >
+      <if test="dataType != null" >
+        DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="filedKey != null" >
+        FILED_KEY = #{filedKey,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldName != null" >
+        FIELD_NAME = #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldType != null" >
+        FIELD_TYPE = #{fieldType,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldExampleValue != null" >
+        FIELD_EXAMPLE_VALUE = #{fieldExampleValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where FIELD_ID = #{fieldId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.led.LedField" >
+    update T_DEVICE_LED_FIELD
+    set DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      FILED_KEY = #{filedKey,jdbcType=VARCHAR},
+      FIELD_NAME = #{fieldName,jdbcType=VARCHAR},
+      FIELD_TYPE = #{fieldType,jdbcType=VARCHAR},
+      FIELD_EXAMPLE_VALUE = #{fieldExampleValue,jdbcType=VARCHAR}
+    where FIELD_ID = #{fieldId,jdbcType=VARCHAR}
+  </update>
+    
+  <select id="selectAll" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_FIELD
+  </select>
+</mapper>

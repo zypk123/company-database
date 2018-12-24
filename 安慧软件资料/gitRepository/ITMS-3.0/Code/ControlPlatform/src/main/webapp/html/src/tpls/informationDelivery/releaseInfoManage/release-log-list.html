@@ -1,0 +1,240 @@
+<!--发布记录信息主页面 -->
+<div  class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="releaseInfo" class="table">
+					<div class="tr">
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td" >
+							<input  name="orgPrivilegeCode" class="cy-org-radio"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input  name="roadId"  class="cy-road-radio"/>
+						</div>
+						<div class="th">
+							诱导屏设备：
+						</div>
+						<div class="td">
+							<input  id="deviceSysId" name="deviceName" class="easyui-combobox" 
+							data-options="valueField:'id',textField:'text'"/>
+						</div>
+						<div class="th">
+							任务类型：
+						</div>
+						<div class="td">
+							<input name="taskType" class="easyui-combobox" cy-code='617'/>
+						</div>
+						<div class="td" style="width: 80px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							消息类型：
+						</div>
+						<div class="td">
+							<input  name="messageType" class="easyui-combobox" cy-code='611'/>
+						</div>
+						<div class="th">
+							发布时间：
+						</div>
+						<div class="td" style="width: 300px;">
+							<input id="start" name="publishTimeFrom" class="easyui-datetimebox" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']" />至
+							<input id="end" name="publishTimeTo" class="easyui-datetimebox" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"/>
+						</div>
+						<div class="th">
+							发布结果：
+						</div>
+						<div class="td" id="resultArr">
+							<input type="hidden" id="resultArrS" name="resultArrS">
+							<input  type="checkbox" value="2" name="resultArr" />下发成功
+							<input  type="checkbox" value="1" name="resultArr" />下发失败
+						</div>
+						<div class="th">
+							发布方式：
+						</div>
+						<div class="td" id="publishMethodArrId" style="width: 100px;">
+							<input type="hidden" id="publishMethodS" name="publishMethodS"/>
+							<input  type="checkbox" value="1" name="publishMethodArr" />手工
+							<input  type="checkbox" value="2" name="publishMethodArr" />自动
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dataGrid" cy-datagrid="options" cy-querydata="formData"
+		cy-url='/device/ledPublishLogAction/findLedPublishLogList'></table>
+	</div>
+
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['016','611','617','618','619']);
+		//初始化加载
+	 	$scope.load = function() {
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+			queryInducedScreen();
+			
+		 };
+			//查询诱导屏信息加载
+			function queryInducedScreen(){
+	        	$scope.$ajaxRequest({
+	                url:$scope.$restRoot+"/device/ledPublishLogAction/findLedPublishLogList",
+	                params:{},
+	                method:"post",
+	                success:function(data){
+	                    $scope.$("#deviceSysId").combobox("loadData",data.ydpData);
+	                },
+	                fail:function(errMsg){
+	                    $.messager.alert("提示","初始化诱导屏失败，请重新打开此页面！");
+	                }
+	            });
+       	  }
+	      $scope.$("#deviceSysId").combobox({
+	      	onSelect : function(value){
+	      		if(value.text=="请选择"){
+	      			$scope.$("#deviceSysId").textbox("setValue",null);
+	      		}
+	      	} 
+	      });
+          
+		$scope.$('#resultArr').click(function(){
+			var values="";
+			$scope.$("input[name='resultArr']:checked").each(function(){
+				values +=$(this).val()+",";
+			});
+			$scope.$('#resultArrS').val(values);
+		});
+		$scope.$('#publishMethodArrId').click(function(){
+			var publishMethodValue="";
+			$scope.$("input[name='publishMethodArr']:checked").each(function(){
+				publishMethodValue +=$(this).val()+",";
+			});
+			$scope.$('#publishMethodS').val(publishMethodValue);
+		});
+		$scope.searchData = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				var count = $scope.$("#dataGrid").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					$scope.$("#dataGrid").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("formData");
+				}
+			};
+		};
+		
+		//列表头部信息
+		$scope.options = {
+			
+			columns : [[{
+				field : 'Id',
+				checkbox : false,
+				align : 'center'
+			},{
+				field : 'publishMethod',
+				title : '发布方式',
+				align : 'center',
+				formatter : publishMethodOption,
+				width : 20
+			}, {
+				field : 'beginTime',
+				title : '发布时间',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'taskType',
+				title : '任务类型',
+				align : 'center',
+				formatter : taskTypeOption,
+				width : 20
+			}, {
+				field : 'messageType',
+				title : '消息类型',
+				align : 'center',
+				formatter : messageTypeOption,
+				width : 20
+			},{
+				field : 'deviceSysNbr',
+				title : '诱导屏设备',
+				align : 'center',
+				width : 25
+			},{
+				field : 'publishUser',
+				title : '发布者',
+				align : 'center',
+				width : 20
+			},{
+				field : 'result',
+				title : '发布结果',
+				align : 'center',
+				formatter : resultOption,
+				width : 20
+			},{
+				field : 'failureDesc',
+				title : '失败原因描述',
+				align : 'center',
+				width : 50
+			},{
+				field : 'progContent',
+				title : '发布内容',
+				align : 'center',
+				formatter : option,
+				width : 15
+			}]],
+			nowrap : false			
+		};
+		//任务类型Code转换名称 			
+		function taskTypeOption(value,row,index){
+			return $scope.$getCodeName("617",value);
+		}
+		//发布方式Code转换名称 	
+		function publishMethodOption(value){
+			return $scope.$getCodeName("618",value);
+		}	
+		//信息类型Code转换名称 
+		function messageTypeOption(value){
+			return $scope.$getCodeName("611",value);
+		}	
+		//发布结果Code转换名称 
+		function resultOption(value){
+			return $scope.$getCodeName("619",value);
+		}	
+		//操作栏按钮
+		function option(value, row, index) {
+			var button1 = $("<a class='button-detail' title='查看' cy-click='details(" + index + ")'></a>");
+			
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			
+			return $("<span/>").append(button1).html();
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#releaseInfo .th {
+		text-align: right;
+		width: 80px;
+	}
+	#releaseInfo .td {
+		width: 150px;
+	}
+	
+</style>

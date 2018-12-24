@@ -1,0 +1,2778 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">fixed layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">report/statistics-libs.rptlibrary</property>
+            <property name="namespace">statistics-libs</property>
+        </structure>
+    </list-property>
+    <parameters>
+        <scalar-parameter name="ORG_PRIVILEGE_CODE" id="1306">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="SITE_ID" id="1303">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="TIME_TYPE" id="1305">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="BEGIN_DATE" id="1301">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="END_DATE" id="1302">
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="birtds" id="1307"
+ extends="statistics-libs.birtds"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="FlowTrendDS" id="9">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">SITE_CODE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">SITE_CODE</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SITE_CODE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">SITE_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">SITE_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SITE_NAME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">DIRECTION_TYPE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">DIRECTION_TYPE</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">DIRECTION_TYPE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">DIRECTION_TYPE_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">DIRECTION_TYPE_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">DIRECTION_TYPE_NAME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">DIRECTION_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">DIRECTION_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">DIRECTION_NAME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">UPDATE_TIME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">UPDATE_TIME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">UPDATE_TIME</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">TOTAL_NUM</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">TOTAL_NUM</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">TOTAL_NUM</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">LARGE_NUM</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">LARGE_NUM</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">LARGE_NUM</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">SMALL_NUM</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">SMALL_NUM</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SMALL_NUM</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">OTHER_NUM</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">OTHER_NUM</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">OTHER_NUM</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">STATUS</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">STATUS</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">STATUS</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">SITE_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">SITE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">DIRECTION_TYPE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">DIRECTION_TYPE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">DIRECTION_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">UPDATE_TIME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">TOTAL_NUM</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">LARGE_NUM</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">SMALL_NUM</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">OTHER_NUM</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">STATUS</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );
+var orgPrivilegeCode = reportContext.getParameterValue("ORG_PRIVILEGE_CODE");  
+var siteId = reportContext.getParameterValue("SITE_ID");  
+var timeType = reportContext.getParameterValue("TIME_TYPE"); 
+var beginTime = reportContext.getParameterValue("BEGIN_DATE");  
+var endTime = reportContext.getParameterValue("END_DATE");
+var length = orgPrivilegeCode.length();
+var query = "with v_device_sys as (select t.device_id,t.section_id_list from T_DEVICE_SYS t where t.device_type = '01' "+
+" and substr(t.ORG_PRIVILEGE_CODE,0,"+length+") = '"+orgPrivilegeCode+"' ";
+if(siteId!= null &amp;&amp; !siteId.equals(""))
+ {
+ query = query + " and t.site_id in "+ 
+ " (select regexp_substr(siteId, '[^,]+', 1, rownum) as siteId "+
+   " from (select '"+ siteId +"' as siteId  from dual) connect by rownum <= length(siteId) - length(replace(siteId, ',')) + 1) ";
+ }
+ query += " ), "+
+ "v_device_section as (SELECT t.device_id,substr(t.ca,instr(t.ca, ',', 1, d.lv) + 1,instr(t.ca, ',', 1, d.lv + 1) -(instr(t.ca, ',', 1, d.lv) + 1)) AS section_id "+
+ "FROM (SELECT t.device_id,',' || t.section_id_list || ',' AS ca,length(t.section_id_list || ',') - nvl(length(REPLACE(t.section_id_list, ',')), 0) AS cnt FROM v_device_sys t) t, "+
+ "(select rownum lv from (select max(length(t.section_id_list || ',') - nvl(length(REPLACE(t.section_id_list, ',')), 0)) mlc FROM v_device_sys t) connect by level<=mlc)d "+      
+"WHERE d.lv <= t.cnt "+
+"ORDER BY t.device_id) ";
+if(timeType == 'D')
+{
+query += "select t.site_code, "+
+       "t.site_name, "+
+       "t.direction_type, "+
+       "t.direction_type_name, "+
+       "t.direction_name, "+
+       "t.hour_time||'时' as update_time, "+
+       "nvl(v.total_num,0) total_num, "+
+       "nvl(v.large_num,0) large_num, "+
+       "nvl(v.small_num,0) small_num, "+
+       "nvl(v.other_num,0) other_num, "+
+       "decode(r.device_id, NULL, 1, 2) as status  "+//1 正常 2 故障
+       "from(select t.device_id, "+
+       "t.section_id, "+
+       "v.site_code, "+
+       "v.site_name, "+
+       "v.direction_type, "+
+       "v.direction_type_name, "+
+       "v.direction_name, "+
+       "r.hour_time "+
+  "from v_device_section t, t_sys_section_view v,(select lpad(rownum-1,2,'0') as hour_time from dual connect by rownum<=24)r "+
+ "where t.section_id = v.section_id)t, "+
+ "(select t.site_code, "+
+       "t.direction_type,"+
+       "to_char(t.pass_time,'HH24')update_time, "+
+       "sum(t.num_flow) total_num, "+
+       "nvl(sum(decode(t.vehicle_type,'1',t.num_flow,'2',t.num_flow,0)),0) large_num, "+
+       "nvl(sum(decode(t.vehicle_type,'3',t.num_flow,0)),0) small_num, "+
+       "nvl(sum(decode(t.vehicle_type,'9',t.num_flow,0)),0) other_num "+
+  "from x_p_h_pass t "+
+   "where t.pass_time >= to_date('"+beginTime+"', 'yyyy-MM-dd') "+
+   "and t.pass_time < to_date('"+endTime+"', 'yyyy-MM-dd') + 1 "+
+   "and substr(t.org_authority_code,0,"+length+") = '"+orgPrivilegeCode+"' group by t.site_code,t.direction_type,to_char(t.pass_time,'HH24') )v, "+
+ "(select t.device_id, to_char(t.start_time,'HH24') start_time "+
+ "from x_d_d_unusual_time t "+
+ "where  t.device_id in(select t.device_id from v_device_sys t) "+
+   "and t.start_time >= to_date('"+beginTime+"', 'yyyy-MM-dd') "+
+   "and t.start_time < to_date('"+endTime+"', 'yyyy-MM-dd') + 1 )r "+
+   "where t.site_code = v.site_code(+) "+
+   "and t.direction_type = v.direction_type(+) "+
+   "and t.hour_time = v.update_time(+) "+
+   "and t.device_id = r.device_id(+) and t.hour_time = r.start_time(+) order by 1,3,6";
+}
+else if(timeType == 'W' || timeType == 'M')
+{
+query += "select t.site_code, "+
+       "t.site_name, "+
+       "t.direction_type, "+
+       "t.direction_type_name, "+
+       "t.direction_name, "+
+       "to_char(t.day_time,'yyyy-MM-dd\"日\"') as update_time, "+
+       "nvl(v.total_num,0) total_num, "+
+       "nvl(v.large_num,0) large_num, "+
+       "nvl(v.small_num,0) small_num, "+
+       "nvl(v.other_num,0) other_num, "+
+       "decode(r.device_id, NULL, 1, 2) as status  "+//1 正常 2 故障
+       "from(select t.device_id, "+
+       "t.section_id, "+
+       "v.site_code, "+
+       "v.site_name, "+
+       "v.direction_type, "+
+       "v.direction_type_name, "+
+       "v.direction_name, "+
+       "r.day_time "+
+  "from v_device_section t, t_sys_section_view v, "+
+  "(select to_date('"+beginTime+"','yyyy-MM-dd')+rownum-1 as day_time from dual connect by rownum<=to_date('"+endTime+"','yyyy-MM-dd')- to_date('"+beginTime+"','yyyy-MM-dd') + 1 )r "+
+ "where t.section_id = v.section_id)t, "+
+ "(select t.site_code, "+
+       "t.direction_type,"+
+       "trunc(t.pass_date) update_time, "+
+       "sum(t.pass_num) total_num, "+
+       "nvl(sum(decode(t.vehicle_type,'1',t.pass_num,'3',t.pass_num,0)),0) large_num, "+
+       "nvl(sum(decode(t.vehicle_type,'2',t.pass_num,0)),0) small_num, "+
+       "nvl(sum(decode(t.vehicle_type,'9',t.pass_num,0)),0) other_num "+
+  "from x_p_s_d_pass t "+
+   "where t.pass_date >= to_date('"+beginTime+"', 'yyyy-MM-dd') "+
+   "and t.pass_date < to_date('"+endTime+"', 'yyyy-MM-dd') + 1  "+
+   "and substr(t.org_authority_code,0,"+length+") = '"+orgPrivilegeCode+"' group by t.site_code,t.direction_type,trunc(t.pass_date) )v, "+
+ "(select t.device_id, trunc(t.start_time) start_time "+
+ "from x_d_m_unusual_time t "+
+ "where  t.device_id in(select t.device_id from v_device_sys t) "+
+   "and t.start_time >= to_date('"+beginTime+"', 'yyyy-MM-dd') "+
+   "and t.start_time < to_date('"+endTime+"', 'yyyy-MM-dd') + 1 )r "+
+   "where t.site_code = v.site_code(+) and t.direction_type=v.direction_type(+) and t.day_time = v.update_time(+) "+
+   "and t.device_id = r.device_id(+) and t.day_time = r.start_time(+) order by 1,3,6 ";
+}
+this.queryText = query;
+out = new PrintWriter(new FileWriter(Packages.cy.its.birt.report.servlet.GlobalProerty.loPath+"/debuginfo.txt", true ));  
+out.println("数据集名称：-->"+ "FlowTrendDS"); 
+out.println("queryText：-->"+ this.queryText); 
+out.println("\n");    
+out.close();]]></method>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">SITE_CODE</property>
+                    <property name="nativeName">SITE_CODE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">SITE_NAME</property>
+                    <property name="nativeName">SITE_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">DIRECTION_TYPE</property>
+                    <property name="nativeName">DIRECTION_TYPE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">DIRECTION_TYPE_NAME</property>
+                    <property name="nativeName">DIRECTION_TYPE_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">DIRECTION_NAME</property>
+                    <property name="nativeName">DIRECTION_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">UPDATE_TIME</property>
+                    <property name="nativeName">UPDATE_TIME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">TOTAL_NUM</property>
+                    <property name="nativeName">TOTAL_NUM</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">LARGE_NUM</property>
+                    <property name="nativeName">LARGE_NUM</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">SMALL_NUM</property>
+                    <property name="nativeName">SMALL_NUM</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">OTHER_NUM</property>
+                    <property name="nativeName">OTHER_NUM</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">STATUS</property>
+                    <property name="nativeName">STATUS</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[/* select t.site_code,
+       t.site_name,
+       t.direction_type,
+       t.direction_type_name,
+       t.direction_name,
+       to_char(t.update_time, 'HH24') update_time,
+       t.total_num,
+       t.large_num,
+       t.small_num,
+       t.other_num,
+       decode(m.device_sys_nbr, NULL, 1, 2) as status --1 正常 2 故障
+  from(select t.device_sys_nbr,
+       t.update_time,
+       t.total_num,
+       t.large_num,
+       t.small_num,
+       t.other_num,
+       v.site_code,
+       v.site_name,
+       v.direction_type,
+       v.direction_type_name,
+       v.direction_name from 
+       (select t.device_sys_nbr,
+       t.section_id,
+       t.update_time,
+       t.total_num,
+       t.large_num,
+       t.small_num,
+       t.other_num
+  from T_TRAFFIC_ONE_HOUR_FLOW t
+ where t.update_time >= to_date(?, 'yyyy-MM-dd')
+   and t.update_time < to_date(?, 'yyyy-MM-dd') + 1)t,
+   (select v.section_id,
+       v.site_code,
+       v.site_name,
+       v.direction_type,
+       v.direction_type_name,
+       v.direction_name
+  from t_sys_section_view v
+  where (v.site_code in (SELECT REGEXP_SUBSTR(siteCode, '[^,]+', 1, ROWNUM) AS SITE_CODE
+           from (select ? as sitecode from dual)
+         connect by rownum <= length(sitecode) - length(replace(sitecode, ',', '')) + 1) or ? is null))v
+ where t.section_id = v.section_id)t 
+ left join (select t.device_id, t.device_sys_nbr, t.start_time
+  from x_d_d_unusual_time t
+ where t.start_time >= to_date(?, 'yyyy-MM-dd')
+   and t.start_time < to_date(?, 'yyyy-MM-dd') + 1) m
+    on t.device_sys_nbr = m.device_sys_nbr
+   and t.update_time = m.start_time*/]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>SITE_CODE</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>SITE_CODE</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>SITE_CODE</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>SITE_NAME</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>128</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>SITE_NAME</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>SITE_NAME</design:label>
+            <design:formattingHints>
+              <design:displaySize>128</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>DIRECTION_TYPE</design:name>
+              <design:position>3</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>1</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>DIRECTION_TYPE</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>DIRECTION_TYPE</design:label>
+            <design:formattingHints>
+              <design:displaySize>1</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>DIRECTION_TYPE_NAME</design:name>
+              <design:position>4</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>128</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>DIRECTION_TYPE_NAME</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>DIRECTION_TYPE_NAME</design:label>
+            <design:formattingHints>
+              <design:displaySize>128</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>DIRECTION_NAME</design:name>
+              <design:position>5</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>32</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>DIRECTION_NAME</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>DIRECTION_NAME</design:label>
+            <design:formattingHints>
+              <design:displaySize>32</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>UPDATE_TIME</design:name>
+              <design:position>6</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>93</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>UPDATE_TIME</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>UPDATE_TIME</design:label>
+            <design:formattingHints>
+              <design:displaySize>7</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>TOTAL_NUM</design:name>
+              <design:position>7</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>6</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>TOTAL_NUM</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>TOTAL_NUM</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>LARGE_NUM</design:name>
+              <design:position>8</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>6</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>LARGE_NUM</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>LARGE_NUM</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>SMALL_NUM</design:name>
+              <design:position>9</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>6</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>SMALL_NUM</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>SMALL_NUM</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>OTHER_NUM</design:name>
+              <design:position>10</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>6</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>OTHER_NUM</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>OTHER_NUM</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>STATUS</design:name>
+              <design:position>11</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>2</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>Nullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>STATUS</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>STATUS</design:label>
+            <design:formattingHints>
+              <design:displaySize>22</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="SiteDS" id="1279">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">SITE_CODE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">SITE_CODE</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SITE_CODE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">SITE_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">SITE_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">SITE_NAME</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">orgPrivilegeCode</property>
+                    <property name="paramName">ORG_PRIVILEGE_CODE</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">1</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">orgPrivilegeCode1</property>
+                    <property name="paramName">ORG_PRIVILEGE_CODE</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">2</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">siteId</property>
+                    <property name="paramName">SITE_ID</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">3</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">siteIdNull</property>
+                    <property name="paramName">SITE_ID</property>
+                    <property name="nativeName"></property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">4</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">SITE_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">SITE_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">SITE_CODE</property>
+                    <property name="nativeName">SITE_CODE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">SITE_NAME</property>
+                    <property name="nativeName">SITE_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select t.site_code,t.site_name from T_SYS_SITE t 
+where t.site_id in 
+(select t.site_id from T_DEVICE_SYS t where t.device_type in('01','02','09')
+    and t.org_id in (select t.org_id from t_sys_org t where substr(t.org_privilege_code, 0, length(?)) = ?)
+    and (t.site_id in (SELECT REGEXP_SUBSTR(siteCode, '[^,]+', 1, ROWNUM) AS SITE_CODE
+           from (select ? as sitecode from dual)
+         connect by rownum <= length(sitecode) - length(replace(sitecode, ',', '')) + 1) or ? is null))
+         order by 1]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>SITE_CODE</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>SITE_CODE</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>SITE_CODE</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>SITE_NAME</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>128</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>SITE_NAME</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>SITE_NAME</design:label>
+            <design:formattingHints>
+              <design:displaySize>128</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="QueryParamForNameByCode" id="682">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">DISPLAY_NAME</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">DISPLAY_NAME</text-property>
+                    <property name="onColumnLayout">false</property>
+                    <text-property name="heading">DISPLAY_NAME</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">DISPLAY_NAME</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );
+var orgPrivilegeCode = reportContext.getParameterValue("ORG_PRIVILEGE_CODE");  
+var siteId = reportContext.getParameterValue("SITE_ID");  
+var timeType = reportContext.getParameterValue("TIME_TYPE"); 
+var beginTime = reportContext.getParameterValue("BEGIN_DATE");  
+var endTime = reportContext.getParameterValue("END_DATE");
+var query = ""; 
+query = query +"select max(display_name) as display_name "+
+  " from (select wmsys.wm_concat(max(t.display_name)) over(order by t.sort_index) as display_name "+
+          " from (select t.sort_index, "+
+                       " t.data_type || wmsys.wm_concat(display_name) over(partition by t.data_type order by t.sort_index) as display_name "+
+                  " from (select null as sort_index,null as data_type,null as display_name from dual ";
+ if(orgPrivilegeCode!=null &amp;&amp; !orgPrivilegeCode.equals(""))
+ {
+   query = query +" union select '1' as sort_index,'管理机构：' as data_type,t.org_name as display_name from t_sys_org t where t.ORG_PRIVILEGE_CODE = '"+orgPrivilegeCode+"' ";
+ }
+ if(siteId!=null &amp;&amp; !siteId.equals(""))
+ {
+   query = query +" union select '4' as sort_index,'监测点位：' as data_type,t.site_name display_name from t_sys_site t,t_sys_device_view v where t.site_id = v.site_id and v.device_type in('01','02','09') and t.site_id in "+
+   " (select regexp_substr(dcode, '[^,]+', 1, rownum) as sitecode "+
+   " from (select '"+siteId+"' as dcode  from dual) "+
+        " connect by rownum <= length(dcode) - length(replace(dcode, ',')) + 1) ";
+ } 
+query = query +"  ) t) t group by t.sort_index) t ";
+this.queryText = query;
+out = new PrintWriter(new FileWriter(Packages.cy.its.birt.report.servlet.GlobalProerty.loPath+"/debuginfo.txt", true ));  
+out.println("数据集名称：-->"+ "QueryParamForNameByCode"); 
+out.println("queryText：-->"+ this.queryText); 
+out.println("\n");    
+out.close();
+]]></method>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">DISPLAY_NAME</property>
+                    <property name="nativeName">DISPLAY_NAME</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select 
+from ]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <cubes>
+        <tabular-cube name="FlowTrendCube" id="10">
+            <property name="dimensions">
+                <tabular-dimension name="Group" id="11">
+                    <property name="defaultHierarchy">NewTabularHierarchy</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy" id="12">
+                            <property name="levels">
+                                <tabular-level name="DIRECTION_TYPE" id="13">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">DIRECTION_TYPE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group1" id="14">
+                    <property name="defaultHierarchy">NewTabularHierarchy1</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy1" id="15">
+                            <property name="levels">
+                                <tabular-level name="DIRECTION_TYPE_NAME" id="16">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">DIRECTION_TYPE_NAME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group2" id="17">
+                    <property name="defaultHierarchy">NewTabularHierarchy2</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy2" id="18">
+                            <property name="levels">
+                                <tabular-level name="DIRECTION_NAME" id="19">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">DIRECTION_NAME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group3" id="22">
+                    <property name="isTimeType">false</property>
+                    <property name="defaultHierarchy">NewTabularHierarchy4</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy4" id="23">
+                            <property name="levels">
+                                <tabular-level name="UPDATE_TIME" id="24">
+                                    <property name="dataType">string</property>
+                                    <property name="levelType">dynamic</property>
+                                    <property name="columnName">UPDATE_TIME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group5" id="25">
+                    <property name="defaultHierarchy">NewTabularHierarchy5</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy5" id="26">
+                            <property name="levels">
+                                <tabular-level name="SITE_CODE" id="27">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">SITE_CODE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group6" id="28">
+                    <property name="defaultHierarchy">NewTabularHierarchy6</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy6" id="29">
+                            <property name="levels">
+                                <tabular-level name="SITE_NAME" id="30">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">SITE_NAME</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+            </property>
+            <property name="measureGroups">
+                <tabular-measure-group name="Summary Field" id="20">
+                    <property name="measures">
+                        <tabular-measure name="LARGE_NUM" id="21">
+                            <expression name="measureExpression" type="javascript">dataSetRow["LARGE_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+                <tabular-measure-group name="Summary Field1" id="31">
+                    <property name="measures">
+                        <tabular-measure name="SMALL_NUM" id="32">
+                            <expression name="measureExpression" type="javascript">dataSetRow["SMALL_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+                <tabular-measure-group name="Summary Field2" id="33">
+                    <property name="measures">
+                        <tabular-measure name="OTHER_NUM" id="34">
+                            <expression name="measureExpression" type="javascript">dataSetRow["OTHER_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+                <tabular-measure-group name="Summary Field3" id="35">
+                    <property name="measures">
+                        <tabular-measure name="TOTAL_NUM" id="36">
+                            <expression name="measureExpression" type="javascript">dataSetRow["TOTAL_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+                <tabular-measure-group name="Summary Field4" id="1282">
+                    <property name="measures">
+                        <tabular-measure name="STATUS" id="1283">
+                            <expression name="measureExpression" type="javascript">dataSetRow["STATUS"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+            </property>
+            <property name="dataSet">FlowTrendDS</property>
+        </tabular-cube>
+    </cubes>
+    <styles>
+        <style name="CELL_BASE" id="243">
+            <property name="fontFamily">"@Gulim"</property>
+            <property name="fontSize">10pt</property>
+            <property name="borderBottomColor">#C7D3AD</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C7D3AD</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C7D3AD</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C7D3AD</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <structure name="numberFormat">
+                <property name="category">Unformatted</property>
+            </structure>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="canShrink">true</property>
+            <property name="bidiTextDirection">ltr</property>
+            <property name="height">0.6mm</property>
+        </style>
+        <style name="CrossTab_Cell" id="1265">
+            <property name="fontWeight">lighter</property>
+            <property name="borderBottomColor">#C7D3AD</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C7D3AD</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C7D3AD</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C7D3AD</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="bidiTextDirection">ltr</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <text id="5">
+            <property name="fontFamily">"楷体"</property>
+            <property name="fontSize">16pt</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="height">1.5cm</property>
+            <property name="contentType">auto</property>
+            <text-property name="content"><![CDATA[点位交通流量趋势分析]]></text-property>
+        </text>
+        <data id="681">
+            <property name="fontFamily">"楷体"</property>
+            <property name="fontSize">10pt</property>
+            <property name="marginTop">10pt</property>
+            <property name="marginBottom">10pt</property>
+            <property name="dataSet">QueryParamForNameByCode</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">QueryParams</property>
+                    <expression name="expression" type="javascript">dataSetRow["DISPLAY_NAME"]+"  统计时间："+params["BEGIN_DATE"].value&#13;
++" 至 "+params["END_DATE"].value+"日"</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <property name="resultSetColumn">QueryParams</property>
+        </data>
+        <list id="1274">
+            <property name="dataSet">SiteDS</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">SITE_CODE</property>
+                    <text-property name="displayName">SITE_CODE</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["SITE_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">SITE_NAME</property>
+                    <text-property name="displayName">SITE_NAME</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["SITE_NAME"]+"流量趋势分析"</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <detail>
+                <data id="1281">
+                    <property name="fontFamily">"楷体"</property>
+                    <property name="fontSize">11pt</property>
+                    <property name="marginTop">15pt</property>
+                    <property name="textAlign">center</property>
+                    <property name="resultSetColumn">SITE_NAME</property>
+                </data>
+                <extended-item extensionName="Chart" id="1277">
+                    <property name="cube">FlowTrendCube</property>
+                    <xml-property name="xmlRepresentation"><![CDATA[<model:ChartWithAxes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:attribute="http://www.birt.eclipse.org/ChartModelAttribute" xmlns:data="http://www.birt.eclipse.org/ChartModelData" xmlns:layout="http://www.birt.eclipse.org/ChartModelLayout" xmlns:model="http://www.birt.eclipse.org/ChartModel" xmlns:type="http://www.birt.eclipse.org/ChartModelType">
+  <Version>2.6.1</Version>
+  <Type>Line Chart</Type>
+  <SubType>Overlay</SubType>
+  <Block>
+    <Children xsi:type="layout:TitleBlock">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>false</Visible>
+      <Label>
+        <Caption>
+          <Value>Chart Title</Value>
+          <Font>
+            <Size>16.0</Size>
+            <Bold>true</Bold>
+            <Alignment>
+              <horizontalAlignment>Center</horizontalAlignment>
+              <verticalAlignment>Center</verticalAlignment>
+            </Alignment>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>true</Visible>
+      </Label>
+    </Children>
+    <Children xsi:type="layout:Plot">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>true</Visible>
+      <HorizontalSpacing>5</HorizontalSpacing>
+      <VerticalSpacing>5</VerticalSpacing>
+      <ClientArea>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>0</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>0.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>0.0</Right>
+        </Insets>
+      </ClientArea>
+    </Children>
+    <Children xsi:type="layout:Legend">
+      <Bounds>
+        <Left>0.0</Left>
+        <Top>0.0</Top>
+        <Width>0.0</Width>
+        <Height>0.0</Height>
+      </Bounds>
+      <Insets>
+        <Top>3.0</Top>
+        <Left>3.0</Left>
+        <Bottom>3.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Row>-1</Row>
+      <Column>-1</Column>
+      <Rowspan>-1</Rowspan>
+      <Columnspan>-1</Columnspan>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </Outline>
+      <Visible>true</Visible>
+      <ClientArea>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>0</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>2.0</Top>
+          <Left>2.0</Left>
+          <Bottom>2.0</Bottom>
+          <Right>2.0</Right>
+        </Insets>
+      </ClientArea>
+      <Text>
+        <Value></Value>
+        <Font>
+          <Name>楷体</Name>
+          <Size>9.0</Size>
+          <Alignment/>
+        </Font>
+      </Text>
+      <Orientation>Horizontal</Orientation>
+      <Direction>Top_Bottom</Direction>
+      <Separator>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </Separator>
+      <Position>Below</Position>
+      <ItemType>Series</ItemType>
+      <Title>
+        <Caption>
+          <Value></Value>
+          <Font>
+            <Alignment/>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>false</Visible>
+      </Title>
+      <TitlePosition>Above</TitlePosition>
+    </Children>
+    <Bounds>
+      <Left>0.0</Left>
+      <Top>0.0</Top>
+      <Width>561.75</Width>
+      <Height>130.0</Height>
+    </Bounds>
+    <Insets>
+      <Top>3.0</Top>
+      <Left>3.0</Left>
+      <Bottom>3.0</Bottom>
+      <Right>3.0</Right>
+    </Insets>
+    <Row>-1</Row>
+    <Column>-1</Column>
+    <Rowspan>-1</Rowspan>
+    <Columnspan>-1</Columnspan>
+    <Outline>
+      <Style>Solid</Style>
+      <Thickness>1</Thickness>
+      <Color>
+        <Transparency>255</Transparency>
+        <Red>0</Red>
+        <Green>0</Green>
+        <Blue>0</Blue>
+      </Color>
+      <Visible>false</Visible>
+    </Outline>
+    <Visible>true</Visible>
+  </Block>
+  <Dimension>Two_Dimensional</Dimension>
+  <Units>Points</Units>
+  <SeriesThickness>10.0</SeriesThickness>
+  <ExtendedProperties>
+    <Name>enable.area.alt</Name>
+    <Value>false</Value>
+  </ExtendedProperties>
+  <SampleData>
+    <BaseSampleData>
+      <DataSetRepresentation>'A','B','C','D','E'</DataSetRepresentation>
+    </BaseSampleData>
+    <OrthogonalSampleData>
+      <DataSetRepresentation>6,4,12,8,10</DataSetRepresentation>
+      <SeriesDefinitionIndex>0</SeriesDefinitionIndex>
+    </OrthogonalSampleData>
+  </SampleData>
+  <Interactivity>
+    <LegendBehavior>ToggleSerieVisibility</LegendBehavior>
+  </Interactivity>
+  <EmptyMessage>
+    <Caption>
+      <Value>暂未查询到该监测点的流量数据！</Value>
+      <Font>
+        <Name>楷体</Name>
+        <Size>10.0</Size>
+        <Alignment>
+          <horizontalAlignment>Center</horizontalAlignment>
+          <verticalAlignment>Center</verticalAlignment>
+        </Alignment>
+      </Font>
+      <Color>
+        <Transparency>255</Transparency>
+        <Red>255</Red>
+        <Green>0</Green>
+        <Blue>0</Blue>
+      </Color>
+    </Caption>
+    <Background xsi:type="attribute:ColorDefinition">
+      <Transparency>64</Transparency>
+      <Red>127</Red>
+      <Green>127</Green>
+      <Blue>127</Blue>
+    </Background>
+    <Outline>
+      <Color>
+        <Transparency>128</Transparency>
+        <Red>127</Red>
+        <Green>127</Green>
+        <Blue>127</Blue>
+      </Color>
+      <Visible>true</Visible>
+    </Outline>
+    <Insets>
+      <Top>10.0</Top>
+      <Left>10.0</Left>
+      <Bottom>10.0</Bottom>
+      <Right>10.0</Right>
+    </Insets>
+    <Visible>true</Visible>
+  </EmptyMessage>
+  <Axes>
+    <Type>Text</Type>
+    <Title>
+      <Caption>
+        <Value>X-Axis Title</Value>
+        <Font>
+          <Size>14.0</Size>
+          <Bold>true</Bold>
+          <Alignment>
+            <horizontalAlignment>Center</horizontalAlignment>
+            <verticalAlignment>Center</verticalAlignment>
+          </Alignment>
+        </Font>
+      </Caption>
+      <Background xsi:type="attribute:ColorDefinition">
+        <Transparency>0</Transparency>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Background>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+      </Outline>
+      <Insets>
+        <Top>0.0</Top>
+        <Left>2.0</Left>
+        <Bottom>0.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Visible>false</Visible>
+    </Title>
+    <TitlePosition>Below</TitlePosition>
+    <AssociatedAxes>
+      <Type>Linear</Type>
+      <Title>
+        <Caption>
+          <Value>Y-Axis Title</Value>
+          <Font>
+            <Size>14.0</Size>
+            <Bold>true</Bold>
+            <Alignment>
+              <horizontalAlignment>Center</horizontalAlignment>
+              <verticalAlignment>Center</verticalAlignment>
+            </Alignment>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>false</Visible>
+      </Title>
+      <TitlePosition>Left</TitlePosition>
+      <SeriesDefinitions>
+        <Query>
+          <Definition>data[&quot;Group1/DIRECTION_TYPE_NAME&quot;]</Definition>
+          <Grouping>
+            <GroupType>Text</GroupType>
+          </Grouping>
+        </Query>
+        <SeriesPalette>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>80</Red>
+            <Green>166</Green>
+            <Blue>218</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>242</Red>
+            <Green>88</Green>
+            <Blue>106</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>232</Red>
+            <Green>172</Green>
+            <Blue>57</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>255</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>64</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>170</Red>
+            <Green>85</Green>
+            <Blue>85</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>192</Red>
+            <Green>192</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>192</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>7</Red>
+            <Green>146</Green>
+            <Blue>94</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>128</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>128</Green>
+            <Blue>192</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>0</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>64</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>80</Red>
+            <Green>240</Green>
+            <Blue>120</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>64</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>0</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>0</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>64</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>128</Red>
+            <Green>128</Green>
+            <Blue>128</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>64</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Entries>
+          <Entries xsi:type="attribute:ColorDefinition">
+            <Transparency>255</Transparency>
+            <Red>255</Red>
+            <Green>128</Green>
+            <Blue>0</Blue>
+          </Entries>
+        </SeriesPalette>
+        <Series xsi:type="type:LineSeries">
+          <Visible>true</Visible>
+          <Label>
+            <Caption>
+              <Value></Value>
+              <Font>
+                <Alignment/>
+              </Font>
+            </Caption>
+            <Background xsi:type="attribute:ColorDefinition">
+              <Transparency>0</Transparency>
+              <Red>255</Red>
+              <Green>255</Green>
+              <Blue>255</Blue>
+            </Background>
+            <Outline>
+              <Style>Solid</Style>
+              <Thickness>1</Thickness>
+              <Color>
+                <Transparency>255</Transparency>
+                <Red>0</Red>
+                <Green>0</Green>
+                <Blue>0</Blue>
+              </Color>
+              <Visible>false</Visible>
+            </Outline>
+            <Insets>
+              <Top>0.0</Top>
+              <Left>2.0</Left>
+              <Bottom>0.0</Bottom>
+              <Right>3.0</Right>
+            </Insets>
+            <Visible>false</Visible>
+          </Label>
+          <DataDefinition>
+            <Definition>data[&quot;Summary Field3/TOTAL_NUM&quot;]</Definition>
+            <Grouping>
+              <Enabled>false</Enabled>
+              <GroupType>Text</GroupType>
+              <AggregateExpression xsi:nil="true"/>
+            </Grouping>
+          </DataDefinition>
+          <SeriesIdentifier>Series 1</SeriesIdentifier>
+          <DataPoint>
+            <Components>
+              <Type>Orthogonal_Value</Type>
+            </Components>
+            <Separator>, </Separator>
+          </DataPoint>
+          <LabelPosition>Above</LabelPosition>
+          <Stacked>false</Stacked>
+          <Triggers>
+            <Condition>onmouseover</Condition>
+            <Action>
+              <Type>Show_Tooltip</Type>
+              <Value xsi:type="attribute:TooltipValue">
+                <Text></Text>
+                <Delay>200</Delay>
+              </Value>
+            </Action>
+          </Triggers>
+          <Markers>
+            <Type>Circle</Type>
+            <Size>3</Size>
+            <Visible>true</Visible>
+            <Outline>
+              <Visible>false</Visible>
+            </Outline>
+          </Markers>
+          <LineAttributes>
+            <Style>Solid</Style>
+            <Thickness>1</Thickness>
+            <Color>
+              <Transparency>255</Transparency>
+              <Red>0</Red>
+              <Green>0</Green>
+              <Blue>0</Blue>
+            </Color>
+            <Visible>true</Visible>
+          </LineAttributes>
+          <PaletteLineColor>true</PaletteLineColor>
+          <Curve>false</Curve>
+        </Series>
+        <Grouping>
+          <GroupType>Text</GroupType>
+          <AggregateExpression>Sum</AggregateExpression>
+        </Grouping>
+      </SeriesDefinitions>
+      <Orientation>Vertical</Orientation>
+      <LineAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </LineAttributes>
+      <Label>
+        <Caption>
+          <Value></Value>
+          <Font>
+            <Name>楷体</Name>
+            <Size>9.0</Size>
+            <Alignment/>
+          </Font>
+        </Caption>
+        <Background xsi:type="attribute:ColorDefinition">
+          <Transparency>0</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Background>
+        <Outline>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>0</Red>
+            <Green>0</Green>
+            <Blue>0</Blue>
+          </Color>
+        </Outline>
+        <Insets>
+          <Top>0.0</Top>
+          <Left>2.0</Left>
+          <Bottom>0.0</Bottom>
+          <Right>3.0</Right>
+        </Insets>
+        <Visible>true</Visible>
+      </Label>
+      <LabelPosition>Left</LabelPosition>
+      <MajorGrid>
+        <LineAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>196</Red>
+            <Green>196</Green>
+            <Blue>196</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </LineAttributes>
+        <TickStyle>Across</TickStyle>
+        <TickAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>196</Red>
+            <Green>196</Green>
+            <Blue>196</Blue>
+          </Color>
+          <Visible>true</Visible>
+        </TickAttributes>
+      </MajorGrid>
+      <MinorGrid>
+        <LineAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>225</Red>
+            <Green>225</Green>
+            <Blue>225</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </LineAttributes>
+        <TickStyle>Across</TickStyle>
+        <TickAttributes>
+          <Style>Solid</Style>
+          <Thickness>1</Thickness>
+          <Color>
+            <Transparency>255</Transparency>
+            <Red>225</Red>
+            <Green>225</Green>
+            <Blue>225</Blue>
+          </Color>
+          <Visible>false</Visible>
+        </TickAttributes>
+      </MinorGrid>
+      <Scale>
+        <Min xsi:type="data:NumberDataElement">
+          <Value>0.0</Value>
+        </Min>
+        <MinorGridsPerUnit>5</MinorGridsPerUnit>
+        <AutoExpand>true</AutoExpand>
+      </Scale>
+      <Origin>
+        <Type>Min</Type>
+      </Origin>
+      <PrimaryAxis>true</PrimaryAxis>
+      <Percent>false</Percent>
+    </AssociatedAxes>
+    <SeriesDefinitions>
+      <Query>
+        <Definition></Definition>
+      </Query>
+      <SeriesPalette>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>80</Red>
+          <Green>166</Green>
+          <Blue>218</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>242</Red>
+          <Green>88</Green>
+          <Blue>106</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>232</Red>
+          <Green>172</Green>
+          <Blue>57</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>255</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>64</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>170</Red>
+          <Green>85</Green>
+          <Blue>85</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>192</Red>
+          <Green>192</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>192</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>7</Red>
+          <Green>146</Green>
+          <Blue>94</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>128</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>128</Green>
+          <Blue>192</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>0</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>64</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>80</Red>
+          <Green>240</Green>
+          <Blue>120</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>64</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>0</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>0</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>64</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>128</Red>
+          <Green>128</Green>
+          <Blue>128</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>64</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>255</Green>
+          <Blue>255</Blue>
+        </Entries>
+        <Entries xsi:type="attribute:ColorDefinition">
+          <Transparency>255</Transparency>
+          <Red>255</Red>
+          <Green>128</Green>
+          <Blue>0</Blue>
+        </Entries>
+      </SeriesPalette>
+      <Series>
+        <Visible>true</Visible>
+        <Label>
+          <Caption>
+            <Value></Value>
+            <Font>
+              <Alignment/>
+            </Font>
+          </Caption>
+          <Background xsi:type="attribute:ColorDefinition">
+            <Transparency>0</Transparency>
+            <Red>255</Red>
+            <Green>255</Green>
+            <Blue>255</Blue>
+          </Background>
+          <Outline>
+            <Style>Solid</Style>
+            <Thickness>1</Thickness>
+            <Color>
+              <Transparency>255</Transparency>
+              <Red>0</Red>
+              <Green>0</Green>
+              <Blue>0</Blue>
+            </Color>
+            <Visible>false</Visible>
+          </Outline>
+          <Insets>
+            <Top>0.0</Top>
+            <Left>2.0</Left>
+            <Bottom>0.0</Bottom>
+            <Right>3.0</Right>
+          </Insets>
+          <Visible>false</Visible>
+        </Label>
+        <DataDefinition>
+          <Definition>if(data[&quot;Group3/UPDATE_TIME&quot;]!=null &amp;&amp; params[&quot;TIME_TYPE&quot;].value!=&quot;D&quot;){&#xD;
+data[&quot;Group3/UPDATE_TIME&quot;].substr(5,data[&quot;Group3/UPDATE_TIME&quot;].length-5);&#xD;
+}&#xD;
+else{&#xD;
+data[&quot;Group3/UPDATE_TIME&quot;];&#xD;
+}</Definition>
+        </DataDefinition>
+        <SeriesIdentifier></SeriesIdentifier>
+        <DataPoint>
+          <Components>
+            <Type>Orthogonal_Value</Type>
+          </Components>
+          <Separator>, </Separator>
+        </DataPoint>
+        <LabelPosition>Outside</LabelPosition>
+        <Stacked>false</Stacked>
+      </Series>
+      <Grouping>
+        <Enabled>false</Enabled>
+        <GroupingUnit>Years</GroupingUnit>
+        <GroupType>Text</GroupType>
+        <AggregateExpression>Sum</AggregateExpression>
+      </Grouping>
+    </SeriesDefinitions>
+    <Orientation>Horizontal</Orientation>
+    <LineAttributes>
+      <Style>Solid</Style>
+      <Thickness>1</Thickness>
+      <Color>
+        <Transparency>255</Transparency>
+        <Red>0</Red>
+        <Green>0</Green>
+        <Blue>0</Blue>
+      </Color>
+      <Visible>true</Visible>
+    </LineAttributes>
+    <Label>
+      <Caption>
+        <Value></Value>
+        <Font>
+          <Name>楷体</Name>
+          <Size>8.0</Size>
+          <Alignment/>
+          <Rotation>-30.0</Rotation>
+        </Font>
+      </Caption>
+      <Background xsi:type="attribute:ColorDefinition">
+        <Transparency>0</Transparency>
+        <Red>255</Red>
+        <Green>255</Green>
+        <Blue>255</Blue>
+      </Background>
+      <Outline>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>0</Red>
+          <Green>0</Green>
+          <Blue>0</Blue>
+        </Color>
+      </Outline>
+      <Insets>
+        <Top>0.0</Top>
+        <Left>2.0</Left>
+        <Bottom>0.0</Bottom>
+        <Right>3.0</Right>
+      </Insets>
+      <Visible>true</Visible>
+    </Label>
+    <LabelPosition>Below</LabelPosition>
+    <MajorGrid>
+      <LineAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>196</Red>
+          <Green>196</Green>
+          <Blue>196</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </LineAttributes>
+      <TickStyle>Across</TickStyle>
+      <TickAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>196</Red>
+          <Green>196</Green>
+          <Blue>196</Blue>
+        </Color>
+        <Visible>true</Visible>
+      </TickAttributes>
+    </MajorGrid>
+    <MinorGrid>
+      <LineAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>225</Red>
+          <Green>225</Green>
+          <Blue>225</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </LineAttributes>
+      <TickStyle>Across</TickStyle>
+      <TickAttributes>
+        <Style>Solid</Style>
+        <Thickness>1</Thickness>
+        <Color>
+          <Transparency>255</Transparency>
+          <Red>225</Red>
+          <Green>225</Green>
+          <Blue>225</Blue>
+        </Color>
+        <Visible>false</Visible>
+      </TickAttributes>
+    </MinorGrid>
+    <Scale>
+      <MinorGridsPerUnit>5</MinorGridsPerUnit>
+    </Scale>
+    <Origin>
+      <Type>Min</Type>
+      <Value xsi:type="data:NumberDataElement">
+        <Value>0.0</Value>
+      </Value>
+    </Origin>
+    <PrimaryAxis>true</PrimaryAxis>
+    <CategoryAxis>true</CategoryAxis>
+    <Percent>false</Percent>
+  </Axes>
+  <Orientation>Vertical</Orientation>
+  <UnitSpacing>50.0</UnitSpacing>
+  <Rotation>
+    <Angles>
+      <XAngle>-20.0</XAngle>
+      <YAngle>45.0</YAngle>
+      <ZAngle>0.0</ZAngle>
+      <Type>None</Type>
+    </Angles>
+  </Rotation>
+</model:ChartWithAxes>
+]]></xml-property>
+                    <property name="outputFormat">SVG</property>
+                    <property name="cubeFilter">
+                        <filter-condition-element>
+                            <expression name="expr" type="javascript">data["Group5/SITE_CODE"]</expression>
+                            <property name="operator">eq</property>
+                            <simple-property-list name="value1">
+                                <value type="javascript">row._outer["SITE_CODE"]</value>
+                            </simple-property-list>
+                        </filter-condition-element>
+                    </property>
+                    <property name="inheritColumns">false</property>
+                    <property name="height">4.739583333333333in</property>
+                    <property name="width">10.979166666666666in</property>
+                    <list-property name="boundDataColumns">
+                        <structure>
+                            <property name="name">Group/DIRECTION_TYPE</property>
+                            <expression name="expression" type="javascript">dimension["Group"]["DIRECTION_TYPE"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Group1/DIRECTION_TYPE_NAME</property>
+                            <expression name="expression" type="javascript">dimension["Group1"]["DIRECTION_TYPE_NAME"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Group2/DIRECTION_NAME</property>
+                            <expression name="expression" type="javascript">dimension["Group2"]["DIRECTION_NAME"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Group3/UPDATE_TIME</property>
+                            <expression name="expression" type="javascript">dimension["Group3"]["UPDATE_TIME"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Group5/SITE_CODE</property>
+                            <expression name="expression" type="javascript">dimension["Group5"]["SITE_CODE"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Group6/SITE_NAME</property>
+                            <expression name="expression" type="javascript">dimension["Group6"]["SITE_NAME"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Summary Field/LARGE_NUM</property>
+                            <expression name="expression" type="javascript">measure["LARGE_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                            <property name="aggregateFunction">SUM</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Summary Field1/SMALL_NUM</property>
+                            <expression name="expression" type="javascript">measure["SMALL_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                            <property name="aggregateFunction">SUM</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Summary Field2/OTHER_NUM</property>
+                            <expression name="expression" type="javascript">measure["OTHER_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                            <property name="aggregateFunction">SUM</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Summary Field3/TOTAL_NUM</property>
+                            <expression name="expression" type="javascript">measure["TOTAL_NUM"]</expression>
+                            <property name="dataType">decimal</property>
+                            <property name="aggregateFunction">SUM</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Summary Field4/STATUS</property>
+                            <expression name="expression" type="javascript">measure["STATUS"]</expression>
+                            <property name="dataType">decimal</property>
+                            <property name="aggregateFunction">SUM</property>
+                        </structure>
+                    </list-property>
+                </extended-item>
+            </detail>
+        </list>
+        <extended-item extensionName="Crosstab" extensionVersion="3.7.0" id="6">
+            <property name="cube">FlowTrendCube</property>
+            <property name="measures">
+                <extended-item extensionName="MeasureView" id="69">
+                    <property name="measure">TOTAL_NUM</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="70">
+                            <property name="aggregationOnRow">Group2/DIRECTION_NAME</property>
+                            <property name="aggregationOnColumn">Group3/UPDATE_TIME</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <expression name="testExpr" type="javascript">data["STATUS_Group2/DIRECTION_NAME_Group3/UPDATE_TIME"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">2</value>
+                                    </simple-property-list>
+                                    <property name="backgroundColor">#FFFF00</property>
+                                </structure>
+                            </list-property>
+                            <property name="content">
+                                <data id="71">
+                                    <property name="fontFamily">"楷体"</property>
+                                    <property name="fontSize">8pt</property>
+                                    <property name="textAlign">right</property>
+                                    <property name="resultSetColumn">TOTAL_NUM_Group2/DIRECTION_NAME_Group3/UPDATE_TIME</property>
+                                </data>
+                            </property>
+                            <property name="style">CrossTab_Cell</property>
+                        </extended-item>
+                    </property>
+                    <property name="aggregations">
+                        <extended-item extensionName="AggregationCell" id="1295">
+                            <property name="aggregationOnRow">Group2/DIRECTION_NAME</property>
+                            <property name="content">
+                                <data id="1296">
+                                    <property name="fontFamily">"楷体"</property>
+                                    <property name="fontSize">8pt</property>
+                                    <property name="textAlign">right</property>
+                                    <method name="onRender"><![CDATA[var v = this.getValue();
+if(v != null &amp;&amp; v != "" &amp;&amp; v > 99999){//如果数据不为空并且数据大于4位数(4位数最大值9999)
+ v = v.toString();
+ var v1 = v.substring(0,5);
+ var v2 = v.substring(5,v.length());
+ v2 = v2.substring(0,v2.length()-2);
+ v = v1 + "\t" + v2;
+}
+this.setDisplayValue(v);]]></method>
+                                    <property name="resultSetColumn">TOTAL_NUM_Group2/DIRECTION_NAME</property>
+                                </data>
+                            </property>
+                            <property name="style">CrossTab_Cell</property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="72">
+                            <property name="content">
+                                <label id="73">
+                                    <text-property name="text">TOTAL_NUM</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="CrosstabCell" id="1297">
+                            <property name="content">
+                                <label id="1298">
+                                    <text-property name="text">TOTAL_NUM</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+                <extended-item extensionName="MeasureView" id="1284">
+                    <property name="measure">STATUS</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="1285">
+                            <property name="aggregationOnRow">Group2/DIRECTION_NAME</property>
+                            <property name="aggregationOnColumn">Group3/UPDATE_TIME</property>
+                            <property name="width">0px</property>
+                            <property name="content">
+                                <data id="1299">
+                                    <property name="resultSetColumn">STATUS_Group2/DIRECTION_NAME_Group3/UPDATE_TIME</property>
+                                </data>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="1287">
+                            <property name="content">
+                                <label id="1288">
+                                    <text-property name="text">STATUS</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="rows">
+                <extended-item extensionName="CrosstabView" id="40">
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="41">
+                            <property name="dimension">Group5</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View" id="42">
+                                    <property name="level">Group5/SITE_CODE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="43">
+                                            <property name="borderTopStyle">solid</property>
+                                            <property name="borderTopWidth">thin</property>
+                                            <property name="borderLeftStyle">solid</property>
+                                            <property name="borderLeftWidth">thin</property>
+                                            <property name="borderBottomStyle">solid</property>
+                                            <property name="borderBottomWidth">thin</property>
+                                            <property name="borderRightStyle">none</property>
+                                            <property name="width">1px</property>
+                                            <property name="style">CrossTab_Cell</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="46">
+                            <property name="dimension">Group6</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View1" id="47">
+                                    <property name="level">Group6/SITE_NAME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="48">
+                                            <property name="content">
+                                                <data name="SITE_NAME" id="50">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="fontSize">9pt</property>
+                                                    <property name="resultSetColumn">SITE_NAME</property>
+                                                </data>
+                                            </property>
+                                            <property name="borderTopStyle">solid</property>
+                                            <property name="borderTopWidth">thin</property>
+                                            <property name="borderLeftStyle">none</property>
+                                            <property name="borderBottomStyle">solid</property>
+                                            <property name="borderBottomWidth">thin</property>
+                                            <property name="borderRightStyle">solid</property>
+                                            <property name="borderRightWidth">thin</property>
+                                            <property name="width">2cm</property>
+                                            <property name="style">CrossTab_Cell</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="52">
+                            <property name="dimension">Group</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View2" id="53">
+                                    <property name="level">Group/DIRECTION_TYPE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="54">
+                                            <property name="borderTopStyle">solid</property>
+                                            <property name="borderTopWidth">thin</property>
+                                            <property name="borderLeftStyle">none</property>
+                                            <property name="borderBottomStyle">solid</property>
+                                            <property name="borderBottomWidth">thin</property>
+                                            <property name="borderRightStyle">none</property>
+                                            <property name="width">1px</property>
+                                            <property name="style">CrossTab_Cell</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="58">
+                            <property name="dimension">Group1</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View3" id="59">
+                                    <property name="level">Group1/DIRECTION_TYPE_NAME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="60">
+                                            <property name="content">
+                                                <data name="DIRECTION_TYPE_NAME" id="62">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="fontSize">9pt</property>
+                                                    <property name="resultSetColumn">DIRECTION_TYPE_NAME</property>
+                                                </data>
+                                            </property>
+                                            <property name="borderTopStyle">solid</property>
+                                            <property name="borderTopWidth">thin</property>
+                                            <property name="borderLeftStyle">none</property>
+                                            <property name="borderBottomStyle">solid</property>
+                                            <property name="borderBottomWidth">thin</property>
+                                            <property name="borderRightStyle">solid</property>
+                                            <property name="borderRightWidth">thin</property>
+                                            <property name="width">2cm</property>
+                                            <property name="style">CrossTab_Cell</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                        <extended-item extensionName="DimensionView" id="1266">
+                            <property name="dimension">Group2</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View5" id="1267">
+                                    <property name="level">Group2/DIRECTION_NAME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="1268">
+                                            <property name="width">0pt</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="columns">
+                <extended-item extensionName="CrosstabView" id="64">
+                    <property name="grandTotal">
+                        <extended-item extensionName="CrosstabCell" id="1294">
+                            <property name="content">
+                                <label id="1300">
+                                    <property name="fontFamily">"楷体"</property>
+                                    <property name="fontSize">9pt</property>
+                                    <text-property name="text">合计</text-property>
+                                </label>
+                            </property>
+                            <property name="style">CrossTab_Cell</property>
+                        </extended-item>
+                    </property>
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="65">
+                            <property name="dimension">Group3</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View4" id="66">
+                                    <property name="level">Group3/UPDATE_TIME</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="67">
+                                            <property name="content">
+                                                <data id="1308">
+                                                    <property name="fontFamily">"楷体"</property>
+                                                    <property name="fontSize">9pt</property>
+                                                    <property name="resultSetColumn">COUNT_TIME</property>
+                                                </data>
+                                            </property>
+                                            <property name="style">CrossTab_Cell</property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="grandTotalLocation">after</property>
+                </extended-item>
+            </property>
+            <property name="header">
+                <extended-item extensionName="CrosstabCell" id="7">
+                    <property name="content">
+                        <label id="45">
+                            <property name="fontFamily">"楷体"</property>
+                            <property name="fontSize">9pt</property>
+                            <text-property name="text">断面</text-property>
+                        </label>
+                    </property>
+                    <property name="style">CrossTab_Cell</property>
+                </extended-item>
+            </property>
+            <property name="hideMeasureHeader">true</property>
+            <property name="marginTop">10pt</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">SITE_CODE</property>
+                    <expression name="expression">dimension["Group5"]["SITE_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">SITE_NAME</property>
+                    <expression name="expression">dimension["Group6"]["SITE_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">DIRECTION_TYPE</property>
+                    <expression name="expression">dimension["Group"]["DIRECTION_TYPE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">DIRECTION_TYPE_NAME</property>
+                    <expression name="expression" type="javascript">dimension["Group1"]["DIRECTION_TYPE_NAME"]+"\n"+"("+dimension["Group2"]["DIRECTION_NAME"]+")"</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">UPDATE_TIME</property>
+                    <expression name="expression" type="javascript">dimension["Group3"]["UPDATE_TIME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">TOTAL_NUM_Group1/DIRECTION_TYPE_NAME_Group3/UPDATE_TIME</property>
+                    <expression name="expression">measure["TOTAL_NUM"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/DIRECTION_TYPE_NAME</value>
+                        <value>Group3/UPDATE_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">DIRECTION_NAME</property>
+                    <expression name="expression">dimension["Group2"]["DIRECTION_NAME"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">TOTAL_NUM_Group2/DIRECTION_NAME_Group3/UPDATE_TIME</property>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/DIRECTION_NAME</value>
+                        <value>Group3/UPDATE_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                    <list-property name="arguments">
+                        <structure>
+                            <property name="name">Expression</property>
+                            <expression name="value" type="javascript">measure["TOTAL_NUM"]</expression>
+                        </structure>
+                    </list-property>
+                </structure>
+                <structure>
+                    <property name="name">STATUS_Group2/DIRECTION_NAME_Group3/UPDATE_TIME</property>
+                    <expression name="expression">measure["STATUS"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/DIRECTION_NAME</value>
+                        <value>Group3/UPDATE_TIME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">TOTAL_NUM_Group2/DIRECTION_NAME</property>
+                    <expression name="expression">measure["TOTAL_NUM"]</expression>
+                    <property name="dataType">float</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group2/DIRECTION_NAME</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">COUNT_TIME</property>
+                    <expression name="expression" type="javascript">if(data["UPDATE_TIME"]!=null &amp;&amp;params["TIME_TYPE"].value!='D'){&#13;
+data["UPDATE_TIME"].substr(8,data["UPDATE_TIME"].length-8);&#13;
+}&#13;
+else{&#13;
+data["UPDATE_TIME"];&#13;
+}</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <property name="style">CrossTab_Cell</property>
+        </extended-item>
+        <grid id="1311">
+            <property name="marginTop">10pt</property>
+            <property name="width">11.15625in</property>
+            <column id="1312">
+                <property name="width">1.2cm</property>
+            </column>
+            <column id="1318">
+                <property name="width">0.5cm</property>
+            </column>
+            <column id="1316">
+                <property name="width">9.854166666666666in</property>
+            </column>
+            <row id="1313">
+                <cell id="1314">
+                    <property name="backgroundColor">yellow</property>
+                </cell>
+                <cell id="1317"/>
+                <cell id="1315">
+                    <text id="1309">
+                        <property name="fontFamily">"楷体"</property>
+                        <property name="contentType">auto</property>
+                        <text-property name="content"><![CDATA[此背景色单元格，该时段内设备曾发生故障或离线，流量数据和实际可能有差距，数据不可信！]]></text-property>
+                    </text>
+                </cell>
+            </row>
+        </grid>
+    </body>
+</report>

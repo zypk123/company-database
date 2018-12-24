@@ -1,0 +1,271 @@
+<div id="flowCurve" class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<form cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							时间：
+						</div>
+						<div class="td">
+							<!-- <div class="easyui-datebox startDate" name="startDate"></div>
+							至 -->
+							<div class="easyui-datebox date" id="date" name="date" data-options="validType:['date']"></div>
+						</div>
+						<div class="td" style="margin-left: 15px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:true">
+		<div id="main" style="height: 400px;">
+
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["deviceSysNbr"], function($scope) {
+		var deviceSysNbr = $scope.deviceSysNbr;
+		var satrtDate;
+		var endDate;
+		var myDate = new Date();
+		var nowHours = myDate.getHours();
+		var nowMinutes = myDate.getMinutes();
+		var nowSeconds = myDate.getSeconds();
+		var year = myDate.getFullYear();
+		//获取两小时前时间的月
+		var month = myDate.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month;
+		}
+			//获取两小时前时间的日
+		var day = myDate.getDate();
+		if (day < 10) {
+			day = "0" + day;
+		}
+		//系统时间
+		var nowDay = year + "-" + month + "-" + day;
+		$scope.load = function() {
+			$scope.$(".date").datebox('setValue', new Date().format("yyyy-MM-dd"));
+			var date = $scope.$(".date").datebox('getValue');
+			startDate = date + " 00:00:00";
+			endDate = date + " " + nowHours + ":" + nowMinutes + ":" + nowSeconds;
+			queryData(deviceSysNbr, startDate, endDate);
+			
+			//查询故障发生时间不能大于当前时间
+			$scope.$('.date').each(function() {
+				$(this).datebox('calendar').calendar({
+					validator : function(date) {
+						var now = new Date();
+						var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+						return date <= d1;
+					}
+				});
+			});
+		};
+
+		$scope.searchData = function() {
+			var date = $scope.$(".date").datebox('getValue');
+			
+			//console.log(nowDay);
+			if (date != nowDay) {
+				startDate = date + " 00:00:00";
+				endDate = date + " 23:59:59";
+			} else if (date == nowDay && date == null) {
+				startDate = date + " 00:00:00";
+				endDate = date + " " + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+			}
+			//query data function
+			queryData(deviceSysNbr, startDate, endDate);
+		};
+		//date validate
+		
+		function transdate(endTime) {
+			date = endTime.substring(0, 19);
+			date = date.replace(/-/g, '/');
+			var timestamp = new Date(date).getTime();
+			return timestamp;
+		}
+
+		function queryData(deviceSysNbr, startDate, endDate) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/trafficSituation/TrafficFlowAction/queryTrafficFlow",
+				params : {
+					deviceSysNbr : deviceSysNbr,
+					startDate : startDate,
+					endDate : endDate
+				},
+				success : function(data) {
+					//数据接口成功返回
+					data = data.result;
+					echatsFunction(data);
+				},
+				fail : function() {
+
+				}
+			});
+		}
+
+		function echatsFunction(data) {
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar'], function(ec) {
+				// 基于准备好的dom，初始化echarts图表
+				var myChart = ec.init($scope.$("#main").get(0));
+				var vehicleSeriesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var speedSeriesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				//var vehicleSeriesData = new Array();
+				//var speedSeriesData = new Array();
+				var seriesData = [];
+				var xAxisData = [];
+				var searchDate = $scope.$(".date").datebox('getValue');
+				var minDate = 0;
+				if (data != null && data.length > 0) {
+					for (var i = 0, len = data.length; i < len; i++) {
+						date = formatDateTimeStamp(data[i].countTime);
+						//xAxisData[i] = date;
+						 if (minDate < date) {
+							minDate = date;
+						}
+
+						var newTotalNum = data[i].totalNum + vehicleSeriesData[date];
+						var newAvgSpeed = ((data[i].avgSpeed * data[i].totalNum + speedSeriesData[date] * vehicleSeriesData[date]) / newTotalNum).toFixed(2);
+
+						vehicleSeriesData[date] = newTotalNum;
+						speedSeriesData[date] = newAvgSpeed;
+					}
+					//console.log(vehicleSeriesData);
+					//console.log(speedSeriesData);
+					
+				} else {
+					$.messager.alert("提示", "暂无数据");
+				}
+				
+				//slice the data after nowHours if searchDate == nowDay  
+				if(searchDate == nowDay){
+						 vehicleSeriesData = vehicleSeriesData.slice(0,nowHours+1);
+						 speedSeriesData = speedSeriesData.slice(0,nowHours+1);
+					}
+				
+				var vehicleSeries = {
+					name : '车流量',
+					type : 'line',
+					data : vehicleSeriesData
+				};
+				var speedSeries = {
+					name : '平均速度',
+					type : 'line',
+					data : speedSeriesData
+				};
+				var option = {
+					tooltip : {
+						trigger : 'axis'
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							mark : {
+								show : true
+							},
+							dataView : {
+								show : true,
+								readOnly : false
+							},
+							magicType : {
+								show : true,
+								type : ['line', 'bar']
+							},
+							restore : {
+								show : true
+							},
+							saveAsImage : {
+								show : true
+							}
+						}
+					},
+					calculable : true,
+					legend : {
+						data : ['车流量', '速度']
+					},
+					xAxis : [{
+						type : 'category',
+						data : ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23']
+						//data: []
+					}],
+					yAxis : [{
+						type : 'value',
+						name : '车流量(辆)',
+						axisLabel : {
+							formatter : '{value}'
+						}
+					}, {
+						type : 'value',
+						name : '速度(km/h)',
+						axisLabel : {
+							formatter : '{value}'
+						}
+					}],
+					series : [{
+						name : '车流量',
+						type : 'line',
+						data : vehicleSeriesData,
+						markPoint : {
+							data : [{
+								type : 'max',
+								name : '最大值'
+							}, {
+								type : 'min',
+								name : '最小值'
+							}]
+						}
+					}, {
+						name : '速度',
+						type : 'line',
+						yAxisIndex : 1,
+						data : speedSeriesData,
+						markPoint : {
+							data : [{
+								type : 'max',
+								name : '最大值'
+							}, {
+								type : 'min',
+								name : '最小值'
+							}]
+						}
+					}]
+				};
+
+				seriesData.push(vehicleSeries);
+				seriesData.push(speedSeries);
+
+				myChart.setOption(option);
+			});
+		}
+
+		function formatDateTimeStamp(value) {
+			if (value == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(value);
+			return (newDate.getHours());
+		}
+
+	}); 
+</script>
+<style type="text/css">
+	#flowCurve .th {
+		width: 70px;
+		text-align: right;
+	}
+</style>

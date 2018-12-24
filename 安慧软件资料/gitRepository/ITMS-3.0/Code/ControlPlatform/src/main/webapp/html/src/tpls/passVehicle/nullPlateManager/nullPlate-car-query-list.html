@@ -1,0 +1,387 @@
+<div id="null-platenbr-analyse" class="easyui-layout">
+    <!--查询条件区 -->
+    <div data-options="region:'north',border:false,height:120">
+        <form cy-form="formNullNumberCar">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div id="nullCodeNumberCar" class="table">
+                	<input type="hidden" name ="qryFields" value = "plate_color,plate_type,vehicle_brand,vehicle_color,image_url_path,snap_nbr,device_nbr,site_code"/>
+                     <div class="tr">
+                        <div class="th" style="height: 25px; line-height: 25px;">
+                            点位：
+                        </div>
+                        <div class="td" style="width: 150px;">
+                            <!--点位多选 -->
+                            <input class="cy-site-checkbox" style="width: 150px;" iscode="true" name="siteCode">
+                        </div>
+                        <div class="th">分析周期：</div>
+                        <div class="td" style="width: 250px;">
+                            <input name="beginTime" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date'],required:true" 
+                                   class="easyui-datetimebox" style="width: 150px;" id="start" /> 至 
+                            <input name="endTime" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date'],required:true"
+                                class="easyui-datetimebox" style="width: 150px;" id="end" />
+                        </div>
+                        <div class="th" style="padding-left: 60px">车辆品牌：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name="vehBrand" cy-code="012" style="width: 150px;"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">号牌颜色：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"  name="plateColor"  cy-code="003" style="width: 150px"/>
+                        </div>
+                        <div class="th">号牌种类：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"  name="plateType" cy-code="002" style="width: 150px"/>
+                        </div>
+                        <div class="th">车辆类型：</div>
+                        <div class="td">
+                            <input name="vehType" class="easyui-combobox" cy-code="001">
+                        </div>
+                        <div class="td" style="width: 70px;">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                               cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'center'">
+        <table id="nullCodeNumberCarData" cy-datagrid="optionsNullNumberCar" cy-querydata="formNullNumberCar" 
+        cy-url="vehTrack/nullplate/findUnlicensedCars"></table>
+    </div>
+    <div data-options="region:'east'" style="width: 270px;">
+        <div class="easyui-layout">
+            <div  id="imageArea" data-options="region:'center',border:false"></div>
+            <div data-options="region:'south',border:true" style="height: 50px;">
+                &nbsp;
+                <div class="td" style="text-align: center">
+                    <a class="easyui-linkbutton"  style="width: 60px" cy-click="selectPre">上一条</a>
+                    <a class="easyui-linkbutton"  style="width: 60px" cy-click="selectNext">下一条</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+    	var currentData;
+    	$scope.$getDefaultCode(['001','002','003','012']);
+        $scope.searchData = function() {
+			$scope.$updateData("formNullNumberCar");
+			//$scope.$("#nullCodeNumberCarData").datagrid('selectRow', 0);
+			//$scope.displayListImage($scope.$("#nullCodeNumberCarData").datagrid('getSelected'));
+			//获得当前第几页数
+			var count = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转到第一页
+				$scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("select", 1);
+				$scope.$('#nullCodeNumberCarData').datagrid('selectRow', 0);
+				$scope.displayListImage($scope.$('#nullCodeNumberCarData').datagrid('getSelected'));
+			} else {
+				$scope.$search("formNullNumberCar");
+			}
+		};
+        $scope.optionsNullNumberCar = {
+            columns: [
+                [
+                    {
+                        field: "vehicle_pass_id",
+                        checkbox: true
+                    },
+                    {
+                        field: "plate_nbr",
+                        title: "车牌号码",
+                        width: 30,
+                        align: 'center',
+                        frozen: true
+                    },
+                    {
+                        field: "plate_type",
+                        title: "号牌种类",
+                        width: 40,
+                        align: 'center',
+                        frozen: true,
+                        formatter: plateTypeName
+                    },
+                    {
+                        field: "plate_color",
+                        title: "车牌顏色",
+                        width: 30,
+                        align: 'center',
+                        formatter: plateColorName
+                    },
+                    {
+                        field: "vehicle_brand",
+                        title: "车辆品牌",
+                        align: 'center',
+                        width: 30,
+                        formatter: vehicleBrandName
+                    },
+                    {
+                        field: "site_name",
+                        title: "点位",
+                        align: 'center',
+                        width: 100
+                    },
+                    {
+                        field: "times",
+                        title: "过车次数",
+                        align: 'center',
+                        width: 40
+                    },
+                    {
+                        field: "image_url_path",
+                        title: "dsf",
+                        hidden: true
+                    }
+                ]
+            ],
+            onLoadSuccess: function(data){
+              var count = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+              if (count == 1) {
+				$scope.$('#nullCodeNumberCarData').datagrid('selectRow', 0);
+				$scope.displayListImage($scope.$('#nullCodeNumberCarData').datagrid('getSelected'));
+			 }
+             },
+            onDblClickRow : function(rowIndex,rowData){
+                $scope.$setParam("nullNumberCarChecked",rowData);
+                $scope.$setParam("index", rowIndex);
+                $scope.$setParam("currentData", $scope.$("#nullCodeNumberCarData").datagrid("getRows"));
+                //查询方法
+                $scope.$setParam("searchData",function(type, callback) {
+                            var currentPage = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+                            var pageSize = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageSize;
+                            var total = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").total;
+                            //type类型：next或者prev  上一页或者下一页
+                            if (type == "pre") {
+                                //查找前一页
+                                if (currentPage == 1) {
+                                    //已经是第一页
+                                    $.messager.alert("提示","前面没有更多的数据!");
+                                    $scope.$excute(callback,undefined);
+                                } else {
+                                    //查询数据
+                                    $scope.searchProgress();
+                                    //返回上一页
+                                    $scope.$("#nullCodeNumberCarData").pagination("options").pageNumber = currentPage - 1;
+                                    refreshData($scope.formNullNumberCar,callback);
+                                }
+                            } else {
+                                //查找后一页
+                                if(currentPage == Math.ceil(total/pageSize)){
+                                    //已经是最后一页
+                                    $.messager.alert("提示","后面没有更多的数据!");
+                                    $scope.$excute(callback,undefined);
+                                }else{
+                                    //查询数据
+                                    //$scope.searchProgress();
+                                    //跳到下一页
+                                    $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber = currentPage + 1;
+                                    refreshData($scope.formNullNumberCar,callback);
+                                }
+                            }
+                        });
+                $scope.$openDialog("checkDialog", {
+                    title: "无牌车辆分析详情",
+                    height: 500,
+                    width: 700,
+                    href : "../src/tpls/passVehicle/nullPlateManager/nullPlate-car-detail.html"
+                });
+            },
+           onClickRow : function (rowIndex, rowData) {	
+            		
+                if ($scope.timeout) {
+                    clearTimeout($scope.timeout);
+                    $scope.timeout = false;
+                } else {
+                    $scope.timeout = setTimeout(function() {
+                        $scope.displayListImage(rowData);
+                        $scope.timeout = false;
+                    }, 300);
+                }
+            }
+        };
+        		
+        	/**
+			 *根据道路类型code获取道路名称name
+			 */
+			function vehicleBrandName(value, row, index) {
+				var vehicleBrandName = $scope.$getCodeName("012", value);
+				return vehicleBrandName;
+			}	
+			/**
+			 *根据道路类型code获取道路名称name
+			 */
+			function plateTypeName(value, row, index) {
+				var plateTypeName = $scope.$getCodeName("002", value);
+				return plateTypeName;
+			}
+			/**
+			 *根据道路类型code获取道路名称name
+			 */
+			function plateColorName(value, row, index) {
+				var plateColorName = $scope.$getCodeName("003", value);
+				return plateColorName;
+			}
+        //显示图片
+        $scope.displayListImage = function (data) {
+            $scope.timeout = setTimeout(function () {
+                        if (data && data.image_url_path) {
+                            $scope.$setParam("images", [data.image_url_path]);
+                            $scope.$("#imageArea").panel("refresh", "tpls/public/image-view.html");
+                        }
+                    },
+                    500);
+        };
+        //选择下一条
+        $scope.selectNext=function () {
+        	var row = $scope.$('#nullCodeNumberCarData').datagrid('getSelected');
+					var currentPage = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+					var pageSize = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageSize;
+					if (row) {
+						var index = $scope.$('#nullCodeNumberCarData').datagrid('getRowIndex', row);
+						$scope.$('#nullCodeNumberCarData').datagrid('selectRow', index + 1);
+						row = $scope.$('#nullCodeNumberCarData').datagrid('getSelected');
+						if (row) {
+							$scope.displayListImage(row);
+						} else {
+							if (index + 1 == $scope.$('#nullCodeNumberCarData').datagrid(
+									"getRows").length && index + 1 == pageSize) {
+								//跳到下一页
+								$scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber = currentPage + 1;
+								$scope.formNullNumberCar.pageNumber = currentPage + 1;
+								//$scope.$("#nullCodeNumberCarData ").datagrid("getPager").pagination('select', currentPage + 1);
+								$scope.SearchAsync("next");
+							}else {
+								
+							$scope.$('#nullCodeNumberCarData').datagrid('selectRow', index);
+							 alert('已到最后一条');
+							}
+						}
+					} else {
+						alert('已到最后一条');
+					}
+				};
+
+        //选择上一条
+        $scope.selectPre=function () {
+            var row = $scope.$('#nullCodeNumberCarData ').datagrid('getSelected');
+					var currentPage = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+					if (row) {
+						var index = $scope.$('#nullCodeNumberCarData').datagrid('getRowIndex', row);
+						var obj = $scope.$('#nullCodeNumberCarData').datagrid('selectRow',index - 1);
+						row = $scope.$('#nullCodeNumberCarData').datagrid('getSelected');
+						if (row) {
+							$scope.VioDetail = row;
+							$scope.displayListImage(row);
+						} else {
+							if (index == 0 && currentPage>1) {
+								//跳到上一页
+								$scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber = currentPage - 1;
+								$scope.formNullNumberCar.pageNumber = currentPage - 1;
+								$scope.SearchAsync("pre");
+							}else {
+								$scope.$("#nullCodeNumberCarData").datagrid('selectRow', index);
+								alert('已到第一条'); 
+							}
+						}
+					} else {
+						alert('已到第一条');
+					}
+				};
+				/**
+				 * 查询
+				 * @constructor
+				 */
+				$scope.SearchAsync = function(type) {
+					$scope.$updateData("formNullNumberCar");
+					// var check;
+					// $scope.$("input[name='clone_flag']:checked").each(
+							// function(i) {
+								// if (0 == i) {
+									// check = $(this).val();
+								// } else {
+									// check += ("," + $(this).val());
+								// }
+							// });
+					// $scope.formNullNumberCar.clone_flag = check;
+					$scope.$search("formNullNumberCar", "", function(data) {
+						if (data && data != null && data.rows.length > 0) {
+							if ("pre" == type) {
+								$scope.$('#nullCodeNumberCarData').datagrid('selectRow',$scope.formNullNumberCar.pageSize - 1);
+							} else {
+								$scope.$('#nullCodeNumberCarData').datagrid('selectRow', 0);
+							}
+							$scope.$("#nullCodeNumberCarData ").datagrid("getPager").pagination('refresh');
+							$scope.displayListImage($scope.$('#nullCodeNumberCarData').datagrid('getSelected'));
+						} else {
+							alert("查无数据");
+							$scope.VioDetail = {};
+							$scope.$updateDom('formNullNumberCar');
+						}
+						;
+					});
+				};
+				
+				/**
+				 * 刷新数据
+				 */
+				var refreshData = function(params, callback) {
+					//获取分页信息
+					params.pageSize = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageSize;
+					params.pageNumber = $scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination("options").pageNumber;
+					//获取后台数据
+					$scope.$ajaxRequest({
+								url : $scope.$restRoot + "",
+								params : params,
+								success : function(data) {
+									$scope.$("#nullCodeNumberCarData").datagrid("getPager").pagination('refresh');
+									//更新数据
+									currentData = data;
+									updatePassData(data);
+									//滚动条滚动到顶部
+									//$scope.$("#passInfoContent").scrollTop(0);
+									//数据加载完毕，关闭进度条
+									$.messager.progress("close");
+									//执行自定义回调函数
+									$scope.$excute(callback, data.result.rows);
+								},
+								fail : function() {
+									$.messager.progress("close");
+									$.messager.alert("提示", "服务器繁忙");
+								}
+							});
+				};
+
+				/**
+				 * 更新数据 
+				 */
+				var updatePassData = function(data) {
+					$scope.$('#nullCodeNumberCarData').datagrid('loadData', data.result);
+					$scope.$updateDom("formNullNumberCar");
+					$scope.$('#nullCodeNumberCarData').datagrid('selectRow', 0);
+					$scope.displayListImage($scope.$('#nullCodeNumberCarData').datagrid('getSelected'));
+				};
+				
+				/**
+				 * 显示查询进度条
+				 */
+				$scope.searchProgress = function() {
+					$.messager.progress({
+						title : false,
+						msg : "正在查询，请稍后...",
+						interval : 1000,
+						text : "查询中..."
+					});
+				};
+    });
+</script>
+<style type="text/css">
+    #nullCodeNumberCar .th {
+        text-align: right;
+        width: 90px;
+    }
+</style>

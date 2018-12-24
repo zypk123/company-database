@@ -1,0 +1,991 @@
+<div id="trafficPolice" class="easyui-layout" style="width:100%;height:100%;">
+	<!--左边列表区 -->
+	<div id="layoutWest" data-options="region:'west',border:false, title:'导航区域'" style="width: 210px">
+		<div data-options="region:'north',border:false" style="margin-bottom: 8px;height: 60px;">
+			<div class="table">
+				<div class="tr">
+					<a id="addFea" class="easyui-splitbutton button-main" iconCls="icon-add" >添加</a>&nbsp;
+					 <a  class="easyui-linkbutton button-main" iconCls="icon-edit" cy-click="modifyFeature" >修改</a>&nbsp; 
+					 <a  class="easyui-linkbutton" iconCls="icon-remove" cy-click="deleteFeature">删除</a>
+				</div>
+				<div class="tr">
+					<input id="search" data-options="prompt:'请输入关键字'" style="width:192px;height:26px"/>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center',border:false">
+			<div id="siteTree">
+
+			</div>
+			<div id="searchReuslt">
+				<div class="table">
+					<div class="tr">
+						<div class="td"style="text-align: left;width: 90px;">
+							<div id="count" style="color: blue;"></div>
+						</div>
+						<div class="td"style="text-align: right;width: 90px;">
+							<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back" >返回</a>
+						</div>
+					</div>
+					<div class="tr">
+						<div id="searchReusltDlst"></div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<div id="menuList1" style="width:50px;">
+		<div data-options="iconCls:'icon-add'" cy-click="addZhifa" >
+			添加执法服务站
+		</div>
+		<div data-options="iconCls:'icon-add'" cy-click="addGangting">
+			添加交警岗亭
+		</div>
+		<div data-options="iconCls:'icon-add'" cy-click="addChaoxian">
+			添加超限检查站
+		</div>
+	</div>
+
+	<div data-options="region:'center'" >
+		<div style="width:100%;height: 100%;" id="map"></div>
+		<div id="layerDock"></div>
+		<div id="baseTool"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		var pointLayer;
+		var tempLayer;
+		var cyMap = null;
+		var wkt_c = new OpenLayers.Format.WKT();
+		var shpType;
+		var layerData;
+		//初始化地图与图层数据
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			//$scope.$topLayout.layout("collapse", "west");
+			//隐藏点位搜索结果div
+			$scope.$('#searchReuslt').hide();
+			//初始化地图
+			initData();
+			//初始化地图基本工具
+			initBaseTool();
+			addTree();
+			$scope.$("#addFea").splitbutton({
+				menu : '#menuList1'
+			});
+			$scope.initSearchTextbox();
+
+			initLayerContrl();
+		};
+		
+		$scope.close = function() {
+			closeTipInfoDialog();
+		};		
+		$scope.leave = function() {
+			closeTipInfoDialog();
+		};
+		//关闭打开的属性窗口
+        function closeTipInfoDialog()
+        {
+            var tipInfoDialog=$scope.$getDialog("InfoDialog");
+            if(tipInfoDialog!=undefined&&tipInfoDialog!=null)
+            {
+                tipInfoDialog.dialog("close");
+            }
+        }
+		
+		//初始化地图中的相关图层及样式和事件
+		function initData() {
+			tempLayer = new OpenLayers.Layer.Vector("temp");
+			cyMap = new CYMap($scope.$("#map")[0],{locationLayer:tempLayer});
+			var layerListeners = {
+				featureover : function(e) {
+					if (e.feature.attributes.tips) {
+						//var popup = new OpenLayers.Popup.FramedCloud("info", e.feature.geometry.getBounds().getCenterLonLat(), null, e.feature.attributes.tips, null, null, null);
+						var centerLonLat=e.feature.geometry.getBounds().getCenterLonLat();
+						var popup =new OpenLayers.Popup.Anchored("chicken", centerLonLat, new OpenLayers.Size(160,30), e.feature.attributes.tips, null, true);
+						e.feature.popup = popup;
+						cyMap.map.addPopup(popup);
+					}
+				},
+				featureout : function(e) {
+					if (e.feature.popup) {
+						e.feature.popup.hide();
+					}
+				},
+				featureclick : function(e) {
+					if (e.feature.popup) {
+						e.feature.popup.hide();
+					}
+					openInfoDialog(e.feature.attributes);
+				}
+			};
+			pointLayer = new OpenLayers.Layer.Vector("point", {
+				eventListeners : layerListeners
+			});
+			cyMap.map.addLayers([pointLayer,tempLayer]);
+		}
+		//初始化地图工具
+		function initBaseTool() {
+			var gisBaseToolControl = new GisBaseToolControl({
+				mapObj : cyMap.map, //地图基本工具栏附加到的地图对象
+				dom : $scope.$("#baseTool")[0]
+			});
+		}
+		//加载树形元素
+		function addTree() {
+			//通过$ajax向后台获取代码类型数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/traffic/getTree",
+				success : function(data) {
+					//加载代码类型树
+					$scope.$('#siteTree').tree({
+						data : data,
+						onSelect : function(node) {
+							//判断是否是叶子节点
+							var isLeaf = $scope.$('#cy-tree').tree('isLeaf', node.target);
+							if (isLeaf) {
+							}
+						},
+						onLoadSuccess : function(node, data) {
+							//获得所有的根节点
+							var roots = $scope.$('#siteTree').tree("getRoots");
+							//获得所有的子节点
+							var rts = $scope.$('#siteTree').tree("getChildren");
+							$scope.$('#siteTree').tree("collapseAll");
+							//折叠所有节点
+							$scope.$('#siteTree').tree("expand", roots[0].target);
+							//展开第一个根节点下的所有节点
+							$scope.$('#siteTree').tree("select", rts[1].target);
+							//默认选中子节点的第一个节点
+						},
+						onDblClick : function(node, data) {
+							if (node.attribute.lonLat) {
+								cyMap.location(createGeoFromWkt(node.attribute.lonLat));
+							}
+							else{
+								$.messager.alert("提示", "经纬度信息为空,无法定位!");
+							}
+							var parent = $scope.$("#siteTree").tree("getParent", node.target);
+							showInfoDialog(parent.id,node.attribute);
+						}
+					});
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "加载失败!");
+				}
+			});
+		}
+
+		//搜索树
+		$scope.initSearchTextbox = function() {
+			//点位搜索框初始化搜索按钮和清除按钮
+			$('#search').textbox({
+				icons : [{
+					iconCls : 'icon-search', //查询按钮
+					iconWidth : 34,
+					handler : function(e) {
+						$scope.search(e);
+					}
+				}]
+			});
+		};
+		//查询按钮点击事件
+		$scope.search = function(e) {
+			var searchText = $scope.$(e.data.target).textbox('getText').trim();
+			if(searchText==""){
+				return;
+			}
+			$scope.$('#searchReuslt').show();
+			$scope.$('#siteTree').hide();
+			//$scope.$("#back").show();
+			var searchResult = [];
+			var arr = $scope.$("#siteTree").tree("getRoots");
+			if (arr) {
+				for (var index in arr ) {
+					getSearchData(searchResult, arr[index], searchText);
+				}
+			}
+			var length = searchResult.length;
+			var str = "共" + length + "项结果";
+			$scope.$("#count").text(str);
+			if (length > 0) {
+				//加载搜索结果列表
+				$scope.$("#searchReusltDlst").datalist({
+					data : searchResult,
+					border : false,
+					textField : "name",
+					valueField : "id",
+					//groupField:"parentName",
+					rowStyler : function(index, row) {
+						return 'cursor: pointer;';
+					},
+					onDblClickRow : function(index, row) {
+						if(row.attribute.lonLat){
+							cyMap.location(createGeoFromWkt(row.attribute.lonLat));
+						}						
+						showInfoDialog(row.parentId,row.attribute);
+					},
+					textFormatter : textformat
+				});
+			}
+		};		
+		function textformat(value, row, index) {
+			var str;
+			if (row.parentId == "1") {
+				str = "<img src='themes/default/images/layers/zhifa03.png' style='width: 20px; height: 20px;'>";
+			} else if (row.parentId == "2") {
+				str = "<img src='themes/default/images/layers/gangting03.png' style='width: 20px; height: 20px;'>";
+			} else if (row.parentId == "3") {
+				str = "<img src='themes/default/images/layers/chaoxian03.png' style='width: 20px; height: 20px;'>";
+			} else if (row.parentId == "4") {
+				str = "<img src='themes/default/images/layers/xiaqu03.png' style='width: 20px; height: 20px;'>";
+			}
+			str+=" ";
+			str += value;
+			return $("<span/>").append(str).html();
+		}
+		function showInfoDialog(parentId,attribute){
+			$scope.$setParam("newData",attribute);
+			var client=$scope.$("#map").offset();
+			var mapSize=cyMap.map.size;			
+			var left=client.left+mapSize.w/2+15;
+			var top=client.top;	
+			if (parentId == "1") {				
+				$scope.$openDialog("InfoDialog", {
+					title : "执法服务站",
+					height : 300,
+					width : 460,
+					modal:false,
+					href : "tpls/sysManagement/traffic/trafficInfo/zhifa-info.html"
+				});
+				var h=mapSize.h/2-270;
+				if(h>0){
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+h
+					});
+				}else{
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+10
+					});
+				}
+			} else if (parentId == "2") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警岗亭",
+					height : 190,
+					width : 460,
+					modal:false,
+					href : "tpls/sysManagement/traffic/trafficInfo/gangting-info.html"
+				});
+				var h=mapSize.h/2-190;
+				if(h>0){
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+h
+					});
+				}else{
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+10
+					});
+				}
+			} else if (parentId == "3") {
+				$scope.$openDialog("InfoDialog", {
+					title : "超限检查站",
+					height : 190,
+					width : 460,
+					modal:false,
+					href : "tpls/sysManagement/traffic/trafficInfo/chaoxian-info.html"
+				});
+				var h=mapSize.h/2-190;
+				if(h>0){
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+h
+					});
+				}else{
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+10
+					});
+				}
+			} else if (parentId == "4") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警机构",
+					height : 190,
+					width : 460,
+					modal:false,
+					href : "tpls/sysManagement/traffic/trafficInfo/jiaojing-info.html"
+				});
+				var h=mapSize.h/2-190;
+				if(h<0){
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top+h
+					});
+				}else{
+					$scope.$getDialog("InfoDialog").dialog("resize",{
+						left:left,
+						top:top
+					});
+				}
+			}
+		}
+
+		/**
+		 * 返回树
+		 */
+		$scope.back = function() {
+			//addTree();
+			
+			$scope.$('#searchReuslt').hide();
+			$scope.$('#siteTree').show();
+			$scope.$("#searchReusltDlst").datalist({
+				data : []
+			});
+			//$scope.$("#back").hide();
+		};
+
+		/**
+		 * 获得查找结果数据
+		 */
+		var getSearchData = function(result, tree, searchIndex) {
+			if (tree.children && tree.children.length > 0) {
+				for (var index in tree.children) {
+					getSearchData(result, tree.children[index], searchIndex);
+				}
+			} else if (tree.text.indexOf(searchIndex) >= 0) {
+				var parent = $scope.$("#siteTree").tree("getParent", tree.target);
+				result.push({
+					id : tree.id,
+					name : tree.text,
+					parentName : parent ? parent.text : "",
+					parentId : parent ? parent.id : "",
+					attribute : tree.attribute
+				});
+			}
+
+		};
+
+		//修改元素
+		$scope.modifyFeature = function() {
+			var treeDom = $scope.$("#siteTree");
+			var dataListDom = $scope.$("#searchReuslt");
+			if (treeDom.is(":visible")) {
+				var current = $scope.$("#siteTree").tree("getSelected");
+				if (current && (!current.children || current.children.length == 0)) {
+					var parent = $scope.$("#siteTree").tree("getParent", current.target);
+					modify(parent.id, current.attribute);
+				} else {
+					$.messager.alert("提示", "请选择!");
+				}
+			}
+			if (dataListDom.is(":visible")) {
+				var current = $scope.$("#searchReusltDlst").datalist("getSelected");
+				if (current) {
+					modify(current.parentId, current.attribute);
+				} else {
+					$.messager.alert("提示", "请选择!");
+				}
+			}
+		};
+		//根据父节点类型和数据修改
+		function modify(parentId, attribute) {
+			//执法服务站
+			if (parentId == "1") {
+				$scope.$setParam("newData", attribute);
+				$scope.$setParam("saveData", function(params) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/policeAgency/enforceStation/update",
+						params : params,
+						success : function(data) {
+							$scope.$getDialog("editDialog").dialog("close");
+							addTree();
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "修改失败！");
+						}
+					});
+				});
+				$scope.$openDialog("editDialog", {
+					title : "&nbsp;&nbsp;编辑执法服务站 ",
+					height : 370,
+					width : 800,
+					href : "tpls/sysManagement/traffic/trafficInfo/zhifa.html?type=edit",
+				}, true);
+			}
+			//交警岗亭
+			else if (parentId == "2") {
+				$scope.$setParam("newData", attribute);
+				$scope.$setParam("saveData", function(params) {
+					//后台保存数据
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/policeAgency/policePost/update",
+						params : params,
+						success : function(data) {
+							$scope.$getDialog("editDialog").dialog("close");
+							addTree();
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "修改失败！");
+						}
+					});
+				});
+				$scope.$openDialog("editDialog", {
+					title : "&nbsp;&nbsp;编辑交警岗亭 ",
+					height : 330,
+					width : 800,
+					href : "tpls/sysManagement/traffic/trafficInfo/gangting.html?type=edit",
+				}, true);
+			}
+			//超限检查站
+			else if (parentId == "3") {
+				$scope.$setParam("newData", attribute);
+				$scope.$setParam("saveData", function(params) {
+					//后台保存数据
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/policeAgency/overRun/update",
+						params : params,
+						success : function(data) {
+							$scope.$getDialog("editDialog").dialog("close");
+							addTree();
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "修改失败！");
+						}
+					});
+				});
+				$scope.$openDialog("editDialog", {
+					title : "&nbsp;&nbsp;编辑超限检查站 ",
+					height : 330,
+					width : 800,
+					href : "tpls/sysManagement/traffic/trafficInfo/chaoxian.html?type=edit",
+				}, true);
+			}
+		}
+
+
+		$scope.deleteFeature = function() {
+			var treeDom = $scope.$("#siteTree");
+			var dataListDom = $scope.$("#searchReuslt");
+			if (treeDom.is(":visible")) {
+				var current = $scope.$("#siteTree").tree("getSelected");
+				if (current && (!current.children || current.children.length == 0)) {
+					var parent = $scope.$("#siteTree").tree("getParent", current.target);
+					deleteF(parent.id, current.attribute);
+					
+				} else {
+					$.messager.alert("提示", "请选择要删除的内容!");
+				}
+			}
+			if (dataListDom.is(":visible")) {
+				var current = $scope.$("#searchReusltDlst").datalist("getSelected");
+				var index = $scope.$("#searchReusltDlst").datalist("getRowIndex", current);
+				if (current) {
+					deleteF(current.parentId, current.attribute);
+					addTree();
+					$scope.$("#searchReusltDlst").datalist("deleteRow", index);
+				} else {
+					$.messager.alert("提示", "请选择要删除的内容!");
+				}
+			}
+		};
+
+		function deleteF(parentId, attribute) {
+			//删除执法服务站
+			if (parentId == "1") {
+				$.messager.confirm("提示", "你确定要删除吗?", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "sysCfg/policeAgency/enforceStation/delete",
+							params : {
+								id : attribute.lawEnforceStationId
+							},
+							success : function(data) {
+								addTree();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+			//删除交警岗亭
+			else if (parentId == "2") {
+				$.messager.confirm("提示", "你确定要删除吗?", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "sysCfg/policeAgency/policePost/delete",
+							params : {
+								id : attribute.policePostId
+							},
+							success : function(data) {
+								addTree();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+			//删除超限检查站
+			else if (parentId == "3") {
+				$.messager.confirm("提示", "你确定要删除吗?", function(flag) {
+					if (flag) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "sysCfg/policeAgency/overRun/delete",
+							params : {
+								id : attribute.checkpointId
+							},
+							success : function(data) {
+								addTree();
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+		}
+
+		
+
+		//添加执法服务站
+		$scope.addZhifa = function() {
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/policeAgency/enforceStation/add",
+					params : params,
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						addTree();
+						var feas = pointLayer.getFeaturesByAttribute("layerType", "zhifa");
+						if(feas.length>0){
+							$scope.showZhifa();
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+			$scope.$openDialog("addDialog", {
+				title : "&nbsp;&nbsp;添加执法服务站 ",
+				height : 370,
+				width : 800,
+				href : "tpls/sysManagement/traffic/trafficInfo/zhifa.html?type=add",
+			}, true);
+
+		};
+		//添加交警岗亭
+		$scope.addGangting = function() {
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/policeAgency/policePost/add",
+					params : params,
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						addTree();
+						var feas = pointLayer.getFeaturesByAttribute("layerType", "gangting");
+						if(feas.length>0){
+							$scope.showGangting();
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+			$scope.$openDialog("addDialog", {
+				title : "&nbsp;&nbsp;添加交警岗亭 ",
+				height : 330,
+				width : 800,
+				href : "tpls/sysManagement/traffic/trafficInfo/gangting.html?type=add",
+			}, true);
+		};
+		//添加超限检查站
+		$scope.addChaoxian = function() {
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/policeAgency/overRun/add",
+					params : params,
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						addTree();
+						var feas = pointLayer.getFeaturesByAttribute("layerType", "chaoxian");
+						if(feas.length>0){
+							$scope.showChaoxian();
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+			$scope.$openDialog("addDialog", {
+				title : "&nbsp;&nbsp;添加超限检查站 ",
+				height : 310,
+				width : 800,
+				href : "tpls/sysManagement/traffic/trafficInfo/chaoxian.html?type=add",
+			}, true);
+
+		};
+
+		//显示交警机构
+		$scope.showJiaojing = function() {
+			$scope.closeJiaojing();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/policeOrg/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertJiaojing(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中插入交警机构
+		function insertJiaojing(data) {
+			if (data.orgLatitude && data.orgLongitude) {
+				var wkt = "POINT(" + data.orgLongitude + " " + data.orgLatitude + ")";
+				var geometry = wkt_c.read(wkt).geometry.clone();
+				geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				var style = {
+					graphicWidth : 15,
+					graphicHeight : 15,
+					externalGraphic : "themes/default/images/layers/单兵03.png"
+				};
+				var arr = {};
+				$.extend(arr, data);
+				arr.tips = data.orgName;
+				arr.layerType = "jiaojing";
+				var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+				pointLayer.addFeatures(feature);
+			}
+		}
+
+		//关闭交警图层
+		$scope.closeJiaojing = function() {
+			var feas = pointLayer.getFeaturesByAttribute("layerType", "jiaojing");
+			pointLayer.removeFeatures(feas);
+		};
+		//显示执法服务站
+		$scope.showZhifa = function() {
+			$scope.closeZhifa();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/enforceStation/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertZhifa(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中插入执法服务站
+		function insertZhifa(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+			var style = {
+				graphicWidth : 15,
+				graphicHeight : 15,
+				externalGraphic : "themes/default/images/layers/zhifa03.png"
+			};
+
+			var arr = {};
+			$.extend(arr, data);
+			arr.tips = data.lawEnforceStationName;
+			arr.layerType = "zhifa";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+			pointLayer.addFeatures(feature);
+		}
+
+		//关闭执法服务站
+		$scope.closeZhifa = function() {
+			var feas = pointLayer.getFeaturesByAttribute("layerType", "zhifa");
+			pointLayer.removeFeatures(feas);
+
+		};
+		//显示交警岗亭
+		$scope.showGangting = function() {
+			$scope.closeGangting();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/policePost/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertGangting(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//在图层中加入交警岗亭
+		function insertGangting(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+			var style = {
+				graphicWidth : 15,
+				graphicHeight : 15,
+				externalGraphic : "themes/default/images/layers/gangting03.png"
+			};
+			var arr = {};
+			$.extend(arr, data);
+			arr.tips = data.postName;
+			arr.layerType = "gangting";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+			pointLayer.addFeatures(feature);
+		}
+
+		//关闭交警岗亭
+		$scope.closeGangting = function() {
+			var feas = pointLayer.getFeaturesByAttribute("layerType", "gangting");
+			pointLayer.removeFeatures(feas);
+		};
+		//显示超限检查站
+		$scope.showChaoxian = function() {
+			$scope.closeChaoxian();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/overRun/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertChaoxian(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中加入超限检查站
+		function insertChaoxian(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var style = {
+				graphicWidth : 15,
+				graphicHeight : 15,
+				externalGraphic : "themes/default/images/layers/chaoxian03.png"
+			};
+			var arr = {};
+			$.extend(arr, data);
+			arr.tips = data.checkpointName;
+			arr.layerType = "chaoxian";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, style);
+			pointLayer.addFeatures(feature);
+		}
+
+		//关闭超限检查站
+		$scope.closeChaoxian = function() {
+			var feas = pointLayer.getFeaturesByAttribute("layerType", "chaoxian");
+			pointLayer.removeFeatures(feas);
+		};
+		
+		//显示超限检查站
+		$scope.showXiaqu = function() {
+			$scope.closeXiaqu();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "sysCfg/policeAgency/policeArea/selectAll",
+				success : function(data) {
+					for (var index in data) {
+						insertXiaqu(data[index]);
+					}
+				},
+				fail : function() {
+				}
+			});
+		};
+		//图层中加入超限检查站
+		function insertXiaqu(data) {
+			var geometry = wkt_c.read(data.lonLat).geometry.clone();
+			geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+			var style = {
+				graphicWidth : 15,
+				graphicHeight : 15,
+				externalGraphic : "themes/default/images/layers/08.png"
+			};
+			var arr = {};
+			$.extend(arr, data);
+			//arr.tips = $scope.$getOrgName(data.orgId);
+			arr.layerType = "xiaqu";
+			var feature = new OpenLayers.Feature.Vector(geometry, arr, null);
+			pointLayer.addFeatures(feature);
+		}
+		//关闭超限检查站
+		$scope.closeXiaqu = function() {
+			var feas = pointLayer.getFeaturesByAttribute("layerType", "xiaqu");
+			pointLayer.removeFeatures(feas);
+		};
+		//打开info 窗口
+		function openInfoDialog(obj) {
+			$scope.$setParam("newData", obj);
+			var layerName = obj.layerType;
+			if (layerName == "jiaojing") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警机构详情",
+					height : 190,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/jiaojing-info.html"
+				}, true);
+			} else if (layerName == "zhifa") {
+				$scope.$openDialog("InfoDialog", {
+					title : "执法服务站详情",
+					height : 300,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/zhifa-info.html"
+				}, true);
+			} else if (layerName == "gangting") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警岗亭详情",
+					height : 190,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/gangting-info.html"
+				}, true);
+			} else if (layerName == "chaoxian") {
+				$scope.$openDialog("InfoDialog", {
+					title : "超限检查站详情",
+					height : 190,
+					width : 460,
+					href : "tpls/sysManagement/traffic/trafficInfo/chaoxian-info.html"
+				}, true);
+			}
+			else if (layerName == "xiaqu") {
+				$scope.$openDialog("InfoDialog", {
+					title : "交警辖区",
+					height : 120,
+					width : 300,
+					href : "tpls/sysManagement/traffic/trafficInfo/xiaqu-info.html"
+				}, true);
+			}
+
+		}
+
+		//初始化图层控制控件
+		function initLayerContrl() {
+			var domDiv = $scope.$("#layerDock")[0];
+			
+			var showItem = [];
+			var notShowItem = [];
+			//获取该用户能够拥有的设备图层
+			var showItemsStr = localStorage.getItem("trafficPolice-showItem");
+			var showItemLocalStorage = $.parseJSON(showItemsStr);
+
+			var notShowItemsStr = localStorage.getItem("trafficPolice-notShowItem");
+			var notShowItemLocalStorage = $.parseJSON(notShowItemsStr);
+			
+			if (showItemLocalStorage == null && notShowItemLocalStorage == null) {
+				//showItem.push(new LayerItem("danbing", "0", "交警机构", "themes/default/images/layers/danbing01.png", "themes/default/images/layers/danbing02.png", false));
+				showItem.push(new LayerItem("gangting", "1", "交警岗亭", "themes/default/images/layers/gangting01.png", "themes/default/images/layers/gangting02.png", false));
+				showItem.push(new LayerItem("zhifa", "2", "执法服务站", "themes/default/images/layers/zhifa01.png", "themes/default/images/layers/zhifa02.png", false));
+				showItem.push(new LayerItem("chaoxian", "3", "超限检查站", "themes/default/images/layers/chaoxian01.png", "themes/default/images/layers/chaoxian02.png", false));
+				showItem.push(new LayerItem("xiaqu", "4", "交警辖区", "themes/default/images/layers/xiaqu01.png", "themes/default/images/layers/xiaqu02.png", false));
+			}else{
+				for(var index in showItemLocalStorage){
+					var data=showItemLocalStorage[index];
+					var iconDefaultUrl="themes/default/images/layers/"+data.layerType+"01.png";
+					var iconSelectUrl="themes/default/images/layers/"+data.layerType+"02.png";
+					showItem.push(new LayerItem(data.layerType, index, data.layerName, iconDefaultUrl, iconSelectUrl, data.isDefaultShow));
+				}
+				for(var index in notShowItemLocalStorage){
+					var data=notShowItemLocalStorage[index];
+					var iconDefaultUrl="themes/default/images/layers/"+data.layerType+"01.png";
+					var iconSelectUrl="themes/default/images/layers/"+data.layerType+"02.png";
+					notShowItem.push(new LayerItem(data.layerType, index, data.layerName, iconDefaultUrl, iconSelectUrl, data.isDefaultShow));
+				}
+			}
+			var layerControl = new LayerControl({
+				dom : domDiv,
+				showItem : showItem,
+				notShowItem : notShowItem,
+				setItemImgUrl : 'themes/default/images/layers/setting02.png',
+				onLayerClick : layerItemClick,
+				saveKey:"trafficPolice"
+			});
+			$scope.$("#layerDock").css("margin-left", -layerControl.dockWidth / 2);
+		}
+
+		//显示或者关闭图层的回调函数
+		function layerItemClick(isLayerSelected, layerType) {
+			if (isLayerSelected)//选中该图层
+			{
+				switch(layerType) {
+				case "danbing":
+					$scope.showJiaojing();
+					break;
+				case "gangting":
+					$scope.showGangting();
+					break;
+				case "zhifa":
+					$scope.showZhifa();
+					break;
+				case "chaoxian":
+					$scope.showChaoxian();
+					break;
+				case "xiaqu":
+					$scope.showXiaqu();
+					break;
+				}
+			} else {
+				switch(layerType) {
+				case "danbing":
+					$scope.closeJiaojing();
+					break;
+				case "gangting":
+					$scope.closeGangting();
+					break;
+				case "zhifa":
+					$scope.closeZhifa();
+					break;
+				case "chaoxian":
+					$scope.closeChaoxian();
+					break;
+				case "xiaqu":
+					$scope.closeXiaqu();
+					break;
+				}
+			}
+		}
+	});
+
+</script>
+<style>
+	#trafficPolice .tr {
+		line-height: 28px;
+		height: 34px;
+	}
+	#trafficPolice #tools {
+		width: 665px;
+		height: 34px;
+		position: absolute;
+		right: 10px;
+		top: 2px;
+		z-index: 100000;
+		background: #EE9572;
+	}
+	#trafficPolice #layerDock {
+		position: absolute;
+		bottom: 0px;
+		left: 50%;
+		z-index: 100000;
+	}
+	#trafficPolice #baseTool {
+		position: absolute;
+		top: 3px;
+		right: 5px;
+		z-index: 100001;
+	}
+</style>
+

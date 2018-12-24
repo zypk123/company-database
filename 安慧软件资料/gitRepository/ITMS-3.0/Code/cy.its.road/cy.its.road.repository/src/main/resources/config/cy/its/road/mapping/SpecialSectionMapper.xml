@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.SpecialSectionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.highway.SpecialSection" >
+    <id column="SPECIAL_SECTION_ID" property="specialSectionId" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_NAME" property="specialSectionName" jdbcType="VARCHAR" />
+    <result column="BEGIN_SITE_ADDRESS" property="beginSiteAddress" jdbcType="VARCHAR" />
+    <result column="END_SITE_ADDRESS" property="endSiteAddress" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_LENGTH" property="specialSectionLength" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_TYPE" property="specialSectionType" jdbcType="VARCHAR" />
+    <result column="SIGNAL_BOARD_NUM" property="signalBoardNum" jdbcType="VARCHAR" />
+    <result column="VIDEO_ID_LIST" property="videoIdList" jdbcType="VARCHAR" />
+    <result column="LED_ID_LIST" property="ledIdList" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SPECIAL_SECTION_ID, ROAD_ID, SPECIAL_SECTION_NAME, BEGIN_SITE_ADDRESS, END_SITE_ADDRESS, 
+    SPECIAL_SECTION_LENGTH, SPECIAL_SECTION_TYPE, SIGNAL_BOARD_NUM, VIDEO_ID_LIST, LED_ID_LIST
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SPECIAL_SECTION
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SPECIAL_SECTION
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.highway.SpecialSection" >
+    insert into T_SYS_SPECIAL_SECTION (SPECIAL_SECTION_ID, ROAD_ID, SPECIAL_SECTION_NAME, 
+      BEGIN_SITE_ADDRESS, END_SITE_ADDRESS, SPECIAL_SECTION_LENGTH, 
+      SPECIAL_SECTION_TYPE, SIGNAL_BOARD_NUM, VIDEO_ID_LIST, 
+      LED_ID_LIST)
+    values (#{specialSectionId,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR}, #{specialSectionName,jdbcType=VARCHAR}, 
+      #{beginSiteAddress,jdbcType=VARCHAR}, #{endSiteAddress,jdbcType=VARCHAR}, #{specialSectionLength,jdbcType=VARCHAR}, 
+      #{specialSectionType,jdbcType=VARCHAR}, #{signalBoardNum,jdbcType=VARCHAR}, #{videoIdList,jdbcType=VARCHAR}, 
+      #{ledIdList,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.highway.SpecialSection" >
+    insert into T_SYS_SPECIAL_SECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="specialSectionId != null" >
+        SPECIAL_SECTION_ID,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="specialSectionName != null" >
+        SPECIAL_SECTION_NAME,
+      </if>
+      <if test="beginSiteAddress != null" >
+        BEGIN_SITE_ADDRESS,
+      </if>
+      <if test="endSiteAddress != null" >
+        END_SITE_ADDRESS,
+      </if>
+      <if test="specialSectionLength != null" >
+        SPECIAL_SECTION_LENGTH,
+      </if>
+      <if test="specialSectionType != null" >
+        SPECIAL_SECTION_TYPE,
+      </if>
+      <if test="signalBoardNum != null" >
+        SIGNAL_BOARD_NUM,
+      </if>
+      <if test="videoIdList != null" >
+        VIDEO_ID_LIST,
+      </if>
+      <if test="ledIdList != null" >
+        LED_ID_LIST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="specialSectionId != null" >
+        #{specialSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionName != null" >
+        #{specialSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginSiteAddress != null" >
+        #{beginSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endSiteAddress != null" >
+        #{endSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionLength != null" >
+        #{specialSectionLength,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionType != null" >
+        #{specialSectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="signalBoardNum != null" >
+        #{signalBoardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="videoIdList != null" >
+        #{videoIdList,jdbcType=VARCHAR},
+      </if>
+      <if test="ledIdList != null" >
+        #{ledIdList,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.highway.SpecialSection" >
+    update T_SYS_SPECIAL_SECTION
+    <set >
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionName != null" >
+        SPECIAL_SECTION_NAME = #{specialSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginSiteAddress != null" >
+        BEGIN_SITE_ADDRESS = #{beginSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endSiteAddress != null" >
+        END_SITE_ADDRESS = #{endSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionLength != null" >
+        SPECIAL_SECTION_LENGTH = #{specialSectionLength,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionType != null" >
+        SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="signalBoardNum != null" >
+        SIGNAL_BOARD_NUM = #{signalBoardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="videoIdList != null" >
+        VIDEO_ID_LIST = #{videoIdList,jdbcType=VARCHAR},
+      </if>
+      <if test="ledIdList != null" >
+        LED_ID_LIST = #{ledIdList,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.highway.SpecialSection" >
+    update T_SYS_SPECIAL_SECTION
+    set ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      SPECIAL_SECTION_NAME = #{specialSectionName,jdbcType=VARCHAR},
+      BEGIN_SITE_ADDRESS = #{beginSiteAddress,jdbcType=VARCHAR},
+      END_SITE_ADDRESS = #{endSiteAddress,jdbcType=VARCHAR},
+      SPECIAL_SECTION_LENGTH = #{specialSectionLength,jdbcType=VARCHAR},
+      SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=VARCHAR},
+      SIGNAL_BOARD_NUM = #{signalBoardNum,jdbcType=VARCHAR},
+      VIDEO_ID_LIST = #{videoIdList,jdbcType=VARCHAR},
+      LED_ID_LIST = #{ledIdList,jdbcType=VARCHAR}
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSpecialSections" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_SYS_SPECIAL_SECTION V
+		<where>			
+			<if test="roadId != null and roadId != '' ">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="specialSectionName != null and specialSectionName != '' ">
+				AND SPECIAL_SECTION_NAME like '%' || #{specialSectionName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="specialSectionType != null and specialSectionType != '' ">
+				AND SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=VARCHAR}
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+	<select id="countSpecialSections" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_SPECIAL_SECTION
+		<where>
+			<if test="roadId != null and roadId != '' ">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="specialSectionName != null and specialSectionName != '' ">
+				AND SPECIAL_SECTION_NAME like '%' || #{specialSectionName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="specialSectionType != null and specialSectionType != '' ">
+				AND SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+  	<delete id="deleteByRoadId" parameterType="java.lang.String">
+		delete from T_SYS_SPECIAL_SECTION
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

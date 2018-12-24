@@ -1,0 +1,477 @@
+<div class="easyui-layout" id="vehicle-pass-detail">
+	<div data-options="region:'west',border:false,width:745">
+		<div class="easyui-layout">
+			<div data-options="region:'west',width:50,border:false" id="prev" cy-click="showPrevPassInfo">
+				&nbsp;
+			</div>
+			<div id="imageView" data-options="region:'center',width:50,border:false"></div>
+			<div data-options="region:'east',width:50,border:false" id="next" cy-click="showNextPassInfo">
+				&nbsp;
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="linkbutton_toolbar" style="padding-left:10px;width:auto;">
+			<a class="button-main" id="autoPlay" data-options="iconCls:'icon-play'" cy-click="start">自动播放</a>
+			<a id="stopPlay" class="easyui-linkbutton button-main" data-options="iconCls:'icon-stop'" cy-click="stop" style="display:none">停止播放</a>
+			<!-- 勾选<span class="checkbox" cy-click="checkOption"></span> -->
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-path'" cy-click="viewTrack" id="viewTrackBtn">查看轨迹</a>
+			<!-- <a class="easyui-linkbutton" data-options="iconCls:'icon-video'">查看视频</a> -->
+		</div>
+		<div id="timeoutList">
+			<div cy-click="setAutoTimeout(2)">
+				2秒
+			</div>
+			<div data-options="iconCls:'icon-ok-solid'" cy-click="setAutoTimeout(5)">
+				5秒
+			</div>
+			<div cy-click="setAutoTimeout(10)">
+				10秒
+			</div>
+			<div cy-click="setAutoTimeout(15)">
+				15秒
+			</div>
+		</div>
+		<div id="passInfo" class="searchPanel" style="height:230px;">
+			<div class="panel_title">
+				过车信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="td" style="width:155px;" >
+						<div class="tr" cy-name="currentPassInfo.plateNbr" cy-filter="plateColorFilter"></div>
+						<div class="tr veh-detial">
+							<p class="car" title="车辆特征">
+								<span cy-name="currentPassInfo.vehicleShape" cy-filter="codeName('004')"></span>
+								<span cy-name="currentPassInfo.vehicleColor" cy-filter="codeName('006')"></span>
+							</p>
+							<p class="time" title="抓拍时间" cy-name="currentPassInfo.passTime"></p>
+							<p class="district" title="机构信息" cy-name="currentPassInfo.orgCode" cy-filter="$getOrgName"></p>
+							<p class="direction" title="方向" cy-name="currentPassInfo.roadCode" cy-filter="getRoadAndDirection"></p>
+							<p class="position"  title="地点" cy-name="currentPassInfo.siteName"></p>
+						</div>
+					</div>
+					<div class="td" style="margin-top: 8px;width:100px;">
+						<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'">车辆信息</a>
+					</div>
+					<div class="td" style="width:70px;">
+						<!-- <img src="themes/default/images/brand/BaoMa.jpg" width="70px"/> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="vehInfo" class="searchPanel" style="height: 217px;overflow-x: hidden;overflow-y: auto;">
+			<div class="panel_title">
+				车辆信息
+			</div>
+			<!-- <div class="table">
+			<div class="tr">
+			<div class="th">车辆特征：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">机动车状态：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">检验有效期：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">保险终止日期：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">车主信息：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">行政区划：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">发动机号：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">车辆识别带代码：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">初次登记日期：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">最近年检日期：</div>
+			<div class="td"></div>
+			</div>
+			<div class="tr">
+			<div class="th">核定载客：</div>
+			<div class="td"></div>
+			</div>
+			</div> -->
+		</div>
+	</div>
+</div>
+<script>
+	/**
+	 * currentData ： 当前页所有数据
+	 * index ：当前下标
+	 * searchData : 查询新数据方法
+	 * oncheck ： 选中后执行方法
+	 */
+	InitPage(["currentData", "index", "searchData", "oncheck","closeDialog","queryData",'htmlId'], function($scope) {
+		
+		//自动播放时间间隔，默认2秒
+		var autoPlayTimeout = 5;
+		//当前自动播放状态，默认不是自动播放
+		var isPlaying = false;
+		//定时器
+		var interval;
+		//初始化自动播放按钮
+		$scope.$("#autoPlay").menubutton({
+			menu : $scope.$("#timeoutList")
+		});
+		//checkbox事件
+		$scope.checkOption = function(e) {
+			var target = e.currentTarget;
+			if ($(target).attr("checked")) {
+				$(target).removeClass("checked");
+				$(target).attr("checked", false);
+			} else {
+				$(target).addClass("checked");
+				$(target).attr("checked", true);
+			}
+		};
+
+		$scope.load = function() {
+			//初始化数据
+			updateDom($scope.currentData.result.rows[$scope.index]);
+		};
+	
+		/**
+		 * 开始自动播放 
+		 */
+		$scope.start = function(){
+			$scope.$("#autoPlay").hide();
+			$scope.$("#stopPlay").show();
+			interval = setTimeout($scope.startAutoPlay,autoPlayTimeout*1000);
+		};
+		/**
+		 * 开始自动播放 
+		 */
+		$scope.stop = function(){
+			$scope.$("#autoPlay").show();
+			$scope.$("#stopPlay").hide();
+			$scope.stopAutoPlay();
+		};
+		
+		/**
+		 * 展示上一条数据
+		 */
+		$scope.showPrevPassInfo = function(e) {
+			if(e){
+				//点击任意按钮，停止播放示
+				$scope.stop();
+			}
+			if ($scope.index == 0) {
+				//已经是第一条数据，查询上一页数据
+				$scope.searchData("prev", function(data) {
+					if (data) {
+						$scope.currentData = data;
+						$scope.index = $scope.currentData.result.rows.length - 1;
+						//更新数据
+						updateDom($scope.currentData.result.rows[$scope.index]);
+					}
+				});
+			} else {
+				//更新页面数据
+				updateDom($scope.currentData.result.rows[--$scope.index]);
+			}
+		};
+
+		/**
+		 * 展示下一条数据
+		 */
+		$scope.showNextPassInfo = function(e) {
+			if(e){
+				//点击任意按钮，停止播放示
+				$scope.stop();
+			}
+			if ($scope.index == $scope.currentData.result.rows.length - 1) {
+				//已经是最后一条数据，查询下一页数据
+				$scope.searchData("next", function(data) {
+					if (data) {
+						$scope.currentData = data;
+						$scope.index = 0;
+						updateDom($scope.currentData.result.rows[$scope.index]);
+						//如果是自动播放状态，自动播放下一条
+						if(isPlaying){
+							interval = setTimeout($scope.startAutoPlay,autoPlayTimeout*1000);
+						}
+					}else{
+						if(isPlaying){
+							//没有新的数据，停止自动播放
+							$scope.stop();
+						}
+					}
+				});
+			} else {
+				//更新页面数据
+				updateDom($scope.currentData.result.rows[++$scope.index]);
+				//如果是自动播放状态，自动播放下一条
+				if(isPlaying){
+					interval = setTimeout($scope.startAutoPlay,autoPlayTimeout*1000);
+				}
+			}
+		};
+
+		/**
+		 *  更新页面数据
+		 */
+		var updateDom = function(data) {
+			$scope.currentPassInfo = data;
+			//无牌车没有轨迹查询
+			if(($scope.currentPassInfo.plateNbr).length<7 ){
+				$scope.$("#viewTrackBtn").hide();
+			}else{
+				$scope.$("#viewTrackBtn").show();
+			}
+			
+			if($scope.htmlId && "vehiclePathResult"==$scope.htmlId || "passVehicleMonitor" == $scope.htmlId){
+				$scope.$("#viewTrackBtn").hide();
+			}else{
+				$scope.$("#viewTrackBtn").show();
+			}
+			//加载图片
+			var imgUrl =$scope.currentPassInfo.imageUrlPath;
+			//如果不包含http
+			if(imgUrl && imgUrl.indexOf("http") >= 0){
+				imgUrl = $scope.currentPassInfo.imageUrlPath;
+			}else {
+				imgUrl = $scope.$servletRoot + "/PassImage?imageUrl=" + $scope.currentPassInfo.imageUrlPath;
+			}
+			$scope.$setParam("images", [imgUrl]);
+			$scope.$("#imageView").panel("refresh", "tpls/public/image-view.html");
+			//更新其他数据
+			$scope.$updateDom("currentPassInfo");
+		};
+		
+		/**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+		/**
+		 * 号牌颜色过滤器
+		 */
+		$scope.plateColorFilter = function(value) {
+			var colorCode = $scope.currentPassInfo.plateColor;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			} 
+			return '<div class="plate ' + className + '">' + value + '</div>';
+		};
+
+		/**
+		 * 获得道路名称和方向名称
+		 */
+		$scope.getRoadAndDirection = function(value) {
+			var roadName = $scope.$getRoadName(value);
+			var directionName = $scope.currentPassInfo.directionName;
+			return roadName + " " + directionName;
+		};
+		
+		/**
+		 * 开始自动播放 
+		 */
+		$scope.startAutoPlay = function(){
+			isPlaying = true;
+			//下一条
+			$scope.showNextPassInfo();
+		};
+		 
+		/**
+		 * 停止自动播放 
+		 */
+		$scope.stopAutoPlay = function(){
+			isPlaying = false;
+			clearTimeout(interval);
+		};
+		
+		/**
+		 * 设置自动播放时间间隔 
+		 */
+		$scope.setAutoTimeout = function(timeout){
+			autoPlayTimeout = timeout;
+			var menu = $scope.$("#autoPlay").menubutton("options").menu;
+			return function(e){
+				var target = e.currentTarget;
+				//清空其他的icon
+				$(target).siblings(".menu-item").each(function(i,n){
+					menu.menu("setIcon",{
+						target : n,
+						iconCls : ""
+					});
+				});
+				//添加icon
+				menu.menu("setIcon",{
+					target : target,
+					iconCls : "icon-ok-solid"
+				});
+				//重启自动播放
+				if(isPlaying){
+					$scope.stop();
+				}
+				$scope.start();
+			};
+		};
+		 /**
+		    *查看车辆轨迹 
+		    */
+	    $scope.viewTrack = function(){
+	    	if(($scope.currentPassInfo.plateNbr).length<7){
+	    		return;
+	    	}
+	    	if($scope.htmlId &&"vehiclePathResult"==$scope.htmlId ){
+				return;
+			}
+	    	$scope.$goto("010301",
+	                {
+			    		plateNbr: $scope.currentPassInfo.plateNbr,
+			    		plateType:$scope.currentPassInfo.plateType,
+			    		passTimeStart:$scope.queryData.passTimeStart,
+			    		passTimeEnd:$scope.queryData.passTimeEnd,
+			    		initSearch:true
+	                });
+	        $scope.$destroySelf();
+		};
+		
+	}); 
+</script>
+<style type="text/css" media="screen">
+	#vehicle-pass-detail .plate {
+		text-align: center;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		font-size: 20px;
+		margin: 10px 20px;
+		border-radius: 5px;
+	}
+	#vehicle-pass-detail .plate-blue {
+		background-color: blue;
+		color: #FFFFFF;
+	}
+	#vehicle-pass-detail .plate-yellow {
+		background-color: yellow;
+		color: #00000;
+	}
+	#vehicle-pass-detail .plate-black {
+		background-color: black;
+		color: #FFFFFF;
+	}
+	#vehicle-pass-detail .plate-white {
+		background-color: white;
+		color: red;
+	}
+	#vehicle-pass-detail .plate-other {
+		background-color: #888888;
+		color: #FFFFFF;
+	}
+	#vehicle-pass-detail .veh-detial {
+		margin-left: 20px;
+		color: #24628A;
+		font-size: 14px;
+	}
+	#vehicle-pass-detail .plate-yellow {
+		background-color: yellow;
+		color: #000000;
+	}
+
+	#vehicle-pass-detail .plate-white {
+		background-color: #FFFFFF;
+		color: red;
+	}
+	#vehicle-pass-detail p {
+		margin: 0;
+		height: 30px;
+		line-height: 30px;
+		font-size: 14px;
+	}
+	#vehicle-pass-detail .time {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/time.png) no-repeat 10px 6px;
+	}
+	#vehicle-pass-detail .car {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/car.png) no-repeat 10px 6px;
+	}
+	#vehicle-pass-detail .car span {
+		font-size: 14px;
+	}
+	#vehicle-pass-detail .district {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/person.png) no-repeat 10px 6px;
+	}
+	#vehicle-pass-detail .direction {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/direction.png) no-repeat 10px 6px;
+	}
+	#vehicle-pass-detail .position {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/position.png) no-repeat 10px 6px;
+	}
+	#vehicle-pass-detail .th {
+		width: 100px;
+		text-align: right;
+	}
+	#vehicle-pass-detail .checkbox {
+		background: url(themes/default/images/checkbox-unchecked.png) no-repeat;
+		padding: 6px 16px;
+		cursor: pointer;
+		margin-left: 0;
+		margin-top: 4px;
+	}
+	#vehicle-pass-detail .checkbox.checked {
+		background: url(themes/default/images/checkbox-checked.png) no-repeat;
+		cursor: pointer;
+	}
+	#vehicle-pass-detail #next{
+		background: url(themes/default/images/right.png) no-repeat center center;
+		cursor: pointer;
+	}
+	#vehicle-pass-detail #next:hover{
+		background-color: #aedef5;
+	}
+	#vehicle-pass-detail #prev{
+		background: url(themes/default/images/left.png) no-repeat center center;
+		cursor: pointer;
+	}
+	#vehicle-pass-detail #prev:hover{
+		background-color: #aedef5;
+	}
+</style>

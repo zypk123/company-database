@@ -1,0 +1,42 @@
+<div id="deviceSysConfigTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div title="设备信息" data-options="href:'tpls/deviceManage/deviceConfig/device-sys-info.html'">
+
+    </div>
+    <div title="相机信息" data-options="href:'tpls/deviceManage/deviceConfig/camera-info.html'">
+
+    </div>
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceConfig/certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceConfig/device-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     * whichType ：设备类型
+     */
+    InitPage(["mode","whichType","whichName"],function($scope) {
+        //传递设备类型
+        $scope.$setParam("deviceType",$scope.whichType);
+        //传递设备名称
+        $scope.$setParam("whichName",$scope.whichName);
+        //获取mode参数
+        var currentMode= $scope.mode;
+        //设置访问tab页
+        if(currentMode=="ADD")
+        {
+            var deviceSysConfigTabs=$scope.$("#deviceSysConfigTabs");
+            $scope.$setParam("deviceSysConfigTabs",deviceSysConfigTabs);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 1);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 2);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 3);
+        }
+        //传递关闭弹出框的方法
+        $scope.$setParam("destroyTab1",$scope.$destroySelf);
+        $scope.$setParam("destroyTab2",$scope.$destroySelf);
+        $scope.$setParam("destroyTab3",$scope.$destroySelf);
+        $scope.$setParam("destroyTab4",$scope.$destroySelf);
+    });
+</script>

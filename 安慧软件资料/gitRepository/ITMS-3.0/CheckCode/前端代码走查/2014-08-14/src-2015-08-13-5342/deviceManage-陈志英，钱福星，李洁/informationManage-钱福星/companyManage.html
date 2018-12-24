@@ -1,0 +1,169 @@
+<div id="manufacturerInfo" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">承建商：</div>
+                        <div class="td">
+                            <select class="easyui-combobox" name="contractor_name">
+                                <option>==请选择==</option>
+                            </select>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+        </div>
+    </div>
+    <div  data-options="region:'center',border:true">
+        <table id="companyInfo" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/informationManage/companyData.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+                {field: 'id', checkbox: true},
+                {title:"承建商",field:"CONTRACTOR_NAME",width:100},
+                {title:"联系地址",field:"ADDRESS_DESC",width:150},
+                {title:"售后负责人",field:"CONTRACTOR_PERSON",width:100},
+                {title:"售后负责人联系电话",field:"CONTRACTOR_TEL",width:150},
+                {title : "操作",field : "OPERATER",width : 100,formatter : operate}
+            ]]
+        }
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        //条件查询
+        $scope.searchData = function(){
+            $scope.$search("queryData");
+        }
+        /**
+         * 新增厂商信息
+         */
+        $scope.addData = function(){
+            //建立弹出框
+            $scope.$openDialog("addDialog",{
+                title : "新增厂商信息",
+                width : 450,
+                height : 250,
+                href : "tpls/deviceManage/informationManage/companyOperate.html"
+            },true);
+            //关闭添加弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+            /**
+             * 新增保存
+             */
+            $scope.$setParam("saveData",function(data) {
+                //后台保存数据
+                $.ajax({
+                    url: "",
+                    data: "",
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新列表
+                        $scope.search("queryData");
+                    }
+                });
+            });
+        }
+        /**
+         *编辑厂商信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            var rowDatas = $scope.$("#companyInfo").datagrid("getData").rows;
+            $scope.$setParam("newData",{
+                CONTRACTOR_NAME : rowDatas[index].CONTRACTOR_NAME,
+                ADDRESS_DESC : rowDatas[index].ADDRESS_DESC,
+                CONTRACTOR_PERSON : rowDatas[index].CONTRACTOR_PERSON,
+                CONTRACTOR_TEL : rowDatas[index].CONTRACTOR_TEL
+            });
+            //创建编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑厂商信息",
+                width : 450,
+                height : 250,
+                href : "tpls/deviceManage/informationManage/companyOperate.html"
+            },true);
+            //关闭修改弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("editDialog").dialog("close");
+            });
+            saveData(data);
+        }
+        //保存
+        function saveData(data){
+            $.ajax({
+                url: "",
+                data: data ,
+                dataType: "json",
+                success: function (data) {
+                    //刷新列表
+                    $scope.search("queryData");
+                }
+            });
+        }
+        /**
+         *删除厂商信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            alert(index);
+        }
+        /**
+         * 批量删除
+         * @returns false
+         */
+        $scope.removeSomeData = function(){
+            var rows = $('#companyInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                alert("请选择需要删除的信息！");
+                return false;
+            }else{
+                alert("删除");
+            }
+        }
+    });
+</script>
+<style type="text/css">
+    #manufacturerInfo .th{
+        width: 80px;
+        text-align: right;
+
+    }
+    #manufacturerInfo .easyui-combobox{
+        width:120px;
+    }
+    #manufacturerInfo .button-search{
+        margin-left: 10px;
+    }
+</style>

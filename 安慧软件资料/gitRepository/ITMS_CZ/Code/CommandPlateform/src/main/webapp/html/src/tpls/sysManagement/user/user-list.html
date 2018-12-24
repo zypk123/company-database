@@ -1,0 +1,498 @@
+<div class="easyui-layout" id="user-message">
+	<!--定义机构导航-->
+	<div data-options="region:'west',title:'机构导航',split:true,border:false" style="width:220px;">
+		<div id="cy-tree"></div>
+	</div>
+	<div data-options="region:'center',border:false" style="border-left: solid 1px #ddd;">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false" style="height: 120px;">
+				<div class="searchPanel">
+					<div class="panel_title">
+						查询条件
+					</div>
+					<form cy-form="deptQueryUser" id="form" >
+						<div class="table">
+							<div class="tr">
+								<div class="th">
+									姓名：
+								</div>
+								<div class="td">
+									<input  name="policeName" class="easyui-textbox" data-options="validType:['notBlank']"style="width:120px;">
+								</div>
+								<div class="th">
+									警号：
+								</div>
+								<div class="td">
+									<input  name="policeCode" class="easyui-textbox" data-options="validType:['notBlank','fixedLength[6]']"style="width: 120px;">
+								</div>
+								<div class="th" style="width: 70px;">
+									在线状态：
+								</div>
+								<div class="td" style="width: 170px;">
+									<input type="radio" name="isOnline" value="" checked="checked"/>
+									全部
+									<input type="radio" name="isOnline" value="1"/>
+									在线
+									<input type="radio" name="isOnline" value="2"/>
+									离线
+								</div>
+								<div class="th">
+									<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+									cy-click="searchData" style="width: 60px;float: right;">查询</a>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="linkbutton_toolbar">
+					<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+					cy-click="addUser">添加</a>
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+					cy-click="removeByGrid">删除</a>
+				</div>
+			</div>
+			<div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+				<table id="yhData" cy-datagrid="optionsUser" cy-querydata="deptQueryUser"
+				cy-url="sysCfg/userAction/selectUser"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+
+		$scope.$getDefaultCode(['018', "411"]);
+
+		var orgId;
+
+		$scope.load = function() {
+
+			//加载树操作
+			$scope.$('#cy-tree').width(330).tree({
+				//加载机构树
+				data : $scope.$org,
+				//当用户选择树节点时触发
+				onSelect : function(node) {
+					orgId = node.id;
+					$scope.deptQueryUser.orgId = orgId;
+					$scope.deptQueryUser.orderName='policeCode';
+					$scope.deptQueryUser.orderType='asc';
+					$scope.$updateData("deptQueryUser");
+					$scope.$search("deptQueryUser");
+				},
+				//默认加载树的第一个节点信息
+				onLoadSuccess : function(node, data) {
+					//获得所有树节点
+					var roots = $scope.$('#cy-tree').tree("getRoots");
+					//默认第一个节点信息
+					$scope.$('#cy-tree').tree("select", roots[0].target);
+					//折叠所有节点
+					$scope.$('#cy-tree').tree('collapseAll');
+					//展开第一个节点
+					$scope.$('#cy-tree').tree('expand', roots[0].target);
+				},
+			});
+
+		};
+
+		/**
+		 * 查找信息
+		 */
+		$scope.searchData = function() {
+			if($scope.$("#form").form("validate")){
+				trimObject($scope.deptQueryUser);
+				$scope.$updateData("deptQueryUser");
+				//获得当前第几页页数
+				var count = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					//刷新,跳转到第一页
+					$scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("deptQueryUser");
+				}
+			}
+		};
+
+		/**
+		 * 获取系统代码名称
+		 */
+		var getCodeName = function(type) {
+			return function(value) {
+				return $scope.$getCodeName(type, value);
+			};
+		};
+
+		$scope.optionsUser = {
+			sortName : 'policeCode',
+			sortOrder : 'asc',
+			columns : [[{
+				field : 'id',
+				checkbox : true,
+				align : 'center',
+				width : 10
+			}, {
+				field : 'policeName',
+				title : '姓名',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'loginName',
+				title : '用户名',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'orgId',
+				title : '所属机构',
+				align : 'center',
+				width : 40,
+				sortable : true,
+				formatter : $scope.$getOrgName
+			}, {
+				field : 'pPhoneNbr',
+				title : '联系电话',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'personId',
+				title : '身份证号',
+				align : 'center',
+				width : 45
+				// formatter : optionsPersonId
+			}, {
+				field : 'policeCode',
+				title : '警号',
+				align : 'center',
+				sortable : true,
+				width : 20
+			}, {
+				field : 'isOnline',
+				title : '在线状态',
+				align : 'center',
+				width : 20,
+				formatter : getCodeName("411")
+			}, {
+				field : 'loginTime',
+				title : '本月登陆次数',
+				align : 'center',
+				width : 28
+			}, {
+				field : 'lastLoginTime',
+				title : '最近登录时间',
+				align : 'center',
+				width : 45
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : operateUserCz,
+				width : 35
+			}]],
+			nowrap : false,
+			onSortColumn : function(sortName,sortType){
+            	$scope.deptQueryUser.orderName = sortName;
+           		$scope.deptQueryUser.orderType = sortType;
+           		$scope.$(this).datagrid("getPager").pagination("select",1);
+           },
+			// 双击查看详情 			
+			onDblClickRow : function(rowIndex, rowData) {
+			$scope.$setParam("userChecked", rowData);
+				$scope.$openDialog("checked",{
+					title : "用户信息详情",
+					width : 800,
+					height : 550,
+					href : "tpls/sysManagement/user/user-checked.html"
+				});
+			},
+			onLoadSuccess : function(data){
+				//加载完成后，取出管理员行的checkbox框
+				if($scope.index || $scope.index == 0){
+					$scope.$("[field=id]:eq(" + (parseInt($scope.index)+1) + ")").find(':checkbox').remove();
+					$scope.index = null;
+				}
+				
+			}
+		};
+		//显示隐藏机构名称
+		// function optionsOrgName(value, row, index) {
+			// var orgName = $scope.$getOrgName(value);
+			// if (orgName == null) {
+				// return "<span/>";
+			// }
+			// var orgNameStr = "";
+			// if (orgName && orgName.length > 9) {
+				// orgNameStr = '' + orgName.substring(0, 9) + '...';
+			// } else {
+				// orgNameStr = '' + orgName + '';
+			// }
+			// return "<span title='" + orgName + "'>" + orgNameStr + "</span>";
+		// }
+
+		// function optionsPersonId(value) {
+			// if (value == null) {
+				// return "<span/>";
+			// } else {
+				// var PIdNumber = "";
+				// if (value && value.length > 15) {
+					// PIdNumber = '' + value.substring(0, 15) + '...';
+				// } else {
+					// PIdNumber = '' + value + '';
+				// }
+				// return "<span title='" + value + "'>" + PIdNumber + "</span>";
+			// }
+		// }
+
+		//用户操作栏
+		function operateUserCz(value, row, index) {
+			//编辑删除
+			var button1 = $("<a class='button-edit' title='编辑' cy-click='editUser(" + index + ")'></a>");
+			//重置密码按钮
+			var button2 = $('<a class="button-remove" title="重置密码" cy-click="resetPassword(\'' + row.userId + '\')"></a>');
+			//删除按钮
+			var button3 = $('<a class="button-remove" title="删除" cy-click="removeById(\'' + row.userId + '\')"></a>');
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-reload-solid",
+				plain : true
+			});
+			button3.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			if(row.loginName == "ADMIN"){
+				//隐藏删除按钮
+				button3.hide();
+				//记录当前行号
+				$scope.index = index;
+			}
+			return $("<span/>").append(button1).append(" ").append(button2).append(" ").append(button3).html();
+		}
+
+		//添加用户信息
+		$scope.addUser = function() {
+			//打开用户信息窗口
+			$scope.$openDialog("addDialog", {
+				title : "新增用户信息",
+				height : 580,
+				width : 800,
+				href : "tpls/sysManagement/user/user-input.html?type=add"
+			}, true);
+			$scope.$setParam("orgId", orgId);
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/userAction/saveUser",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if (data == "success") {
+							$scope.$getDialog("addDialog").dialog("close");
+							//获得当前第几页页数
+							var count = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+							if (count > 1) {
+								//刷新,跳转到第一页
+								$scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+							} else {
+								$scope.$search("deptQueryUser");
+							}
+						} else {
+							if (data.error) {
+								$.messager.alert("提示", data.error);
+							}
+						}
+
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", errMsg);
+					}
+				});
+			});
+		};
+		//编辑用户信息
+		$scope.editUser = function(index) {
+			//获取当前页面所有行数数据
+			var row = $scope.$("#yhData").datagrid("getData").rows;
+			//用户信息注入当前行数据
+			$scope.$setParam("userInfo", row[index]);
+
+			//添加用户信息
+			$scope.addUser = function() {
+				//打开用户信息窗口
+				$scope.$openDialog("addDialog", {
+					title : "新增用户信息",
+					height : 580,
+					width : 800,
+					href : "tpls/sysManagement/user/user-input.html?type=add"
+				}, true);
+				$scope.$setParam("orgId", orgId);
+				$scope.$setParam("saveData", function(data) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/userAction/saveUser",
+						params : data,
+						method : "post",
+						success : function(data) {
+							if (data == "success") {
+								$scope.$getDialog("addDialog").dialog("close");
+								var curr = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+								if (curr > 1) {
+									$scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+								} else {
+									$scope.$search("deptQueryUser");
+								}
+							} else {
+								if (data.error) {
+									$.messager.alert("提升", data.error);
+								}
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", errMsg);
+						}
+					});
+				});
+			};
+			//编辑用户信息
+			$scope.editUser = function(index) {
+				//获取当前页面所有行数数据
+				var row = $scope.$("#yhData").datagrid("getData").rows;
+				//用户信息注入当前行数据
+				$scope.$setParam("userInfo", row[index]);
+
+				//保存按钮
+				// 通过Ajax提交和后台交
+				$scope.$setParam("saveData", function(data) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/userAction/updateUser",
+						params : data,
+						success : function(data) {
+							if (data == "success") {
+								$scope.$getDialog("editDialog").dialog("close");
+								$scope.$search("deptQueryUser");
+							} else {
+								if (data.error) {
+									$.messager.alert("提示", data.error);
+								}
+							}
+
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", errMsg);
+						}
+					});
+				});
+				//打开机用户息窗口
+				$scope.$openDialog("editDialog", {
+					title : "修改用户信息",
+					height : 580,
+					width : 800,
+					href : "tpls/sysManagement/user/user-input.html?type=edit"
+				});
+			};
+			/**
+			 * 重置密码 
+			 */
+			$scope.resetPassword = function(userId) {
+				$.messager.confirm("提示", "确定重置密码?", function(r) {
+					if (!r) {
+						return;
+					}
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "/sysCfg/userAction/updateLoginPasswordToDefault",
+						params : {
+							userId : userId
+						},
+						success : function(data) {
+							if (data == "success") {
+								$.messager.alert("提示", "重置密码成功");
+							}
+						}
+					});
+				});
+			};
+
+			//保存按钮
+			// 通过Ajax提交和后台交
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/userAction/updateUser",
+					params : data,
+					success : function(data) {
+						$scope.$getDialog("editDialog").dialog("close");
+						$scope.$search("deptQueryUser");
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "更新失败！");
+					}
+				});
+			});
+			//打开机用户息窗口
+			$scope.$openDialog("editDialog", {
+				title : "修改用户信息",
+				height : 580,
+				width : 800,
+				href : "tpls/sysManagement/user/user-input.html?type=edit"
+			});
+		};
+		//删除当前行用户信息
+		$scope.removeById = function(id) {
+			removeUser(id);
+		};		
+		/**
+		 * 重置密码
+		 */
+		$scope.resetPassword = function(userId) {
+			$.messager.confirm("提示", "确定重置密码?", function(r) {
+				if (!r) {
+					return;
+				}
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "/sysCfg/userAction/updateLoginPasswordToDefault",
+					params : {
+						userId : userId
+					},
+					success : function(data) {
+						if (data == "success") {
+							$.messager.alert("提示", "重置密码成功");
+						}
+					}
+				});
+			});
+		};
+
+		//删除单行或者多行用户函数
+		var removeUser = function(ids) {
+			if (ids == "") {
+				$.messager.alert("提示", "至少选择一条记录!");
+				return;
+			}
+			$.messager.confirm("提示", "确定删除?", function(r) {
+				if (r) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "/sysCfg/userAction/deleteUser",
+						params : {
+							ids : ids
+						},
+						success : function(data) {
+							if (data == "success") {
+								$scope.$search("deptQueryUser");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+	}); 
+</script>
+<style type="text/css">
+	#user-message .th {
+		width: 60px;
+		text-align: right;
+	}
+	#user-message .td {
+		width: 130px;
+	}
+</style>

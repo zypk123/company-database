@@ -1,0 +1,247 @@
+<div id="addManualEvent"  class="easyui-layout">
+	<div data-options="region:'north',height:'113px'">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="queryHistoryData" id="form">
+				<div class="table">
+					<div class="tr">
+						<div class="th" >
+							登记时间：
+						</div>
+						<div class="td">
+							从&nbsp;&nbsp;<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:150px" 
+							data-options="prompt:'开始时间',validType:'maxDate[\'end\']'">
+						</div>	
+						<div class="td">
+							至&nbsp;&nbsp;<input class="easyui-datetimebox"  name="endTime" id="end" style="width:150px" 
+							data-options="prompt:'结束时间',validType:'minDate[\'start\']'"/>
+						</div>				
+						<div class="th">
+							所在道路名称：
+						</div>
+						<div class="td">
+							<input  class="cy-road-radio" name="roadId" isCode="false" style="width:150px">
+						</div>
+							<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton " data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+					
+				</div>
+			</form>
+		</div>
+		<div class="linkbutton_toolbar" >
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addDm">添加</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-remove'" cy-click="deleteDm">删除</a>
+		</div>
+	</div>
+	
+	<div data-options="region:'center',split:true" >		
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="queryHistoryData"
+		cy-url="trafficSituation/manualEvent/selectAll"></table>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(["434","070"]);
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$updateData("queryHistoryData");
+			$scope.$search("queryHistoryData");
+		};
+		$scope.optionsDm = {
+			columns : [[
+				{field : 'roadEventId',checkbox : true,align : 'center',width : 50}, 
+				{field : 'eventType',title : '事件类型',align : 'center',formatter:options_eventType,width : 15}, 
+				{field : 'roadId',title : '所在道路',align : 'center',formatter:$scope.$getRoadName,width : 20}, 
+				{field : 'directionType',title : '方向',align : 'center',formatter:options_direction,width : 15}, 
+				{field : 'eventDesc',title : '事件描述',align : 'center',width : 60},
+				{field : 'orgId',title : '管理单位',align : 'center',formatter : $scope.$getOrgName,width : 30},
+				{field : 'reportTime',title : '登记时间',align : 'center',width : 30}, 
+				{field : 'cz',title : '操作',align : 'center',formatter : optionsDmCz,width : 12}
+			]],
+			onDblClickRow: function(index,row){
+				$scope.$setParam("newData",row);
+				$scope.$openDialog("editDialog", {
+				title : "交通事件详细信息",
+				width : 810,
+				height : 300,
+				href : "tpls/trafficMonitor/manualEvent/manual-event-info.html"
+			});
+			},
+			nowrap:false
+		};
+		
+		//转换道路方向
+		function options_direction(value, row, index) {
+			return $scope.$getCodeName("070",value);
+		}
+		function options_eventType(value, row, index) {
+			return $scope.$getCodeName("434",value);
+		}
+		// //设置时间为当前时间的前一天
+		// $scope.$("#start").datetimebox({
+			// value:((new Date()).dateAdd('m',-1)).format("yyyy-MM-dd HH:mm:ss")
+		// });
+
+		function optionsCode(value, row, index) {
+			var button1 = $("<a class='button-enable' cy-click='enable(" + index + ")'></a>");
+			var button2 = $("<a class='button-disable' cy-click='disable(" + index + ")'></a>");
+			button1.linkbutton({
+				iconCls : "icon-enable"
+			});
+			button2.linkbutton({
+				iconCls : "icon-disable"
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		}
+
+		//操作栏信息
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='easyui-linkbutton' cy-click='editDm(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='easyui-linkbutton' cy-click='removeDm(" + index + ")'></a>");
+			//删除按钮
+
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).append(" ").html();
+		}
+
+
+		$scope.addDm = function() {
+			//保存按钮、通过Ajax提交和后台交互
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/manualEvent/add",
+					params : params,
+					success : function(data) {
+						//$.messager.alert("提示","添加成功！");	
+						//插入成功关闭dialog
+						$scope.$getDialog("addDialog").dialog("close");
+						$scope.$search("queryHistoryData");					
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+			$scope.$openDialog("addDialog", {
+				title : "新增交通事件",
+				width : 810,
+				height : 300,
+				href : "tpls/trafficMonitor/manualEvent/manual-event-info-edit.html?type=add"
+			});
+		};
+		//编辑页面
+		$scope.editDm = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			//保存按钮、通过Ajax提交和后台交互
+			$scope.$setParam("saveData", function(params) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/manualEvent/update",
+					params : params,
+					success : function(data) {
+						//$.messager.alert("提示", "修改成功！");
+						//修改成功关闭dialog								
+						$scope.$getDialog("editDialog").dialog("close");
+						$scope.$search("queryHistoryData");
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "修改失败！");
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改交通事件",
+				width : 810,
+				height : 300,
+				href : "tpls/trafficMonitor/manualEvent/manual-event-info-edit.html?type=edit"
+			});
+		};
+		//机构信息批量删除操作
+		$scope.deleteDm = function() {
+			//获得所有的行数
+			var rows = $scope.$("#dmData").datagrid("getChecked");
+			//选择要删除的行
+			if (rows.length > 0) {
+				$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+					if (r) {
+						var ids = [];
+						for (var i = 0; i < rows.length; i++) {
+							ids.push(rows[i].roadEventId);
+						}
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "trafficSituation/manualEvent/deleteMultiple",
+							params : {ids : ids.join(",")},
+							success : function(data) {
+								//$.messager.alert("提示", "删除成功！");
+								$scope.$search("queryHistoryData");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			} else {
+				$.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+			}
+		};
+		//删除当前行信息
+		$scope.removeDm = function(index) {
+			//获得所有的行数
+			var rows = $scope.$("#dmData").datagrid("getData").rows;
+			$.messager.confirm("提示", "你确定要删除吗?", function(flag) {
+				if (flag) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "trafficSituation/manualEvent/delete",
+						params : {id : rows[index].roadEventId},
+						success : function(data) {
+							//$.messager.alert("提示","删除成功！");
+							$scope.$search("queryHistoryData");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+		
+		//根据条件搜索
+		$scope.searchData=function(){		
+			if($scope.$("#form").form("validate")){	
+				$scope.$updateData("queryHistoryData");			
+				$scope.$search("queryHistoryData");	
+			}			
+		};
+
+	}); 
+</script>
+<style>
+	#addManualEvent .td{
+		width:180px;
+		text-align: center;
+	}
+	#addManualEvent .th{
+		width:120px;
+		text-align: right;
+	}
+</style>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficRoadsensorMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficRoadsensor" >
+    <id column="ROADSENSOR_DATA_ID" property="roadsensorDataId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+    <result column="ROAD_TEMPERATURE" property="roadTemperature" jdbcType="DECIMAL" />
+    <result column="ROADBED_TEMPERATURE" property="roadbedTemperature" jdbcType="DECIMAL" />
+    <result column="WATER_FILE_HEIGH" property="waterFileHeigh" jdbcType="DECIMAL" />
+    <result column="SALINITY" property="salinity" jdbcType="DECIMAL" />
+    <result column="FREEZING_TEMPERATURE" property="freezingTemperature" jdbcType="DECIMAL" />
+    <result column="ROAD_CONDITION" property="roadCondition" jdbcType="VARCHAR" />
+    <result column="RECORD_TIME" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROADSENSOR_DATA_ID, DEVICE_SYS_NBR, ORG_CODE, SITE_CODE, ROAD_TEMPERATURE, 
+    ROADBED_TEMPERATURE, WATER_FILE_HEIGH, SALINITY, FREEZING_TEMPERATURE, ROAD_CONDITION, 
+    RECORD_TIME,ORG_PRIVILEGE_CODE
+  </sql>
+  
+  <select id="selectRoadsensors" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   <include refid="Base_Column_List" />    
+    from T_TRAFFIC_ROADSENSOR 
+    <where> 
+			1=1
+			<if test="startTime!=null and startTime != ''" >
+				<![CDATA[AND RECORD_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime!=null and endTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>	
+	</where>  
+	order by RECORD_TIME desc,site_code   
+  </select>
+  
+  <select id="select2HourRoadsensors" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   <include refid="Base_Column_List" />    
+    from T_TRAFFIC_ROADSENSOR 
+    <where> 
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>	
+	</where>  
+	order by RECORD_TIME
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_ROADSENSOR
+    where ROADSENSOR_DATA_ID = #{roadsensorDataId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_ROADSENSOR
+    where ROADSENSOR_DATA_ID = #{roadsensorDataId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficRoadsensor" >
+    insert into T_TRAFFIC_ROADSENSOR (ROADSENSOR_DATA_ID, DEVICE_SYS_NBR, 
+      ORG_CODE, SITE_CODE, ROAD_TEMPERATURE, 
+      ROADBED_TEMPERATURE, WATER_FILE_HEIGH, SALINITY, 
+      FREEZING_TEMPERATURE, ROAD_CONDITION, RECORD_TIME
+      )
+    values (#{roadsensorDataId,jdbcType=VARCHAR}, #{deviceSysNbr,jdbcType=VARCHAR}, 
+      #{orgCode,jdbcType=VARCHAR}, #{siteCode,jdbcType=VARCHAR}, #{roadTemperature,jdbcType=DECIMAL}, 
+      #{roadbedTemperature,jdbcType=DECIMAL}, #{waterFileHeigh,jdbcType=DECIMAL}, #{salinity,jdbcType=DECIMAL}, 
+      #{freezingTemperature,jdbcType=DECIMAL}, #{roadCondition,jdbcType=VARCHAR}, #{recordTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficRoadsensor" >
+    insert into T_TRAFFIC_ROADSENSOR
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadsensorDataId != null" >
+        ROADSENSOR_DATA_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE,
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE,
+      </if>
+      <if test="roadTemperature != null" >
+        ROAD_TEMPERATURE,
+      </if>
+      <if test="roadbedTemperature != null" >
+        ROADBED_TEMPERATURE,
+      </if>
+      <if test="waterFileHeigh != null" >
+        WATER_FILE_HEIGH,
+      </if>
+      <if test="salinity != null" >
+        SALINITY,
+      </if>
+      <if test="freezingTemperature != null" >
+        FREEZING_TEMPERATURE,
+      </if>
+      <if test="roadCondition != null" >
+        ROAD_CONDITION,
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadsensorDataId != null" >
+        #{roadsensorDataId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roadTemperature != null" >
+        #{roadTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="roadbedTemperature != null" >
+        #{roadbedTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="waterFileHeigh != null" >
+        #{waterFileHeigh,jdbcType=DECIMAL},
+      </if>
+      <if test="salinity != null" >
+        #{salinity,jdbcType=DECIMAL},
+      </if>
+      <if test="freezingTemperature != null" >
+        #{freezingTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="roadCondition != null" >
+        #{roadCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="recordTime != null" >
+        #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficRoadsensor" >
+    update T_TRAFFIC_ROADSENSOR
+    <set >
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roadTemperature != null" >
+        ROAD_TEMPERATURE = #{roadTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="roadbedTemperature != null" >
+        ROADBED_TEMPERATURE = #{roadbedTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="waterFileHeigh != null" >
+        WATER_FILE_HEIGH = #{waterFileHeigh,jdbcType=DECIMAL},
+      </if>
+      <if test="salinity != null" >
+        SALINITY = #{salinity,jdbcType=DECIMAL},
+      </if>
+      <if test="freezingTemperature != null" >
+        FREEZING_TEMPERATURE = #{freezingTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="roadCondition != null" >
+        ROAD_CONDITION = #{roadCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ROADSENSOR_DATA_ID = #{roadsensorDataId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficRoadsensor" >
+    update T_TRAFFIC_ROADSENSOR
+    set 
+      DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      ROAD_TEMPERATURE = #{roadTemperature,jdbcType=DECIMAL},
+      ROADBED_TEMPERATURE = #{roadbedTemperature,jdbcType=DECIMAL},
+      WATER_FILE_HEIGH = #{waterFileHeigh,jdbcType=DECIMAL},
+      SALINITY = #{salinity,jdbcType=DECIMAL},
+      FREEZING_TEMPERATURE = #{freezingTemperature,jdbcType=DECIMAL},
+      ROAD_CONDITION = #{roadCondition,jdbcType=VARCHAR},
+      RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP}
+    where ROADSENSOR_DATA_ID = #{roadsensorDataId,jdbcType=VARCHAR}
+  </update>
+</mapper>

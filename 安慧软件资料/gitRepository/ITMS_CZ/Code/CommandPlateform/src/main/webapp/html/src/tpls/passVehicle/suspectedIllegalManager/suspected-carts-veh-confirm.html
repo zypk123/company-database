@@ -1,0 +1,186 @@
+<!--
+ ********************************************************************************
+ * 用户           云南交警总队
+ *
+ * 当前页面名   大车占道详情页面(suspected-carts-veh-confirm.html) 
+ *
+ * 版本号        Version 1.0
+ * 作者           wangyunqi
+ *
+ * 更新履历     2016-05-09：创建
+ ********************************************************************************
+-->
+
+<div id="suspected-carts-veh-confirm" class="easyui-layout">
+	<form cy-form="formData" id="form">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:true,height:30">
+		时间：
+         <input name="startDateTime" id="startDateTime" data-options="required:true" class="easyui-datetimebox" style="width:148px;" autocomplete="on" />
+		至	
+        <input name="endDateTime" id="endDateTime" data-options="required:true" class="easyui-datetimebox" style="width:148px;" autocomplete="on" />
+		<a style="margin-left: 30px;" class="easyui-linkbutton button-search" cy-click="searchVedio"   id="searchButton" data-options="iconCls:'icon-search'">&nbsp;查询&nbsp;</a>
+	</div>
+	<div data-options="region:'center',border:true,height:370" id="cartsVideo">
+	</div>
+
+	<div data-options="region:'south',border:false,height:150" id="centerDiv">
+		<div class="table" style="margin-top: 5px">
+			<div class="tr">
+				<div class="th">
+					异常原因:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+					<span cy-name="formData.vioSuspectedDesc"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					结果记录:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+					<input class="easyui-textbox" data-options="multiline:true" 
+	 				 name="confirmResult" id="confirm_desc"  style="width:500px;height: 40px;"/>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					操作:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','1')">确认有效</a>
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','2')">确认无效</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	InitPage(['data','searchForm','closeDialog'], function($scope) {
+		var identifyAccordance;
+		$scope.load = function() {
+			if($scope.data.identifyAccordance && $scope.data.identifyAccordance != '<CLOB>'){
+				identifyAccordance = jQuery.parseJSON($scope.data.identifyAccordance);
+			}
+			//给确认秒速赋值
+        	$scope.$("#confirm_desc").textbox("setValue",$scope.data.confirmResult)
+			updateDom($scope.data);
+        	initVedio($scope.data);
+		};
+		
+		$scope.searchVedio = function(){
+			if(!$scope.$("#form").form("validate")){
+				return;
+			}
+			initVedio($scope.data);
+		};
+		
+		/**
+		*加载视频
+		*/
+		var initVedio = function(data){
+			//更新其他数据
+			$scope.$updateData("formData");
+			//
+			$scope.$setParam("deviceIds",  [data.deviceId]);//
+			//$scope.$setParam("deviceIds",  ['307cfceee9fc4c799ceee8e8415433dc','1d53af963d934cc48e8a6c07252eb1cd']);
+			$scope.$setParam('startTime', $scope.formData.startDateTime);
+			$scope.$setParam('endTime', $scope.formData.endDateTime);
+			var href = 'tpls/video/popPlayBack.html';
+			$scope.$('#cartsVideo').panel({
+				href : href
+			});
+		};
+
+		/**
+		 *  更新页面数据
+		 */
+		var updateDom = function(data) {
+			$scope.formData = data;
+			  if(!identifyAccordance){
+				 $scope.formData.startDateTime = new Date().format("yyyy-MM-dd hh:mm:ss");
+				 $scope.formData.endDateTime = new Date().format("yyyy-MM-dd hh:mm:ss");
+			}else{
+				$scope.formData.startDateTime = (identifyAccordance.startTime).substr(0,19);
+				$scope.formData.endDateTime = (identifyAccordance.endTime).substr(0,19);
+			}
+			//更新其他数据
+			$scope.$updateDom("formData");
+		};
+
+
+		/**
+		 *确认按钮
+		 */
+		$scope.confirmButton = function(flag, value) {
+			var row = $scope.data;
+			var confirmDesc = $scope.$("#confirm_desc").val();
+			var param = {};
+			param.id = row.vioSuspectedId;
+			param.confirmResult = confirmDesc;
+			param.confirmFlag = value;
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot
+						+ "/vehTrack/vehtrackPassVio/updateVehById",
+				params : param,
+				success : function(data) {
+					if (data.result>0) {
+						$scope.searchForm();
+						$.messager.alert("提示", "确认成功");
+						$scope.closeDialog('editDCDialog');
+					}
+				},
+				fail : function() {
+					$.messager.alert("提示", "服务器繁忙");
+				}
+			});
+		};
+
+	});
+</script>
+<style>
+	#suspected-carts-veh-confirm .imgDiv {
+		float: left;
+		border: dashed 1px silver;
+		margin: 5px;
+		height: 300px;
+		width: 320px
+	}
+	#suspected-carts-veh-confirm .info {
+		margin: 5px;
+		height: 16px;
+		width: 300px;
+		text-align: center
+	}
+	#suspected-carts-veh-confirm .info span {
+		text-align: center;
+		margin-top: 120px;
+		display: block;
+	}
+	#suspected-carts-veh-confirm .tr {
+		height: 260px;
+	}
+	#suspected-carts-veh-confirm .th {
+		width: 80px;
+		text-align: right;
+	}
+	#suspected-carts-veh-confirm .td {
+		width: 208px;
+	}
+	#suspected-carts-veh-confirm .deleteButton {
+		margin-top: -450px;
+		position: relative;
+		margin-left: -35px;
+		margin-top: 5px;
+		z-index: 100000
+	}
+	#suspected-carts-veh-confirm #centerDiv .tr {
+		height: 40px;
+	}
+
+</style>

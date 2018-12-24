@@ -1,0 +1,1377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.CustomForVioMapper">
+	<resultMap id="VioResultMap"
+		type="cy.its.violation.mybatis.model.T_Vio_Violation">
+		<id column="VIOLATION_ID" property="violationId" jdbcType="VARCHAR" />
+		<result column="VEHICLE_REG_ID" property="vehicleRegId"
+			jdbcType="VARCHAR" />
+		<result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+		<result column="SNAP_NBR" property="snapNbr" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="COLLECTION_TYPE" property="collectionType"
+			jdbcType="CHAR" />
+		<result column="COLLECTION_POLICE" property="collectionPolice"
+			jdbcType="VARCHAR" />
+		<result column="DISTRICT_CODE" property="districtCode"
+			jdbcType="VARCHAR" />
+		<result column="VIO_SITE_CODE" property="vioSiteCode" jdbcType="VARCHAR" />
+		<result column="ADDRESS_DESC" property="addressDesc" jdbcType="VARCHAR" />
+		<result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR" />
+		<result column="ROAD_SECTION_CODE" property="roadSectionCode"
+			jdbcType="VARCHAR" />
+		<result column="MILEAGE" property="mileage" jdbcType="DECIMAL" />
+		<result column="DIRECTION_TYPE" property="directionType"
+			jdbcType="VARCHAR" />
+		<result column="DIRECTION_NAME" property="directionName"
+			jdbcType="VARCHAR" />
+		<result column="LANE_NBR" property="laneNbr" jdbcType="VARCHAR" />
+		<result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+		<result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+		<result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+		<result column="VIOLATION_TIME" property="violationTime"
+			jdbcType="TIMESTAMP" />
+		<result column="VIOLATION_TYPE" property="violationType"
+			jdbcType="VARCHAR" />
+		<result column="VIOLATION_CODE" property="violationCode"
+			jdbcType="VARCHAR" />
+		<result column="VIOLATION_DESC" property="violationDesc"
+			jdbcType="VARCHAR" />
+		<result column="SPEED" property="speed" jdbcType="DECIMAL" />
+		<result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+		<result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+		<result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+		<result column="OVER_SPEED_PERCENT" property="overSpeedPercent"
+			jdbcType="DECIMAL" />
+		<result column="ENTRY_SITE_CODE" property="entrySiteCode"
+			jdbcType="VARCHAR" />
+		<result column="REGION_ENTRY_TIME" property="regionEntryTime"
+			jdbcType="TIMESTAMP" />
+		<result column="REGION_DISTANCE" property="regionDistance"
+			jdbcType="DECIMAL" />
+		<result column="RED_LIGHT_BEGIN_TIME" property="redLightBeginTime"
+			jdbcType="TIMESTAMP" />
+		<result column="RED_LIGHT_END_TIME" property="redLightEndTime"
+			jdbcType="TIMESTAMP" />
+		<result column="SPEEDING_TYPE" property="speedingType"
+			jdbcType="CHAR" />
+		<result column="SPECIAL_VEH_TYPE" property="specialVehType"
+			jdbcType="CHAR" />
+		<result column="DISCARDED_REASON" property="discardedReason"
+			jdbcType="CHAR" />
+		<result column="DISCARDED_TYPE" property="discardedType"
+			jdbcType="CHAR" />
+		<result column="LOCAL_PUNISH_FLAG" property="localPunishFlag"
+			jdbcType="CHAR" />
+		<result column="EXPORT_FLAG" property="exportFlag" jdbcType="CHAR" />
+		<result column="EXPORT_TIME" property="exportTime" jdbcType="TIMESTAMP" />
+		<result column="LOCK_FLAG" property="lockFlag" jdbcType="CHAR" />
+		<result column="LOCK_USER" property="lockUser" jdbcType="VARCHAR" />
+		<result column="LOCK_TIME" property="lockTime" jdbcType="TIMESTAMP" />
+		<result column="STATUS_FLAG" property="statusFlag" jdbcType="CHAR" />
+		<result column="ENTRY_BY" property="entryBy" jdbcType="VARCHAR" />
+		<result column="ENTRY_TIME" property="entryTime" jdbcType="TIMESTAMP" />
+		<result column="UPLOAD_FLAG" property="uploadFlag" jdbcType="CHAR" />
+		<result column="UPLOAD_BY" property="uploadBy" jdbcType="VARCHAR" />
+		<result column="UPLOAD_TIME" property="uploadTime" jdbcType="TIMESTAMP" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="IMAGE" property="image" jdbcType="VARCHAR" />
+		<result column="VIDEO" property="video" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="VEH_LOCALIZATION" property="vehLocalization"
+			jdbcType="CHAR" />
+		<result column="DISCARDED_BY" property="discardedBy" jdbcType="VARCHAR" />
+		<result column="DISCARDED_TIME" property="discardedTime"
+			jdbcType="TIMESTAMP" />
+		<result column="DEVICE_NBR" property="deviceNbr" jdbcType="VARCHAR" />
+		<result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+		<result column="CROSS_CODE" property="crossCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="unFilterStatisticResultMap"
+		type="cy.its.violation.mybatis.model.T_VIO_UNFILTERSTATISTIC">
+		<result column="VIOLATION_TYPE" property="violationType" jdbcType="VARCHAR" />
+		<result column="D15" property="d15" jdbcType="DECIMAL" />
+		<result column="D7" property="d15" jdbcType="DECIMAL" />
+		<result column="D3" property="d3" jdbcType="DECIMAL" />
+		<result column="D2" property="d2" jdbcType="DECIMAL" />
+		<result column="D1" property="d1" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<resultMap id="filterStatisticResultMap"
+		type="cy.its.violation.mybatis.model.T_VIO_FILTERSTATISTIC">
+		<result column="STATUS_FLAG" property="status_flag" jdbcType="VARCHAR" />
+		<result column="DISCARDED_REASON_NAME" property="discarded_reason_name" jdbcType="VARCHAR" />
+		<result column="TOTAL" property="total" jdbcType="DECIMAL" /> 
+	</resultMap>
+	
+	<select id="selectViolations" resultMap="VioResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		VIOLATION_ID, VEHICLE_REG_ID, DEVICE_SYS_NBR, SNAP_NBR, ORG_CODE,
+		COLLECTION_TYPE,
+		COLLECTION_POLICE,
+		DISTRICT_CODE, VIO_SITE_CODE,
+		ADDRESS_DESC, ROAD_CODE, ROAD_SECTION_CODE, MILEAGE,
+		DIRECTION_TYPE,
+		DIRECTION_NAME, LANE_NBR, PLATE_NBR, PLATE_TYPE, PLATE_COLOR,
+		VIOLATION_TIME,
+		VIOLATION_TYPE,
+		VIOLATION_CODE, VIOLATION_DESC, SPEED,
+		LIMIT_LARGE, LIMIT_SMALL, LIMIT_LOWER,
+		OVER_SPEED_PERCENT,
+		ENTRY_SITE_CODE, REGION_ENTRY_TIME, REGION_DISTANCE,
+		RED_LIGHT_BEGIN_TIME,
+		RED_LIGHT_END_TIME,
+		SPEEDING_TYPE,
+		SPECIAL_VEH_TYPE, DISCARDED_REASON, DISCARDED_TYPE,
+		LOCAL_PUNISH_FLAG,
+		EXPORT_FLAG, EXPORT_TIME, LOCK_FLAG, LOCK_USER, LOCK_TIME,
+		STATUS_FLAG, ENTRY_BY,
+		ENTRY_TIME, UPLOAD_FLAG, UPLOAD_BY, UPLOAD_TIME,
+		CREATE_TIME,
+		UPDATE_TIME, IMAGE,
+		VIDEO, REMARK, VEH_LOCALIZATION,
+		DISCARDED_BY, DISCARDED_TIME,DEVICE_NBR,ORG_AUTHORITY_CODE,CROSS_CODE
+		FROM
+		(SELECT
+		<if test="deviceSysNbr != null and deviceSysNbr != ''">
+		 /*+ INDEX(V IDX_VIO_DEV_TIME) */ 
+		 </if>
+		V.*, ROWNUM RN
+		FROM
+		T_VIO_VIOLATION V
+		<where>
+			<if test="to != null and to != '' ">
+			   <![CDATA[    ROWNUM <= #{to,jdbcType=INTEGER} ]]>
+			</if>
+
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateColor != null and plateColor != ''">
+				AND PLATE_COLOR = #{plateColor,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if> 
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if>
+
+			<if test="discardedReason != null and discardedReason != ''">
+				AND DISCARDED_REASON = #{discardedReason,jdbcType=CHAR}
+			</if>
+
+			<if test="discardedType != null and discardedType != ''">
+				AND DISCARDED_TYPE = #{discardedType,jdbcType=CHAR}
+			</if>
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if>
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[    RN >=  #{from,jdbcType=INTEGER}  ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countViolations" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT
+		 <if test="deviceSysNbr != null and deviceSysNbr != ''">
+		 /*+ INDEX(V IDX_VIO_DEV_TIME) */ 
+		 </if>
+		 COUNT(1)
+		FROM T_VIO_VIOLATION V
+		<where>
+			
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND V.PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND V.PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND V.PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateColor != null and plateColor != ''">
+				AND V.PLATE_COLOR = #{plateColor,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgCode != null and orgCode != ''">
+				AND V.ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND V.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND V.VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND V.VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND V.VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND V.UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND V.UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND V.VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if> 
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND V.STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND V.STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if>
+
+			<if test="discardedReason != null and discardedReason != ''">
+				AND V.DISCARDED_REASON = #{discardedReason,jdbcType=CHAR}
+			</if> 
+
+			<if test="discardedType != null and discardedType != ''">
+				AND V.DISCARDED_TYPE = #{discardedType,jdbcType=CHAR}
+			</if>
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND V.SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND V.SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND V.SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND V.UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND V.SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND V.SPECIAL_VEH_TYPE > '0'  ]]>
+			</if>
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(V.PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(V.PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(V.PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND V.PLATE_NBR='未知' 
+			</if>
+		</where>
+	</select>
+
+	<select id="discardViolations" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		UPDATE T_VIO_VIOLATION
+		<set>
+			<if test="o_dicardedType != null">
+				DISCARDED_TYPE = #{o_dicardedType,jdbcType=VARCHAR},
+			</if> 			
+			<if test="o_discardedTime != null">
+				DISCARDED_TIME = #{o_discardedTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="o_specialVehType != null">
+				SPECIAL_VEH_TYPE = #{o_specialVehType,jdbcType=VARCHAR},
+			</if>
+			<if test="o_discardedReason != null">
+				DISCARDED_REASON = #{o_discardedReason,jdbcType=VARCHAR},
+			</if>
+			<if test="o_discardedBy != null">
+				DISCARDED_BY = #{o_discardedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="o_statusFlag  != null">
+				STATUS_FLAG = #{o_statusFlag ,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateColor != null and plateColor != ''">
+				AND PLATE_COLOR = #{plateColor,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if> 
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if> 
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if>
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+	</select>
+
+	<update id="updateVioForLockOrNot" parameterType="java.util.Map">
+		update T_VIO_VIOLATION
+		<set>
+			<if test="vehicleRegId != null">
+				VEHICLE_REG_ID = #{vehicleRegId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceSysNbr != null">
+				DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+			</if> 
+			<if test="siteCode != null and siteCode != ''">
+				VIO_SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+			</if>
+			<if test="snapNbr != null">
+				SNAP_NBR = #{snapNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null">
+				ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+			</if> 
+			<if test="org_authority_code != null">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+			<if test="collectionType != null">
+				COLLECTION_TYPE = #{collectionType,jdbcType=CHAR},
+			</if>
+			<if test="collectionPolice != null">
+				COLLECTION_POLICE = #{collectionPolice,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="vioSiteCode != null">
+				VIO_SITE_CODE = #{vioSiteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDesc != null">
+				ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="roadCode != null">
+				ROAD_CODE = #{roadCode,jdbcType=VARCHAR},
+			</if>
+			<if test="roadSectionCode != null">
+				 ROAD_SECTION_CODE= #{roadSectionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="mileage != null">
+				MILEAGE = #{mileage,jdbcType=DECIMAL},
+			</if>
+			<if test="directionType != null">
+				DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+			</if>
+			<if test="directionName != null">
+				DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+			</if>
+			<if test="laneNbr != null">
+				LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="plateNbr != null">
+				PLATE_NBR = #{plateNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="plateType != null">
+				PLATE_TYPE = #{plateType,jdbcType=VARCHAR},
+			</if>
+			<if test="plateColor != null">
+				PLATE_COLOR = #{plateColor,jdbcType=VARCHAR},
+			</if>
+			<if test="violationTime != null">
+				VIOLATION_TIME = #{violationTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="violationType != null">
+				VIOLATION_TYPE = #{violationType,jdbcType=VARCHAR},
+			</if>
+			<if test="violationCode != null">
+				VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR},
+			</if>
+			<if test="violationDesc != null">
+				VIOLATION_DESC = #{violationDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="speed != null">
+				SPEED = #{speed,jdbcType=DECIMAL},
+			</if>
+			<if test="limitLarge != null">
+				LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+			</if>
+			<if test="limitSmall != null">
+				LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+			</if>
+			<if test="limitLower != null">
+				LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+			</if>
+			<if test="overSpeedPercent != null">
+				OVER_SPEED_PERCENT =
+				#{overSpeedPercent,jdbcType=DECIMAL},
+			</if>
+			<if test="entrySiteCode != null">
+				ENTRY_SITE_CODE = #{entrySiteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="regionEntryTime != null">
+				REGION_ENTRY_TIME =
+				#{regionEntryTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regionDistance != null">
+				REGION_DISTANCE = #{regionDistance,jdbcType=DECIMAL},
+			</if>
+			<if test="redLightBeginTime != null">
+				RED_LIGHT_BEGIN_TIME =
+				#{redLightBeginTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="redLightEndTime != null">
+				RED_LIGHT_END_TIME =
+				#{redLightEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="speedingType != null">
+				SPEEDING_TYPE = #{speedingType,jdbcType=CHAR},
+			</if>
+			<if test="specialVehType != null">
+				SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR},
+			</if>
+			<if test="discardedReason != null">
+				DISCARDED_REASON = #{discardedReason,jdbcType=CHAR},
+			</if>
+			<if test="discardedType != null">
+				DISCARDED_TYPE = #{discardedType,jdbcType=CHAR},
+			</if>
+			<if test="localPunishFlag != null">
+				LOCAL_PUNISH_FLAG = #{localPunishFlag,jdbcType=CHAR},
+			</if>
+			<if test="exportFlag != null">
+				EXPORT_FLAG = #{exportFlag,jdbcType=CHAR},
+			</if>
+			<if test="exportTime != null">
+				EXPORT_TIME = #{exportTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lockFlag != null">
+				LOCK_FLAG = #{lockFlag,jdbcType=CHAR},
+			</if>
+			<if test="lockUser != null">
+				LOCK_USER = #{lockUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lockTime != null">
+				LOCK_TIME = #{lockTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="statusFlag != null">
+				STATUS_FLAG = #{statusFlag,jdbcType=CHAR},
+			</if>
+			<if test="entryBy != null">
+				ENTRY_BY = #{entryBy,jdbcType=VARCHAR},
+			</if>
+			<if test="entryTime != null">
+				ENTRY_TIME = #{entryTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="uploadFlag != null">
+				UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR},
+			</if>
+			<if test="uploadBy != null">
+				UPLOAD_BY = #{uploadBy,jdbcType=VARCHAR},
+			</if>
+			<if test="uploadTime != null">
+				UPLOAD_TIME = #{uploadTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			UPDATE_TIME = SYSDATE,
+			<if test="image != null">
+				IMAGE = #{image,jdbcType=VARCHAR},
+			</if>
+			<if test="video != null">
+				VIDEO = #{video,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="vehLocalization != null">
+				VEH_LOCALIZATION = #{vehLocalization,jdbcType=CHAR},
+			</if>
+			<if test="discardedBy != null">
+				DISCARDED_BY = #{discardedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="discardedTime != null">
+				DISCARDED_TIME = #{discardedTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deivceNbr != null">
+				DEVICE_NBR = #{deivceNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="orgAuthorityCode != null">
+				ORG_AUTHORITY_CODE = #{orgAuthorityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="crossCode != null">
+				CROSS_CODE = #{crossCode,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where VIOLATION_ID = #{violationId,jdbcType=VARCHAR} 
+		<!-- AND
+		LOCK_FLAG =
+		#{condLockFlag,jdbcType=CHAR} -->
+	</update>
+
+
+	<update id="updateVioByCondition" parameterType="java.util.Map">
+		update T_VIO_VIOLATION
+		<set> 
+			<if test="o_collectionType != null">
+				COLLECTION_TYPE = #{o_collectionType,jdbcType=CHAR},
+			</if>
+			<if test="o_collectionPolice != null">
+				COLLECTION_POLICE = #{o_collectionPolice,jdbcType=VARCHAR},
+			</if>   
+			<if test="o_speedingType != null">
+				SPEEDING_TYPE = #{o_speedingType,jdbcType=CHAR},
+			</if>
+			<if test="o_specialVehType != null">
+				SPECIAL_VEH_TYPE = #{o_specialVehType,jdbcType=CHAR},
+			</if>
+			<if test="o_discardedReason != null">
+				DISCARDED_REASON = #{o_discardedReason,jdbcType=CHAR},
+			</if>
+			<if test="o_discardedType != null">
+				DISCARDED_TYPE = #{o_discardedType,jdbcType=CHAR},
+			</if>
+			<if test="o_exportFlag != null">
+				EXPORT_FLAG = #{o_exportFlag,jdbcType=CHAR},
+			</if>
+			<if test="o_exportTime != null"> 
+				<if test="o_updateTime != ''">		
+				EXPORT_TIME = TO_DATE(#{o_exportTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				</if> 
+				<if test="o_updateTime == ''">
+					EXPORT_TIME = NULL,
+				</if> 
+			</if> 
+			<if test="o_statusFlag != null">
+				STATUS_FLAG = #{o_statusFlag,jdbcType=CHAR},
+			</if>
+			<if test="o_entryBy != null">
+				ENTRY_BY = #{o_entryBy,jdbcType=VARCHAR},
+			</if>
+			<if test="o_entryTime != null"> 
+				<if test="o_updateTime != ''">		
+					ENTRY_TIME = TO_DATE(#{o_entryTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				</if> 
+				<if test="o_updateTime == ''">
+					ENTRY_TIME = NULL,
+				</if> 
+			</if>
+			<if test="o_uploadFlag != null">
+				UPLOAD_FLAG = #{o_uploadFlag,jdbcType=CHAR},
+			</if>
+			<if test="o_uploadBy != null">
+				UPLOAD_BY = #{o_uploadBy,jdbcType=VARCHAR},
+			</if>
+			<if test="o_uploadTime != null"> 
+				<if test="o_updateTime != ''">		
+					UPLOAD_TIME = TO_DATE(#{o_uploadTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				</if> 
+				<if test="o_updateTime == ''">
+					UPLOAD_TIME = NULL,
+				</if> 
+			</if> 
+			<if test="o_remark != null">
+				REMARK = #{o_remark,jdbcType=VARCHAR},
+			</if> 
+			<if test="o_discardedBy != null">
+				DISCARDED_BY = #{o_discardedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="o_discardedTime != null">
+				<if test="o_updateTime != ''">		
+					DISCARDED_TIME = TO_DATE(#{o_discardedTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				</if> 
+				<if test="o_updateTime == ''">
+					UPDATE_TIME = NULL,
+				</if> 
+			</if>
+			<if test="o_updateTime != null">
+				<if test="o_updateTime != ''">					
+					UPDATE_TIME = TO_DATE(#{o_updateTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				</if> 
+				<if test="o_updateTime == ''">
+					UPDATE_TIME = NULL,
+				</if> 
+			</if>
+		</set> 
+		<where>
+			
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateColor != null and plateColor != ''">
+				AND PLATE_COLOR = #{plateColor,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if>
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+	</update>
+
+
+	<update id="deleteVioByCondition" parameterType="java.util.Map">
+		delete T_VIO_VIOLATION 
+		<where>
+			
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateColor != null and plateColor != ''">
+				AND PLATE_COLOR = #{plateColor,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>  
+			
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if>
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+	</update>
+
+	<resultMap id="VioActionResultMap" type="cy.its.violation.mybatis.model.T_Vio_Action">
+		<id column="VIO_ACTION_CODE" property="vioActionCode" jdbcType="VARCHAR" />
+		<result column="VIO_TYPE" property="vioType" jdbcType="CHAR" />
+		<result column="VIO_PRIOR_TYPE" property="vioPriorType"
+			jdbcType="VARCHAR" />
+		<result column="VIO_SUMMARY" property="vioSummary" jdbcType="VARCHAR" />
+		<result column="VIO_CONETENT" property="vioConetent" jdbcType="VARCHAR" />
+		<result column="LEGAL_REFERENCE" property="legalReference"
+			jdbcType="VARCHAR" />
+		<result column="PUNISH_LEGAL_REFERENCE" property="punishLegalReference"
+			jdbcType="VARCHAR" />
+		<result column="FINE_SCORE" property="fineScore" jdbcType="DECIMAL" />
+		<result column="FINE_MAX" property="fineMax" jdbcType="DECIMAL" />
+		<result column="FINE_MIN" property="fineMin" jdbcType="DECIMAL" />
+		<result column="FINE_DEFAULT" property="fineDefault" jdbcType="DECIMAL" />
+		<result column="SUSPEND_MONTH_MAX" property="suspendMonthMax"
+			jdbcType="DECIMAL" />
+		<result column="SUSPEND_MONTH_MIN" property="suspendMonthMin"
+			jdbcType="DECIMAL" />
+		<result column="DETAIN_DAYS_MAX" property="detainDaysMax"
+			jdbcType="DECIMAL" />
+		<result column="DETAIN_DAYS_MIN" property="detainDaysMin"
+			jdbcType="DECIMAL" />
+		<result column="FORCE_TYPE" property="forceType" jdbcType="VARCHAR" />
+		<result column="FLAG_WARN" property="flagWarn" jdbcType="CHAR" />
+		<result column="FLAG_FINE" property="flagFine" jdbcType="CHAR" />
+		<result column="FLAG_SUSPEND" property="flagSuspend" jdbcType="CHAR" />
+		<result column="FLAG_CANCEL" property="flagCancel" jdbcType="CHAR" />
+		<result column="FLAG_DETAIN" property="flagDetain" jdbcType="CHAR" />
+		<result column="FLAG_REVOKE_VEHICLE" property="flagRevokeVehicle"
+			jdbcType="CHAR" />
+		<result column="FLAG_REVOKE_DRIVER" property="flagRevokeDriver"
+			jdbcType="CHAR" />
+		<result column="IS_GB" property="isGb" jdbcType="CHAR" />
+		<result column="ISSUE_DAY" property="issueDay" jdbcType="TIMESTAMP" />
+		<result column="ISSUE_END_DAY" property="issueEndDay" jdbcType="TIMESTAMP" />
+		<result column="IS_COMMON_USED" property="isCommonUsed"
+			jdbcType="CHAR" />
+	</resultMap>
+
+	<select id="selectVioActions" resultMap="VioActionResultMap">
+		select
+		VIO_ACTION_CODE,
+		VIO_TYPE, VIO_PRIOR_TYPE, VIO_SUMMARY, VIO_CONETENT, LEGAL_REFERENCE,
+		PUNISH_LEGAL_REFERENCE, FINE_SCORE, FINE_MAX, FINE_MIN, FINE_DEFAULT,
+		SUSPEND_MONTH_MAX,
+		SUSPEND_MONTH_MIN, DETAIN_DAYS_MAX, DETAIN_DAYS_MIN,
+		FORCE_TYPE, FLAG_WARN, FLAG_FINE,
+		FLAG_SUSPEND, FLAG_CANCEL,
+		FLAG_DETAIN, FLAG_REVOKE_VEHICLE,
+		FLAG_REVOKE_DRIVER,
+		IS_GB, ISSUE_DAY,
+		ISSUE_END_DAY, IS_COMMON_USED
+		from T_VIO_ACTION
+	</select>
+	
+	<select id="getUnfilterStatistic" resultMap="unFilterStatisticResultMap"
+		parameterType="java.util.Map">
+		<![CDATA[ SELECT T.CODE_NAME VIOLATION_TYPE, 
+		SUM(CASE WHEN V.VIOLATION_TIME>TRUNC(SYSDATE-15) AND V.VIOLATION_TIME<SYSDATE THEN 1 ELSE NULL END) D15,
+		SUM(CASE WHEN V.VIOLATION_TIME>TRUNC(SYSDATE-7) AND V.VIOLATION_TIME<SYSDATE THEN 1 ELSE NULL END) D7,
+		SUM(CASE WHEN V.VIOLATION_TIME>TRUNC(SYSDATE-2) AND V.VIOLATION_TIME<TRUNC(SYSDATE-1) THEN 1 ELSE NULL END) D3,
+		SUM(CASE WHEN V.VIOLATION_TIME>TRUNC(SYSDATE-1) AND V.VIOLATION_TIME<TRUNC(SYSDATE) THEN 1 ELSE NULL END) D2,
+		SUM(CASE WHEN V.VIOLATION_TIME>TRUNC(SYSDATE) AND V.VIOLATION_TIME<SYSDATE THEN 1 ELSE NULL END) D1
+		FROM T_VIO_VIOLATION V,T_SYS_CODE T
+		]]>
+		<where>   
+			V.VIOLATION_TYPE=T.CODE_NO
+			AND T.CODE_TYPE='011'
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="org_authority_code != null and org_authority_code != ''">
+				AND ORG_AUTHORITY_CODE like #{org_authority_code,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+			
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >= to_date(#{violationBeginTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss') ]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME <to_date( #{uploadEndTime,jdbcType=VARCHAR} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if>
+
+			<if test="discardedReason != null and discardedReason != ''">
+				AND DISCARDED_REASON = #{discardedReason,jdbcType=CHAR}
+			</if> 
+
+			<if test="discardedType != null and discardedType != ''">
+				AND DISCARDED_TYPE = #{discardedType,jdbcType=CHAR}
+			</if>
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if> 
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+		GROUP BY T.CODE_NAME  
+	</select>
+	
+	
+	<select id="getFilterStatistic" resultMap="filterStatisticResultMap"
+		parameterType="java.util.Map">
+		 SELECT STATUS_FLAG, T.CODE_NAME DISCARDED_REASON_NAME, COUNT(1) TOTAL
+			  FROM T_VIO_VIOLATION V
+			  LEFT JOIN T_SYS_CODE T
+			    ON V.DISCARDED_REASON = T.CODE_NO
+			   AND T.CODE_TYPE = '312' 
+		 
+		<where>   
+			V.VIOLATION_TIME > TRUNC(SYSDATE)
+			   AND STATUS_FLAG != '0'
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE like #{orgCode,jdbcType=VARCHAR}
+			</if>
+
+			<if test="deviceSysNbr != null and deviceSysNbr != ''">
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if> 
+			
+			
+			<if test="LstSiteCode != null and LstSiteCode.size()>0"> 
+				AND VIO_SITE_CODE IN
+				<foreach collection="LstSiteCode" index="index" item="siteCode"
+					open="(" separator="," close=")">
+					#{siteCode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="violationBeginTime != null and violationBeginTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME >=to_date( #{violationBeginTime,jdbcType=TIMESTAMP} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="violationEndTime != null and violationEndTime != ''">
+				 <![CDATA[ AND VIOLATION_TIME < to_date(#{violationEndTime,jdbcType=TIMESTAMP} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>			
+			
+			<if test="uploadBeginTime != null and uploadBeginTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME >= to_date(#{uploadBeginTime,jdbcType=TIMESTAMP} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+			<if test="uploadEndTime != null and uploadEndTime != ''">
+				 <![CDATA[ AND UPLOAD_TIME < to_date(#{uploadEndTime,jdbcType=TIMESTAMP} ,'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+
+            <if test="lstViolationType != null and lstViolationType.size() > 0">
+				AND VIOLATION_TYPE IN
+				<foreach collection="lstViolationType" index="index" item="violationType"
+					open="(" separator="," close=")">
+					#{violationType,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			
+			<if test="statusFlag != null and statusFlag != ''">
+				AND STATUS_FLAG = #{statusFlag,jdbcType=CHAR}
+			</if>
+			
+			<if test="lstStatusFlag != null and lstStatusFlag.size() > 0">
+				AND STATUS_FLAG IN
+				<foreach collection="lstStatusFlag" index="index" item="statusFlag"
+					open="(" separator="," close=")">
+					#{statusFlag,jdbcType=CHAR}
+				</foreach>
+			</if>
+
+			<if test="discardedReason != null and discardedReason != ''">
+				AND DISCARDED_REASON = #{discardedReason,jdbcType=CHAR}
+			</if> 
+
+			<if test="discardedType != null and discardedType != ''">
+				AND DISCARDED_TYPE = #{discardedType,jdbcType=CHAR}
+			</if>
+
+			<if test="speedMin != null and speedMin != ''">
+				<![CDATA[  AND SPEED >= #{speedMin,jdbcType=DECIMAL} ]]>
+			</if>
+
+			<if test="speedMax != null and speedMax != ''">
+				<![CDATA[  AND SPEED <= #{speedMax,jdbcType=DECIMAL} ]]>
+			</if>
+			
+			<if test="lstCollectionType != null and lstCollectionType.size() > 0">
+				AND COLLECTION_TYPE IN
+				<foreach collection="lstCollectionType" index="index" item="collectionType"
+					open="(" separator="," close=")">
+					#{collectionType,jdbcType=CHAR}
+				</foreach>
+			</if> 
+
+			<if test="speedingType != null and speedingType != ''">
+				AND SPEEDING_TYPE = #{speedingType,jdbcType=CHAR}
+			</if>
+
+			<if test="uploadFlag != null and uploadFlag != ''">
+				AND UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR}
+			</if>
+
+			<if test="specialVehType != null and specialVehType != ''">
+				AND SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR}
+			</if>
+
+			<if test="isIncludeSpecial != null and isIncludeSpecial != ''">
+				<![CDATA[  AND SPECIAL_VEH_TYPE > '0'  ]]>
+			</if> 
+			
+
+			<if test="isArmyPlate != null and isArmyPlate != ''">
+				<![CDATA[  AND ((SUBSTR(ASCIISTR(PLATE_NBR),1,1) > '\' OR SUBSTR(ASCIISTR(PLATE_NBR),1,1) < '\' )
+OR SUBSTR(REVERSE(PLATE_NBR),1,1) = REVERSE('警') ) )]]>
+			</if>
+			
+			<if test="isUnknownPlate != null and isUnknownPlate != ''">
+				AND PLATE_NBR='未知' 
+			</if>
+		</where>
+		
+			 GROUP BY STATUS_FLAG, T.CODE_NAME
+			 ORDER BY STATUS_FLAG
+	</select>
+</mapper>

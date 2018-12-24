@@ -1,0 +1,148 @@
+<div id="calculateRegion" class="easyui-layout"  >
+    <div class="table" >
+        <div  class="searchPanel" >
+            <div class="tr">
+                <div class="th">
+                    &nbsp;类型
+                </div>
+                <div class="th" >
+                    数量
+                </div>
+                <div class="td">
+                    最小速度
+                </div>
+                <div class="td">
+                    最大速度
+                </div>
+
+            </div>
+            <div class="tr">
+                <div class="th" >
+                    &nbsp;高速
+                </div>
+                <div class="th"id="gaosuCount">
+
+                </div>
+                <div class="td"id="gaosuMin">
+                </div>
+                <div class="td"id="gaosuMax">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    &nbsp;国道
+                </div>
+                <div class="th" id="guodaoCount">
+
+                </div>
+                <div class="td" id="guodaoMin">
+                </div>
+                <div class="td" id="guodaoMax">
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" >
+                    &nbsp;省道
+                </div>
+                <div class="th" id="shengdaoCount">
+
+                </div>
+                <div class="td" id="shengdaoMin">
+                </div>
+                <div class="td" id="shengdaoMax">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+
+    InitPage(["featureData"],function($scope) {
+        //国道数组
+        var guodao=[];
+        //省道数组
+        var shengdao=[];
+        //高速数组
+        var gaosu=[];
+        //页面登录时调用
+        $scope.load = function () {
+            //分类填充到不同类型道路的数组中
+            calData($scope.featureData);
+            //给div中的高速类型道路赋值数量、最大最小速度
+            $scope.$("#gaosuCount").text(gaosu.length);
+            $scope.$("#gaosuMin").text(calMinSpeed(gaosu));
+            $scope.$("#gaosuMax").text(calMaxSpeed(gaosu));
+            //给div中的国道类型道路赋值数量、最大最小速度
+            $scope.$("#guodaoCount").text(guodao.length);
+            $scope.$("#guodaoMin").text(calMinSpeed(guodao));
+            $scope.$("#guodaoMax").text(calMaxSpeed(guodao));
+            //给div中的省道类型道路赋值数量、最大最小速度
+            $scope.$("#shengdaoCount").text(shengdao.length);
+            $scope.$("#shengdaoMin").text(calMinSpeed(shengdao));
+            $scope.$("#shengdaoMax").text(calMaxSpeed(shengdao));
+        }
+        /**
+         * 对数据进行分类，按照国道、省道、高速
+         * @param data，所有当前流量数据集合
+         */
+        function calData(data){
+            for(var index in data ){
+                if(data[index].attributes.dllx=="高速"){
+                    gaosu.push(data[index]);
+                }
+                else if(data[index].attributes.dllx=="国道"){
+                    guodao.push(data[index]);
+                }
+                else if(data[index].attributes.dllx=="省道"){
+                    shengdao.push(data[index]);
+                }
+            }
+        }
+
+        /**
+         * 计算数组中的最大车速
+         * @param data，流量集合
+         * @returns {number}最大车速
+         */
+        function calMaxSpeed(data){
+            var maxSpeed=0;
+            for(var index in data ) {
+                if(maxSpeed<data[index].attributes.speed){
+                    maxSpeed= data[index].attributes.speed;
+                }
+            }
+            return maxSpeed;
+        }
+        /**
+         * 计算数组中的最小车速
+         * @param data，流量集合
+         * @returns {number}最小车速
+         */
+        function calMinSpeed(data){
+            var minSpeed=200;
+            if(data.length==0){
+                minSpeed=0;
+            }
+            for(var index in data ) {
+                if(minSpeed>data[index].attributes.speed){
+                    minSpeed= data[index].attributes.speed;
+                }
+            }
+            return minSpeed;
+        }
+    });
+
+
+</script>
+
+<style type="text/css">
+    #calculateRegion .th{
+        width : 38px;
+        text-align: center;
+    }
+    #calculateRegion .td{
+        width : 50px;
+        text-align: center;
+    }
+</style>

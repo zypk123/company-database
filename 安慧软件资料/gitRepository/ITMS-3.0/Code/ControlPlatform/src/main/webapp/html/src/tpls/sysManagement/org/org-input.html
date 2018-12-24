@@ -1,0 +1,285 @@
+<!-- 机构信息面板-->
+<div id="orgInput" class="easyui-layout">
+    <form cy-form="orgInfo" id="form">
+        <div class="searchPanel">
+            <div class="panel_title">
+                基本信息
+            </div>
+            <div class="table">
+                <div class="tr">
+                    <div class="th">
+                        机构代码：
+                    </div>
+                    <div class="td">
+                        <input name="orgCode" class="easyui-numberbox" style="width:140px;" data-options="required:true,validType:'fixedLength[12]'"/>
+                    </div>
+                    <div class="th">
+                        机构名称：
+                    </div>
+                    <div class="td">
+                        <input name="orgName" class="easyui-textbox" data-options="required:true,validType:'length[0,30]'" style="width: 155px;"/>
+                    </div>
+                    <div class="th" style="width: 104px">
+                        机构级别：
+                    </div>
+                    <div class="td">
+                        <input id="orgLevelId" name="orgLevel" class="easyui-combobox" cy-code="114" data-options="required:true" style="width: 140px"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 89px">
+                        父机构：
+                        <input type="hidden" name="parentOrgId"/>
+                        <input type="hidden" name="orgPrivCode"/>
+                    </div>
+                    <div class="td" cy-name="orgInfo.parentOrgId" cy-filter="$getOrgName" style="width: 165px;height: auto;white-space: normal "></div>
+                    <div class="th">
+                        业务指导机构：
+                    </div>
+                    <div class="td">
+                        <input name="parentInstructOrgId" class="cy-org-radio"  style="width: 142px;"/>
+                    </div>
+                    <div class="th" style="width: 90px">
+                        机构类型：
+                    </div>
+                    <div class="td">
+                        <input name="orgType" class="easyui-combobox" cy-code="111" data-options="required:true" style="width: 140px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 111px">
+                        机构负责人：
+                    </div>
+                    <div class="td">
+                        <input name="orgHeaderName" data-options="validType:'length[0,10]'" class="easyui-textbox" style="width: 130px;">
+                    </div>
+
+                    <div class="th" style="width: 90px">
+                        负责人电话：
+                    </div>
+                    <div class="td">
+                        <input name="orgHeaderPhone" class="easyui-textbox" data-options="validType:'phone'" style="width: 155px;"/>
+                    </div>
+                    <div class="th" style="width: 103px">
+                        机构电话：
+                    </div>
+                    <div class="td">
+                        <input name="orgPhoneNbr" class="easyui-textbox" data-options="validType:'phone'" style="width: 140px;"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="width:65%;height:80px;">
+                        <div class="tr">
+                            <div class="th">
+                                辖区范围：
+                            </div>
+                            <div class="td">
+                                <input name="sponsorDistributes" class="cy-district-checkbox" style="width: 395px;"/>
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="th">
+                                独立机构：
+                            </div>
+                            <div class="td">
+                                <input type="radio" name="isDepartment" value="0" checked="checked"/>
+                                是
+                                <input type="radio" name="isDepartment" value="1"/>
+                                否
+                            </div>
+                            <div class="th" >
+                                高速管理部门：
+                            </div>
+                            <div class="td">
+                                <input type="radio" name="isHighwayOrg" value="0" checked="checked"/>
+                                是
+                                <input type="radio" name="isHighwayOrg" value="1"/>
+                                否
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="td" style="width:35%;height:80px;">
+                        <div class="tr">    
+                            <div class="th" style="width: 68px">
+                                备注：
+                            </div>
+                            <div class="td" >
+                                <textarea name="remark" class="easyui-validatebox" data-options="validType:'length[0,100]'" style="width: 160px;height: 60px;"></textarea>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="searchPanel">
+            <div class="panel_title">
+                地址信息
+            </div>
+            <div class="table">
+                <div class="tr">
+                <div class="td" style="width:65%;height:130px;">
+                    <div class="tr">
+                        <div class="th">
+                            驻地行政区划：
+                        </div>
+                        <div class="td">
+                            <input name="districtCode" class="cy-district-radio" data-options="required: true" style="width: 140px;"/>
+                        </div>
+                        <div class="th"></div>
+                        <div class="td">
+                            <a class="easyui-linkbutton " data-options="iconCls:'icon-site'" cy-click="getLonLat" >从地图获取经纬度</a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            经度：
+                        </div>
+                        <div class="td" style="width: 135px">
+                            <input  class="easyui-numberbox" name="orgLongitude" id="lon"
+                            data-options="min:72.004,max:137.8347,precision:6"  style="width: 135px;"/>
+                        </div>
+                        <div class="th">
+                            纬度：
+                        </div>
+                        <div class="td" >
+                            <input  class="easyui-numberbox" name="orgLatitude" id="lat"
+                            data-options="min:0.8293,max:55.8271,precision:6" style="width :130px;" />
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            驻地地址：
+                        </div>
+                        <div class="td">
+                            <input name="addressDesc" class="easyui-textbox" data-options="required:true,validType:'length[0,60]'" style="width:365px;"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="td" style="width:35% ;height: 130px;">
+                    <div id="map" style="width: 260px;height: 130px"></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="linkbutton_toolbar" style="text-align: center;">
+        <a id="save" class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+        cy-click="save">保存</a>
+        <a id="cancel" class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+        cy-click="$closeSelf">取消</a>
+    </div>
+</div>
+
+<script>
+    //接受数据
+    InitPage(["orgInfo", "saveData", "editData"], function($scope) {
+    	
+        //初始化加载
+        $scope.load = function() {
+            lonlat = "POINT(" + $scope.orgInfo.orgLongitude + " " + $scope.orgInfo.orgLatitude + ")";
+            init();
+            moveToMap();
+			//根据机构权限code长度联动机构级别        
+			var orgPrivCode=$scope.orgInfo.orgPrivCode;
+			if(orgPrivCode.length==2){
+				$scope.$("#orgLevelId").combobox("select",2);
+			}else if(orgPrivCode.length==4){
+				$scope.$("#orgLevelId").combobox("select",3);
+			}else if(orgPrivCode.length==6){
+				$scope.$("#orgLevelId").combobox("select",4);
+			}
+        };
+        var lonlat;
+        if ($scope.$params.get("type") == "add") {
+               	$scope.save = function() {
+            		if ($scope.$("#form").form("validate")) {
+                		$scope.$updateData("orgInfo");
+                		$scope.saveData($scope.orgInfo);
+            		}
+           		};
+        } else {
+        	   	$scope.save = function() {
+            		if ($scope.$("#form").form("validate")) {
+                		$scope.$updateData("orgInfo");
+                		$scope.editData($scope.orgInfo);
+            		}
+           		};
+        }
+
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        var centerPoint = new OpenLayers.LonLat(105.70405, 28.58103);
+        var point;
+        var wkt_c = new OpenLayers.Format.WKT();
+        //初始化地图及双击事件
+        function init() {
+            cyMap.map.events.remove("dblclick");
+            cyMap.map.events.registerPriority("dblclick", map, $scope.getLonLat);
+            point = new OpenLayers.Layer.Vector("point");
+            cyMap.map.addLayer(point);
+        }
+
+        //移动地图至执法服务站或者中心点
+        function moveToMap() {
+            if (lonlat) {
+                var style = {
+                    graphicWidth : 18,
+                    graphicHeight : 18,
+                    externalGraphic : "frameworks/Openlayers/img/marker.png"
+                };
+                var geometry = wkt_c.read(lonlat).geometry.clone();
+                geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+                point.addFeatures(feature);
+                cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+            } else {
+                centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                cyMap.map.panTo(centerPoint);
+            }
+        }
+
+        //弹出地图窗口获取经纬度信息
+        $scope.getLonLat = function() {
+
+            $scope.$setParam("lonLat", lonlat);
+            $scope.$setParam("saveLonLat", function(params) {
+
+                point.removeAllFeatures();
+
+                $scope.$("#lon").textbox('setValue', params.lon.toFixed(6));
+                $scope.$("#lat").textbox('setValue', params.lat.toFixed(6));
+                var style = {
+                    graphicWidth : 18,
+                    graphicHeight : 18,
+                    externalGraphic : "frameworks/Openlayers/img/marker.png"
+                };
+                var geometry = (new OpenLayers.Geometry.Point(params.lon, params.lat)).clone();
+                geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+                point.addFeatures(feature);
+                cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+
+            });
+
+            $scope.$openDialog("createInfoDialog", {
+                title : "&nbsp;&nbsp;获取经纬度 ",
+                height : 600,
+                width : 800,
+                href : "tpls/sysManagement/traffic/get-lonlat.html",
+            }, true);
+        };
+
+    });
+
+</script>
+<style type="text/css">
+    /*表头样式*/
+    #orgInput .th {
+        width: 100px;
+        text-align: right;
+    }
+    #orgInput .td {
+        width: 140px;
+    }
+</style>
+

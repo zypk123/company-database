@@ -1,0 +1,49 @@
+<style>
+.table > tfoot > tr > td {
+    padding: 5px !important;
+}
+
+.modal-body {
+  width:900px !important;
+  height:500px !important;
+  overflow:auto;
+}
+</style>
+<div ng-controller="deployFlowController">
+	<div  style='height:95%;overflow:auto;'>
+		<table class="table table-striped" style='height:50px;overflow:auto;font-size: 14px;font-family:'"Microsoft YaHei" ! important;color:#333333'>
+			<thead>
+				<tr>
+					<th>流程ID</th>
+					<th>流程名称</th>
+					<th>版本</th>
+					<th>描述</th>
+					<th>流程详细</th>
+				</tr>
+			</thead>
+			<tr ng-repeat="item in items" style='font-size: 13px;font-family:'"Microsoft YaHei"! important;color:#333333'>
+				<td>{{item.processId}}</td>
+				<td>{{item.processName}}</td>
+				<td>{{item.version}}</td>
+				<td>{{item.description}}</td>
+				<td><img src="/EmApl/img/login/detail.png" height="32"
+					width="32" style='cursor: hand' ng-click='details(item.processId)' />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div  style='height:5%;margin-top:-25px;'>
+			<uib-pagination boundary-links="true" total-items="totalItems"
+			max-size="maxSize" force-ellipses="true" ng-model="currentPage"
+			class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;"
+			first-text="&laquo;" last-text="&raquo;" items-per-page="pageSize"> 
+		</uib-pagination>
+	</div>
+	<div style='margin-left: -200px'>
+		<script type="text/ng-template" id="prcossImg"">
+         <div class="modal-body">
+			<img ng-src="{{imgUrl}}" ng-dblclick='enlarge()' style='width:{{imgwd}}px'></img>
+		</div>
+      </script>
+	</div>
+</div>

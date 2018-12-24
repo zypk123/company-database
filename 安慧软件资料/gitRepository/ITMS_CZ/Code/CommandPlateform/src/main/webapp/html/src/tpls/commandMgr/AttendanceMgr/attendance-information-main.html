@@ -1,0 +1,173 @@
+<div class="easyui-layout" id="attendance-information-main">
+    <div data-options="region:'north',border:false,height:120">
+        <div class="searchPanel">
+            <div class="panel_title"></div>
+            <form cy-form="queryData">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">
+                                                                            管理部门：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="department" style="width:150px;"/>
+                        </div>
+                        <div class="th">
+                                                                            人员姓名：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="name" style="width:150px;"/>
+                        </div>
+                        <div class="th">
+                                                                             警号：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="Alarm" style="width:150px;"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                                                                                 请假日期：
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datebox" name="birth" />至
+                        </div>
+                        <div class="td">
+                            <input class="easyui-datebox" name="birth" />
+                        </div>
+                        <div class="th">
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton" cy-click="search" data-options="iconCls:'icon-search'" 
+                            style="width:70px;margin-left:20px">查询</a>
+                            <a class="easyui-linkbutton"  style="width:70px;margin-left:20px">审核</a>
+                            <a class="easyui-linkbutton"  style="width:70px;margin-left:20px" cy-click="ANSWER">点名</a>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    <div data-options="region:'center',border:false">
+        <table cy-datagrid="options" cy-querydata="queryData"
+        cy-url="/dsadsa/dasdasdsa"></table>
+    </div>
+</div>
+<script>
+    InitPage([], function($scope) {
+
+        //配置参数
+        $scope.options = {
+            columns : [[{
+                field : 'id',
+                checkbox : true,
+                align : 'center',
+                width : 8
+            }, {
+                field : 'ATTENDANCE_DATE',
+                title : '考勤日期',
+                align : 'center',
+                width : 16
+            }, {
+                field : 'ATTENDANCE_PERSON',
+                title : '人员姓名',
+                align : 'center',
+                width : 16
+            }, {
+                field : 'Alarm',
+                title : '警号',
+                align : 'center',
+                width : 12
+            }, {
+                field : 'department',
+                title : '管理部门',
+                align : 'center',
+                width :28
+            },  {
+                field : 'AM_ATTENDANCE',
+                title : '上午考勤状况',
+                align : 'center',
+                width : 16
+            }, {
+                field : 'PM_ATTENDANCE',
+                title : '下午考勤状况',
+                align : 'center',
+                width : 16
+            }, {
+                field : 'Rollcall',
+                title : '答道/点名次数',
+                align : 'center',
+                width : 16
+            }, {
+                field : 'START_WORK_TIME',
+                title : '上班时间',
+                align : 'center',
+                width : 12
+            }, {
+                field : 'OFF_WORK_TIME',
+                title : '下班时间',
+                align : 'center',
+                width : 12
+            }, {
+                field : 'IS_OVERTIME',
+                title : '是否加班',
+                align : 'center',
+                width : 12
+            },{
+                field : 'OVERTIME ',
+                title : '加班时长',
+                align : 'center',
+                width : 12
+            },{
+                field : 'CHAR',
+                title : '审核状态',
+                align : 'center',
+                width : 12
+            },{
+                field : 'operate',
+                title : '操作',
+                align : "center",
+                width : 14
+            }]]
+        };
+
+        //查询方法
+        $scope.search = function() {
+            $scope.$search("queryData");
+        };
+
+        //弹出添加界面
+        $scope.ANSWER = function() {
+            $scope.$setParam("saveData", function(data) {
+                console.log(data);
+                //交互
+                // $.ajax({
+                // ...
+                // success : function(){
+                //关闭窗口
+                $scope.$getDialog("addDialog").dialog("close");
+                //刷新列表
+                $scope.$search('queryData');
+                // }
+                // });
+
+            });
+            $scope.$openDialog("addDialog", {
+                href : "tpls/commandMgr/AttendanceMgr/attendance-information-main-list.html",
+                height : 300,
+                width : 650,
+                title : "人员点名"
+            });
+        };
+    }); 
+</script>
+<style>
+    #attendance-information-main .th {
+        width: 100px;
+        text-align: right;
+    }
+    #attendance-information-main .td {
+        width: 155px;
+    }
+</style>

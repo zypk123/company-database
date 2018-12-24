@@ -1,0 +1,191 @@
+<div id="cameraInfoOperatePublic" class="easyui-layout">
+	<div data-options="region:'center', border:false">
+		<form cy-form="formDatas" id="form">
+        	<div class="table">
+        		<div class="tr">
+        			<div class="th">部件编号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="deviceNbr" data-options="required:true,validType:['length[0,32]','number']"/>
+        			</div>
+        			<div class="th">部件名称：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="componentName" data-options="required:true,validType:'length[0,64]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">接入方式：</div>
+        			<div class="td">
+        				<input class="easyui-combobox" name="accessMode" cy-code="403"/>
+        			</div>
+        			<div class="th">部件类型：</div>
+        			<div class="td">
+        				<input class="easyui-combobox" name="sysComponentType" cy-code="438"  data-options="required:true"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th" style="width: 178px;">相机唯一序列号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="deviceKey" data-options="required:true,validType:'length[0,64]'"/>
+        			</div>
+        			<div class="td">
+        				<span style="color:red">（与监控服务器接入设备对应关系字段）</span>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th" style="width: 188px;">是否支持视频输出：</div>
+        			<div class="td" id="isVideoSupport" style="width: 160px;">
+        				<input type="radio" name="isVideoSupport" value="1"  style="width: 10px" checked="checked"/>是
+                        <input type="radio" name="isVideoSupport" value="2"  style="width: 10px"/>否
+        			</div>
+        			<div class="th">视频平台备案编号：</div>
+        			<div class="td">
+        				<input id="cameraSn"  class="easyui-textbox" name="cameraSn" data-options="validType:'length[0,32]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">视频接入方式：</div>
+        			<div class="td">
+        				<input id="videoAccessMode" class="easyui-combobox" name="videoAccessMode"  cy-code="485"/>
+       				</div>
+        			<div class="th">相机IP：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="cameraIp" validType='ip'/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">端口号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="cameraPort" data-options="validType:['length[0,10]','number']"/>
+        			</div>
+        			<div class="th">相机序列号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="assembleSerialNbr" data-options="validType:'length[0,32]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">品    牌：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="brand" data-options="validType:'length[0,16]'"/>
+        			</div>
+        			<div class="th">型    号：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="model" data-options="validType:'length[0,16]'"/>
+        			</div>
+        		</div>
+        		<div class="tr">
+        			<div class="th">规    格：</div>
+        			<div class="td">
+        				<input class="easyui-textbox" name="specification" data-options="validType:'length[0,64]'"/>
+        			</div>
+        			<div id="direction">
+        			<div class="th">监控方向：</div>
+        			<div class="td">
+        				<input id="directionType" class="easyui-combobox" name="directionType" data-options="valueField:'state',textField:'text'" />
+       				</div>
+       				</div>
+        		</div>
+        	</div>
+        </form>
+    </div>
+    <div data-options="region:'south', border:false">
+        <div class="linkbutton_toolbar" style="text-align: center">
+            <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+	InitPage(["saveData","formDatas","deviceId1","type","directionData","deviceType"],function($scope){
+
+		//初始化数据词典
+	    $scope.$getDefaultCode(['403','438','485']);
+	    var deviceId = $scope.deviceId1;
+		$scope.load=function(){
+			if($scope.type=="edit"){
+				var value=$scope.$("input[name='isVideoSupport']:checked").val();
+				if(value=="2"){
+					$scope.$("#videoAccessMode").textbox("clear");
+					$scope.$("#videoAccessMode").textbox("disable");
+					$scope.$("#cameraSn").textbox("disable");
+					$scope.$("#cameraSn").textbox("clear");
+				}
+			}
+			
+			//初始化加载方向类型
+			if($scope.formDatas != undefined){
+				if($scope.formDatas.directionType){
+					$scope.$("#directionType").textbox("setValue",$scope.formDatas.directionType);
+				}
+				if($scope.formDatas.directionName){
+					$scope.$("#directionType").textbox("setText",$scope.formDatas.directionName);
+				}
+			}
+			if($scope.directionData){
+				$scope.$("#directionType").combobox("loadData",$scope.directionData);
+			}
+		
+			//判断设备类型来隐藏相应标签,"16"表示车载设备
+			if($scope.deviceType){
+				if("16" == $scope.deviceType){
+					$scope.$("#direction").hide();
+				}else{
+					$scope.$("#direction").show();
+				}
+			}
+			  $scope.$("#isVideoSupport").click(function(){
+				var value=$scope.$("input[name='isVideoSupport']:checked").val();
+				if(value==2){
+						$scope.$("#videoAccessMode").textbox("clear");
+						$scope.$("#videoAccessMode").textbox("disable");
+						$scope.$("#cameraSn").textbox("clear");
+						$scope.$("#cameraSn").textbox("disable");
+					}else{
+						$scope.$("#videoAccessMode").textbox("clear");
+						$scope.$("#videoAccessMode").textbox("enable");
+						$scope.$("#cameraSn").textbox("clear");
+						$scope.$("#cameraSn").textbox("enable");
+					}
+			  });
+		};
+		
+		/**
+		 *相机信息保存
+		 */
+		if ($scope.$params.get("type") == "add") {
+			$scope.save = function() {
+				//更新form中的数据
+				if ($scope.$("#form").form("validate")) {
+					$scope.$updateData("formDatas");
+					//添加时设备的ID
+					$scope.formDatas.deviceId = deviceId;
+					trimObject($scope.formDatas);
+					//对对象中的每个元素进行trim操作
+					//添加保存相机信息
+					$scope.saveData($scope.formDatas);
+			 	}
+			};
+		} else {
+			$scope.save = function() {
+				if ($scope.$("#form").form("validate")) {
+					$scope.$updateData("formDatas");
+					//添加时设备的ID
+					$scope.formDatas.deviceId = deviceId;
+					trimObject($scope.formDatas);
+					//对对象中的每个元素进行trim操作
+					//添加保存相机信息
+					$scope.saveData($scope.formDatas);
+			 	}
+			};
+		}
+		});
+</script>
+<style type="text/css">
+	#cameraInfoOperatePublic .th{
+        width: 140px;
+        text-align: right;
+    }
+    #cameraInfoOperatePublic .td>input[class^='easyui-']{
+        width: 174px;
+    }
+</style>

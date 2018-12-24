@@ -1,0 +1,188 @@
+<!--查看机构信息详情面板-->
+<div id="basicInformation_add" class="easyui-layout">
+	<form cy-form="InformationData">
+		<div class="searchPanel">
+			<div class="panel_title">
+				基本信息
+			</div>
+			<div id="basicInformation" class="table">
+				<div class="tr">
+					<div class="th">
+						机构代码：
+					</div>
+					<div class="td" cy-name="InformationData.orgCode" ></div>
+					<div class="th" >
+						机构名称：
+					</div>
+					<div class="td" cy-name="InformationData.orgName" ></div>
+					<div class="th" >
+						机构级别：
+					</div>
+					<div class="td" cy-name="InformationData.orgLevel" cy-filter="orgLevel"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						父机构名称：
+					</div>
+					<div class="td" cy-name="InformationData.parentOrgId"></div>
+					<div class="th">
+						业务指导机构：
+					</div>
+					<div class="td" cy-name="InformationData.parentInstructOrgId"></div>
+					<div class="th" >
+						机构类型：
+					</div>
+					<div class="td" cy-name="InformationData.orgType" cy-filter="orgType"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						机构负责人：
+					</div>
+					<div class="td" cy-name="InformationData.orgHeaderName"></div>
+					<div class="th" >
+						负责人电话：
+					</div>
+					<div class="td" cy-name="InformationData.orgHeaderPhone"></div>
+					<div class="th">
+						机构联系人电话：
+					</div>
+					<div class="td" cy-name="InformationData.orgPhoneNbr"></div>
+				</div>
+				<div class="tr">
+					<div class="td" style="width:64%;height:80px;" >
+						<div class="tr">
+							<div class="th">
+								辖区范围：
+							</div>
+							<div class="td" cy-name="InformationData.sponsorDistributes"></div>
+							<div class="th">
+								启用状态：
+							</div>
+							<div class="td" cy-name="InformationData.qyzt"></div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								是否是独立机构：
+							</div>
+							<div class="td" cy-name="InformationData.isDepartment" cy-filter="isDepartment"></div>
+							<div class="th">
+								是否高速管理部门：
+							</div>
+							<div class="td" cy-name="InformationData.isHighwayOrg" cy-filter="isHighwayOrg"></div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								备注：
+							</div>
+							<div class="td" cy-name="InformationData.remark"></div>
+						</div>
+					</div>
+					<div class="td" style="width:36%;height:140px;"></div>
+				</div>
+			</div>
+			<div class="searchPanel">
+				<div class="panel_title">
+					地址信息
+				</div>
+				<div id="addressMessage" class="table">
+					<div class="tr">
+						<div class="th" >
+							驻地所在城市：
+						</div>
+						<div class="td" cy-name="InformationData.city" style="width: 170px;"></div>
+						<div class="th" >
+							驻地行政区域划分：
+						</div>
+						<div class="td" cy-name="InformationData.districtCode"  cy-filter="$getDistrictName" style="width: 170px;"></div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							纬度：
+						</div>
+						<div class="td" cy-name="InformationData.orgLatitude" style="width: 170px;"></div>
+						<div class="th">
+							经纬：
+						</div>
+						<div class="td" cy-name="InformationData.orgLongitude" style="width: 170px;"></div>
+					</div>
+					<div class="tr">
+						<div class="th" >
+							驻地地址：
+						</div>
+						<div class="td" cy-name="InformationData.addressDesc" style="width: 170px;"></div>
+					</div>
+				</div>
+			</div>
+			<!--
+			<div class="tr">
+			<div class="td">
+			<div class="searchPanel  half">
+			<div class="panel_title">机构签章</div>
+			</div>
+			</div>
+			<div class="td">
+			<div class="searchPanel  half" style="text-align: right;">
+			<div class="panel_title">通知书签章</div>
+			</div>
+			</div>
+			</div>
+			-->
+			<div class="tr">
+				<div class="td" style="text-align: center">
+					<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">关闭</a>
+				</div>
+			</div>
+	</form>
+</div>
+
+<script>
+	//接受数据
+	InitPage(["InformationData", "close"], function($scope) {
+		$scope.$getDefaultCode(['111','114']);
+		 $scope.orgType=function(value){
+		 	 return $scope.$getCodeName("111",value);
+       };
+       $scope.orgLevel=function(value){
+       	return $scope.$getCodeName('114',value);
+       };
+      
+       $scope.isDepartment=function(value){
+       	 	if(value==0){
+       	 		return "是";
+       	 	}else{
+       	 		return "否";
+       	 	}
+       };
+       $scope.isHighwayOrg=function(value){
+       		if(value==0){
+       	 		return "是";
+       	 	}else{
+       	 		return "否";
+       	 	}
+       };
+	});
+
+</script>
+<style type="text/css">
+	/* 机构签章和通知签章*/
+	#basicInformation_add .half {
+		float: left;
+		width: 47%;
+		height: 180px;
+	}
+	/* 基础信息中的单元格样式*/
+	#basicInformation_add .th {
+		width: 120px;
+		text-align: right;
+	}
+	/* 基础信息中的表头样式*/
+	#basicInformation .td {
+		width: 120px;
+	}
+	/* 地址信息中的表头样式*/
+	#addressMessage .th {
+		width: 150px;
+		text-align: right;
+	}
+</style>
+

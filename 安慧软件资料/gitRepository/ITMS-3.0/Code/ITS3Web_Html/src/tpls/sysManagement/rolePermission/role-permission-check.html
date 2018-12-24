@@ -1,0 +1,88 @@
+<div class="easyui-layout">
+    <form cy-form="dataJs">
+        <div data-options="region:'north'" style="height:100px;">
+            <div class="table">
+                &nbsp;
+                <div class="tr">
+                    <div class="th" style="margin-left: 20px;">角色名称：</div>
+                    <div class="td"  cy-name="dataJs.jsmc" style="width: 200px;"></div>
+                    <div class="th" >角色说明：</div>
+                    <div class="td" cy-name="dataJs.jssm"></div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="margin-left: 20px;">启用状态：</div>
+                    <div class="td" cy-name="dataJs.qyzt"></div>
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+            <div class="easyui-layout">
+                <div data-options="region:'west',title:'权限分配',collapsible:false,border:false,width:'50%'" style="border-right: solid 1px #ddd">
+                    <div id="permission-tree"></div>
+                </div>
+                <div data-options="region:'center',title:'服务分配',border:false">
+                    <div id="server-tree"></div>
+                </div>
+
+            </div>
+        </div>
+        <div data-options="region:'south'" style="height: 55px;">&nbsp;
+            <div class="tr">
+                <div class="td" style="text-align: center">
+                    <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="close">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+//接受数据
+InitPage(["dataJs", "close"], function ($scope) {
+    $scope.$("#permission-tree").tree({
+        onLoadSuccess: function(){
+            if($scope.$params.get("type")=="edit"){
+                $scope.$ajaxRequest({
+                    url: "data/sysManagement/checked.json",
+                    param:{id: $scope.dataJs.id},
+                    success: function(data){
+                        for(var index= 0;index<data.length;index++){
+                            var checkedId=data[index];
+                            var node=$scope.$("#permission-tree").tree("find",checkedId);
+                            $scope.$("#permission-tree").tree("check",node.target);
+                        }
+                    }
+                })
+            }
+        },
+        lines: true,
+        checkbox: true,
+        animate: true,
+        url: "data/sysManagement/js-tree.json"
+    });
+    $scope.$("#server-tree").tree({
+        onLoadSuccess: function(){
+            if($scope.$params.get("type")=="edit"){
+                $scope.$ajaxRequest({
+                    url: "data/sysManagement/checked-server.json",
+                    param:{id: $scope.dataJs.id},
+                    success: function(data){
+                        for(var index= 0;index<data.length;index++){
+                            var checkedId=data[index];
+                            var node=$scope.$("#server-tree").tree("find",checkedId);
+                            $scope.$("#server-tree").tree("check",node.target);
+                        }
+                    }
+                })
+            }
+        },
+        lines: true,
+        checkbox: true,
+        animate: true,
+        url: "data/sysManagement/server-tree.json"
+    });
+
+})
+</script>
+ <style type="text/css">
+
+ </style>

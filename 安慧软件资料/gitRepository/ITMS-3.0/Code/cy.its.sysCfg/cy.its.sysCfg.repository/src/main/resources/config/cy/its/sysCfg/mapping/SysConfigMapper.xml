@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysConfigMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Config" >
+    <id column="CONFIG_ID" property="configId" jdbcType="VARCHAR" />
+    <result column="CONFIG_NAME" property="configName" jdbcType="VARCHAR" />
+    <result column="CONFIG_REMARK" property="configRemark" jdbcType="VARCHAR" />
+    <result column="KEY" property="key" jdbcType="VARCHAR" />
+    <result column="VALUE" property="value" jdbcType="VARCHAR" />
+    <result column="VALUE_TYPE" property="valueType" jdbcType="VARCHAR" />
+    <result column="SELECTED_VALUE" property="selectedValue" jdbcType="VARCHAR" />
+    <result column="SELECTED_VALUE_DESC" property="selectedValueDesc" jdbcType="VARCHAR" />
+    <result column="DEFAULT_VALUE" property="defaultValue" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONFIG_ID, CONFIG_NAME, CONFIG_REMARK, KEY, VALUE, VALUE_TYPE, SELECTED_VALUE, SELECTED_VALUE_DESC, 
+    DEFAULT_VALUE, TYPE
+  </sql>
+  <select id="selectConfigByType" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_CONFIG
+    <where>
+		<if test="type != null and type != '' ">
+			type = #{type,jdbcType=VARCHAR}
+		</if>
+	</where> 
+  </select>  
+</mapper>

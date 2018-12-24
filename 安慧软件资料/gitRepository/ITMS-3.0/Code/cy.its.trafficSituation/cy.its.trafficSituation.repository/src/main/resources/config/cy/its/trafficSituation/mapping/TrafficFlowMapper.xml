@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficFlowMapper" >
+
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficDeviceFlow" >
+    <result column="DEVICESYSNBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="COUNTTIME" property="countTime" jdbcType="TIMESTAMP" />
+    <result column="TOTALNUM" property="totalNum" jdbcType="DECIMAL" />
+    <result column="AVGSPEED" property="avgSpeed" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <select id="countDeviceFlow"  resultMap="BaseResultMap" parameterType="java.util.HashMap">
+    select m.device_sys_nbr deviceSysNbr,
+           m.count_time countTime,
+           sum(m.total_num) totalNum,
+           round(sum(m.total_num * m.avr_speed) / decode(sum(m.total_num), 0, 1, sum(m.total_num))) avgSpeed
+	  from t_flow_five_min m
+	 where m.device_sys_nbr = #{deviceSysNbr,jdbcType=VARCHAR}
+	   <![CDATA[and m.count_time > to_date(#{from,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss') - 1 / 86400 ]]> 
+	   <![CDATA[and m.count_time < to_date(#{to,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss') + 1 / 86400 ]]> 
+	 group by m.device_sys_nbr, m.count_time
+	 order by m.count_time asc
+  </select>
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.PolicePostMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.traffic.PolicePost" >
+    <id column="POLICE_POST_ID" property="policePostId" jdbcType="VARCHAR" />
+    <result column="POST_NAME" property="postName" jdbcType="VARCHAR" />
+    <result column="MANAGE_ORG" property="manageOrg" jdbcType="VARCHAR" />
+    <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    <result column="LON_LAT" property="lonLat" jdbcType="VARCHAR" />
+    <result column="DUTY_MODEL" property="dutyModel" jdbcType="CHAR" />
+    <result column="HEADER_NAME" property="headerName" jdbcType="VARCHAR" />
+    <result column="HEADER_PHONE" property="headerPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    POLICE_POST_ID, POST_NAME, MANAGE_ORG, ADDRESS, LON_LAT, DUTY_MODEL, 
+    HEADER_NAME, HEADER_PHONE
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE_POST
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE_POST
+    where POLICE_POST_ID = #{policePostId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_POLICE_POST
+    where POLICE_POST_ID = #{policePostId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.traffic.PolicePost" >
+    insert into T_SYS_POLICE_POST (POLICE_POST_ID, POST_NAME, MANAGE_ORG, 
+      ADDRESS, LON_LAT, 
+      DUTY_MODEL, HEADER_NAME, HEADER_PHONE
+      )
+    values (#{policePostId,jdbcType=VARCHAR}, #{postName,jdbcType=VARCHAR}, #{manageOrg,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{lonLat,jdbcType=VARCHAR}, 
+      #{dutyModel,jdbcType=CHAR}, #{headerName,jdbcType=VARCHAR}, #{headerPhone,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.traffic.PolicePost" >
+    insert into T_SYS_POLICE_POST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="policePostId != null" >
+        POLICE_POST_ID,
+      </if>
+      <if test="postName != null" >
+        POST_NAME,
+      </if>
+      <if test="manageOrg != null" >
+        MANAGE_ORG,
+      </if>
+      <if test="address != null" >
+        ADDRESS,
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT,
+      </if>      
+      <if test="dutyModel != null" >
+        DUTY_MODEL,
+      </if>
+      <if test="headerName != null" >
+        HEADER_NAME,
+      </if>
+      <if test="headerPhone != null" >
+        HEADER_PHONE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="policePostId != null" >
+        #{policePostId,jdbcType=VARCHAR},
+      </if>
+      <if test="postName != null" >
+        #{postName,jdbcType=VARCHAR},
+      </if>
+      <if test="manageOrg != null" >
+        #{manageOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyModel != null" >
+        #{dutyModel,jdbcType=CHAR},
+      </if>
+      <if test="headerName != null" >
+        #{headerName,jdbcType=VARCHAR},
+      </if>
+      <if test="headerPhone != null" >
+        #{headerPhone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.traffic.PolicePost" >
+    update T_SYS_POLICE_POST
+    <set >
+      <if test="postName != null" >
+        POST_NAME = #{postName,jdbcType=VARCHAR},
+      </if>
+      <if test="manageOrg != null" >
+        MANAGE_ORG = #{manageOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        ADDRESS = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyModel != null" >
+        DUTY_MODEL = #{dutyModel,jdbcType=CHAR},
+      </if>
+      <if test="headerName != null" >
+        HEADER_NAME = #{headerName,jdbcType=VARCHAR},
+      </if>
+      <if test="headerPhone != null" >
+        HEADER_PHONE = #{headerPhone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where POLICE_POST_ID = #{policePostId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.traffic.PolicePost" >
+    update T_SYS_POLICE_POST
+    set POST_NAME = #{postName,jdbcType=VARCHAR},
+      MANAGE_ORG = #{manageOrg,jdbcType=VARCHAR},
+      ADDRESS = #{address,jdbcType=VARCHAR},
+      LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      DUTY_MODEL = #{dutyModel,jdbcType=CHAR},
+      HEADER_NAME = #{headerName,jdbcType=VARCHAR},
+      HEADER_PHONE = #{headerPhone,jdbcType=VARCHAR}
+    where POLICE_POST_ID = #{policePostId,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

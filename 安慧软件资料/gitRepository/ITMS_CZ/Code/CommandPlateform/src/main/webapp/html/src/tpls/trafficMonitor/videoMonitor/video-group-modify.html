@@ -1,0 +1,532 @@
+<div class="easyui-layout" id="video-group-modify">
+    <div data-options="region:'north'" style="height: 40px">
+        <form id="formUserGroupDetail" cy-form="userGroupDetail">
+            <div class="table">
+                <div class="tr">
+                    <div class="td">自定义分组名称:</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="groupName" data-options="required:true"
+                               validType="length[0,32]" data-options="prompt:'请输入组名称'" style="width: 200px"/>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'west',border:false" style="width:300px">
+        <div class="easyui-layout" id="innerLayout">
+            <div data-options="region:'north',border:false" style="line-height: 30px;">
+                <div class="linkbutton_toolbar">
+                    <input id="search" data-options="prompt:'请输入设备或组件名称关键字'" style="width:200px;height:26px"/>
+                    <a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back"
+                       style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+                </div>
+                <div>
+                    <input type="checkbox" name="chkDome" value="0" cy-click="clickChkDome"/>
+                    <input type="checkbox" name="groupRadioDome" value="1" cy-click="clickRadioDome"/>球机
+                    <input type="checkbox" name="groupRadioDome" value="2" cy-click="clickRadioDome"/>枪机
+                    <input type="checkbox" name="groupRadioDome" value="3" cy-click="clickRadioDome"/>组件
+                </div>
+            </div>
+            <div data-options="region:'center',border:false">
+
+                <div id="videoGroupTollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true"
+                        >
+                    <!--高度设为100%或者不设，总会导致滚动条下方超出浏览器可见区域-->
+                    <div title="按道路">
+                        <ul id="roadTree"></ul>
+                    </div>
+                    <div title="按机构" style="overflow: auto;margin-bottom: 5px;margin-right: 5px;height:90%">
+                        <ul id="orgTree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'west',border:false,closed:true" style="width:280px;border-top: solid 1px #ddd">
+                <table id="searchGrid" cy-datagrid="searchGridOptions">
+
+                </table>
+                &nbsp;
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',border:false">
+        <div class="searchPanel" style="height:390px;margin-bottom: 0px;">
+            <div class=panel_title>
+                已选列表
+            </div>
+            <div id="checkedDiv" style="height:400px;overflow-y: auto;overflow-x:hidden"></div>
+        </div>
+    </div>
+    <div data-options="region:'south',height: 40,border:false">
+        <div class="linkbutton_toolbar" style="text-align: center;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" cy-click="saveUserGroup">确定</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-clear'" cy-click="clearChecked">清空</a>
+        </div>
+    </div>
+</div>
+<script>
+InitPage(["userGroupDetail", "refresh"], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+    /**
+     * 已选数组
+     */
+    $scope.checkList = [];
+
+    //初始化方法
+    $scope.load = function () {
+        $scope.$updateDom("userGroupDetail");
+        $scope.$("input[name=groupRadioDome]").attr({disabled: "disabled"});
+        //初始化树
+        $scope.loadDeviceTree('roadTree');
+        $scope.$("#videoGroupTollgateTabs").tabs({
+            onSelect: function (title, index) {
+                switch (title) {
+                    case "按道路":
+                        $scope.loadDeviceTree('roadTree');
+                        break;
+                    case "按机构":
+                        $scope.loadDeviceTree('orgTree');
+                        break;
+                }
+            }
+        });
+        //设置查找方法
+        $scope.initSearch();
+        $scope.initChecList();
+        //$scope.$("input[name=groupName]").val($scope.userGroupDetail.groupName);
+        //$scope.userGroupDetail.groupContent=ids.substr(0,ids.length-1);
+    };
+
+    $.extend($scope, {
+        /**
+         * 查找结果列表参数
+         */
+        searchGridOptions: {
+            columns: [
+                [
+                    {
+                        field: 'id',
+                        checkbox: true
+                    },
+                    {
+                        field: 'name',
+                        title: '设备或组件名称',
+                        formatter: function(value,data,rowIndex){
+                            var html='';
+                            if(value && value != ''){
+                                html="<div>"+value+"</div>"
+                            }
+                            return html;
+                        }
+                    }
+                ]
+            ],
+            pagination: false,
+            nowrap:false,
+            onLoadSuccess:function(data){
+                //遍历加载选择项
+                console.log('onLoadSuccess');
+                for(var index in data.rows){
+                    if($scope.getCheckListIndex($scope.checkList,data.rows[index])>0){
+                        $scope.$("#searchGrid").datagrid('checkRow',index);
+                    }
+                }
+            },
+            onCheck: function (rowIndex, rowData) {
+                console.log('oncheck');
+                console.log(rowData);
+                //获取对应的树节点
+                var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                var node = tree.tree("find", rowData.id);
+                //展开父节点
+                tree.tree("expandTo", node.target);
+                //选中节点
+                tree.tree("check", node.target);
+            },
+            onUncheck: function (rowIndex, rowData) {
+                //获取对应的树节点
+                var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                var node=tree.tree("find", rowData.id);
+                //选中节点
+                tree.tree("uncheck", node.target);
+            },
+            onCheckAll: function (rows) {
+                console.log('onCheckAll');
+                var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                for (var index in rows) {
+                    var row = rows[index];
+                    //获取对应的树节点
+                    var node = tree.tree("find", row.id);
+                    //展开父节点
+                    tree.tree("expandTo", node.target);
+                    //选中节点
+                    tree.tree("check", node.target);
+                }
+            },
+            onUncheckAll: function (rows) {
+                var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                for (var index in rows) {
+                    var row = rows[index];
+                    //获取对应的树节点
+                    var node = tree.tree("find", row.id);
+                    //选中节点
+                    tree.tree("uncheck", node.target);
+                }
+            }
+        },
+
+
+        /**
+         * 获得查找结果数据
+         */
+        getSearchData: function (result, tree, searchIndex) {
+            //var tree=$($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+            if (tree.children && tree.children.length > 0) {
+                for (var index in tree.children) {
+                    $scope.getSearchData(result, tree.children[index], searchIndex);
+                }
+            } else if (tree.text&&tree.text.toUpperCase().indexOf(searchIndex) >= 0) {
+//            var node =tree.tree("find", tree.id);
+//            var parent = tree.tree("getParent", node.target);
+                result.push({
+                    id: tree.id,
+                    name: tree.text
+                });
+            }
+        },
+
+    //保存用户组
+    saveUserGroup : function () {
+        //验证
+        if (!$scope.$("#userGroupDetail").form('validate')) {
+            return;
+        }
+        $scope.$updateData("userGroupDetail");
+        if ($scope.checkList.length == 0) {
+            $scope.showMessage("分组设备不能为空!");
+            return;
+        }
+        if($scope.checkList.length>30){
+            $scope.showMessage("分组设备数量不能超过30个，请酌情选择!");
+            return;
+        }
+        var ids = "";
+        for (var index in $scope.checkList) {
+            var sysComponentId = '';
+            var deviceId = '';
+            if ($scope.checkList[index].attribute.deviceId) {
+                deviceId = $scope.checkList[index].attribute.deviceId;
+            }
+            if ($scope.checkList[index].attribute.sysComponentId) {
+                sysComponentId = $scope.checkList[index].attribute.sysComponentId;
+            }
+            ids += "{" + deviceId + "|" + sysComponentId + "},";
+        }
+        $scope.userGroupDetail.groupContent = ids.substr(0, ids.length - 1);
+        if ($scope.userGroupDetail.groupId) {
+            $scope.PostAjax(
+                    $scope.$restRoot + "/video/cruisePlan/updateVideoGroup",
+                    {param: JSON.stringify($scope.userGroupDetail)},
+                    function (data) {
+                        if (data.errorMsg && data.errorMsg != '') {
+                            alert(data.errorMsg);
+                        }
+                        else {
+                            console.log("修改户自定义组成功");
+                            $scope.$closeSelf();
+                            $scope.refresh($scope.userGroupDetail.groupId);
+                        }
+                    }
+            );
+        }
+        else {
+            $scope.PostAjax(
+                    $scope.$restRoot + "/video/cruisePlan/createVideoGroup",
+                    {param: JSON.stringify($scope.userGroupDetail)},
+                    function (data) {
+                        if (data.errorMsg && data.errorMsg != '') {
+                            alert(data.errorMsg);
+                        }
+                        else {
+                            console.log("新增用户自定义组成功");
+                            $scope.$closeSelf();
+                            $scope.refresh(data.result);
+                        }
+                    }
+            );
+        }
+    },
+        getCheckListIndex: function (arr, node) {
+            var existIndex = -1;
+            for (var index = 0; index < arr.length; index++) {
+                var item = arr[index];
+                if (item.id == node.id) {
+                    existIndex = index;
+                }
+            }
+            return existIndex;
+        },
+        /**
+         * 返回树
+         */
+        back: function () {
+            $scope.$("#innerLayout").layout("panel", "west").panel("close");
+            $scope.$("#innerLayout").layout("resize");
+            $scope.$("#back").hide();
+        },
+        //初始化视频列表
+        initChecList: function () {
+            //console.log("initChecList");
+            if($scope.userGroupDetail.groupContent){
+                //加载已选择的子结点
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot + "/video/videoPlay/getVideoByVideoComponentIds",
+                    params: {VideoComponentIds:$scope.userGroupDetail.groupContent},
+                    method: "post",
+                    success: function (result) {
+                        $scope.checkList = result;
+                        $scope.generateSelectDivList();
+                    }
+                });
+            }
+        },
+        //加载机构树菜单
+        loadDeviceTree: function (treeId) {
+            var domeGun = null;
+            if($scope.$("input[name=chkDome]").prop("checked")
+                    &&$scope.$("input[name=groupRadioDome]:checked").length!=3){
+                domeGun='';
+                $scope. $("input[name=groupRadioDome]:checked").each(function(){
+                    domeGun+=$(this).val()+',';
+                });
+            }
+            var queryParams = {
+                id: "", //默认根节点为空，表示查询基础数据
+                //nodeIDType:'deviceSysNbr',//节点id类型，deviceID,deviceSysNbr,后续根据需要扩展
+                type: treeId,//默认类型为0,
+                isDomeGun: domeGun
+            };
+            var tree = $scope.$("#" + treeId);
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/videoPlay/getVideoDeviceTrees",
+                params: queryParams,
+                method: "post",
+                success: function (result) {
+                    tree.tree({
+                        data: result,
+                        checkbox: true,
+                        onDblClick: function (node) {
+                            var nodeType = node.attribute.nodeType;
+                            if (nodeType == 'device') {
+                                $(this).tree('check', node.target);
+                            }
+                            else {
+                                $(this).tree('expand', node.target);
+                            }
+                        },
+                        onLoadSuccess: function (node,data) {
+//                            console.log('onLoadSuccess');
+                            if($(this).tree("getRoots").length>0){
+                                var root = $(this).tree("getRoots")[0];
+                                //收起全部节点
+                                $(this).tree("collapseAll");
+                                //展开根节点
+                                $(this).tree("expand", root.target);
+                            }
+                            //遍历/选择子结点
+                            var roots=$(this).tree("getRoots");
+                            for(var index=0;index<roots.length;index++){
+                                var nodes=$(this).tree("getChildren",roots[index].target);
+                                for(var index1=0;index1<nodes.length;index1++){
+                                    if($(this).tree('isLeaf',nodes[index1].target)&&
+                                            $scope.getCheckListIndex($scope.checkList,nodes[index1])>=0){
+                                        $(this).tree('check',nodes[index1].target);
+                                    }
+                                }
+                            }
+                        },
+                        onCheck: function (node,checked) {
+                            var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                            var addOrMoveNodes=[];
+                            if(tree.tree('isLeaf',node.target)){
+                                addOrMoveNodes=[node];
+                            }
+                            else{
+                                addOrMoveNodes=tree.tree('getChildren',node.target);
+                            }
+                            //只能选子节点
+                            for (var index = 0; index < addOrMoveNodes.length; index++) {
+                                //tree.tree('uncheck', checked[index].target);
+                                var nodeIndex=$scope.getCheckListIndex($scope.checkList,addOrMoveNodes[index]);
+                                if(checked){
+                                    if(nodeIndex<0){
+                                        $scope.checkList.push(addOrMoveNodes[index]);
+                                    }
+                                }
+                                else{
+                                    if(nodeIndex>=0){
+                                        $scope.checkList.splice(nodeIndex, 1);
+                                    }
+                                }
+                            }
+//                            console.log(checked);
+//                            console.log($scope.checkList);
+                            $scope.generateSelectDivList();
+                        }
+                    });
+                },
+                fail: function (errMsg) {
+                    alert('加载机构树失败，原因：' + errMsg);
+                }
+            });
+        },
+        /**
+         * 生成右侧设备树
+         */
+        generateSelectDivList: function () {
+            //在已选列表中展示选择的节点
+            $scope.$("#checkedDiv").html("");
+            var table = $("<div class='table'></div>");
+            for (var index in $scope.checkList) {
+                var tr = $("<div class='tr'></div>");
+                var th = $("<div class='th'></div>");
+                var td = $("<div class='td'></div>");
+                var closeButton = $("<a></a>").linkbutton({
+                    iconCls: 'icon-cancel',
+                    plain: true
+                }).click({
+                    removeEl: tr
+                }, function (e) {
+//                    //取消该元素的选中状态,移除内存中的已选列表
+//                    var node = e.data.removeEl.data("node");
+//                    var nodeIndex=$scope.getCheckListIndex($scope.checkList,node);
+//                    if(nodeIndex>=0){
+//                        $scope.checkList.splice(nodeIndex, 1);
+//                    }
+//                    $scope.generateSelectDivList();
+                    //取消该元素的选中状态
+                    var node = e.data.removeEl.data("node");
+                    var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+                    if(node.target){
+                        tree.tree("uncheck", node.target);
+                    }else{
+                        $("#searchGrid").datagrid("uncheckRow",node.rowIndex);
+                    }
+                });
+                tr.data("node", $scope.checkList[index]);
+                th.text($scope.checkList[index].text);
+                td.append(closeButton);
+                if (index % 2 == 0) {
+                    tr.css("backgroundColor", "#efefef");
+                } else {
+                    tr.css("backgroundColor", "#e5e5e5");
+                }
+                table.append(tr.append(th).append(td));
+            }
+            $scope.$("#checkedDiv").append(table);
+        },
+        /**
+         * 初始化查找
+         */
+        initSearch: function () {
+            var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+            $scope.$("#search").searchbox({
+                searcher: function () {
+                    var searchIndex = $(this).searchbox("getValue").trim();
+                    //显示查询结果
+                    $scope.showGrid();
+                    var searchResult = [];
+                    var rootNodes = tree.tree("getRoots");
+                    for (var index = 0; index < rootNodes.length; ++index) {
+                        var data = tree.tree("getData", rootNodes[index].target);
+                        $scope.getSearchData(searchResult, data, searchIndex.toUpperCase());
+                    }
+                    //获得超找结果
+                    $scope.$("#searchGrid").datagrid("loadData", searchResult);
+                }
+            });
+        },
+
+        /**
+         * 显示查询结果
+         */
+        showGrid: function () {
+            $scope.$("#innerLayout").layout("panel", "west").panel("open");
+            $scope.$("#innerLayout").layout("resize");
+            $scope.$("#back").show();
+        },
+
+        //选择球机或枪机
+        clickChkDome: function () {
+            if ($scope.$("input[name=chkDome]").prop("checked")) {
+                $scope.$("input[name=groupRadioDome]").removeAttr("disabled");
+                $scope.$("input[name=groupRadioDome]:first").prop('checked',true);
+            }
+            else {
+                $scope.$("input[name=groupRadioDome]").attr({disabled: "disabled"});
+                $scope.$("input[name=groupRadioDome]").prop("checked",false);
+            }
+            var treeID = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+            $scope.loadDeviceTree(treeID);
+        },
+        clickRadioDome: function () {
+            if($scope.$("input[name=groupRadioDome]:checked").length==0){
+                $scope.showMessage("选择类型时请至少选择一项!");
+                $(this).prop('checked',true);
+            }
+            else {
+                var treeID = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+                $scope.loadDeviceTree(treeID);
+            }
+        },
+        /**
+         * 清除全部选中节点
+         */
+        clearChecked : function() {
+            var tree = $($scope.$('#videoGroupTollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+            var roots=tree.tree("getRoots");
+            for (var index = 0; index < roots.length; ++index) {
+                //取消选中状态
+                tree.tree("uncheck", roots[index].target);
+                //展开根节点
+                tree.tree("collapseAll", roots[index].target);
+                tree.tree("expand", roots[index].target);
+            }
+//            //返回
+//            $scope.back();
+        },
+        /**
+         * 显示信息
+         * @param msg
+         */
+        showMessage: function (msg) {
+            $.messager.show({
+                title: '提示',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        }
+    });
+});
+</script>
+<style>
+    #choose-road-checkbox .th {
+        width: 70%;
+        padding: 0 12px;
+        height: 30px;
+        line-height: 30px;
+    }
+
+    #choose-road-checkbox .td {
+        padding: 0 12px;
+        height: 30px;
+        line-height: 30px;
+    }
+</style>

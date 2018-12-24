@@ -1,0 +1,269 @@
+<!--系统代码主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'west',title:'代码管理',split: true " style="width: 200px;">
+		<div id="cy-tree"></div>
+	</div>
+	<div data-options="region:'center'">
+		<div class="linkbutton_toolbar" id="dm-toolbar">
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-add'" cy-click="addDm">添加</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-remove'" cy-click="deleteDm">删除</a>
+		</div>
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+		cy-url="conCfg/SysCodeTypeAction/selectAllCode"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//设置系统代码类型全局变量
+		var codeType;
+		//初始化加载数据
+		$scope.load = function() {
+			//通过$ajax向后台获取代码类型数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "conCfg/SysCodeTypeAction/getSysCodeTypeData",
+				success : function(data) {
+					//加载代码类型树
+					$scope.$('#cy-tree').tree({
+						data : data,
+						onSelect : function(node) {
+							//判断是否是叶子节点
+							var isLeaf = $scope.$('#cy-tree').tree('isLeaf', node.target);
+							if (isLeaf) {
+								//获得代码类型名字和Id
+								codeType = {
+									codeTypeText : node.text,
+									codeTypeId : node.id,
+								};
+								//根据叶子节点Id搜索信息展示列表
+								var codeTypeId = node.id;
+								$scope.deptQueryDm.codeType = codeTypeId;
+								$scope.$search("deptQueryDm");
+							}
+						},
+						onLoadSuccess : function(node, data) {
+							//获得所有的根节点
+							var roots = $scope.$('#cy-tree').tree("getRoots");
+							//获得所有的子节点
+							var rts = $scope.$('#cy-tree').tree("getChildren");
+
+							$scope.$('#cy-tree').tree("collapseAll");
+							//折叠所有节点
+							$scope.$('#cy-tree').tree("expand", roots[0].target);
+							//展开第一个根节点下的所有节点
+							$scope.$('#cy-tree').tree("select", rts[1].target);
+							//默认选中子节点的第一个节点
+
+						}
+					});
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "加载失败!");
+				}
+			});
+
+		};
+		//列表展示
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'codeId',
+				checkbox : true,
+				align : 'center',
+				width : 50
+			}, {
+				field : 'codeType',
+				title : '代码类型',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'codeNo',
+				title : '代码编号',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'codeName',
+				title : '代码名称',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'enableFlag',
+				title : '启用状态',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'remark',
+				title : '备注',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 40
+			}]],
+			toolbar : $scope.$("#dm-toolbar"),
+			onDblClickRow : function(rowIndex, rowData) {
+				$scope.$setParam("checkedData", rowData);
+				$scope.$setParam("codeType", codeType);
+				$scope.$openDialog("checked", {
+					title : "代码信息详情",
+					width : 550,
+					height : 300,
+					href : "tpls/sysManagement/systemCode/system-code-check.html"
+				});
+			},
+		};
+		function optionsCode(value, row, index) {
+			var button1 = $("<a class='button-enable' cy-click='enable(" + index + ")'></a>");
+			var button2 = $("<a class='button-disable' cy-click='disable(" + index + ")'></a>");
+			button1.linkbutton({
+				iconCls : "icon-enable"
+			});
+			button2.linkbutton({
+				iconCls : "icon-disable"
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		}
+
+		//操作栏信息
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='editDm(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='button-remove' cy-click='deleteDm(" + index + ")'></a>");
+			//删除按钮
+
+			button1.linkbutton({
+				iconCls : "icon-edit"
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove"
+			});
+
+			return $("<span/>").append(button1).append(" ").append(button2).append(" ").html();
+		}
+
+		//新增代码信息
+		$scope.addDm = function() {
+			//设置代码类型名和值
+			$scope.$setParam("codeType", codeType);
+			//打开新增页面窗口
+			$scope.$openDialog("addDialog", {
+				title : "添加代码信息",
+				width : 600,
+				height : 300,
+				href : "tpls/sysManagement/systemCode/codeInformation.html?type=add"
+			}, true);
+			//设置保存方法
+			$scope.$setParam("saveData", function(data) {
+				// 向后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "conCfg/SysCodeTypeAction/saveCode",
+					params : data,
+					method : "post",
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						//$("#dmData").datagrid("getPager").pagination("select",1);
+						$scope.$search("deptQueryDm");
+						$.messager.confirm("提示", "保存成功！");
+					},
+					fail : function(errMsg) {
+						$.messager.confirm("提示", "保存失败！");
+					}
+				});
+			});
+		};
+		//编辑页面
+		$scope.editDm = function(index) {
+
+			//系统代码信息注入代码类型
+			$scope.$setParam("codeType", codeType);
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows[index];
+			var codeId = rowDatas.codeId;
+			//系统代码信息注入当前行数据
+			$scope.$setParam("codeData", rowDatas);
+			//设置保存方法
+			$scope.$setParam("saveData", function(data) {
+				//向后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "conCfg/SysCodeTypeAction/update",
+					params : data,
+					method : "post",
+					success : function(data) {
+						$scope.$getDialog("editDialog").dialog("close");
+						$.messager.alert("提示", "保存成功！");
+						//刷新列表
+						$scope.$search("deptQueryDm");
+
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "保存失败！");
+					}
+				});
+			});
+			//打开编辑窗口
+			$scope.$openDialog("editDialog", {
+				title : "修改代码信息",
+				width : 600,
+				height : 300,
+				href : "tpls/sysManagement/systemCode/codeInformation.html?type=edit"
+			}, true);
+		};
+
+		//机构信息批量删除操作
+		$scope.deleteDm = function() {
+
+			//获得所有的行数
+			var rows = $scope.$("#dmData").datagrid("getChecked");
+			console.log(rows);
+			var dataNum = $scope.$("#dmData").datagrid("getRows").length;
+			//alert(dataNum);
+			//var options = $scope.$("#dmData").datagrid("getPager").data("pagination").options;
+			//var pageNumber = options.pageNumber;
+			if (rows.length == 0) {
+				$.messager.alert("提示", "至少选中一条信息！");
+				return false;
+			} else {
+				var codeIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (i > 0) {
+						codeIdStr = codeIdStr + "," + rows[i].codeId;
+						
+					} else {
+						codeIdStr = codeIdStr + rows[i].codeId;
+					}
+				}
+				alert(codeIdStr);
+				$.messager.confirm("提示","你是否删除信息？",function(flag){
+					if(flag){
+						console.log(flag);
+						$scope.$ajaxRequest({
+							url:$scope.$restRoot+"conCfg/SysCodeTypeAction/delete",
+							params:{
+								codeIdStr:codeIdStr
+							},
+							memoth:"post",
+							success:function(data){
+								$scope.$search("deptQueryDm");
+								$.messager.alert("提示","删除成功！");
+							},
+							fail:function(errMsg){
+								$.messager.alert("提示","删除失败！");
+							}
+						});
+					}
+				});
+			}
+
+		};
+		//删除当前行信息
+		$scope.removeDm = function(index) {
+			$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+				if (r) {
+
+				}
+			});
+		};
+
+	}); 
+</script>

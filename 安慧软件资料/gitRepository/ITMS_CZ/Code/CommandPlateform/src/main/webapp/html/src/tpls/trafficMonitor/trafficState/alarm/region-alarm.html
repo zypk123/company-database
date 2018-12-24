@@ -1,0 +1,194 @@
+<div id="regionAlarm" class="easyui-panel" data-options="fit:true" >
+	<div data-options="region:'center',border:false" >
+		<div class="table"  >
+			<div  class="searchPanel" id="qjbh">
+				<div class="panel_title" style="color: red;"  >
+					区间饱和预警：
+				</div>
+				<div class="tr">
+					<div class="th">
+						区间名称：
+					</div>
+					<div class="td">
+						<span cy-name=newData.regionalName></span>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						方向：
+					</div>
+					<div class="td">
+						<span cy-name=newData.regionDirectionType cy-filter="options_direction"></span>
+					</div>
+					<div class="th">
+						设计容量：
+					</div>
+					<div class="td">
+						<span cy-name=newData.regionalDesignCapacity></span>&nbsp;辆&nbsp;
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						区间距离：
+					</div>
+					<div class="td" >
+						<span cy-name=newData.distance></span>&nbsp;km
+					</div>
+					<div class="th">
+						旅行时间：
+					</div>
+					<div class="td">
+						<span cy-name=newData.weatherData></span>秒
+					</div>
+				</div>
+				<!-- <div class="tr">
+					<div class="th">
+						区间距离：
+					</div>
+					<div class="td" >
+						<span cy-name=newData.distance></span>&nbsp;km
+					</div>
+					<div class="th">
+						当前车辆：
+					</div>
+					<div class="td" >
+						<span id="currentNum" style="color: #0000ff;" ></span>&nbsp;辆&nbsp;
+					</div>
+				</div>
+
+				<div class="tr">
+					<div class="th">
+						设计容量：
+					</div>
+					<div class="td">
+						<span cy-name=newData.regionalDesignCapacity></span>&nbsp;辆&nbsp;
+					</div>
+					<div class="th">
+						饱和度：
+					</div>
+					<div class="td">
+						<span cy-name=newData.regionSaturation></span>
+					</div>
+				</div> -->
+				<div class="tr">
+					<div class="th">
+						更新时间：
+					</div>
+					<div class="td" >
+						<span cy-name=newData.startAlarmTime></span>
+					</div>
+				</div>
+
+			</div>
+			<div  class="searchPanel"  >
+				<div class="panel_title">
+					预警处理
+				</div>
+				<form cy-form="newData">
+					<div class="tr">
+						<div class="th">
+							预警确认：
+						</div>
+						<div class="td">
+							<input name="validity" type="radio" value="1" >
+							有效</input>
+							<input name="validity" type="radio" value="0" >
+							无效</input>
+							<input name="validity" type="radio" value="2" >
+							未确认</input>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th" style="height:40px;">
+							处理方法：
+						</div>
+						<div class="td" >
+							<textarea id="dealMethod" name="dealMethod" style="height:40px;width: 344px;"> </textarea>
+						</div>
+					</div>
+					<!-- <div class="tr">
+						<div class="th" >
+							处理人：
+						</div>
+						<div class="td" >
+							<input class="easyui-textbox" name="confirmPerson" />
+						</div>
+						<div class="th" >
+							联系电话：
+						</div>
+						<div class="td" >
+							<input class="easyui-textbox" name="confirmPersonPhone" />
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							处理时间：
+						</div>
+						<div class="td" >
+							<input class="easyui-datetimebox" name="confirmTime" style="width:145px"/>
+						</div>
+					</div> -->
+					<br>
+				</form>
+			</div>
+
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 38px">
+		<div class="table">
+			<div class="tr" style="text-align: center">
+				<a class="easyui-linkbutton button-main" iconCls="icon-save" cy-click="save">提交</a>
+				<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf" >取消</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["newData","saveData"], function($scope) {
+		$scope.$getDefaultCode(["070"]);
+		//方向direction的格式化
+		$scope.options_direction = function(value) {
+			return $scope.$getCodeName("070", value);
+		};
+		$scope.save = function() {
+			//从form取数据
+			$scope.$updateData("newData");
+			if($scope.newData.validity){
+				$scope.saveData($scope.newData);
+			}else{
+				//调用父页面方法
+				$.messager.alert("提示", "请确认预警！");
+			}
+		};
+		$scope.load=function(){
+			var current=parseFloat($scope.newData.regionalDesignCapacity)* parseFloat($scope.newData.regionSaturation)/100;
+			$scope.$("#currentNum").text(current);
+			$scope.$("input[name='validity']").trigger("change");
+		};
+		$scope.$("input[name='validity']").change(function(){
+			var value=$scope.$("input[name='validity']:checked").val();
+			if(value=="1"){				
+				$scope.$("#dealMethod").prop('disabled', false);
+			}
+			else{
+				$scope.$("#dealMethod").prop('disabled', true);
+			}
+			
+		 });
+	}); 
+</script>
+
+<style type="text/css">
+	#regionAlarm .th {
+		width: 85px;
+		text-align: right;
+	}
+	#regionAlarm .td {
+		width: 130px;
+	}
+	#regionAlarm span[cy-name] {
+		color: #0000ff;
+	}
+
+</style>

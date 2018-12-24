@@ -1,0 +1,88 @@
+<div id="gangting" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    岗亭代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gtdm">
+                </div>
+                <div class="th">
+                    岗亭名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gljg">
+                </div>
+                <div class="th">
+                    岗亭地址：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gtdz" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    值守模式：
+                </div>
+                <div class="td">
+                    <select  class="easyui-combobox"  style="width: 135px" name="zsms">
+                        <option value="0">--请选择--</option>
+                        <option value="1">24小时值守</option>
+                        <option value="2">白天值守</option>
+                        <option value="3">夜间值守</option>
+                    </select>
+                </div>
+                <div class="th">
+                    岗亭负责人：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gtfzr" >
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="tel" >
+                </div>
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #gangting .th{
+        width : 100px;
+        text-align: right;
+    }
+    #gangting .td{
+        width : 150px;
+    }
+
+</style>

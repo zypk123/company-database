@@ -1,0 +1,321 @@
+<!--用户信息面板添加页面-->
+<div id="user-message-add" >
+	<form cy-form="userInfo" id="form">
+		<div class="searchPanel">
+			<div class="panel_title">
+				基础信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						姓名：
+					</div>
+					<div class="td">
+						<input  name="policeName" class="easyui-textbox" required="required" validType="length[0,20]" style="width: 150px;"/>
+					</div>
+					<div class="th" style="width: 68px">
+						警号：
+					</div>
+					<div class="td" style="width: 172px;">
+						<input id="pliceCode"  name="policeCode" class="easyui-textbox" required="required" validType="fixedLength[6]" style="width: 162px;"/>
+					</div>
+					<div class="th">
+						所属机构：
+					</div>
+					<div class="td">
+						<input name="orgId" class="cy-org-radio" date-options="required:true" style="width: 150px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						性别：
+					</div>
+					<div class="td">
+						<input type="radio" name="sex" value="1" checked="checked"/>
+						男
+						<input type="radio" name="sex" value="2"/>
+						女
+					</div>
+					<div class="th">
+						出生年月：
+					</div>
+					<div class="td">
+						<input  name="birthDate" class="easyui-datebox" data-options="required:true,value:'1980-01-01'" validType="date" style="width: 150px;"/>
+					</div>
+					<div class="th">
+						身份证号：
+					</div>
+					<div class="td">
+						<input  name="personId" class="easyui-textbox" data-options="required:true" validType="personId" style="width: 150px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						警衔：
+					</div>
+					<div class="td">
+						<input name="policeRank" class="easyui-combobox" style="width: 150px;" cy-code="106"/>
+					</div>
+					<div class="th">
+						编制类型：
+					</div>
+					<div class="td">
+						<input name="authorizedType" class="easyui-combobox" cy-code="101" style="width: 150px;"/>
+					</div>
+					<div class="th">
+						业务岗位：
+					</div>
+					<div class="td">
+						<input name="businessPost" class="easyui-combobox" cy-code="102" validType="lenght[0,20]" style="width: 150px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 104px">
+						警员类型：
+					</div>
+					<div class="td" style="width: 155px;">
+						<input type="radio" name="policeType" value="1" checked="checked"/>
+						交管
+						<input type="radio" name="policeType" value="2"/>
+						其他
+					</div>
+					<div class="th" >
+						事务处理级别：
+					</div>
+					<div class="td" style="width: 142px">
+						<input name="eventLevel" class="easyui-combobox" cy-code="103" style="width: 132px;"/>
+					</div>
+					<div class="th">
+						领导级别：
+					</div>
+					<div class="td">
+						<input name="leaderLevel" class="easyui-combobox" cy-code="104" style="width: 150px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						职级：
+					</div>
+					<div class="td">
+						<input name="jobLevel" class="easyui-textbox" validType="length[0,25]" style="width: 150px;"/>
+					</div>
+					<div class="th">
+						联系电话：
+					</div> 
+					<div class="td">
+						<input  name="pPhoneNbr" class="easyui-textbox" validType="cellphone" style="width: 150px;"/>
+					</div>
+					<div class="th" style="width: 92px">
+						办公室电话：
+					</div>
+					<div class="td" style="width: 140px">
+						<input name="officePhone" class="easyui-textbox" validType="phone" style="width: 139px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						职位：
+					</div>
+					<div class="td">
+						<input  name="position" class="easyui-textbox" validType="length[0,25]" style="width: 150px;"/>
+					</div>
+					<div class="th">
+						家庭住址：
+					</div>
+					<div class="td">
+						<input  name="familyAddress" class="easyui-textbox" data-options="validType:['length[0,100]']" style="width: 390px;"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 103px;">
+						电子邮箱：
+					</div>
+					<div class="td">
+						<input  name="email" class="easyui-textbox" validType="email" style="width: 220px;"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="searchPanel" id="roleConfig">
+			<div class="panel_title">
+				角色分配
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						角色分配：
+					</div>
+					<div class="td" style="width:100px;">
+						<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addRole">增加角色</a>
+						<input id="roleIds" name="roleIds" type="hidden"/>
+					</div>
+					<div class="td" id="roleDiv"  style="width:550px;">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="searchPanel" id="loginInfo">
+			<div class="panel_title">
+				登录信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						用户名：
+					</div>
+					<div class="td">
+						<input id="loginName" name="loginName" class="easyui-textbox" data-options="required:true" validType="length[0,20]" style="width: 150px;">
+					</div>
+					
+				</div>
+				<div class="tr">
+					<div class="th">
+						过期时间：
+					</div>
+					<div class="td">
+						<input type="text" name="validDate" class="easyui-datebox" validType="date" style="width: 150px;">
+					</div>
+					<div class="th">
+						许可IP：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="permissionIpList" data-options="prompt:'多个IP用逗号分隔'" style="width: 250px;"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="linkbutton_toolbar" style="height:40px;text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+			cy-click="save">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">取消</a>
+		</div>
+</form>
+</div>
+<script>
+	//接受数据
+	InitPage(["userInfo", "saveData","orgId"], function($scope) {
+
+		var roleList;
+		
+		if(!$scope.userInfo){
+			$scope.userInfo = {
+				orgId : $scope.orgId
+			};
+		}
+		
+		$scope.load = function() {
+			
+			if($scope.userInfo && $scope.userInfo.loginName == "ADMIN"){
+				$scope.$("#roleConfig").hide();
+				$scope.$("#loginInfo").height(160);
+				$scope.$("#loginName").textbox("disable");
+			}else{
+				//查找已选角色并展示在选择区域
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "/sysCfg/permission/findPermission",
+					success : function(data) {
+						roleList = data.result;
+						if($scope.userInfo && $scope.userInfo.roleIds){
+							var checkedRoles = [];
+							var checkedIds = $scope.userInfo.roleIds.split(",");
+							for (var index in checkedIds) {
+								for(var i in roleList.rows){
+									if(roleList.rows[i].roleId == checkedIds[index]){
+										checkedRoles.push(roleList.rows[i]);
+									}
+								}
+							}
+							if(checkedRoles.length > 0){
+								addRoleTab(checkedRoles);
+							}
+						}
+					}
+				});
+			}
+			//使用警员编号作为用户名
+			$scope.$("#pliceCode").textbox({
+				onChange : function(newValue, oldValue){
+					$scope.$("#loginName").textbox("setValue",newValue);
+				}
+			});
+		};
+
+		//添加角色
+		$scope.addRole = function() {
+			/**
+			 * 选择返回方法
+			 */
+			$scope.$setParam("roleList",roleList);
+			$scope.$setParam("choose", function(roles) {
+				addRoleTab(roles);
+				$scope.$getDialog("roleChooseDialog").dialog("close");
+			});
+			$scope.$setParam("initData", $scope.$("#roleIds").val());
+			$scope.$openDialog('roleChooseDialog', {
+				title : '选择角色权限',
+				width : 600,
+				height : 400,
+				href : "tpls/sysManagement/user/user-choose-role.html"
+			}, false);
+		};
+		/**
+		 * 保存用户信息
+		 */
+		$scope.save = function() {
+			if ($scope.$("#form").form("validate")) {
+				//更新获取form中的数据
+				$scope.$updateData("userInfo");
+				$scope.userInfo.roleIds = $scope.userInfo.roleIds.substring(0, $scope.userInfo.roleIds.length - 1);
+				$scope.saveData($scope.userInfo);
+			}
+		};
+
+		/**
+		 * 添加权限标签
+		 */
+		var addRoleTab = function(roles) {
+			var ids = "";
+			$scope.$("#roleDiv").html("");
+			for (var index in roles) {
+				//生成权限标签，并初始化删除按钮
+				var role = roles[index];
+				var div = $("<div class='role-item'></div>");
+				var name = $("<a class='role-text'></a>");
+				var close = $("<a class='role-close'></a>").attr("roleid", role.roleId);
+				div.append(name).append(close).appendTo($scope.$("#roleDiv"));
+				name.linkbutton({
+					text : role.roleName,
+					selected : true
+				});
+				close.linkbutton({
+					iconCls : 'icon-remove-solid',
+					plain : true
+				}).click(function() {
+					$(this).parent().remove();
+					$scope.$("#roleIds").val($scope.$("#roleIds").val().replace($(this).attr("roleid") + ",", ""));
+				});
+				ids += role.roleId + ',';
+			}
+			//权限id填入隐藏字段中
+			$scope.$("#roleIds").val(ids);
+		};
+	});
+
+</script>
+<style type="text/css">
+	/*用户信息表头样式*/
+	#user-message-add .th {
+		width: 80px;
+		text-align: right;
+	}
+	#user-message-add .td {
+		width: 160px;
+	}
+	#user-message-add .role-item {
+		float: left;
+		margin-left: 5px;
+		border-radius: 5px;
+	}
+</style>

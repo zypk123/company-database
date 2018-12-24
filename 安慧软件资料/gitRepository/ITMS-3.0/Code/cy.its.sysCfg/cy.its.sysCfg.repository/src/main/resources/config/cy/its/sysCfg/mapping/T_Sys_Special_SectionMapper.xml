@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Special_SectionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Special_Section" >
+    <id column="SPECIAL_SECTION_ID" property="specialSectionId" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_NAME" property="specialSectionName" jdbcType="VARCHAR" />
+    <result column="BEGIN_SITE_ADDRESS" property="beginSiteAddress" jdbcType="VARCHAR" />
+    <result column="END_SITE_ADDRESS" property="endSiteAddress" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_LENGTH" property="specialSectionLength" jdbcType="VARCHAR" />
+    <result column="SPECIAL_SECTION_TYPE" property="specialSectionType" jdbcType="CHAR" />
+    <result column="SIGNAL_BOARD_NUM" property="signalBoardNum" jdbcType="VARCHAR" />
+    <result column="VIDEO_ID_LIST" property="videoIdList" jdbcType="VARCHAR" />
+    <result column="LED_ID_LIST" property="ledIdList" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SPECIAL_SECTION_ID, SPECIAL_SECTION_NAME, BEGIN_SITE_ADDRESS, END_SITE_ADDRESS, SPECIAL_SECTION_LENGTH, 
+    SPECIAL_SECTION_TYPE, SIGNAL_BOARD_NUM, VIDEO_ID_LIST, LED_ID_LIST
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SPECIAL_SECTION
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SPECIAL_SECTION
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Special_Section" >
+    insert into T_SYS_SPECIAL_SECTION (SPECIAL_SECTION_ID, SPECIAL_SECTION_NAME, 
+      BEGIN_SITE_ADDRESS, END_SITE_ADDRESS, SPECIAL_SECTION_LENGTH, 
+      SPECIAL_SECTION_TYPE, SIGNAL_BOARD_NUM, VIDEO_ID_LIST, 
+      LED_ID_LIST)
+    values (#{specialSectionId,jdbcType=VARCHAR}, #{specialSectionName,jdbcType=VARCHAR}, 
+      #{beginSiteAddress,jdbcType=VARCHAR}, #{endSiteAddress,jdbcType=VARCHAR}, #{specialSectionLength,jdbcType=VARCHAR}, 
+      #{specialSectionType,jdbcType=CHAR}, #{signalBoardNum,jdbcType=VARCHAR}, #{videoIdList,jdbcType=VARCHAR}, 
+      #{ledIdList,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Special_Section" >
+    insert into T_SYS_SPECIAL_SECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="specialSectionId != null" >
+        SPECIAL_SECTION_ID,
+      </if>
+      <if test="specialSectionName != null" >
+        SPECIAL_SECTION_NAME,
+      </if>
+      <if test="beginSiteAddress != null" >
+        BEGIN_SITE_ADDRESS,
+      </if>
+      <if test="endSiteAddress != null" >
+        END_SITE_ADDRESS,
+      </if>
+      <if test="specialSectionLength != null" >
+        SPECIAL_SECTION_LENGTH,
+      </if>
+      <if test="specialSectionType != null" >
+        SPECIAL_SECTION_TYPE,
+      </if>
+      <if test="signalBoardNum != null" >
+        SIGNAL_BOARD_NUM,
+      </if>
+      <if test="videoIdList != null" >
+        VIDEO_ID_LIST,
+      </if>
+      <if test="ledIdList != null" >
+        LED_ID_LIST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="specialSectionId != null" >
+        #{specialSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionName != null" >
+        #{specialSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginSiteAddress != null" >
+        #{beginSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endSiteAddress != null" >
+        #{endSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionLength != null" >
+        #{specialSectionLength,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionType != null" >
+        #{specialSectionType,jdbcType=CHAR},
+      </if>
+      <if test="signalBoardNum != null" >
+        #{signalBoardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="videoIdList != null" >
+        #{videoIdList,jdbcType=VARCHAR},
+      </if>
+      <if test="ledIdList != null" >
+        #{ledIdList,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Special_Section" >
+    update T_SYS_SPECIAL_SECTION
+    <set >
+      <if test="specialSectionName != null" >
+        SPECIAL_SECTION_NAME = #{specialSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginSiteAddress != null" >
+        BEGIN_SITE_ADDRESS = #{beginSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="endSiteAddress != null" >
+        END_SITE_ADDRESS = #{endSiteAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionLength != null" >
+        SPECIAL_SECTION_LENGTH = #{specialSectionLength,jdbcType=VARCHAR},
+      </if>
+      <if test="specialSectionType != null" >
+        SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=CHAR},
+      </if>
+      <if test="signalBoardNum != null" >
+        SIGNAL_BOARD_NUM = #{signalBoardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="videoIdList != null" >
+        VIDEO_ID_LIST = #{videoIdList,jdbcType=VARCHAR},
+      </if>
+      <if test="ledIdList != null" >
+        LED_ID_LIST = #{ledIdList,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Special_Section" >
+    update T_SYS_SPECIAL_SECTION
+    set SPECIAL_SECTION_NAME = #{specialSectionName,jdbcType=VARCHAR},
+      BEGIN_SITE_ADDRESS = #{beginSiteAddress,jdbcType=VARCHAR},
+      END_SITE_ADDRESS = #{endSiteAddress,jdbcType=VARCHAR},
+      SPECIAL_SECTION_LENGTH = #{specialSectionLength,jdbcType=VARCHAR},
+      SPECIAL_SECTION_TYPE = #{specialSectionType,jdbcType=CHAR},
+      SIGNAL_BOARD_NUM = #{signalBoardNum,jdbcType=VARCHAR},
+      VIDEO_ID_LIST = #{videoIdList,jdbcType=VARCHAR},
+      LED_ID_LIST = #{ledIdList,jdbcType=VARCHAR}
+    where SPECIAL_SECTION_ID = #{specialSectionId,jdbcType=VARCHAR}
+  </update>
+</mapper>

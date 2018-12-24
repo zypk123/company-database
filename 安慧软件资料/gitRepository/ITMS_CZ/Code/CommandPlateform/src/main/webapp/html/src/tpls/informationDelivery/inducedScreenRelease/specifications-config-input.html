@@ -1,0 +1,194 @@
+<div  class="easyui-layout">
+	<div data-options="region: 'center',border:false">
+		<form cy-form="formData" id="form">
+			<div class="table" id="specifcationsConfigMessage" >
+				<div class="tr">
+					<div class="th">
+						颜色类型：
+					</div>
+					<div class="td" id="colorTypeId">
+						<input type="radio" name="colorType" value="1" checked>
+						<span>单色</span></input>
+						<input type="radio" name="colorType" value="2">
+						<span>双色</span></input>
+						<input type="radio" name="colorType" value="3">
+						<span>全色</span></input>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						功能类型：
+					</div>
+					<div class="td">
+						<input type="radio" name="ledFunctionType" value="1"checked/>
+						点阵屏
+						<input type="radio" name="ledFunctionType" value="2"/>
+						复合屏
+						<input type="radio" name="ledFunctionType" value="3"/>
+						光带屏
+						<input type="radio" name="ledFunctionType" value="4"/>
+						停车诱导屏
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						设备外形：
+					</div>
+					<div class="td" id="ledShapeId">
+						<input type="radio" name="ledShape" value="1" checked>
+						<span>条屏</span></input>
+						<input type="radio" name="ledShape" value="2">
+						<span>方屏</span></input>
+					</div>
+					<div class="th">
+						控制方式：
+					</div>
+					<div class="td">
+						<input type="radio" name="controlType" value="1"/>
+						同步
+						<input type="radio" name="controlType" value="2" checked/>
+						异步
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						诱导屏型号：
+					</div>
+					<div class="td">
+						<input name="ledDeviceModel" class="easyui-combobox" data-options="required:true" cy-code='603'/>
+					</div>
+					<div class="th">
+						控制卡厂商：
+					</div>
+					<div class="td">
+						<input  class="easyui-textbox" name="controlContacttor"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						像素点宽：
+					</div>
+					<div class="td">
+						<input id="pixesWidthId" name="pixesWidth" class="easyui-textbox" data-options="required:true,validType:'number'" style="width:115px;"/>
+						px
+					</div>
+					<div class="th">
+						像素点高：
+					</div>
+					<div class="td">
+						<input id="pixesHeightId" class="easyui-textbox" name="pixesHeight" data-options="required:true,validType:'number'" style="width:115px;"/>
+						px
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						诱导屏宽：
+					</div>
+					<div class="td">
+						<input name="width" class="easyui-textbox" data-options="validType:'number'" style="width:115px;"/>
+						cm
+					</div>
+					<div class="th">
+						诱导屏高：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="height"  data-options="validType:'number'" style="width:115px;"/>
+						cm
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						规格名称：
+					</div>
+					<div class="td">
+						<input id="specNameId" name="specName" class="easyui-textbox" data-options="required:true,validType:'length[0,128]'"  style="width: 350px;"/>
+					</div>
+				</div>
+		</form>
+	</div>
+
+	<div data-options="region:'south',border:false" style="height: 50px;" >
+		<div class="tr">
+			<div class="td" style="text-align: center">
+				<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'"
+				cy-click="save">保存</a>
+				<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+				cy-click="$closeSelf">取消</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(["formData", "editData", "saveData"], function($scope) {
+		$scope.$getDefaultCode(['603']);
+		$scope.$("#colorTypeId").click(function() {
+			var colorTypeName = spcName();
+			$('#specNameId').textbox('setText', colorTypeName);
+		});
+		$scope.$("#ledShapeId").click(function() {
+			var ledShapeName = spcName();
+			$('#specNameId').textbox('setText', ledShapeName);
+		});
+		$scope.$("#pixesWidthId").textbox({
+			onChange : function(newValue, oldValue) {
+				var pixesWidthName = spcName();
+				$('#specNameId').textbox('setText', pixesWidthName);
+			}
+		});
+		$scope.$("#pixesHeightId").textbox({
+			onChange : function(newValue, oldValue) {
+				
+				var pixesHeightName = spcName();
+				$('#specNameId').textbox('setText', pixesHeightName);
+			}
+		});
+		function spcName() {
+
+			var colorTypeValue = $scope.$("input[name='colorType']:checked + span").text();
+			var ledShapeValue = $scope.$("input[name='ledShape']:checked + span").text();
+
+			var pixesHeightValue;
+			if ($scope.$('#pixesHeightId').textbox('getValue')) {
+				pixesHeightValue = $('#pixesHeightId').textbox('getValue');
+			} else {
+				pixesHeightValue = "像素点高";
+			}
+			var pixesWidthValue;
+			if ($scope.$('#pixesWidthId').textbox('getValue')) {
+				pixesWidthValue = $('#pixesWidthId').textbox('getValue');
+			} else {
+				pixesWidthValue = "像素点高";
+			}
+
+			console.log(colorTypeValue + "/" + ledShapeValue + "/" + pixesWidthValue + '*' + pixesHeightValue);
+			return (colorTypeValue + "/" + ledShapeValue + "/" + pixesWidthValue + '*' + pixesHeightValue);
+		}
+
+		if ($scope.$params.get("type") == "add") {
+
+			$scope.save = function() {
+				if ($scope.$("#form").form("validate")) {
+					$scope.$updateData("formData");
+					$scope.saveData($scope.formData);
+				}
+			};
+		} else {
+			$scope.save = function() {
+				if ($scope.$("#form").form("validate")) {
+					$scope.$updateData("formData");
+					$scope.editData($scope.formData);
+				}
+			};
+		}
+	}); 
+</script>
+<style type="text/css">
+	#specifcationsConfigMessage .th {
+		text-align: right;
+		width: 90px;
+	}
+	#specifcationsConfigMessage .td {
+		text-align: left;
+		width: 130px;
+	}
+</style>

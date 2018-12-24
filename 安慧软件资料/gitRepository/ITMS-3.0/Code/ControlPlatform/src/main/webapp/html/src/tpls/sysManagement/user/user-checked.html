@@ -1,0 +1,315 @@
+<!--用户信息面板添加页面-->
+<div id="user-message-add">
+	<form cy-form="userChecked" id="form">
+		<div class="searchPanel">
+			<div class="panel_title">
+				基础信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						姓名：
+					</div>
+					<div class="td" cy-name="userChecked.policeName"  ></div>
+					<div class="th" style="width: 59px;">
+						警号：
+					</div>
+					<div class="td" cy-name="userChecked.policeCode"  style="width: 132px;"></div>
+					<div class="th">
+						所属机构：
+					</div>
+					<div class="td" cy-name="userChecked.orgId" cy-filter="$getOrgName" style="width: 270px;height: auto;white-space: normal "></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						性别：
+					</div>
+					<div class="td" cy-name="userChecked.sex" cy-filter="sexOptions"></div>
+					<div class="th">
+						出生年月：
+					</div>
+					<div class="td" cy-name="userChecked.birthDate" ></div>
+					<div class="th">
+						身份证号：
+					</div>
+					<div class="td" cy-name="userChecked.personId" ></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						警衔：
+					</div>
+					<div class="td" cy-name="userChecked.policeRank" cy-filter="policeRankOption"></div>
+					<div class="th">
+						编制类型：
+					</div>
+					<div class="td" cy-name="userChecked.authorizedType"  cy-filter="authorizedTypeOption"></div>
+					<div class="th">
+						业务岗位：
+					</div>
+					<div class="td" cy-name="userChecked.businessPost" cy-filter="businessPostOption" ></div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 104px;">
+						警员类型：
+					</div>
+					<div class="td" cy-name="userChecked.policeType" cy-filter="policeTypeOption" style="width: 105px;"></div>
+					<div class="th">
+						事务处理级别：
+					</div>
+					<div class="td"	cy-name="userChecked.eventLevel" cy-filter="eventLevelOption"></div>
+					<div class="th" style="width: 60px;">
+						领导级别：
+					</div>
+					<div class="td" cy-name="userChecked.leaderLevel" cy-filter="leaderLevelOption"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						职级：
+					</div>
+					<div class="td" cy-name="userChecked.jobLevel"></div>
+					<div class="th">
+						联系电话：
+					</div> 
+					<div class="td"	cy-name="userChecked.pPhoneNbr" style="width: 122px;"></div>
+					<div class="th">
+						办公室电话：
+					</div>
+					<div class="td" cy-name="userChecked.officePhone"></div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						职位：
+					</div>
+					<div class="td"	cy-name="userChecked.position"></div>
+					<div class="th">
+						家庭住址：
+					</div>
+					<div class="td" cy-name="userChecked.familyAddress" style="width: 390px;"></div>
+				</div>
+				<div class="tr">
+					<div class="th" style="width: 102px;">
+						电子邮箱：
+					</div>
+					<div class="td"	cy-name="userChecked.email"></div>
+				</div>
+			</div>
+		</div>
+		<div class="searchPanel">
+			<div class="panel_title">
+				角色分配
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						角色分配：
+					</div>
+					<div class="td"  id="roleDiv"  style="width:600px;">
+						<input id="roleIds" name="roleIds" type="hidden"/>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<div class="searchPanel">
+			<div class="panel_title">
+				登录信息
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						用户名：
+					</div>
+					<div class="td" cy-name="userChecked.loginName"></div>
+					<div class="th">
+						过期时间：
+					</div>
+					<div class="td" cy-name="userChecked.validDate"></div>
+					<div class="th">
+						许可IP：
+					</div>
+					<div class="td" cy-name="userChecked.permissionIpList"></div>
+				</div>
+			</div>
+		</div>
+		<div class="linkbutton_toolbar" style="height:40px;text-align: center;">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'"
+			cy-click="$destroySelf">关闭</a>
+		</div>
+</form>
+</div>
+<script>
+	//接受数据
+	InitPage(["userChecked", "saveData","orgId"], function($scope) {
+		
+			//根据性别Code转化为名称
+			$scope.sexOptions=function(value){
+				if(value=="1"){
+					return "男";
+				}else{
+					return "女";
+				}
+			};
+			//根据警衔Code转化为名称
+			$scope.policeRankOption=function(value){
+				if(value=="01"){
+					return "总警监";
+				}else if(value=="02"){
+					return "副总警监";
+				}else if(value=="03"){
+					return "一级警监";
+				}else if(value=="04"){
+					return "二级警监";
+				}else if(value=="05"){
+					return "三级警监";
+				}else if(value=="06"){
+					return "一级警督";
+				}else if(value=="07"){
+					return "二级警督";
+				}else if(value=="08"){
+					return "三级警督";
+				}else if(value=="09"){
+					return "一级警司";
+				}else if(value=="10"){
+					return "二级警司";
+				}else if(value=="11"){
+					return "三级警司";
+				}
+			};
+			//编制类型Code转化为名称
+			$scope.authorizedTypeOption=function(value){
+				if(value=="1"){
+					return "公安编";
+				}else if(value=="2"){
+					return "事业编";
+				}else if(value=="3"){
+					return "地方编";
+				}
+			};
+			//根据业务岗位Code转化名称
+			$scope.businessPostOption=function(value){
+				if(value=="01"){
+					return "城区管理执勤";
+				}else if(value=="02"){
+					return "国省道执勤";
+				}else if(value=="03"){
+					return "高速执勤";
+				}else if(value=="04"){
+					return "县乡执勤";
+				}else if(value=="05"){
+					return "事故处理";
+				}else if(value=="06"){
+					return "车驾管";
+				}else if(value=="07"){
+					return "道路宣传";
+				}else if(value=="08"){
+					return "科技管理";
+				}else if(value=="09"){
+					return "其它";
+				}
+			};
+			//根据警员类型Code转化为名称
+			$scope.policeTypeOption=function(value){
+				if(value=="1"){
+					return "交警";
+				}else if(value=="2"){
+					return "其它警种";
+				}
+			};
+			//根据事务处理级别Code转化为名称
+			$scope.eventLevelOption=function(value){
+				if(value=="0"){
+					return "无等级";
+				}else if(value=="1"){
+					return "高级";
+				}else if(value=="2"){
+					return "中级";
+				}else if(value=="3"){
+					return "初级";
+				}
+			};
+			//根据领导级别Code转化为名称
+			$scope.leaderLevelOption=function(value){
+				if(value=="D0"){
+					return "总队领导";
+				}else if(value=="D1"){
+					return "支队领导";
+				}else if(value=="D2"){
+					return "大队领导";
+				}else if(value=="D3"){
+					return "中队领导";
+				}else if(value=="ZZ"){
+					return "其他";
+				}
+			};
+			
+		var roleList;
+		
+		$scope.load = function() {
+			//查找已选角色并展示在选择区域
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/permission/findPermission",
+				success : function(data) {
+					roleList = data.result;
+					if($scope.userChecked && $scope.userChecked.roleIds){
+						var checkedRoles = [];
+						var checkedIds = $scope.userChecked.roleIds.split(",");
+						for (var index in checkedIds) {
+							for(var i in roleList.rows){
+								if(roleList.rows[i].roleId == checkedIds[index]){
+									checkedRoles.push(roleList.rows[i]);
+								}
+							}
+						}
+						if(checkedRoles.length > 0){
+							addRoleTab(checkedRoles);
+						}
+					}
+				}
+			});
+		
+		 };
+				
+		/**
+		 * 添加权限标签
+		 */
+		var addRoleTab = function(roles) {
+			var ids = "";
+			$scope.$("#roleDiv").html("");
+			for (var index in roles) {
+				//生成权限标签，并初始化删除按钮
+				var role = roles[index];
+				var div = $("<div class='role-item'></div>");
+				var name = $("<a class='role-text'></a>");
+				div.append(name).appendTo($scope.$("#roleDiv"));
+				name.linkbutton({
+					text : role.roleName,
+					disabled : true
+				});
+				ids += role.roleId + ',';
+			}
+			//权限id填入隐藏字段中
+			$scope.$("#roleIds").val(ids);
+		};
+	});
+
+</script>
+<style type="text/css">
+	/*用户信息表头样式*/
+	#user-message-add .th {
+		width: 80px;
+		text-align: right;
+	}
+	#user-message-add .td {
+		width: 110px;
+	}
+	#user-message-add .role-item {
+		float: left;
+		margin-left: 5px;
+		background-color: #F2F2F2;
+		border-radius: 5px;
+	}
+	#user-message-add .panel_title{
+        position: relative;
+        width: 60px;
+    }
+</style>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.MeteorologicMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.Meteorologic" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="RELATED_VIDEO_ID" property="relatedVideoId" jdbcType="VARCHAR" />
+    <result column="RELATED_LED_ID" property="relatedLedId" jdbcType="VARCHAR" />
+    <result column="RELATED_SPEED_DEVICE_ID" property="relatedSpeedDeviceId" jdbcType="VARCHAR" />
+    <result column="IS_WEATHER_SUPPORT" property="isWeatherSupport" jdbcType="CHAR" />
+    <result column="IS_VISIBILITY_SUPPORT" property="isVisibilitySupport" jdbcType="CHAR" />
+    <result column="IS_ROADSENSOR_SUPPORT" property="isRoadsensorSupport" jdbcType="CHAR" />
+    <result column="RELATED_VARIABLE_SPEED" property="relatedVariableSpeed" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_ID, RELATED_VIDEO_ID, RELATED_LED_ID, RELATED_SPEED_DEVICE_ID, IS_WEATHER_SUPPORT, 
+    IS_VISIBILITY_SUPPORT, IS_ROADSENSOR_SUPPORT,RELATED_VARIABLE_SPEED
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_METEOROLOGIC
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_METEOROLOGIC
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.Meteorologic" >
+    insert into T_DEVICE_METEOROLOGIC (DEVICE_ID, RELATED_VIDEO_ID, RELATED_LED_ID, 
+      RELATED_SPEED_DEVICE_ID, IS_WEATHER_SUPPORT, IS_VISIBILITY_SUPPORT, 
+      IS_ROADSENSOR_SUPPORT,RELATED_VARIABLE_SPEED)
+    values (#{deviceId,jdbcType=VARCHAR}, #{relatedVideoId,jdbcType=VARCHAR}, #{relatedLedId,jdbcType=VARCHAR}, 
+      #{relatedSpeedDeviceId,jdbcType=VARCHAR}, #{isWeatherSupport,jdbcType=CHAR}, #{isVisibilitySupport,jdbcType=CHAR}, 
+      #{isRoadsensorSupport,jdbcType=CHAR},#{relatedVariableSpeed,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.Meteorologic" >
+    insert into T_DEVICE_METEOROLOGIC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="relatedVideoId != null" >
+        RELATED_VIDEO_ID,
+      </if>
+      <if test="relatedLedId != null" >
+        RELATED_LED_ID,
+      </if>
+      <if test="relatedSpeedDeviceId != null" >
+        RELATED_SPEED_DEVICE_ID,
+      </if>
+      <if test="isWeatherSupport != null" >
+        IS_WEATHER_SUPPORT,
+      </if>
+      <if test="isVisibilitySupport != null" >
+        IS_VISIBILITY_SUPPORT,
+      </if>
+      <if test="isRoadsensorSupport != null" >
+        IS_ROADSENSOR_SUPPORT,
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        RELATED_VARIABLE_SPEED
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedVideoId != null" >
+        #{relatedVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedLedId != null" >
+        #{relatedLedId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedSpeedDeviceId != null" >
+        #{relatedSpeedDeviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="isWeatherSupport != null" >
+        #{isWeatherSupport,jdbcType=CHAR},
+      </if>
+      <if test="isVisibilitySupport != null" >
+        #{isVisibilitySupport,jdbcType=CHAR},
+      </if>
+      <if test="isRoadsensorSupport != null" >
+        #{isRoadsensorSupport,jdbcType=CHAR},
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        #{relatedVariableSpeed,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Meteorologic" >
+    update T_DEVICE_METEOROLOGIC
+    <set >
+      <if test="relatedVideoId != null" >
+        RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedLedId != null" >
+        RELATED_LED_ID = #{relatedLedId,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedSpeedDeviceId != null" >
+        RELATED_SPEED_DEVICE_ID = #{relatedSpeedDeviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="isWeatherSupport != null" >
+        IS_WEATHER_SUPPORT = #{isWeatherSupport,jdbcType=CHAR},
+      </if>
+      <if test="isVisibilitySupport != null" >
+        IS_VISIBILITY_SUPPORT = #{isVisibilitySupport,jdbcType=CHAR},
+      </if>
+      <if test="isRoadsensorSupport != null" >
+        IS_ROADSENSOR_SUPPORT = #{isRoadsensorSupport,jdbcType=CHAR},
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        RELATED_VARIABLE_SPEED = #{relatedVariableSpeed,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Meteorologic" >
+    update T_DEVICE_METEOROLOGIC
+    set RELATED_VIDEO_ID = #{relatedVideoId,jdbcType=VARCHAR},
+      RELATED_LED_ID = #{relatedLedId,jdbcType=VARCHAR},
+      RELATED_SPEED_DEVICE_ID = #{relatedSpeedDeviceId,jdbcType=VARCHAR},
+      IS_WEATHER_SUPPORT = #{isWeatherSupport,jdbcType=CHAR},
+      IS_VISIBILITY_SUPPORT = #{isVisibilitySupport,jdbcType=CHAR},
+      IS_ROADSENSOR_SUPPORT = #{isRoadsensorSupport,jdbcType=CHAR},
+      RELATED_VARIABLE_SPEED = #{relatedVariableSpeed,jdbcType=VARCHAR}
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectMeteorologics" resultMap="BaseResultMap" parameterType="java.util.Map">		
+	select *
+	  from (select t.*, rownum rn
+	          from (select m.*, s.site_code
+	                  from (select m.*, s.site_id
+	                          from t_device_meteorologic m, t_device_sys s
+	                         where m.device_id = s.device_id
+						        <if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">			
+									 and s.org_id in (select o.org_id
+						                                  from t_sys_org o
+						                                 where o.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%')
+								</if>
+								<if test="useStatusFlag != null and useStatusFlag != ''">
+									and s.use_status_flag =  #{useStatusFlag,jdbcType=CHAR}
+								</if>) m
+	                  left join t_sys_site s
+	                    on m.site_id = s.site_id
+	                 order by s.site_code asc) t) t
+        <where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  t.RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  t.RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countMeteorologics" resultType="java.lang.Integer"
+		parameterType="java.util.Map">		
+   select count(1)
+     from t_device_meteorologic m, t_device_sys s
+    where m.device_id = s.device_id
+     <if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">			
+		 and s.org_id in (select o.org_id
+                                 from t_sys_org o
+                                where o.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%')
+	 </if>
+	 <if test="useStatusFlag != null and useStatusFlag != ''">
+		 and s.use_status_flag =  #{useStatusFlag,jdbcType=CHAR}
+	 </if>
+	</select>
+</mapper>

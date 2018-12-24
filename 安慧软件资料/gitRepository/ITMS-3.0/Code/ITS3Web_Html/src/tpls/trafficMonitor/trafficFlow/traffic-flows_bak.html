@@ -1,0 +1,300 @@
+<div id="trafficFlow" class="easyui-layout" >
+
+    <div data-options="region:'center',split:true" >
+        <div id="map"style="height:100%;width:100%" >
+
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    InitPage([],function($scope) {
+
+        var cyMap=new CYMap($scope.$("#map")[0]);
+        //wkt字符串转换器
+        var wkt_c = new OpenLayers.Format.WKT();
+        //断面图元数组
+        var sectionFeature=[];
+        //断面图层
+        var sectionLayer;
+        //区间图元数组
+        var regionFeature=[];
+        //区间图层
+        var regionLayer;
+        //流量突变图层
+        var lltbyjLayer;
+        //路面断流图元数组
+        var lmdlyjLayer;
+            //断面车速差图层
+        var dmcscyjLayer;
+        //区间旅行时间超长图层
+        var qjlxsjyjLayer;
+        //区间饱和图层
+        var qjbhyjLayer;
+        //白天大型车辆占比超标预警图层
+        var dczbyjLayer;
+
+        //页面登录时调用
+        $scope.load = function(){
+            initData();
+            readSection();
+            readRegion();
+        };
+        //初始化地图及相关图层和样式
+        function initData(){
+            var layerListeners= {
+                featureover: function (e) {
+                    var popup = new OpenLayers.Popup("info",
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            new OpenLayers.Size(160,120),$scope.fieldInfo(e),false, null);
+                    popup.setBackgroundColor("ghostwhite");
+                    popup.setOpacity(5);
+                    popup.setBorder("1px solid gray");
+                    e.feature.popup = popup;
+                    cyMap.map.addPopup(popup);
+                },
+                featureout: function (e) { e.feature.popup.hide(); },
+                featureclick:function(e){
+                    e.feature.popup.hide();
+                    $scope.openDialog(e);}
+            };
+            var style = new OpenLayers.Style({
+                pointRadius: 8, fillColor: "red",strokeWidth:3,
+                fillOpacity: 1, strokeColor: "darkred"
+            });
+            var style_lltb = new OpenLayers.Style({
+                    pointRadius: 8, fillColor: "red",strokeWidth:1,
+                    fillOpacity: 1, strokeColor: "darkred"
+            });
+            var style_lmdl = new OpenLayers.Style({
+                pointRadius: 8, fillColor: "yellow",strokeWidth:1,
+                fillOpacity: 1, strokeColor: "gray"
+            });
+            var style_dmcs = new OpenLayers.Style({
+                pointRadius: 8, fillColor: "blue",strokeWidth:1,
+                fillOpacity: 1, strokeColor: "blue"
+            });
+            sectionLayer=new OpenLayers.Layer.Vector("section",{eventListeners: layerListeners});
+            regionLayer=new OpenLayers.Layer.Vector("region",{eventListeners: layerListeners});
+
+            cyMap.map.addLayers([sectionLayer,regionLayer]);
+            lltbyjLayer=new OpenLayers.Layer.Vector("lltbyj",{styleMap: new OpenLayers.StyleMap(style_lltb),eventListeners: layerListeners});
+            lmdlyjLayer=new OpenLayers.Layer.Vector("lmdlyj",{styleMap: new OpenLayers.StyleMap(style_lmdl),eventListeners: layerListeners});
+            dmcscyjLayer=new OpenLayers.Layer.Vector("dmcscyj",{styleMap: new OpenLayers.StyleMap(style_dmcs),eventListeners: layerListeners});
+            qjlxsjyjLayer=new OpenLayers.Layer.Vector("qjlxsjyj",{styleMap: new OpenLayers.StyleMap(style),eventListeners: layerListeners});
+            qjbhyjLayer=new OpenLayers.Layer.Vector("qjbhyj",{styleMap: new OpenLayers.StyleMap(style),eventListeners: layerListeners});
+            dczbyjLayer=new OpenLayers.Layer.Vector("dczbyj",{styleMap: new OpenLayers.StyleMap(style),eventListeners: layerListeners});
+            cyMap.map.addLayers([lltbyjLayer,lmdlyjLayer,dmcscyjLayer,qjlxsjyjLayer,qjbhyjLayer,dczbyjLayer]);
+        }
+
+        function readSection(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficState/sectionFlow.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        //sectionLayer.addFeatures(feature);
+                        sectionFeature.push(feature);
+                    }
+                    lmdlAlarm();
+                    lltbAlarm();
+                    dmcscAlarm();
+                    console.log(sectionFeature);
+                },
+                fail : function(){}
+            });
+        }
+        //流量突变
+        function lltbAlarm() {
+            for (var index in sectionFeature) {
+                var feature = sectionFeature[index];
+                //上行
+                var curFlow = parseInt(feature.attributes.dqll);
+                var exFlow = parseInt(feature.attributes.qyxsll);
+                if (exFlow > 0) {
+                    var per = ((curFlow - exFlow) / exFlow).toFixed(2);
+                    if (per > 0.15) {
+                        feature.attributes.title_lltb = "流量突变预警";
+                        feature.attributes.qyxsll = exFlow;
+                        feature.attributes.ssfd = (per * 100) + "%";
+                    }
+                    if (per > 0.15 && per <= 0.3) {
+                        feature.attributes.yjjb = "四级";
+                    }
+                    else if (per > 0.3 && per <= 0.45) {
+                        feature.attributes.yjjb_lltb = "三级";
+                    }
+                    else if (per > 0.45 && per <= 0.6) {
+                        feature.attributes.yjjb_lltb = "二级";
+                    }
+                    else if (per > 0.6) {
+                        feature.attributes.yjjb_lltb = "一级";
+                    }
+                }
+                //下行
+                var curFlowx = parseInt(feature.attributes.dqllx);
+                var exFlowx = parseInt(feature.attributes.qyxsllx);
+                if (exFlowx > 0) {
+                    var perx = ((curFlowx - exFlowx) / exFlowx).toFixed(2);
+                    if (per > 0.15) {
+                        feature.attributes.title_lltb = "流量突变预警";
+                        feature.attributes.qyxsllx = exFlowx;
+                        feature.attributes.ssfdx = (perx * 100) + "%";
+                    }
+                    if (perx > 0.15 && perx <= 0.3) {
+                        feature.attributes.yjjbx_lltb = "四级";
+                    }
+                    else if (perx > 0.3 && perx <= 0.45) {
+                        feature.attributes.yjjbx_lltb = "三级";
+                    }
+                    else if (perx > 0.45 && perx <= 0.6) {
+                        feature.attributes.yjjbx_lltb = "二级";
+                    }
+                    else if (perx > 0.6) {
+                        feature.attributes.yjjbx_lltb = "一级";
+                    }
+                }
+            }
+        }
+        //路面断流
+        function lmdlAlarm() {
+            for (var index in sectionFeature) {
+                var feature = sectionFeature[index];
+                var curFlow=parseInt(feature.attributes.dqll);
+                var exFlow=parseInt(feature.attributes.qyxsll);
+                if(exFlow==0&&curFlow == 0){
+                    feature.attributes.title_lmdl="路面断流预警";
+                    feature.attributes.lmdl_fx="上行";
+                }
+                var curFlowx=parseInt(feature.attributes.dqllx);
+                var exFlowx=parseInt(feature.attributes.qyxsllx);
+                if(exFlowx==0&&curFlowx == 0){
+                    feature.attributes.title_lmdl="路面断流预警";
+                    feature.attributes.lmdl_fxx="下行";
+                }
+            }
+        }
+        //断面车速差
+        function dmcscAlarm(){
+            for(var index in sectionFeature) {
+                var feature = sectionFeature[index];
+                var difSpeed = Math.abs(parseInt(feature.attributes.ppspeed) - parseInt(feature.attributes.speed));
+                var difSpeedx = Math.abs(parseInt(feature.attributes.ppspeedx) - parseInt(feature.attributes.speedx));
+                if (difSpeed > 15 || difSpeedx > 15) {
+                    feature.attributes.title_dmcsc = "断面车速差预警";
+                    feature.attributes.difSpeed = difSpeed;
+                    feature.attributes.difSpeedx = difSpeedx;
+                }
+                if (difSpeed > 15 && difSpeed <= 20) {
+                    feature.attributes.yjjb_dmcsc = "四级";
+                }
+                else if (difSpeed > 20 && difSpeed <= 25) {
+                    feature.attributes.yjjb_dmcsc = "三级";
+                }
+                else if (difSpeed > 25 && difSpeed <= 30) {
+                    feature.attributes.yjjb_dmcsc = "二级";
+                }
+                else if (difSpeed > 30) {
+                    feature.attributes.yjjb_dmcsc = "一级";
+                }
+
+                if (difSpeedx > 15 && difSpeedx <= 20) {
+                    feature.attributes.yjjbx_dmcsc = "四级";
+                }
+                else if (difSpeedx > 20 && difSpeedx <= 25) {
+                    feature.attributes.yjjbx_dmcsc = "三级";
+                }
+                else if (difSpeedx > 25 && difSpeedx <= 30) {
+                    feature.attributes.yjjbx_dmcsc = "二级";
+                }
+                else if (difSpeedx > 30) {
+                    feature.attributes.yjjbx_dmcsc = "一级";
+                }
+            }
+        }
+        //处理section报警信息
+
+
+        function readRegion(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficState/regionFlow.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        //regionLayer.addFeatures(feature);
+                        regionFeature.push(feature);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+
+        //用于popup显示信息
+        $scope.fieldInfo=function(obj){
+            var name=obj.object.name;
+            if(name=="section"){
+                return "<div style='font-size:1em'> "
+                        + obj.feature.attributes['dwwz']+"："
+                        +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;"+ obj.feature.attributes['speed']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;"+ obj.feature.attributes['ctsj']
+                        +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fxx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;"+ obj.feature.attributes['speedx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;"+ obj.feature.attributes['ctsjx'];
+            }
+            else if(name=="region"){
+                return "<div style='font-size:1em'> "
+                        + obj.feature.attributes['qjmc']+"："
+                        +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;"+ obj.feature.attributes['speed']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当前车辆：&nbsp;&nbsp;"+ obj.feature.attributes['dqll']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重点车辆：&nbsp;&nbsp;"+ obj.feature.attributes['zdcl'];
+
+            }
+            return "<div style='font-size:1em'> "
+                    + obj.feature.attributes['title']+"："
+                    +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['dwwz']
+                    +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fx']
+                    +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;"+ obj.feature.attributes['yjjb']
+                    +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fxx']
+                    +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;"+ obj.feature.attributes['yjjbx'];
+        };
+
+        //打开新的openDialog
+        $scope.openDialog = function(obj) {
+            $scope.$setParam("newData",obj.feature.attributes);
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("createDialog").dialog("close");
+            });
+            if(obj.object.name=="dmcscyj"){
+                $scope.$openDialog("createDialog", {
+                    title: "断面信息",
+                    height: 330,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficFlow/section-different-speed.html"
+                }, true);
+            }
+            else if(obj.object.name=="region"){
+                $scope.$openDialog("createDialog", {
+                    title: "区间信息",
+                    height: 220,
+                    width: 400,
+                    href: "tpls/trafficMonitor/trafficState/region-flow-info.html"
+                }, true);
+            }
+
+        };
+    });
+
+</script>

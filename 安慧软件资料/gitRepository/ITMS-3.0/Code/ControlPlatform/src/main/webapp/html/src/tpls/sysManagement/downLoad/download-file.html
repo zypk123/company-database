@@ -1,0 +1,159 @@
+<div class="easyui-layout" id="downLoadCenter" >
+	<div data-options="region:'north',height:'85px'">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="deptQueryDm">
+				<div class="table">
+					<div class="tr">
+						<div class="th" style="width:100px" >
+							文件名称：
+						</div>
+						<div class="td" style="width:130px">
+							<input class="easyui-textbox" name="fileName" />
+						</div>
+
+						<div class="th" >
+							时间：
+						</div>
+						<div class="td">从
+							<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:150px"
+							data-options="prompt:'开始时间',validType:'maxDate[\'end\']'" />
+						</div>
+						<div class="td">至
+							<input class="easyui-datetimebox"  name="endTime" id="end"  style="width:150px"
+							data-options="prompt:'结束时间',validType:'minDate[\'start\']'" />
+						</div>
+						<div class="th" >
+							状态：
+						</div>
+						<div class="td" style="width:120px" >
+							<input name="status" class="easyui-combobox" style="width:110px" cy-code="163"/>
+						</div>
+						<div class="td" style="width: 100px;">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div data-options="region:'center',split:true" >
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+		cy-url="sysCfg/exportFile/selectAll"></table>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(["163"]);
+		$scope.load = function() {
+			$scope.$search("deptQueryDm");
+		};
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'funcName',
+				title : '模块',
+				align : 'center',
+				width : 10
+			},{
+				field : 'fileName',
+				title : '文件名称',
+				align : 'center',
+				formatter : options_download,
+				width : 20
+			},{
+				field : 'status',
+				title : '状态',
+				align : 'center',
+				formatter : options_stateType,
+				width : 10
+			},
+			// {field: 'fileUrl',title: '文件',align: 'center',width: 25},
+			{
+				field : 'createTime',
+				title : '创建时间',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'remark',
+				title : '备注',
+				align : 'center',
+				width : 15
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 10
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+			},
+			// pagination:false,
+			nowrap : false
+		};
+		function options_stateType(value, row, index) {
+			return $scope.$getCodeName("163", value);
+		}
+
+
+		$scope.searchData = function() {
+			$scope.$updateData("deptQueryDm");
+			$scope.$search("deptQueryDm");
+		};
+		function options_download(value, row, index) {
+			var str = $("<a href=" + row.fileUrl + ">" + value + " </a>");
+			return $("<span/>").append(str).html();
+		}
+//        "target='_blank'" +
+            // //操作栏信息三到四
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='button-edit' title='删除' cy-click='delete(" + index + ")'></a>");
+			//定位按钮
+			button1.linkbutton({
+				iconCls : "icon-remove",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").html();
+
+		}
+
+		// //弹出人工干预
+		$scope.delete = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+
+			$.messager.confirm("提示", "你确定要删除吗?", function(flag) {
+				if (flag) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/exportFile/deleteById",
+						params : {id : rowDatas[index].taskId},
+						success : function(data) {
+							$scope.$search("deptQueryDm");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+
+	}); 
+</script>
+<style>
+	#downLoadCenter .th {
+		width: 60px;
+		text-align: right;
+	}
+	#downLoadCenter .td {
+		width: 170px;
+		text-align: left;
+	}
+
+</style>

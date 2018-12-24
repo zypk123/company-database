@@ -1,0 +1,278 @@
+<div class="easyui-layout" id="pathDetails">
+	<form cy-form="formData">
+		<div data-options="region:'north'">
+			<div class="table">
+				<div class="tr">
+					<div class="th">当前卡口：</div>
+					<div class="td" cy-name="formData.deviceName" cy-filter="getDeviceName">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center'">
+			<div class="table">
+				<div class = tr>
+					<div class="th">过车时间：</div>
+					<div class="td">
+						<div class="table">
+							<div class="tr">
+								<div class="td" cy-name="formData.startTime" style="margin-top:-5px;">
+								
+								</div>
+								&nbsp;&nbsp;至
+								<div class="td" cy-name="formData.endTime" style="margin-top:-33px;margin-left:30px;">
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">平均延迟：</div>
+					<div class="td" cy-name="formData.avgDelay" cy-filter="getTime">
+						
+					</div>
+				</div>
+			</div>
+			<!-- 设备图片 -->
+			<div id="u200" class="img">
+				<img src="../src/themes/default/images/dataPath/kakou.png"/>
+				<div class="text" style="margin-left: 15px;">
+					卡口
+				</div>
+			</div>
+			
+			<div id="u201" class="img">
+				<!-- 卡口设备到前置监控服务器的延迟 -->
+				<div class="time" cy-name="formData.dev2svrDelay" cy-filter="getTime">
+					
+				</div>
+				<img src="../src/themes/default/images/dataPath/jt.png"/>
+			</div>
+			
+			<div id="u202" class="img">
+				<img src="../src/themes/default/images/dataPath/fwq.png"/>
+				<div class="text" style="margin-left: 10px;">
+					服务器
+				</div>
+			</div>
+			
+			<div id="u203" class="img">
+				<img src="../src/themes/default/images/dataPath/wjt.png"/>
+			</div>
+			
+			<div id="u204" class="img">
+				<img src="../src/themes/default/images/dataPath/wj.png"/>
+			</div>
+			
+			<div id="u205" class="img">
+				<!-- 前置监控服务器到后置监控服务器的延迟 -->
+				<div class="time" cy-name="formData.svr2afsvrDelay" cy-filter="getTime">
+					
+				</div>
+				<img src="../src/themes/default/images/dataPath/jt.png"/>
+			</div>
+			
+			<div id="u206" class="img">
+				<img src="../src/themes/default/images/dataPath/fwq.png"/>
+				<div class="text" style="margin-left: 10px;">
+					服务器
+				</div>
+			</div>
+			
+	   		<div id="u207" class="img">
+	   			<!-- 后置监控服务器到ICE2MQ的延迟 -->
+				<div class="time" cy-name="formData.afsvr2imDelay" cy-filter="getTime">
+					
+				</div>
+				<img src="../src/themes/default/images/dataPath/jt.png"/>
+			</div>
+			
+			<div id="u208" class="img">
+				<img src="../src/themes/default/images/dataPath/ICE2MQ.png"/>
+				<div class="text">
+					ICE2MQ
+				</div>
+			</div>
+			
+			<div id="u209" class="img">
+				<!-- ICE2MQ到稽查布控上传开始的延迟 -->
+				<div class="time" cy-name="formData.im2updsDelay" cy-filter="getTime">
+					
+				</div>
+				<img src="../src/themes/default/images/dataPath/jt.png"/>
+			</div>
+			
+			<div id="u210" class="img">
+				<img src="../src/themes/default/images/dataPath/scks.png"/>
+				<div class="text">
+					上传开始
+				</div>
+			</div>
+			
+			<div id="u211" class="img">
+				<!-- 查布控上传开始到查布控上传结束的延迟 -->
+				<div class="time" cy-name="formData.upds2updeDelay" cy-filter="getTime">
+					
+				</div>
+				<img src="../src/themes/default/images/dataPath/jt.png"/>
+			</div>
+			
+			<div id="u212" class="img">
+				<img src="../src/themes/default/images/dataPath/scjs.png"/>
+				<div class="text">
+					上传结束
+				</div>
+			</div>
+			
+			<div id="u213" class="text">
+				公安网
+			</div>
+			
+			<div id="u214" class="text">
+				专网
+			</div>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+	InitPage(["formData"],function($scope){
+		//动态加载传输轨迹
+		var timeList = $scope.formData;
+		console.log(timeList);
+		if(timeList != null && timeList != undefined){
+			if(timeList.dev2server != null){//无公安网和专网服务器之分(设备到服务器的时间)
+				$scope.$("#u201").hide();
+				$scope.$("#u202").hide();
+				$scope.$("#u213").css("left","140px");
+				$scope.$("#u214").css("left","70px");
+				$scope.formData.svr2afsvrDelay = $scope.formData.dev2server;
+			}
+			/**else if(timeList.afsvr2imDelay == null){
+				$scope.$("#u207").hide();
+				$scope.$("#u208").hide();
+			}else if(timeList){
+				
+			}**/
+		}
+		$scope.getTime = function(value) {
+			if (value && value != "") {
+				return value + "秒";
+			}else{
+				return "无数据";
+			}
+		};
+		$scope.getDeviceName = function(value) {
+			if (value && value != "") {
+				var newValue = value;
+				if(value.length > 60){
+					newValue = value.substring(0,60) + "...";
+				}
+				return "<span title = " + value + ">" + newValue + "</span>";
+			}else{
+				return "--";
+			}
+		};
+	});
+</script>
+<style type="text/css">
+	#pathDetails .th {
+		width: 80px;
+		text-align: right;
+	}
+	
+	/*** 图片样式 *****/
+	#pathDetails #u200 {
+		margin-top: 45px;
+		margin-left: 20px;
+		float: left;
+	}
+	#pathDetails #u201 {
+		width: 57px;
+		height: 34px;
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u202 {
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u203 {
+		margin-top: 58px;
+		float: left;
+	}
+	#pathDetails #u204 {
+		margin-top: 11px;
+		float: left;
+	}
+	#pathDetails #u205 {
+		width: 57px;
+		height: 34px;
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u206 {
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u207 {
+		width: 57px;
+		height: 34px;
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u208 {
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u209 {
+		width: 57px;
+		height: 34px;
+		margin-top: 45px;
+		float: left;
+	}
+	#pathDetails #u210 {
+		margin-top: 45px;
+		float: left;
+	    /* 顺时针旋转90度 
+		-moz-transform:rotate(90deg);
+		-webkit-transform:rotate(90deg);
+		-o-transform:rotate(90deg);
+		transform:rotate(90deg);
+		filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=1);*/
+	}
+	#pathDetails #u211 {
+		width: 57px;
+		height: 34px;
+		margin-top: 45px;
+		float: left;
+		
+	}
+	#pathDetails #u212 {
+		margin-top: 45px;
+		float: left;
+		/*水平翻转
+		-moz-transform:scale(-1,1);
+		-webkit-transform:scale(-1,1);
+		-o-transform:scale(-1,1);
+		transform:scale(-1,1);
+		filter:FlipH;*/
+	}
+	#pathDetails #u213 {
+		position: absolute;
+		left: 260px;
+		top: 100px;
+		color: orange;
+	}
+	#pathDetails #u214 {
+		position: absolute;
+		left: 180px;
+		top: 100px;
+		color: orange;
+	}
+	#pathDetails .time {
+		height: 17px;
+		margin-left: 20px;
+	}
+</style>

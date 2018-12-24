@@ -1,0 +1,164 @@
+<div id="trafficEventInfo" class="easyui-layout"  >
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<div data-options="region:'center',border:false" >
+				<div class="table">
+					<div  class="searchPanel" style="height:380px">
+						<div class="panel_title">
+							现场图片：
+						</div>
+						<img src="frameworks/Openlayers/img/pic.jpg" style="width: 325px;height: 380px;"/>
+						<br>
+
+					</div>
+				</div>
+
+			</div>
+
+			<div data-options="region:'east',border:false" style="width: 270px">
+				<div class="table" id="eventInfo">
+					<div  class="searchPanel" >
+						<div class="panel_title">
+							气象信息：
+						</div>
+						
+						<div class="tr">
+							<div class="th">
+								所属机构：
+							</div>
+							<div class="td">
+								<input cy-name=newData.device_name/>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th" >
+								发生地点：
+							</div>
+							<div class="td" >
+								<input cy-name=newData.device_name/>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th" >
+								气象类型：
+							</div>
+							<div class="td" >
+								<input type="text" class="easyui-combobox" id="eventType"/>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								发生时间：
+							</div>
+							<div class="td">
+								<input  class="easyui-datetimebox" name="endTime"
+						data-options="required:true,showSeconds:false" value="9/6/2015 10:01"style="width:135px" >
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th">
+								上报人：
+							</div>
+							<div class="td" >
+								<input cy-name=newData.device_name/>
+							</div>
+						</div>
+					</div>
+					<div  class="searchPanel" >
+						<div class="panel_title">
+							事件处理：
+						</div>
+						<div class="tr">
+							<div class="th">
+								事件确认：
+							</div>
+							<div class="td">
+								<label >
+									<input name="event_check" type="radio" value="2" />
+									有效</label>
+								<label >
+									<input name="event_check" type="radio" value="1" />
+									无效</label>
+								<label >
+									<input name="event_check" type="radio" value="0" checked="checked"  />
+									未确认</label>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th" style="height:40px; ">
+								气象描述：
+							</div>
+							<div class="td">
+								<textarea  cy-name="newData.event_desc" style="height:40px; ">
+									</textarea>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th" style="height:40px;">
+								处理方法：
+							</div>
+							<div class="td" >
+								<textarea cy-name="newData.remark" style="height:40px; "> 
+									</textarea>
+							</div>
+						</div>
+						<div class="tr">
+							<div class="th" style="height:40px;">
+								处理结果：
+							</div>
+							<div class="td" >
+								<textarea cy-name="newData.result" style="height:40px; ">
+									</textarea>
+							</div>
+						</div>
+						<br>
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height: 38px">
+		<div class="table">
+			<div class="tr">
+				<div class="td"></div>
+				<div class="td"></div>
+
+				<a class="easyui-linkbutton" iconCls="icon-video" >视频录像</a>
+				<a class="easyui-linkbutton" iconCls="icon-save" >提交</a>
+				<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf" >取消</a>
+
+			</div>
+
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+	InitPage(["newData", "dicAll", "saveData"], function($scope) {
+
+		//页面登录时调用
+		$scope.load = function() {
+			$scope.$("#eventType").combobox("loadData",$scope.dicAll.weatherAlarmTpye);
+		};
+	}); 
+</script>
+
+<style type="text/css">
+	#trafficEventInfo .th {
+		width: 65px;
+		text-align: right;
+		height: 22px;
+	}
+	#trafficEventInfo .td {
+		width: 160px;
+		height: 22px;
+	}
+
+	#trafficEventInfo span[cy-name] {
+		color: #0000ff;
+	}
+</style>

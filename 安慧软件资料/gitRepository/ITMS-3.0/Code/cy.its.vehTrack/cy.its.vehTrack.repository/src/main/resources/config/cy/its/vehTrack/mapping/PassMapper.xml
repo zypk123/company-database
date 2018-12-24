@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.vehTrack.mybatis.client.PassMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.vehTrack.mybatis.model.Pass" >
+    <id column="VEHICLE_PASS_ID" property="vehiclePassId" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR" property="snapNbr" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+    <result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR" />
+    <result column="ROAD_TYPE" property="roadType" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_CODE" property="roadSectionCode" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+    <result column="LANE" property="lane" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="TAIL_PLATE_NBR" property="tailPlateNbr" jdbcType="VARCHAR" />
+    <result column="TAIL_PLATE_COLOR" property="tailPlateColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_SUB_BRAND" property="vehicleSubBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_TYPE" property="vehicleType" jdbcType="VARCHAR" />
+    <result column="VEH_CHARCTER" property="vehCharcter" jdbcType="VARCHAR" />
+    <result column="VEHICLE_SHAPE" property="vehicleShape" jdbcType="CHAR" />
+    <result column="VEHICLE_LENGTH" property="vehicleLength" jdbcType="DECIMAL" />
+    <result column="VEHICLE_COLOR" property="vehicleColor" jdbcType="VARCHAR" />
+    <result column="PASS_TIME" property="passTime" jdbcType="TIMESTAMP" />
+    <result column="SPEED" property="speed" jdbcType="DECIMAL" />
+    <result column="DRIVE_MODE" property="driveMode" jdbcType="VARCHAR" />
+    <result column="VEH_LOCALIZATION" property="vehLocalization" jdbcType="CHAR" />
+    <result column="VEH_CATEGORY" property="vehCategory" jdbcType="CHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL_PATH" property="imageUrlPath" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL1" property="imageUrl1" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL2" property="imageUrl2" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL3" property="imageUrl3" jdbcType="VARCHAR" />
+    <result column="VEHICLE_PLATE_PLACE" property="vehiclePlatePlace" jdbcType="VARCHAR" />
+    <result column="FACE_PLACE" property="facePlace" jdbcType="VARCHAR" />
+    <result column="TRANSFER_DELAY" property="transferDelay" jdbcType="DECIMAL" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="HIGHWAY_ACCESS_FLAG" property="highwayAccessFlag" jdbcType="CHAR" />
+    <result column="SERVICE_AREA_ACCESS_FLAG" property="serviceAreaAccessFlag" jdbcType="CHAR" />
+    <result column="ENTRANCE_OR_EXIT" property="ertranceOrExit" jdbcType="CHAR" />
+    <result column="DEVICE_NBR" property="deviceNbr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VEHICLE_PASS_ID, SNAP_NBR, DEVICE_SYS_NBR, DISTRICT_CODE, SITE_CODE, ROAD_CODE, ROAD_TYPE, 
+    ROAD_SECTION_CODE, DIRECTION_NAME, DIRECTION_TYPE, LANE, PLATE_NBR, PLATE_COLOR, 
+    PLATE_TYPE, TAIL_PLATE_NBR, TAIL_PLATE_COLOR, VEHICLE_BRAND, VEHICLE_SUB_BRAND, VEHICLE_TYPE, 
+    VEH_CHARCTER, VEHICLE_SHAPE, VEHICLE_LENGTH, VEHICLE_COLOR, PASS_TIME, SPEED, DRIVE_MODE, 
+    VEH_LOCALIZATION, VEH_CATEGORY, ORG_CODE, ORG_AUTHORITY_CODE, IMAGE_URL_PATH, IMAGE_URL1, 
+    IMAGE_URL2, IMAGE_URL3, VEHICLE_PLATE_PLACE, FACE_PLACE, TRANSFER_DELAY, CREATE_TIME, 
+    HIGHWAY_ACCESS_FLAG, SERVICE_AREA_ACCESS_FLAG, ENTRANCE_OR_EXIT, DEVICE_NBR
+  </sql>
+  <select id="findPassInfo" resultMap="BaseResultMap"  parameterType="java.util.Map">
+  	select
+  		<include refid="Base_Column_List" />
+  	from T_VEHTRACK_PASS
+  	where 1=1
+  	<if test="distritCodes != null" >
+  		and DISTRICT_CODE in 
+  		<foreach item="item" index="index" collection="distritCodes" 
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  	<if test="roadType != '' and roadType != null" >
+  		and ROAD_TYPE = #{roadType,jdbcType=VARCHAR} 
+  	</if>
+  	<if test="roadCodes != null" >
+  		and ROAD_CODE in 
+  		<foreach item="item" index="index" collection="roadCodes"  
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if>
+  	<if test="siteCodes != null" >
+  		and SITE_CODE in 
+  		<foreach item="item" index="index" collection="siteCodes"  
+  			open="(" separator="," close=")">
+  			#{item}
+  		</foreach>
+  	</if> 
+  	<if test="direction != '' and direction != null" >
+  		and DIRECTION_TYPE = #{direction,jdbcType=VARCHAR} 
+  	</if>
+  	<if test="lane != '' and lane != null" >
+  		and LANE = #{lane,jdbcType=VARCHAR} 
+  	</if>
+  	<if test="passTimeStart != null and passTimeEnd != null" >
+  		and PASS_TIME &gt; to_date(#{passTimeStart},'yyyy-mm-dd-hh24:mi:ss')  and PASS_TIME &lt;=  to_date(#{passTimeEnd},'yyyy-mm-dd-hh24:mi:ss')
+  	</if> 
+  	<if test="plateNbr != '' and plateNbr != null">
+  		and PLATE_NBR like '%'|| #{plateNbr,jdbcType=VARCHAR} || '%'
+  	</if>
+  	<if test="plateColor != '' and plateColor != null">
+  		and PLATE_NBR = #{plateColor,jdbcType=VARCHAR}
+  	</if>
+  	<if test="vehicleType != '' and vehicleType != null">
+  		and VEHICLE_TYPE = #{vehicleType,jdbcType=VARCHAR}
+  	</if>
+  	<if test="vehicleColor != '' and vehicleColor != null">
+  		and VEHICLE_COLOR = #{vehicleColor,jdbcType=VARCHAR}
+  	</if>
+  	<if test="vehicleBrand != '' and vehicleBrand != null">
+  		and VEHICLE_BRAND = #{vehicleColor,jdbcType=VARCHAR}
+  	</if>
+  	<if test="vehLocalization != '' and vehLocalization != null">
+  		and VEH_LOCALIZATION = #{vehLocalization,jdbcType=VARCHAR}
+  	</if>
+  	<if test="speedMin != '' and speedMin != null">
+  		and SPEED &gt; #{speedMin,jdbcType=VARCHAR}
+  	</if>
+  	<if test="speedMax != '' and speedMax != null">
+  		and SPEED &lt; #{speedMax,jdbcType=VARCHAR}
+  	</if>
+  	<if test="orgPrvCode != null and orgPrvCode != ''">
+  		and ORG_AUTHORITY_CODE like #{orgPrvCode,jdbcType=VARCHAR}||'%'
+  	</if>
+  	
+  	<if test="justSearchNullPlate != null and justSearchNullPlate != ''">
+  		and  length(PLATE_NBR) &lt; 7
+  	</if>
+  		order by PASS_TIME ${sort}
+  </select>
+</mapper>

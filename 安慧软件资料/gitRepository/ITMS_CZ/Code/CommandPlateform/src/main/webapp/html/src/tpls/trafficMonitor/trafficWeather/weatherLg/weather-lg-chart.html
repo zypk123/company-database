@@ -1,0 +1,180 @@
+<div id="weatherHistoryChart" class="easyui-panel" data-options="fit:true" >
+	<div id="tt" class="easyui-tabs" >
+		<div title="路面温度" data-options="fit:true">
+			<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+			<div id="mainUp"  style="height:380px;padding:20px"></div>
+		</div>
+
+		<div title="水膜厚度" >
+			<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+			<div id="mainDown"  style="height:380px;padding:20px"></div>
+		</div>
+
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	InitPage(["deviceSysNbr", "recordTime"], function($scope) {
+		//路感-路面温度数组 //时间横轴
+		var lg_roadTemperature = [];
+		var times = [];
+		//路感-水膜厚度数组 //时间横轴
+		var lg_waterFileHeigh = [];
+
+		//基础数据的数组、时间数组、title、legend、对应的字段值、单位、Json地址
+		var dataArray = {
+			"lg_roadTemperature" : {
+				array : lg_roadTemperature,
+				times : times,
+				field : "roadTemperature",
+				title : "2小时路面温度变化情况",
+				legend : ["当前路面温度"],
+				unitValue : "℃"
+			},
+			"lg_waterFileHeigh" : {
+				array : lg_waterFileHeigh,
+				times : times,
+				field : "waterFileHeigh",
+				title : "2小时水膜厚度变化情况",
+				legend : ["当前水膜厚度"],
+				unitValue : "mm"
+			}
+		};
+
+		//页面登录时调用初始化方法
+		$scope.load = function() {
+			initData();
+		};
+		//定义echarts入口
+		function initData() {
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar'], function(ec) {
+				showEcharts(ec, $scope.$("#mainUp").get(0));
+			});
+		}
+
+		//读取Json数据初始化echarts
+		function showEcharts(ec, dom) {
+			var myChart = ec.init(dom);
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficState/multiple/searchRoadsensorsByTime",
+				params : {
+					deviceSysNbr : $scope.deviceSysNbr,
+					recordTime : $scope.recordTime
+				},
+				success : function(data) {
+					if (!data || data.length == 0) {
+						$scope.$("#tt").html('<div style="color:red;font-size:15px">没有查询到最近2小时的路感数据！</div>');
+						return;
+					}
+					for (var index in data) {
+						//填充路面温度及水膜厚度
+						lg_roadTemperature.push(data[index].roadTemperature);
+						lg_waterFileHeigh.push(data[index].waterFileHeigh);
+						times.push(formatDateTimeStamp(data[index].recordTime));
+					}
+					//折线图的配置
+					myChart.setOption(getOptions(dataArray.lg_roadTemperature));
+				}
+			});
+		}
+
+		/**
+		 *把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		 */
+		function formatDateTimeStamp(dateTimeStamp) {
+			if (dateTimeStamp == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(dateTimeStamp);
+			return newDate.format('HH:mm');
+		}
+
+		//根据速度值配置echarts折线图的参数配置
+		function getOptions(arr) {
+			return {
+				title : {
+					text : arr.title //subtext: '纯属虚构'
+				},
+				tooltip : {
+					trigger : 'axis'
+				},
+				legend : {
+					data : arr.legend
+				},
+				// toolbox : {
+					// show : true,
+					// feature : {
+						// mark : {
+							// show : true
+						// },
+						// dataView : {
+							// show : true,
+							// readOnly : false
+						// },
+						// magicType : {
+							// show : true,
+							// type : ['line', 'bar']
+						// },
+						// restore : {
+							// show : true
+						// },
+						// saveAsImage : {
+							// show : true
+						// }
+					// }
+				// },
+				// calculable : true,
+				xAxis : [{
+					type : 'category',
+					boundaryGap : false,
+					data : arr.times
+				}],
+				yAxis : [{
+					type : 'value',
+					axisLabel : {
+						formatter : '{value} ' + arr.unitValue
+					}
+				}],
+				series : [{
+					name : arr.legend[0],
+					type : 'line',
+					data : arr.array,
+					markPoint : {
+						data : [{
+							type : 'max',
+							name : '最大值'
+						}, {
+							type : 'min',
+							name : '最小值'
+						}]
+					}
+				}]
+			};
+		}
+
+		//根据tab变化显示折线图
+		$scope.$('#tt').tabs({
+			border : false,
+			onSelect : function(title) {
+				if (title == "路面温度") {
+					var myChartDown = require('echarts').init($scope.$("#mainUp").get(0));
+					myChartDown.setOption(getOptions(dataArray.lg_roadTemperature));
+				} else {
+					var myChartDown = require('echarts').init($scope.$("#mainDown").get(0));
+					myChartDown.setOption(getOptions(dataArray.lg_waterFileHeigh));
+				}
+			}
+		});
+	}); 
+</script>
+
+<style type="text/css">
+</style>

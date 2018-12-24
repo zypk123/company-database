@@ -1,0 +1,330 @@
+<div id="suspected-region-veh-confirm" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'center',border:false,height:550,width:580" id="imageView">
+	</div>
+
+	<div data-options="region:'east',border:true,height:550,width:300" id="centerDiv">
+		<form cy-form="formData" id="form">
+		<div class="table" style="margin-top: 5px">
+			<div class="tr" style="height:35px;">
+				<div class="th" style="padding-left: 10px;">
+					号牌:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<span cy-name="formData.plateNbr"></span> <span cy-name="formData.plateType" cy-filter="codeName('002')"></span>
+				</div>
+				
+				<!--<div class="th" style="padding-left: 10px;">
+					号牌类型:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					
+				</div>!-->
+			</div>
+			<div class="tr">
+				<div class="th" style="padding-left: 10px;">
+					进入区间的点位:
+				</div>
+				<div class="td" style="margin-left: 40px;width:150px;">
+					<div cy-name="formData.entrySiteName"></div>
+				</div>
+				
+				<div class="th" style="padding-left: 10px;">
+					进入区间的时间:
+				</div>
+				<div class="td" style="margin-left: 40px;width:150px;">
+					<div cy-name="formData.identifyAccordance.entryTime"></div>
+				</div>
+			</div>
+			
+			<div class="tr">
+				<div class="th" style="padding-left: 10px;">
+					离开区间的点位:
+				</div>
+				<div class="td" style="margin-left: 40px;width:150px;">
+					<div cy-name="formData.exitSiteName"></div>
+				</div>
+				
+				<div class="th" style="padding-left: 10px;">
+					离开区间的时间:
+				</div>
+				<div class="td" style="margin-left: 40px;width:150px;">
+					<div cy-name="formData.identifyAccordance.exitTime"></div>
+				</div>
+			</div>
+			
+			<div class="tr">
+				<div class="th" style="padding-left: 10px;">
+					区间名称:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<div cy-name="formData.regionalName"></div>
+				</div>
+				
+				<div class="th" style="padding-left: 10px;">
+					区间距离:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<div cy-name="formData.identifyAccordance.distance"></div>KM
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" style="padding-left: 10px;">
+					限速值:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<span cy-name="formData.identifyAccordance.speedLimit"></span>KM/h
+				</div>
+				
+				<div class="th" style="padding-left: 10px;">
+					真实速度:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<span cy-name="formData.identifyAccordance.actualSpeed"></span>KM/h
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" style="padding-left: 10px;">
+					超速比:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<span cy-name="formData.identifyAccordance.overspeedPercent"></span>%
+				</div>
+			</div>
+			
+			
+			<div class="tr">
+				<div class="th" style="padding-left: -10px;">
+					异常原因:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					<div cy-name="formData.vioSuspectedDesc" style="width: 130px;display: block；word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;"></div>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					结果记录:
+				</div>
+				<div class="td" style="margin-left: 10px;">
+					
+					<input class="easyui-textbox" data-options="multiline:true" 
+	 				 name="confirmResult" id="confirm_desc"  style="width:230px;height: 60px;"/>
+				</div>
+			</div>
+			<br>
+			<br>
+			<div class="tr" style="margin-top: 20px;">
+				<div class="th" >
+					操作:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','1')">确认有效</a>
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','2')">确认无效</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	InitPage(['data','searchForm','closeDialog'], function($scope) {
+		var area1Count;
+		$scope.$getDefaultCode(['002']);
+
+		$scope.load = function() {
+			//给确认秒速赋值
+        	$scope.$("#confirm_desc").textbox("setValue",$scope.data.confirmResult)
+			updateDom($scope.data);
+			refreshData($scope.data);
+		};
+		
+		/**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+		
+		 /**
+		 *  更新页面数据
+		 */
+		var updateDom = function(data) {
+			$scope.formData = data;
+			if (typeof $scope.formData.identifyAccordance != "object"){
+				$scope.formData.identifyAccordance = jQuery.parseJSON(data.identifyAccordance);
+			}
+			codesConvertNames($scope.formData.identifyAccordance.regionCode);
+			//更新其他数据
+			$scope.$updateDom("formData");
+		};
+		
+		/**
+		 *根据区间的code取区间的信息
+		 * regionalCode
+		 */
+		var codesConvertNames = function(regionalCode){
+			var param = {};
+			param.regionalCode = regionalCode;
+			param.pageSize = 20;
+			param.pageNumber = 1;
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/IntervalManage/queryIntervalSys",
+				params : param,
+				success : function(data) {
+					//更新数据
+					$scope.formData.regionalName=data.result.rows[0].regionalName;
+					$scope.formData.entrySiteName=data.result.rows[0].entrySiteName; 
+					$scope.formData.exitSiteName=data.result.rows[0].exitSiteName; 
+					$scope.$updateDom("formData");
+				},
+				fail : function() {
+					$.messager.progress("close");
+					$.messager.alert("提示", "服务器繁忙");
+				}
+			});
+		};
+
+		/**
+		 * 刷新数据
+		 */
+		var refreshData = function(data, callback) {
+			var params = {};
+			if(!data.identifyAccordance|| data.identifyAccordance==''){
+				return ;
+			}
+			if (typeof $scope.formData.identifyAccordance != "object"){
+				$scope.formData.identifyAccordance = jQuery.parseJSON(data.identifyAccordance);
+			}
+			var identifyAccordance  = $scope.formData.identifyAccordance;
+			params.pageSize = 20;
+			params.pageNumber = 1;
+			params.totalCount = 0;
+			params.passTimeStart = (identifyAccordance.entryTime).substr(0,19);
+			params.passTimeEnd = (identifyAccordance.exitTime).substr(0,19);
+			params.plateNbr = data.plateNbr;
+			params.plateType = data.plateType;
+			area1Count = 0;
+			params.orderType = "asc";
+			params.siteCodes = identifyAccordance.entrySiteCode+","+identifyAccordance.exitSiteCode;
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/vehTrack/pass/findPassInfo",
+				params : params,
+				success : function(data) {
+					//更新数据
+					updatePassData(data);
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+					$scope.$excute(callback, data);
+				},
+				fail : function() {
+					$.messager.progress("close");
+					$.messager.alert("提示", "服务器繁忙");
+				}
+			});
+		};
+
+		/**
+		 * 更新数据
+		 */
+		var updatePassData = function(data) {
+			if (!data.result.rows || data.result.rows.length == 0) {
+				$.messager.alert("提示", "没有数据");
+				return;
+			}
+			//更新数据
+			var allRows = data.result.rows;
+			var row;
+			var areaList1;
+			var urls = [];
+			for (var i = 0; i < allRows.length; i++) {
+				row = allRows[i];
+				/* createDbImg(row.imageUrlPath, row.passTime, row.siteName) */
+				urls.push($scope.$servletRoot + "/PassImage?imageUrl=" +row.imageUrlPath);
+			}
+			createDbImg(urls, row.passTime, row.siteName)
+		};
+
+		//查看创建图片
+		function createDbImg(url, passTime, siteName) {
+			//加载图片
+			$scope.$setParam("images", url);
+			$scope.$("#imageView").panel("refresh", "tpls/public/image-view.html");
+		};
+		/**
+		 *确认按钮
+		 */
+		$scope.confirmButton = function(flag,value) {
+			var row = $scope.data;
+			var confirmDesc= $scope.$("#confirm_desc").val();
+			var param ={};
+			param.id = row.vioSuspectedId;
+			param.confirmResult = confirmDesc;
+			param.confirmFlag = value;
+			//获取后台数据
+			$scope.$ajaxRequest({
+					url : $scope.$restRoot + "/vehTrack/vehtrackPassVio/updateVehById",
+					params : param,
+					success : function(data) {
+						if(data.result>0){
+							$.messager.alert("提示", "确认成功");
+							$scope.searchForm();
+							$scope.closeDialog('editPLDialog');
+						}
+					},
+					fail : function() {
+						$.messager.alert("提示", "服务器繁忙");
+					}
+				});
+		};
+
+	}); 
+</script>
+<style>
+	#suspected-region-veh-confirm .imgDiv {
+		float: left;
+		border: dashed 1px silver;
+		margin: 5px;
+		height: 300px;
+		width: 320px
+	}
+	#suspected-region-veh-confirm .info {
+		margin: 5px;
+		height: 16px;
+		width: 300px;
+		text-align: center
+	}
+	#suspected-region-veh-confirm .info span {
+		text-align: center;
+		margin-top: 120px;
+		display: block;
+	}
+	#suspected-region-veh-confirm .tr {
+		line-height: 90px;
+	}
+	#suspected-region-veh-confirm .th {
+		width: 50px;
+		text-align: right;
+	}
+	#suspected-region-veh-confirm .td {
+		width: 208px;
+	}
+	#suspected-region-veh-confirm .deleteButton {
+		margin-top: -450px;
+		position: relative;
+		margin-left: -35px;
+		margin-top: 5px;
+		z-index: 100000
+	}
+	#suspected-region-veh-confirm #centerDiv .tr {
+		height: 80px;
+	}
+
+</style>

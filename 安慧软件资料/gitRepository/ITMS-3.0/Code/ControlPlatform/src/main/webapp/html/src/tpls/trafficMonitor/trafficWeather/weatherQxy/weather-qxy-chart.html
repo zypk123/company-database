@@ -1,0 +1,192 @@
+<div id="weatherHistoryChart" class="easyui-panel" data-options="fit:true" >
+    <div id="tt" class="easyui-tabs" >
+    	<div title="温度趋势" >
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="main_wd"  style="height:380px;padding:20px"></div>
+        </div>
+        <div title="风速趋势" data-options="fit:true">
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="main_fs"  style="height:380px;padding:20px"></div>
+        </div>
+        <div title="降雨量趋势" >
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="main_jyl"  style="height:380px;padding:20px"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(["deviceSysNbr","recordTime"],function($scope){
+        var times=[];
+        var qxy_weatherTemperature=[];
+        //气象仪-风速数组  
+        var qxy_windSpeed=[];
+        //气象仪-降雨量数组 
+        var qxy_waterFilmHeight=[];
+        
+        //基础数据的数组、时间数组、title、legend、对应的字段值、单位
+        var dataArray={
+        	"qxy_weatherTemperature":{
+                array:qxy_weatherTemperature,
+                times:times,
+                title:"2小时温度变化情况",
+                legend:["当前温度"],
+                field:"weatherTemperature",
+                unitValue:"℃"
+            },
+            "qxy_windSpeed":{
+                array:qxy_windSpeed,
+                times:times,
+                title:"2小时风速变化情况",
+                legend:["当前风速"],
+                field:"windSpeed",
+                unitValue:"m/s"
+            },
+            "qxy_waterFilmHeight":{
+                array:qxy_waterFilmHeight,
+                times:times,
+                field:"waterFilmHeight",
+                title:"2小时降雨量变化情况",
+                legend:["当前降雨量"],
+                unitValue:"mm"
+            }
+        };
+        //页面登录时调用初始化方法
+        $scope.load = function(){
+            initData();
+        };
+        //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar'
+                    ],
+                    function (ec) {
+                        showEcharts(ec,$scope.$("#main_wd").get(0));
+                    }
+            );
+        }
+        //读取Json数据初始化echarts
+        function showEcharts(ec,dom){
+            var myChart = ec.init(dom);
+            $scope.$ajaxRequest({
+                url : $scope.$restRoot + "trafficSituation/trafficState/multiple/searchWeathersByTime",
+                params : {
+                	deviceSysNbr:$scope.deviceSysNbr,
+                	recordTime:$scope.recordTime
+                	},
+                success : function(data) {
+                	if (!data || data.length == 0) {
+						$scope.$("#tt").html('<div style="color:red;font-size:15px">没有查询到最近2小时的气象数据！</div>');
+						return;
+					}
+                	//data.reverse();
+                    for (var index in data) {
+	                    //填充风速及降雨量
+                    	qxy_weatherTemperature.push(data[index].weatherTemperature);
+                        qxy_windSpeed.push(data[index].windSpeed);
+                        qxy_waterFilmHeight.push(data[index].waterFilmHeight);
+                        times.push(formatDateTimeStamp(data[index].recordTime));
+                    }
+                    //温度折线图的配置
+                    myChart.setOption(getOptions(dataArray.qxy_weatherTemperature));
+                }
+            });
+        }
+        /**
+		 *把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		 */
+		function formatDateTimeStamp(dateTimeStamp) {
+			if (dateTimeStamp == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(dateTimeStamp);
+			return newDate.format('HH:mm');
+			//return newDate.format('yyyy-MM-dd hh:mm:ss');
+			//return newDate.toLocaleTimeString();
+		}
+        //根据速度值配置echarts折线图的参数配置
+        function getOptions(arr){
+            return {
+                title : {
+                    text: arr.title //subtext: '纯属虚构'
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:arr.legend
+                },
+                // toolbox: {
+                    // show : true,
+                    // feature : {
+                        // mark : {show: true},
+                        // dataView : {show: true, readOnly: false},
+                        // magicType : {show: true, type: ['line', 'bar']},
+                        // restore : {show: true},
+                        // saveAsImage : {show: true}
+                    // }
+                // },
+                // calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : arr.times
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        axisLabel : {
+                            formatter: '{value} '+arr.unitValue
+                        }
+                    }
+                ],
+                series : [
+                    {
+                        name:arr.legend[0],
+                        type:'line',
+                        data:arr.array,
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        }
+                    }
+                ]
+            };
+        }
+        //根据tab变化显示上行或者下行折线图
+        $scope.$('#tt').tabs({
+            border:false,
+            onSelect:function(title){
+            	if(title == "温度趋势"){
+                    var myChartDown = require('echarts').init($scope.$("#main_wd").get(0));
+                    myChartDown.setOption(getOptions(dataArray.qxy_weatherTemperature));
+                }
+                else if(title == "风速趋势"){
+                    var myChartDown = require('echarts').init($scope.$("#main_fs").get(0));
+                    myChartDown.setOption(getOptions(dataArray.qxy_windSpeed));
+                }else{
+                    var myChartDown = require('echarts').init($scope.$("#main_jyl").get(0));
+                    myChartDown.setOption(getOptions(dataArray.qxy_waterFilmHeight));
+                }
+            }
+        });
+    });
+</script>
+
+<style type="text/css">
+
+
+</style>

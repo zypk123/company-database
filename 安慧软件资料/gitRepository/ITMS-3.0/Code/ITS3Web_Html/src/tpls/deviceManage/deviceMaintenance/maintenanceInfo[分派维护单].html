@@ -1,0 +1,92 @@
+<div class="easyui-layout" fit="true">
+    <div region="center" border="false" style="padding: 5px; background: #fff; border: 1px solid #ccc;">
+        <form method="post" cy-form="formData" id="maintenanceForm">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="padding-left: 5px;text-align: right">
+                    维护厂家：
+                </div>
+                <div class="td">
+                    <input class="easyui-combobox" id="devComp" name="devComp" style="width:150px"
+                           data-options="valueField:'id',textField:'text'"
+                           style="width:150px"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="padding-left: 5px;text-align: right;">
+                    联系人：
+                </div>
+                <div class="td">
+                    <input type="text" id="person" name="person"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="padding-left: 5px;text-align: right;">
+                    联系方式：
+                </div>
+                <div class="td">
+                    <input type="text" id="phone" name="phone"/>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th" style="padding-left: 5px;text-align: right;">
+                    完成时间：
+                </div>
+                <div class="td">
+                    <input class="easyui-datetimebox" style="width:150px" id="completeTime" name="completeTime">
+                </div>
+            </div>
+                </div>
+            </form>
+    </div>
+    <div region="south" border="false" style="text-align: center; padding: 5px 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton button-save"
+           data-options="iconCls:'icon-save',plain:true" cy-click="ok">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton button-close"
+           data-options="iconCls:'icon-close',plain:true" cy-click="close_maintenanceInfo">关闭</a>
+    </div>
+</div>
+<script>
+    InitPage(["paraData","close_maintenanceInfo"], function ($scope) {
+        var sysCodeDic;
+        //查询数据
+        $scope.$ajaxRequest({
+            url: "data/deviceManage/chooseInit.json",
+            params: { OrgCode: $scope.UserInfo.OrgCode },
+            success: function (retData) {
+                sysCodeDic = retData.dicts;
+                $scope.$('#devComp').combobox('loadData', sysCodeDic["T_DIC_COMP"]);
+            },
+            fail: function (errTxt) {
+                alert(errTxt);
+            }
+        });
+        //获取数据
+        function getData() {
+            //获得数据
+            //没有查询到点位数据
+            var formData = $scope.$("#maintenanceForm").getParams();
+            return formData;
+        }
+
+        //确定
+        $scope.ok = function () {
+            //填写数据
+            //关闭窗口
+            console.log($scope.$("#maintenanceForm").getParams());//通过getParams方法获取数据
+            $scope.close_maintenanceInfo();
+        }
+        //清空
+        $scope.clear = function () {
+            //清空from
+            $scope.$("#maintenanceForm").form("clear");
+            $scope.dialog.dialog("close");
+        }
+    });
+</script>
+ <style>
+            #maintenanceForm .th{
+                width : 120px;
+                text-align:right;
+            }
+        </style>

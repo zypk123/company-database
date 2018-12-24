@@ -1,0 +1,1958 @@
+<div id="deviceMoniter" class="easyui-layout" style="width: 100%;height: 100%">
+	<!--左边列表区 -->
+	<div data-options="region:'west',border:false,title:'导航区域'" style="width: 270px">
+		<div class="easyui-layout">
+			<div data-options="region:'center',border:false">
+				<div id="leftLayout" class="easyui-layout">
+					<div data-options="region:'north',border:false">
+						<div>
+							<div id="attributeQryDiv" style="float: left;width:100%;">
+								<input id="searchSite" data-options="prompt:'请输入设备名称关键字'" style="width: 234px;height:30px">
+							</div>
+							<div id="spatialQryDiv" style="float: left;width:100%;display: none">
+								<div style="line-height: 25px">
+									<span>查询图层：</span>
+									<span>
+										<input class="easyui-combobox" id="cmbDevcieLayer"  style="width:164px" data-options="valueField:'id',textField:'text',multiple:true"/>
+									</span>
+								</div>
+								<div style="margin: 0 auto;width:120px">
+									<ul>
+										<li>
+											<a title="矩形选择" class="rect-draw-btn" cy-click="drawRect"></a>
+										</li>
+										<li>
+											<a title="圆形选择" class="circle-draw-btn"  cy-click="drawCircle"></a>
+										</li>
+										<li>
+											<a title="清除地图"  class="btn_clear" cy-click="drawClear"></a>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div style="position: absolute;right: 5px;top:5px">
+								<img src="themes/default/images/attributeQry.png"  title="切换到空间查询" cy-click="changeQryType" data-value="0"></img>
+							</div>
+						</div>
+					</div>
+					<div data-options="region:'center',border:false">
+						<div id="treeTab" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+							<div title="按机构">
+								<ul id="orgTree"></ul>
+							</div>
+							<div title="按道路">
+								<ul id="roadTree"></ul>
+							</div>
+						</div>
+					</div>
+					<div data-options="region:'east',border:false,width:'100%',closed:true">
+						<div class="easyui-layout">
+							<div data-options="region:'north',border:false">
+								<div style="float:left; color: blue;height: 25px; line-height: 25px;width:100%">
+									<div style="float:left;width:170px">
+										共<span id="searchResTotal">6</span>项结果：
+									</div>
+									<div style="float:left;">
+										<a class="easyui-linkbutton" data-options="iconCls:'icon-back'" style="height: 20px;" cy-click="searchGoBack">返回</a>
+									</div>
+								</div>
+							</div>
+							<div data-options="region:'center',border:false">
+								<div id="searchReusltDlst" style="width:93%;">
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--中间地图区域-->
+	<div id="mapContent" data-options="region:'center',border:true">
+		<div id="layerDock"></div>
+		<div style="width:100%; height:100%;" id="map"></div>
+		<div id="baseTool"></div>
+	</div>
+
+	<div id="searchResItemDiv" style="display: none">
+		<div class="searchResItem">
+			<div class="searchResItemXH">
+				2
+			</div>
+			<div class="searchResItemImg">
+				<img src="themes/default/images/device/01_1.png">
+			</div>
+			<div >
+				<span style="display:block"> 西景线(G214)K2056+500固定点香格里拉方向 </span>
+				<span style="display:block"> 昆明市交警支队一大队 </span>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['400']);
+
+		//地图对象
+		$scope.cyMap = null;
+		//设备图层
+		var deviceClusterLayer = null;
+		var isFirstLoadDevice = true;
+		var isNeedCluster = false;
+		var strategy = null;
+		//聚合的最小像素
+		var distance = 20;
+		//聚合的最小数量
+		var threshold = 2;
+		//最后一次地图滑动所处的等级
+		var lastMapLevel = 0;
+		/*存储地图上的features，格式为：
+		 {"设备类型1":{
+		 "设备ID1":"地物feature对象1",
+		 "设备ID2":"地物feature对象1",
+		 "设备ID3":"地物feature对象1"
+		 ....
+		 }
+		 ...
+		 }
+		 */
+		var layerFeatures = {};
+
+		var devSubObj = null;
+		//存放图层类型也即是设备类型
+		var defaultShowLayer = [];
+		//存放地图上加载的设备图层，key图层name值也即是设备类型，value图层layer对象
+		var devLayerLst = {};
+		//key状态类型代码，value是{name状态名称，value状态数目}对象
+		var devStatusPieData = null;
+		//当前选中的图层
+		var selectedLayer = {};
+		// //左边树的类型，org 或 road
+		// var currentTreeType="org";
+		//设备图层样式定义
+		var style = new OpenLayers.Style({
+			cursor : "pointer",
+			label : "${name}",
+			fontColor : "blue",
+			//title : "${orgName}",
+			pointRadius : "${radius}",
+			fillColor : "#ffcc66",
+			fillOpacity : 0.8,
+			strokeColor : "#cc6633",
+			strokeWidth : 2,
+			strokeOpacity : 0.8
+		}, {
+			context : {
+				// radius : function(feature) {
+				// return (feature.attributes["count"] / 100) + 10;
+				// }
+				radius : function(feature) {
+					var pix = 2;
+					if (feature.cluster) {
+						pix = Math.min(feature.attributes.count, 7) + 6;
+					}
+					return pix;
+				},
+				name : function(feature) {
+					var name;
+					if (feature.attributes.count > 1) {
+						name = feature.attributes.count;
+					} else {
+						name = 1;
+					}
+					return name;
+				}
+			}
+		});
+
+		$scope.changeQryType = function(event) {
+			//debugger;
+			var thisValue = $(this).attr("data-value");
+			if (thisValue == "0")//说明当前处在属性查询，点击后，要显示空间查询div
+			{
+				$scope.$("#attributeQryDiv").hide();
+				$scope.$("#spatialQryDiv").show();
+				$(this).attr("title","切换到属性查询");
+				$(this).attr("data-value", "1");
+				$(this).attr("src", "themes/default/images/spatialQry.png");
+				$scope.$("#leftLayout").layout("panel", "north").panel({
+					height : '73px'
+				});
+			} else if (thisValue == "1") {
+				$scope.$("#attributeQryDiv").show();
+				$scope.$("#spatialQryDiv").hide();
+				$(this).attr("title","切换到空间查询");
+				$(this).attr("data-value", "0");
+				$(this).attr("src", "themes/default/images/attributeQry.png");
+				$scope.$("#leftLayout").layout("panel", "north").panel({
+					height : '36px'
+				});
+			}
+			$scope.$("#leftLayout").layout("resize");
+		};
+
+		/**
+		 * 页面加载完后一些初始化处理
+		 */
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			//初始化输入框
+			initSearchTextbox();
+			//初始化地图
+			$scope.initMap();
+			//初始化基本操作按钮控件
+			initBaseTool();
+			//从服务端查询当前用户管辖的设备，用于绑定树，与统计图表显示
+			initQryDevice();
+		};
+
+		function initBaseTool() {
+			var gisBaseToolControl = new GisBaseToolControl({
+				mapObj : $scope.cyMap.map, //地图基本工具栏附加到的地图对象
+				dom : $scope.$("#baseTool")[0]
+			});
+		}
+
+		var allDevCache = null;
+
+		function initQryDevice() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceMoniter/queryDeviceInit",
+				params : {
+				},
+				success : function(result) {
+					allDevCache = result.devices;
+					loadOrgTree(result.orgTreeData);
+					loadRoadTree(result.roadTreeData);
+					//初始化图层控件
+					initLayerContrl(result.devices);
+					//绑定空间查询中图层选中combox
+					loadLayerCmb();
+					//定位到当前机构中心点
+					var currentUserOrgLonLat = result.currentUserOrgLonLat;
+					if (currentUserOrgLonLat != "") {
+						var lonLat = currentUserOrgLonLat.split(',');
+						var geo = new OpenLayers.Geometry.Point(lonLat[0], lonLat[1]);
+						$scope.cyMap.location(geo, false);
+					}
+					//订阅设备状态
+					subscribeDevStatus();
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function loadLayerCmb() {
+			$scope.$("#cmbDevcieLayer").combobox("loadData", devcieTypeLst);
+		}
+
+		//加载机构树菜单
+		function loadOrgTree(data) {
+			//加载机构树
+			$scope.$("#orgTree").tree({
+				// checkbox:true,
+				data : data,
+				formatter : function(node) {
+					var otherTxt = "";
+					var title = "";
+					var nodeType = node.attribute.nodeType;
+					if (nodeType == "org" || nodeType == "devType")//如果是设备类型，该节点上显示正常、故障、掉线总数
+					{
+						var totalNum = getNodeDevStatus(node);
+						otherTxt = "(<span class='nomalDev'>" + totalNum.nomalNum + "</span>/<span class='exceptionDev'>" + totalNum.exceptionNum + "</span>/<span class='bugDev'>" + totalNum.bugNum + "</span>/<span class='offlineDev'>" + totalNum.offlineNum + "</span>)";
+						title = node.text + "(" + totalNum.nomalNum + "/" + totalNum.exceptionNum + "/" + totalNum.bugNum + "/" + totalNum.offlineNum + ")";
+					}
+					var txt = node.text + otherTxt;
+					//return txt;
+					return '<span class="tree-node-txt" title="' + node.text + '">' + txt + '</span>';
+				},
+				onClick : $scope.treeNodeClick,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//收起全部节点
+					$(this).tree("collapseAll");
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					//$(this).tree("select", root.target);
+				}
+			});
+		}
+
+		function getNodeDevStatus(node) {
+			var children = node.children;
+			var num = {
+				nomalNum : 0,
+				offlineNum : 0,
+				bugNum : 0,
+				exceptionNum : 0
+			};
+			for (var i = 0; i < children.length; i++) {
+				var son = children[i];
+				if (son.attribute.nodeType != "device") {
+					var sonNum = getNodeDevStatus(son);
+					num.nomalNum += sonNum.nomalNum;
+					num.offlineNum += sonNum.offlineNum;
+					num.bugNum += sonNum.bugNum;
+					num.exceptionNum += sonNum.exceptionNum;
+				} else {
+					if (son.attribute.devStatus == "1") {
+						num.nomalNum++;
+					} else if (son.attribute.devStatus == "2") {
+						num.offlineNum++;
+					} else if (son.attribute.devStatus == "3") {
+						num.bugNum++;
+					} else if (son.attribute.devStatus == "4") {
+						num.exceptionNum++;
+					}
+				}
+			};
+			return num;
+		}
+
+		//加载道路树点位
+		function loadRoadTree(data) {
+			$scope.$("#roadTree").tree({
+				// checkbox:true,
+				data : data,
+				formatter : function(node) {
+					var otherTxt = "";
+					var nodeType = node.attribute.nodeType;
+					if (nodeType == "root" || nodeType == "roadType" || nodeType == "roadType" || nodeType == "devType")//如果是设备类型，该节点上显示正常、故障、掉线总数
+					{
+						var totalNum = getNodeDevStatus(node);
+						otherTxt = "(<span class='nomalDev'>" + totalNum.nomalNum + "</span>/<span class='exceptionDev'>" + totalNum.exceptionNum + "</span>/<span class='bugDev'>" + totalNum.bugNum + "</span>/<span class='offlineDev'>" + totalNum.offlineNum + "</span>)";
+					}
+					var txt = node.text + otherTxt;
+					//return txt;
+					return '<span class="tree-node-txt" title="' + node.text + '">' + txt + '</span>';
+				},
+				onClick : $scope.treeNodeClick,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//收起全部节点
+					$(this).tree("collapseAll");
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					//$(this).tree("select", root.target);
+					//删除第二级节点中的空节点
+					for (var index = 0; index < root.children.length; index++) {
+						var item = root.children[index];
+						if (!item.children || item.children.length == 0) {
+							//删除空节点
+							$(this).tree("pop", document.getElementById(item.domId));
+							index--;
+						}
+					}
+
+				}
+			});
+		}
+
+		//左击机构树点击事件
+		$scope.treeNodeClick = function(node) {
+			var attribute = node.attribute;
+			var nodeType = attribute["nodeType"];
+			if (nodeType == "device")//如果是设备节点，点击定位该点，并显示提示信息框
+			{
+				locationAndShowTip(attribute["devType"], node.id);
+			} else if (nodeType == "root" || nodeType == "org" || nodeType == "roadType" || nodeType == "road")//右边地图过滤显示点击的节点下的地物 root org
+			{
+				//debugger;
+				var treeId = getSelectedTreeId(getTabIndex());
+				var data = $(treeId).tree('getData', node.target);
+				filterDeviceByTree(data);
+			}
+		};
+
+		function locationAndShowTip(devType, devId) {
+			var thisNodeDevObj = allDevCache[devType][devId];
+			var lon = thisNodeDevObj.longitude;
+			var lat = thisNodeDevObj.latitude;
+			if (lon == 0 || lat == 0) {
+				alert("还没有为该设备配置经纬度无法定位！");
+				return;
+			}
+			queryShowTipInfo(thisNodeDevObj, null);
+		}
+
+		function queryShowTipInfo(thisNodeDevObj, geo) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceMoniter/getDeviceForMapTip",
+				params : {
+					deviceId : thisNodeDevObj.devId
+				},
+				success : function(result) {
+					if (geo == null) {
+						geo = new OpenLayers.Geometry.Point(thisNodeDevObj.longitude, thisNodeDevObj.latitude);
+						$scope.cyMap.location(geo);
+					}
+					//弹出提示框
+					var tipInfo = result;
+					//返回值包含：机构名称、监控方向、检定情况、图片URL
+					//其他提示信息从缓存中取
+					tipInfo.devId = thisNodeDevObj.devId;
+					tipInfo.devNbr = thisNodeDevObj.devNbr;
+					tipInfo.devName = thisNodeDevObj.devName;
+					tipInfo.devType = thisNodeDevObj.devType;
+					tipInfo.siteCode = thisNodeDevObj.siteCode;
+					tipInfo.siteName = thisNodeDevObj.siteName;
+					tipInfo.devStatus = thisNodeDevObj.devStatus;
+					tipInfo.latestHeartTime = thisNodeDevObj.latestHeartTime;
+					tipInfo.timeDiff = thisNodeDevObj.timeDiff;
+					tipInfo.latestUpDataTime = thisNodeDevObj.latestUpDataTime;
+					// tipInfo.snapTotal = thisNodeDevObj.snapTotal;
+					// tipInfo.snapBackLogPercent = thisNodeDevObj.snapBackLogPercent;
+					// tipInfo.latestCalibrationTime = thisNodeDevObj.latestCalibrationTime;
+					//该设置支持的业务功能
+					showFixTipWnd(tipInfo);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		//左击道路点位树点击事件
+		$scope.roadTreeNodeClick = function(node) {
+			var nodeType = node.attribute.nodeType;
+			if (nodeType != "site")
+				return;
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceMoniter/getSiteLonLatBySiteId",
+				params : {
+					siteId : node.id
+				},
+				success : function(result) {
+					if (result == "") {
+						alert("没有给点位配置经纬度信息，无法定位！");
+					}
+					var lonLat = result.split(',');
+					var geo = new OpenLayers.Geometry.Point(lonLat[0], lonLat[1]);
+					$scope.cyMap.location(geo);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		};
+
+		function subscribeDevStatus() {
+			//订阅设备状态
+			devSubObj = new Subsribe({
+				type : SubsribeType.deviceMonitor,
+				onMessage : onReceiveDevStatus
+			});
+		}
+
+		function onReceiveDevStatus(data)//接收到状态消息
+		{
+			var data = $.parseJSON(data);
+			var devsForType = allDevCache[data.deviceType];
+			if (devsForType == null) {
+				return;
+			}
+			var device = devsForType[data.deviceId];
+			if (device != null) {
+				device.timeDiff = data.timeDiff;
+				device.latestHeartTime = formatDateTimeStamp(data.statusUpdateTime);
+				device.latestUpDataTime = formatDateTimeStamp(data.lastUploadTime);
+				//device.snapTotal = data.vehicleTotal;
+				//对于工控机式的系统，该项有值；智能相机式无值
+				device.statusDetails = data.statusDetails;
+				//对于工控机式系统，该项无值；智能相机式有值
+				device.componentStatus = data.componentStatus;
+				var oldDevStatus = device.devStatus;
+				if (oldDevStatus != data.statusType)//如果原先的设备状态和这次的设备状态不一致，则要更新状态值，同时更新图标
+				{
+					//更新allDevCache中该设备的状态
+					device.devStatus = data.statusType;
+					//更新地图图标
+					//debugger;
+					updateMapFeature(data.deviceId, device.devType, data.statusType);
+					//缓存的地物
+					updateCacheFeature(data.deviceId, device.devType, data.statusType);
+					//更新机构树
+					updateTree('#orgTree', data);
+					//更新道路树
+					updateTree('#roadTree', data);
+				}
+			}
+		}
+
+		function updateTree(treeId, data) {
+			//debugger;
+			//更新机构树
+			var node = $(treeId).tree('find', data.deviceId);
+			if (node != null) {
+				var upObj = {
+					target : node.target
+				};
+				var attributeNew = node.attribute;
+
+				//则要更新状态值
+				attributeNew.devStatus = data.statusType;
+				//更新图标
+				upObj.iconCls = "icon-" + attributeNew.devType + "-" + data.statusType;
+
+				upObj.attribute = attributeNew;
+				//更新树节点，检查下父节点数字可变了
+				$(treeId).tree('update', upObj);
+
+				updateParentNode(treeId, node);
+			}
+		}
+
+		function updateParentNode(treeId, node) {
+			var parentNode = $(treeId).tree('getParent', node.target);
+			if (parentNode) {
+				$(treeId).tree('update', {
+					target : parentNode.target
+				});
+				updateParentNode(treeId, parentNode);
+			}
+		}
+
+		/**
+		 *把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		 */
+		function formatDateTimeStamp(dateTimeStamp) {
+			if (dateTimeStamp == undefined) {
+				return "";
+			}
+			var newDate = new Date();
+			newDate.setTime(dateTimeStamp);
+			return newDate.format('yyyy-MM-dd hh:mm:ss');
+		}
+
+		//delete
+		function changeDevStatusPie(oldStauts, newStatus) {
+			devStatusPieData[oldStauts].value--;
+			devStatusPieData[newStatus].value++;
+			showPie();
+		}
+
+		function updateMapFeature(devId, devType, devStatus) {
+			var devFeatures = deviceClusterLayer.getFeaturesByAttribute("devId", devId);
+			if (devFeatures != null && devFeatures.length > 0) {
+
+				var devFeature = devFeatures[0];
+				devFeature.attributes["devStatus"] = devStatus;
+				//更新图标
+				devFeature.style.externalGraphic = 'themes/default/images/device/' + devType + "_" + devStatus + ".png";
+				//deviceClusterLayer.addFeatures(devFeature.clone());
+				//deviceClusterLayer.removeFeatures(devFeature);
+				deviceClusterLayer.drawFeature(devFeature);
+			}
+		}
+
+		/**
+		 *更新缓存的地物状态
+		 */
+		function updateCacheFeature(devId, devType, devStatus) {
+			if (layerFeatures[devType]) {
+				var feature = layerFeatures[devType][devId];
+				if (feature) {
+					feature.attributes["devStatus"] = devStatus;
+					//更新图标
+					feature.style.externalGraphic = 'themes/default/images/device/' + devType + "_" + devStatus + ".png";
+				}
+			}
+		}
+
+
+		$scope.close = function() {
+			if (devSubObj) {
+				devSubObj.remove();
+			}
+			closeTipInfoDialog();
+		};
+		$scope.leave = function() {
+			if (devSubObj) {
+				devSubObj.remove();
+			}
+			closeTipInfoDialog();
+		};
+		$scope.enter = function() {
+			subscribeDevStatus();
+		};
+		function closeTipInfoDialog() {
+			var tipInfoDialog = $scope.$getDialog("tipInfoDialog");
+			if (tipInfoDialog != undefined && tipInfoDialog != null) {
+				tipInfoDialog.dialog("close");
+			}
+		}
+
+		var drawCtrl = null;
+		var boxLayer = null;
+		var highlightLayer;
+		$scope.initMap = function() {
+			//加载地图
+			$scope.cyMap = new CYMap($scope.$("#map")[0], {
+				mapMoveendCallBack : $scope.mapMoveendCallBack
+			});
+			// $scope.cyMap.map.events.register("featureclick", null, $scope.featureClickCallBack);
+			// $scope.cyMap.map.events.register("featureover", null, $scope.featureoverClickCallBack);
+			// $scope.cyMap.map.events.register("featureout", null, $scope.featureoutClickCallBack);
+			var strategy = new OpenLayers.Strategy.Cluster();
+			strategy.distance = distance;
+			strategy.threshold = threshold;
+			deviceClusterLayer = new OpenLayers.Layer.Vector('deviceClusterLayer', {
+				strategies : [strategy],
+				styleMap : new OpenLayers.StyleMap({
+					"default" : style,
+					"select" : {
+						cursor : "pointer"
+					}
+				})
+			});
+			deviceClusterLayer.events.register("featureclick", null, $scope.featureClickCallBack);
+			deviceClusterLayer.events.register("featureover", null, $scope.featureoverClickCallBack);
+			deviceClusterLayer.events.register("featureout", null, $scope.featureoutClickCallBack);
+			$scope.cyMap.map.addLayer(deviceClusterLayer);
+
+			boxLayer = new OpenLayers.Layer.Vector("BoxLayer");
+			highlightLayer = new OpenLayers.Layer.Vector("highlightLayer");
+			$scope.cyMap.map.addLayer(boxLayer);
+			$scope.cyMap.map.addLayer(highlightLayer);
+			drawCtrl = {
+				drawCircle : new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {
+					handlerOptions : {
+						sides : 36, //一个圆
+						irregular : true
+					}
+				}),
+				drawRect : new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {
+					handlerOptions : {
+						sides : 4, //矩形
+						irregular : true
+					}
+				})
+			};
+			for (var ctl in drawCtrl) {
+				drawCtrl[ctl].events.on({
+					"featureadded" : drawFeatureComplete
+				});
+				$scope.cyMap.map.addControl(drawCtrl[ctl]);
+			}
+
+			lastMapLevel = $scope.cyMap.map.zoom + mapTileMinLevel;
+		};
+
+		$scope.drawRect = function() {
+			drawCtrl.drawRect.activate();
+			boxLayer.removeAllFeatures();
+		};
+		$scope.drawCircle = function() {
+			drawCtrl.drawCircle.activate();
+			boxLayer.removeAllFeatures();
+		};
+		$scope.drawClear = function() {
+			boxLayer.removeAllFeatures();
+		};
+		function drawFeatureComplete(feature) {
+			//debugger;
+			var feat = boxLayer.features[0];
+			var resFs = [];
+			var selectedQryLayerArry = getSelectedQryLayer();
+			var filterByType = {};
+			if (selectedQryLayerArry == null || selectedQryLayerArry.length == 0) {
+				//查询所有图层的数据
+				for (var everyType in allDevCache) {
+					$.extend(filterByType, allDevCache[everyType]);
+				}
+			} else {
+				//只查询选中的图层
+				for (var stQryLayer in selectedQryLayerArry) {
+					var devTemp = allDevCache[selectedQryLayerArry[stQryLayer]];
+					if (devTemp) {
+						$.extend(filterByType, devTemp);
+					}
+				}
+			}
+			for (var f in filterByType) {
+				var fObj = filterByType[f];
+				var p = new OpenLayers.Geometry.Point(fObj.longitude, fObj.latitude);
+				p.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+				if (feat.geometry.containsPoint(p)) {
+					resFs.push(fObj);
+				}
+			}
+			this.deactivate();
+			bindDevieQryResLst(resFs);
+			showQryResultPanel();
+		}
+
+		function getSelectedQryLayer() {
+			return $scope.$("#cmbDevcieLayer").combobox("getValues");
+		}
+
+		function createDevLayer(layerType) {
+			var deviceVcLayer = new OpenLayers.Layer.Vector(layerType);
+			$scope.cyMap.map.addLayer(deviceVcLayer);
+			return deviceVcLayer;
+		}
+
+		/**
+		 *地图移动回调事件，地图范围变化需要重新加载设备点
+		 */
+		$scope.mapMoveendCallBack = function() {
+			if (isFirstLoadDevice) {//如果第一次则不需要管的
+				isFirstLoadDevice = false;
+				return;
+			}
+			var currentLevle = $scope.cyMap.map.zoom + mapTileMinLevel;
+
+			if (currentLevle == lastMapLevel) {
+				return;
+			}
+			var isNeedClusterOld = isNeedCluster;
+			$scope.checkNeedCluster(currentLevle);
+			if (isNeedCluster)//如果当前需要聚合，重新聚合
+			{
+				deviceClusterLayer.options.strategies[0].activate();
+				resetCluster();
+			} else {
+				//如果不需要聚合，在判断上一次是否是聚合，如果是聚合则要解除聚合，如果上一次就已经不是聚合状态了，则不用管了
+				if (isNeedClusterOld) {
+					deviceClusterLayer.options.strategies[0].deactivate();
+					resetCluster();
+				}
+			}
+			lastMapLevel = currentLevle;
+		};
+
+		$scope.featureoverClickCallBack = function(event) {
+			if (event.feature.attributes.count) {
+				return;
+			}
+			//debugger;
+			var orgLon = event.feature.geometry.x;
+			var orgLat = event.feature.geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(orgLon, orgLat);
+			var tip = "";
+			var tipOfset = event.feature.style.graphicXOffset + 20;
+			tip = event.feature.attributes["devName"];
+			if (tip == undefined) {
+				return;
+			}
+			var pop = new OpenLayers.Popup.Anchored("chicken", centerLonLat, new OpenLayers.Size(160, 30), tip, {
+				size : new OpenLayers.Size(5, -10),
+				offset : new OpenLayers.Pixel(tipOfset, 10)
+			}, true);
+			pop.relativePosition = "br";
+			pop.setOpacity(0.7);
+			pop.setBorder("1px solid gray");
+			$scope.cyMap.map.addPopup(pop);
+			event.feature.attributes["pop"] = pop;
+		};
+
+		$scope.featureoutClickCallBack = function(event) {
+			if (event.feature.attributes.count) {
+				return;
+			}
+			//event.feature.style.cursor = "";
+			var pop = event.feature.attributes["pop"];
+			if (pop != undefined) {
+				$scope.cyMap.map.removePopup(pop);
+			}
+		};
+		/**
+		 *地图上图标点击事件
+		 */
+		$scope.featureClickCallBack = function(event) {
+			if (event.feature.attributes.count) {
+				return;
+			}
+			var orgLon = event.feature.geometry.x;
+			var orgLat = event.feature.geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(orgLon, orgLat);
+			//centerLonLat.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+			var centerPix = $scope.cyMap.map.getPixelFromLonLat(centerLonLat);
+			var devId = event.feature.attributes["devId"];
+			var devType = event.feature.attributes["devType"];
+			//弹出设备信息框
+			var devsForType = allDevCache[devType];
+			if (devsForType == null) {
+				return;
+			}
+			queryShowTipInfo(devsForType[devId], event.feature.geometry);
+		};
+
+		/**
+		 *判断是否需要聚合
+		 */
+		$scope.checkNeedCluster = function(currentLevle) {
+			if (currentLevle <= clusterLevel)//仍然聚合显示
+			{
+				isNeedCluster = true;
+			} else {
+				isNeedCluster = false;
+			}
+		};
+		/**
+		 *查询设备
+		 */
+		$scope.queryDevice = function() {
+			var currentLevle = $scope.cyMap.map.zoom + mapTileMinLevel;
+			var isNeedClusterOld = isNeedCluster;
+			$scope.checkNeedCluster(currentLevle);
+			if (isNeedCluster && isNeedClusterOld == isNeedCluster)//如果当前需要聚合，且原先也是聚合，则不需要再去服务端查询设备了
+			{
+				return;
+			}
+			var currentExtent = $scope.cyMap.map.getExtent();
+			currentExtent.transform($scope.cyMap.map.getProjectionObject(), $scope.cyMap.map.displayProjection);
+			//获取设备ajaxRquest
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceMoniter/queryDeviceForMap",
+				params : {
+					isNeedCluster : isNeedCluster,
+					left : currentExtent.left,
+					bottom : currentExtent.bottom,
+					right : currentExtent.right,
+					top : currentExtent.top
+				},
+				success : function(result) {
+					//console.log(result);
+					$scope.loadDevice(result);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+			//测试用，实际要删除的
+			//$scope.loadDevice();
+
+		};
+		/**
+		 *将查询的设备在地图上显示
+		 */
+		$scope.loadDevice = function(result) {
+			deviceClusterLayer.removeAllFeatures();
+			removeAllDevLayer();
+			devLayerLst = {};
+			if (result.length == 0) {
+				return;
+			}
+			var feaures = null;
+			if (result[0].devNbr == null || result[0].devNbr == undefined)//说明是聚合
+			{
+				feaures = $scope.createClusterFeature(result);
+				deviceClusterLayer.addFeatures(feaures);
+			} else {
+				feaures = $scope.createDevFeature(result);
+			}
+			//deviceVcLayer.addFeatures(feaures);
+
+		};
+		function removeAllDevLayer() {
+			//debugger;
+			if (!$.isEmptyObject(devLayerLst)) {
+				for (var lay in devLayerLst) {
+					$scope.cyMap.map.removeLayer(devLayerLst[lay]);
+				}
+			}
+		}
+
+		/**
+		 *创建聚合设备
+		 */
+		$scope.createClusterFeature = function(result) {
+			var features = [];
+			for (var i = 0; i < result.length; i++) {
+				var p = new OpenLayers.Geometry.Point(result[i].longitude, result[i].latitude);
+				p.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+				var f = new OpenLayers.Feature.Vector(p, {
+					orgid : result[i].orgId,
+					orgName : $scope.$getOrgName(result[i].orgId),
+					count : result[i].total,
+					lon : result[i].longitude,
+					lat : result[i].latitude
+				});
+				features.push(f);
+			};
+			return features;
+		};
+
+		/**
+		 *创建设备图层，如果图层显示列表中不包含该图层name，则把图层设置为不显示状态
+		 */
+		function createAndStoreDevLaye(layerName) {
+			var layer = null;
+			if (!$.isEmptyObject(devLayerLst)) {
+				for (var ly in devLayerLst) {
+					if (ly == layerName) {
+						layer = devLayerLst[ly];
+					}
+				}
+			}
+			if (layer == null) {
+				layer = createDevLayer(layerName);
+				devLayerLst[layerName] = layer;
+			}
+			var index = $.inArray(layerName, defaultShowLayer);
+			if (index > -1) {
+				//layer.display(true);
+				layer.setVisibility(true);
+			} else {
+				//layer.display(false);
+				layer.setVisibility(false);
+				//layer.redraw();
+			}
+			return layer;
+		}
+
+		/**
+		 *创建设备feature
+		 */
+		$scope.createDevFeature = function(result) {
+			//debugger;
+			var features = [];
+			for (var i = 0; i < result.length; i++) {
+				var devNbr = result[i].devNbr;
+				var devStatus = result[i].devStatus;
+				var node = $('#devTree').tree('find', devNbr);
+				if (node == null) {//如果该设备在树上不存在则在地图上也不显示
+					continue;
+				} else {
+					devStatus = node.attribute.devStatus;
+					//使用树上的设备状态
+				}
+				var devType = result[i].devType;
+				var layer = createAndStoreDevLaye(devType);
+				var p = new OpenLayers.Geometry.Point(result[i].longitude, result[i].latitude);
+				p.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+				//根据设备类型和状态显示不同样式与颜色的图标
+				var currentStyle = devIcon.getDevIcon(devType, devStatus);
+				//添加鼠标提到图标上显示设备名称
+				//currentStyle.title = result[i].devName;
+				//currentStyle.display = "none";
+				var f = new OpenLayers.Feature.Vector(p, {
+					devNbr : result[i].devNbr,
+					devType : result[i].devType,
+					devStatus : result[i].devStatus,
+					siteId : result[i].siteId,
+					devName : result[i].devName
+				}, currentStyle);
+
+				features.push(f);
+				layer.addFeatures(f);
+			};
+			return features;
+		};
+
+		var devcieTypeLst = [];
+		//组装当前用户拥有的设备类型，用于绑定空间查询图层combox
+		function fillDeviceTypeData(devType, devName) {
+			var devTypeObj = {};
+			devTypeObj["id"] = devType;
+			devTypeObj["text"] = devName;
+			devcieTypeLst.push(devTypeObj);
+		}
+
+		function initLayerContrl(devTypeList) {
+			//获取该用户能够拥有的设备图层
+			var showItemsStr = localStorage.getItem("deviceMoniter-showItem");
+			var showItemLocalStorage = $.parseJSON(showItemsStr);
+
+			var notShowItemsStr = localStorage.getItem("deviceMoniter-notShowItem");
+			var notShowItemLocalStorage = $.parseJSON(notShowItemsStr);
+
+			var showItem = [];
+			var notShowItem = [];
+			//说明用户还没有进行个性话设置，以数据库中读取出来的设备类型为准
+			if (showItemLocalStorage == null && notShowItemLocalStorage == null) {
+				for (var devType1 in devTypeList) {
+					var devName1 = $scope.$getCodeName("400", devType1);
+					fillDeviceTypeData(devType1, devName1);
+					showItem.push(new LayerItem(devType1, devType1, devName1, "themes/default/images/layers/" + devType1 + ".png", "themes/default/images/layers/" + devType1 + "_1.png", false, createKakouSubItem(devType1, false)));
+				}
+			} else {
+				for (var devType2 in devTypeList) {
+					var devName2 = $scope.$getCodeName("400", devType2);
+					fillDeviceTypeData(devType2, devName2);
+					if (showItemLocalStorage[devType2])//如果在显示的存储对象中，则显示，同时默认是否显示根据存储的设置来
+					{
+						var isShow = showItemLocalStorage[devType2].isDefaultShow;
+						showItem.push(new LayerItem(devType2, devType2, devName2, "themes/default/images/layers/" + devType2 + ".png", "themes/default/images/layers/" + devType2 + "_1.png", showItemLocalStorage[devType2].isDefaultShow, createKakouSubItem(devType2, isShow)));
+						if (isShow)//todo
+						{
+							defaultShowLayer.push(devType2);
+						}
+					} else if (notShowItemLocalStorage[devType2])//如果在不显示的存储对象中，则不显示
+					{
+						notShowItem.push(new LayerItem(devType2, devType2, devName2, "themes/default/images/layers/" + devType2 + ".png", "themes/default/images/layers/" + devType2 + "_1.png", notShowItemLocalStorage[devType2].isDefaultShow, createKakouSubItem(devType2, notShowItemLocalStorage[devType2].isDefaultShow)));
+					} else//数据库中新有的图层类型
+					{
+						showItem.push(new LayerItem(devType2, devType2, devName2, "themes/default/images/layers/" + devType2 + ".png", "themes/default/images/layers/" + devType2 + "_1.png", false, createKakouSubItem(devType2, false)));
+					}
+				}
+			}
+
+			var domDiv = $scope.$("#layerDock")[0];
+			var layerControl = new LayerControl({
+				dom : domDiv,
+				showItem : showItem,
+				notShowItem : notShowItem,
+				setItemImgUrl : 'themes/default/images/layers/set_1.png',
+				onLayerClick : layerItemClick,
+				onLayerSetComplete : layerSetComplete,
+				saveKey : "deviceMoniter"
+			});
+			changeLayerControlPostion();
+		}
+
+		function changeLayerControlPostion() {
+			var dockWd = $scope.$("#layerDock").width();
+			//var dockWd = layerControl.dockWidth;
+			$scope.$("#layerDock").css("margin-left", -dockWd / 2);
+		}
+
+		function createKakouSubItem(layerType, isShow) {
+			var subItem = [];
+			if (layerType == "01") {
+				subItem.push(new LayerItem("011", "011", "交警自建卡口", "themes/default/images/layers/011.png", "themes/default/images/layers/011_1.png", isShow));
+				subItem.push(new LayerItem("012", "012", "公安建设卡口", "themes/default/images/layers/012.png", "themes/default/images/layers/012_1.png", isShow));
+				subItem.push(new LayerItem("013", "013", "社会建设卡口", "themes/default/images/layers/013.png", "themes/default/images/layers/013_1.png", isShow));
+			}
+			return subItem;
+		}
+
+		function layerSetComplete(notShowItem, showItem) {
+			//重置图层控制条的位置
+			changeLayerControlPostion();
+			//对于非默认显示的图层，则删除在地图上显示的地物
+			removeFtOfNotDefaultShowLayer(showItem);
+			//对于不显示的图层，同时去除地图上的显示
+			removeFtOfNotShowLayer(notShowItem);
+			resetCluster();
+		}
+
+		/**
+		 * 对于非默认显示的图层，则删除在地图上显示的地物
+		 */
+		function removeFtOfNotDefaultShowLayer(showItem) {
+			if (showItem == null || showItem.length == 0) {
+				return;
+			}
+			for (var j in showItem) {
+				var itemSh = showItem[j];
+				if (!itemSh.isLayerDefaultShow) {
+					delete layerFeatures[itemSh.layerType];
+				}
+			}
+		}
+
+		/**
+		 * 对于不显示的图层，则删除在地图上显示的地物
+		 */
+		function removeFtOfNotShowLayer(notShowItem) {
+			if (notShowItem == null || notShowItem.length == 0) {
+				return;
+			}
+			for (var i in notShowItem) {
+				var item = notShowItem[i];
+				delete layerFeatures[item.layerType];
+			}
+		}
+
+		function layerItemClick(isLayerSelected, layerType) {
+			//debugger;
+			if (isLayerSelected) {
+				var needDevices = getNeedDevice(layerType.substr(0, 2));
+				if (layerType.length == 2) {
+					//addFeatureToLayer(layerType);
+					//保存选中的图层layerType
+					if (layerType == "01")//如果是卡口图层选中，则下属三个子图层都要包含起来
+					{
+						selectedLayer[layerType] = ["011", "012", "013"];
+					} else {
+						selectedLayer[layerType] = layerType;
+					}
+					addDeviceToLayer(needDevices, layerType);
+				} else {
+					//对于子图层保存其父图层的type作为key与子图层的type
+					var parentLayerType = layerType.substr(0, 2);
+					if (!selectedLayer[parentLayerType]) {
+						selectedLayer[parentLayerType] = [];
+					}
+					selectedLayer[parentLayerType].push(layerType);
+					createSubFeature(layerType, needDevices);
+				}
+			} else {
+				if (layerType.length == 2) {
+					delete selectedLayer[layerType];
+					delete layerFeatures[layerType];
+				} else {
+					var parentLayerType = layerType.substr(0, 2);
+					var subType = layerType.substr(2, 1);
+					//移除选中的图层
+					var parentLayerSons = selectedLayer[parentLayerType];
+					var index = $.inArray(parentLayerSons, layerType);
+					if (index > -1) {
+						parentLayerSons.slice(index, 1);
+					}
+
+					var devFs = layerFeatures[parentLayerType];
+					for (var d in devFs) {
+						var ownership = devFs[d].attributes["ownership"];
+						if (ownership == subType) {
+							delete devFs[d];
+						}
+					}
+				}
+			}
+			resetCluster();
+		}
+
+		function createSubFeature(layerType, needDevices) {
+			var parentLayerType = layerType.substr(0, 2);
+			var subType = layerType.substr(2, 1);
+			//var devsForType = allDevCache[parentLayerType];
+			if (needDevices == null) {
+				return;
+			}
+			for (var dev in needDevices) {
+				var devObj = needDevices[dev];
+				if (devObj.ownership == subType) {
+					addToLayerFeatures(parentLayerType, devObj);
+				}
+			}
+		}
+
+		function getTabIndex() {
+			var tab = $('#treeTab').tabs('getSelected');
+			var index = $('#treeTab').tabs('getTabIndex', tab);
+			return index;
+		}
+
+		function getSelectedTreeId(index) {
+			var treeId = "#orgTree";
+			if (index == 1) {
+				treeId = "#roadTree";
+			}
+			return treeId;
+		}
+
+		/**
+		 *根据图层类型与当前选中的机构下的设备进行过滤出符合条件的设备
+		 */
+		function getNeedDevice(layerType) {
+			//debugger;
+			var treeId = getSelectedTreeId(getTabIndex());
+			var node = $(treeId).tree('getSelected');
+			var devsForType = {};
+			if (node == null) {//说明任何节点没选择，则显示所有
+				devsForType = allDevCache[layerType];
+			} else {
+				var nodeType = node.attribute.nodeType;
+				var orgPrivCode = node.attribute.orgPrivCode;
+				//选择的是根节点、设备类型节点、设备节点，则显示所有
+				if (nodeType == "root" || nodeType == "devType" || nodeType == "device" || orgPrivCode == $scope.UserInfo.orgPrivCode) {
+					devsForType = allDevCache[layerType];
+				} else//获取该节点下，这种类型的设备
+				{
+					var data = $(treeId).tree('getData', node.target);
+					var devices = getTreeDevice(data);
+					if (!$.isEmptyObject(devices)) {
+						var treeDeviceOfType = devices[layerType];
+						if (treeDeviceOfType) {
+							var allDeviceOfType = allDevCache[layerType];
+							for (var d in treeDeviceOfType) {
+								var deviceId = treeDeviceOfType[d];
+								devsForType[deviceId] = allDeviceOfType[deviceId];
+							}
+						}
+					}
+				}
+			}
+			return devsForType;
+		}
+
+		/**
+		 *根据点击的树节点过滤地图显示
+		 * 原理：1、清空地图上缓存的地物
+		 *     2、查询该节点下所有的设备，按照类型分组
+		 *     3、对每种类型的设备，着个看其是否存在当前可见的图层列表中，如果不存在，则这种类型的设备忽略掉，
+		 * 如果存在，a:如果存在的图层是子图层，则要进一步判断设备的建设归属是否是子图层，如果是则保留这个设备
+		 *        b：如果就是一级图层，则该类型下的所有设备都保留下来
+		 *     4、把这些最终保留下来的设备，着个重新创建地物对象
+		 *     5、地物对象加载到图层中，然后聚合地物
+		 */
+		function filterDeviceByTree(selectedNodeAndSonData) {
+			//debugger;
+			//清空地图上聚合缓存
+			layerFeatures = {};
+			//获取当前节点下各种类型的设备集合
+			var devices = getTreeDevice(selectedNodeAndSonData);
+
+			var filterDevices = {};
+			//遍历每种类型的设备看其图层是否启用，如果图层启用则留下这些设备，如果没启用则丢掉这些设备
+			for (var d in devices) {
+				if (selectedLayer[d]) {
+					var treeDeviceOfType = devices[d];
+					var allDeviceOfType = allDevCache[d];
+					var layerValue = selectedLayer[d];
+					filterDevices[d] = {};
+					//如果该选中图层的value是一个数组说明是有子图层
+					if ($.isArray(layerValue)) {
+						//判断owenship
+						var subTypeArry = [];
+						for (var sub in layerValue) {
+							var subType = layerValue[sub].substr(2, 1);
+							subTypeArry.push(subType);
+						}
+						for (var j in treeDeviceOfType) {
+							var deviceId = treeDeviceOfType[j];
+							var devObj = allDeviceOfType[deviceId];
+							if ($.inArray(devObj.ownership, subTypeArry) > -1) {
+								filterDevices[d][deviceId] = allDeviceOfType[deviceId];
+							}
+						}
+					} else {
+						for (var i in treeDeviceOfType) {
+							var deviceId = treeDeviceOfType[i];
+							filterDevices[d][deviceId] = allDeviceOfType[deviceId];
+						}
+
+					}
+
+				}
+			}
+			if ($.isEmptyObject(filterDevices)) {
+				return;
+			}
+			for (var fDev in filterDevices) {
+				addDeviceToLayer(filterDevices[fDev], fDev);
+			}
+			resetCluster();
+		}
+
+		/**
+		 *获取选中的节点下的所有设备
+		 */
+		function getTreeDevice(selectedNodeAndSonData) {
+			var deviceObj = {};
+			if (selectedNodeAndSonData && selectedNodeAndSonData.children) {
+				var children = selectedNodeAndSonData.children;
+				for (var d in children) {
+					var nodeType = children[d].attribute.nodeType;
+					if (nodeType == "org" || nodeType == "roadType" || nodeType == "road") {
+						var temObj = getTreeDevice(children[d]);
+						if (temObj) {
+							for (var t in temObj) {
+								var typeTem = temObj[t];
+								if (!deviceObj[t]) {
+									deviceObj[t] = [];
+								}
+								for (var tt in typeTem) {
+									deviceObj[t].push(typeTem[tt]);
+								}
+							}
+						}
+					} else if (nodeType == "devType") {
+						for (var dev in children[d].children) {
+							var deviceNode = children[d].children[dev];
+							if (!deviceObj[deviceNode.attribute.devType]) {
+								deviceObj[deviceNode.attribute.devType] = [];
+							}
+							deviceObj[deviceNode.attribute.devType].push(deviceNode.id);
+						}
+					}
+				}
+			}
+			return deviceObj;
+		}
+
+		// function addFeatureToLayer(layerType) {
+		// var devsForType = allDevCache[layerType];
+		// if (devsForType == null) {//如果该设备在树上不存在则在地图上也不显示
+		// return;
+		// }
+		// for (var dev in devsForType) {
+		// var devObj = devsForType[dev];
+		// addToLayerFeatures(layerType, devObj);
+		// };
+		// }
+
+		function addDeviceToLayer(devsForType, layerType) {
+			if (devsForType == null) {//如果该设备在树上不存在则在地图上也不显示
+				return;
+			}
+			for (var dev in devsForType) {
+				var devObj = devsForType[dev];
+				addToLayerFeatures(layerType, devObj);
+			};
+		}
+
+		function getDeviceIcon(devType, devStatus) {
+			var style_mark = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+			style_mark.cursor = "pointer";
+			style_mark.graphicWidth = 20;
+			style_mark.graphicHeight = 20;
+			var offsetX = 0;
+			switch(devType) {
+			case "01":
+				offsetX = 10;
+				break;
+			case "02":
+				offsetX = 10;
+				break;
+			case "03":
+				offsetX = -10;
+				break;
+			case "04":
+				offsetX = 15;
+				break;
+			case "05":
+				offsetX = 10;
+				break;
+			case "06":
+				offsetX = 10;
+				break;
+			case "07":
+				offsetX = 10;
+				break;
+			case "08":
+				offsetX = 20;
+				break;
+			case "09":
+				offsetX = 10;
+				break;
+			}
+			style_mark.graphicXOffset = offsetX;
+			style_mark.graphicYOffset = -style_mark.graphicHeight;
+			style_mark.fillOpacity = 1;
+			style_mark.externalGraphic = 'themes/default/images/device/' + devType + "_" + devStatus + ".png";
+			return style_mark;
+		}
+
+		function addToLayerFeatures(layerType, devObj) {
+			var p = new OpenLayers.Geometry.Point(devObj.longitude, devObj.latitude);
+			p.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+			//根据设备类型和状态显示不同样式与颜色的图标
+			//var currentStyle = devIcon.getDevIcon(devObj.devType, devObj.devStatus);
+			var currentStyle = getDeviceIcon(devObj.devType, devObj.devStatus);
+			var f = new OpenLayers.Feature.Vector(p, {
+				devId : devObj.devId,
+				devNbr : devObj.devNbr,
+				devType : devObj.devType,
+				devStatus : devObj.devStatus,
+				devName : devObj.devName,
+				ownership : devObj.ownership
+			}, currentStyle);
+
+			if (!layerFeatures[layerType]) {
+				layerFeatures[layerType] = {};
+			}
+			layerFeatures[layerType][devObj.devId] = f;
+		}
+
+		function resetCluster() {
+			deviceClusterLayer.removeAllFeatures();
+			var fs = [];
+			for (var type in layerFeatures) {
+				var typeF = layerFeatures[type];
+				for (var d in typeF) {
+					fs.push(typeF[d]);
+				}
+			}
+			deviceClusterLayer.addFeatures(fs);
+		}
+
+		/**
+		 * 初始化机构点位树
+		 */
+		function initOrgTree(data) {
+			//加载机构点位树
+			$scope.$("#devTree").tree({
+				data : data,
+				formatter : function(node) {
+					var otherTxt = "";
+					if (node.attribute && node.attribute.nodeType == "DEVICE_TYPE")//如果是设备类型，该节点上显示正常、故障、掉线总数
+					{
+						var children = node.children;
+						var nomalNum = 0;
+						var offlineNum = 0;
+						var bugNum = 0;
+						var exceptionNum = 0;
+						for (var i = 0; i < children.length; i++) {
+							var son = children[i];
+							if (son.attribute.devStatus == "1") {
+								nomalNum++;
+							} else if (son.attribute.devStatus == "2") {
+								offlineNum++;
+							} else if (son.attribute.devStatus == "3") {
+								bugNum++;
+							} else if (son.attribute.devStatus == "4") {
+								exceptionNum++;
+							}
+						};
+						otherTxt = "(<span class='nomalDev'>" + nomalNum + "</span>/<span class='exceptionDev'>" + exceptionNum + "</span>/<span class='bugDev'>" + bugNum + "</span>/<span class='offlineDev'>" + offlineNum + "</span>)";
+					}
+					return node.text + otherTxt;
+				},
+				onLoadSuccess : function() {
+
+				},
+				onClick : function(node) {//点击设备节点定位
+					if (node.attribute && node.attribute.nodeType == "DEVICE") {
+						var lon = node.attribute.siteLon;
+						var lat = node.attribute.siteLat;
+						if (lon == 0 || lat == 0) {
+							alert("还没有为该设备配置经纬度无法定位！");
+							return;
+						}
+						var geo = new OpenLayers.Geometry.Point(lon, lat);
+						$scope.cyMap.location(geo);
+						showTipInfoWnd(node.attribute, geo);
+					}
+				}
+			});
+		}
+
+		function showTipInfoWnd_old(devInfos, geometry) {
+			// var devType = devInfos.devType;
+			// //对于卡口、违法取证类设备、气象设备要查询是否有配置关联的视频，有的话，把关联的视频设备IDs传递到弹出页面中
+			// if (devType == "01" || devType == "04" || devType == "05" || devType == "11" || devType == "12" || devType == "13") {
+			// $scope.$ajaxRequest({
+			// url : $scope.$restRoot + "device/deviceMoniter/queryDevAssoVideoIds",
+			// params : {
+			// devId : devInfos.devId,
+			// devType : devInfos.devType
+			// },
+			// success : function(result) {
+			// var videoIds = "";
+			// if (result.length > 0) {
+			// videoIds = result;
+			// }
+			// showWnd(devInfos, geometry, videoIds);
+			// },
+			// fail : function(errMsg) {
+			// console.log(errMsg);
+			// }
+			// });
+			// } else if (devType == "03") {//视频设备直接传递视频的id
+			// showWnd(devInfos, geometry, [devInfos.devId]);
+			// } else {//其他设备不需要显示视频按钮的
+			// showWnd(devInfos, geometry, "");
+			// }
+			showWnd(devInfos, geometry, "");
+		}
+
+		function showTipInfoWnd(devInfos, geometry) {
+			var lon = geometry.x;
+			var lat = geometry.y;
+			var centerLonLat = new OpenLayers.LonLat(lon, lat);
+			//centerLonLat.transform($scope.cyMap.map.displayProjection, $scope.cyMap.map.getProjectionObject());
+			var centerPix = $scope.cyMap.map.getPixelFromLonLat(centerLonLat);
+			//当前地图长宽
+			var mapSize = $scope.cyMap.map.size;
+			var left = centerPix.x;
+			if (mapSize.w - centerPix.x < 500) {
+				left = centerPix.x - 500;
+			}
+			var top = centerPix.y;
+			if (mapSize.h - centerPix.y < 310) {
+				top = centerPix.y - 300;
+			}
+			$scope.$setParam("devTipInfo", devInfos);
+			//$scope.$setParam("videoIds", videoIds);
+			//弹出设备信息框
+			$scope.$openDialog("tipInfoDialog", {
+				title : "设备信息",
+				draggable : false,
+				height : 310,
+				width : 500,
+				modal : false,
+				href : "tpls/deviceManage/deviceMonitor/device-tip-wnd.html"
+			});
+			$scope.$getDialog("tipInfoDialog").dialog("resize", {
+				left : left + 230,
+				top : top + 110
+			});
+		}
+
+		/**
+		 * 弹出设备概要信息框，位于地图的右上角
+		 */
+		function showFixTipWnd(devInfos) {
+			//当前地图长宽
+			var mapSize = $scope.cyMap.map.size;
+			var left = mapSize.w - 265;
+			$scope.$setParam("devTipInfo", devInfos);
+			//$scope.$setParam("videoIds", videoIds);
+			//弹出设备信息框
+			$scope.$openDialog("tipInfoDialog", {
+				title : "设备信息",
+				draggable : false,
+				height : 310,
+				width : 500,
+				modal : false,
+				href : "tpls/deviceManage/deviceMonitor/device-tip-wnd.html"
+			});
+			$scope.$getDialog("tipInfoDialog").dialog("resize", {
+				left : left,
+				top : 145
+			});
+		}
+
+		/**
+		 * 初始化搜索框
+		 */
+		function initSearchTextbox() {
+			//点位搜索框初始化搜索按钮和清除按钮
+			$scope.$('#searchSite').searchbox({
+				searcher : function() {
+					seachDeviceClick();
+				}
+			});
+		}
+
+		function seachDeviceClick() {
+			var searchText = $scope.$('#searchSite').searchbox('getValue');
+			seachDevice(searchText);
+			showQryResultPanel();
+		}
+
+		function showQryResultPanel() {
+			$scope.$("#leftLayout").layout("panel", "east").panel("open");
+			$scope.$("#leftLayout").layout("resize");
+		}
+
+		function seachResultFormatter(value, rowData, rowIndex) {
+			var divRow = $scope.$("#searchResItemDiv").clone().show();
+			divRow.remove("id");
+			var xh = divRow.find(".searchResItemXH");
+			xh.eq(0).text(rowIndex + 1);
+			var img = divRow.find("img");
+			img.eq(0).attr("src", "themes/default/images/device/" + rowData.devType + "_" + rowData.devStatus + ".png");
+			var as = divRow.find("span");
+			as.eq(0).text(rowData.devName);
+			as.eq(1).text($scope.$getOrgName(rowData.orgId));
+			//rowData.orgName
+			return divRow.html();
+		}
+
+		function seachDevice(devName) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/deviceMoniter/queryDeviceByName",
+				params : {
+					// currentOrgId : $scope.UserInfo.orgId,
+					// currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode,
+					devName : devName
+				},
+				success : function(result) {
+					bindDevieQryResLst(result);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function bindDevieQryResLst(data) {
+			//加载搜索结果列表
+			$scope.$("#searchReusltDlst").datalist({
+				data : data,
+				nowrap : false,
+				lines : true,
+				border : true,
+				textFormatter : seachResultFormatter,
+				onClickRow : function(index, row) {//点击定位该点位
+					var thisNodeDevObj = allDevCache[row.devType][row.devId];
+					var lon = thisNodeDevObj.longitude;
+					var lat = thisNodeDevObj.latitude;
+					if (lon == 0 || lat == 0) {
+						alert("还没有为该设备配置经纬度无法定位！");
+						return;
+					}
+					queryShowTipInfo(thisNodeDevObj, null);
+
+				},
+				onLoadSuccess : function(data) {
+					$scope.$("#searchResTotal").text(data.total);
+				}
+			});
+		}
+
+
+		$scope.searchGoBack = function() {
+			$scope.$("#leftLayout").layout("panel", "east").panel("close");
+			$scope.$("#leftLayout").layout("resize");
+		};
+
+	}); 
+</script>
+<style>
+	#deviceMoniter #baseTool {
+		position: absolute;
+		top: 3px;
+		right: 5px;
+		z-index: 100001;
+	}
+	#deviceMoniter #layerDock {
+		position: absolute;
+		bottom: 5px;
+		left: 50%;
+		z-index: 100000;
+	}
+	#deviceMoniter .pie {
+		width: 100%;
+		height: 165px;
+	}
+	#deviceMoniter .searchResItem {
+		float: left;
+		width: 100%;
+		/*border-top: solid 1px silver;*/
+		padding: 5px 0px;
+	}
+	#deviceMoniter .searchResItemXH {
+		float: left;
+		border-radius: 16px;
+		background: #F54336;
+		color: white;
+		min-width: 18px;
+		text-align: center;
+		margin: 0px 3px;
+	}
+	#deviceMoniter .searchResItemImg {
+		float: left;
+		margin-right: 3px;
+	}
+	/*
+	 01    卡口
+	 02  电警
+	 03  视频
+	 04  测速设备
+	 05  气象设备
+	 06  可变限速牌
+	 07  诱导屏
+	 08  事件检测
+	 09  流量检测
+	 10  短信基站
+	 11  违停
+	 12  大车占道
+	 13  逆行
+	 14  信号机
+	 15  匝道口信号机
+	 16  车载
+	 * */
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-01-1 {
+		background: url('themes/default/images/device/01_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-01-2 {
+		background: url('themes/default/images/device/01_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-01-3 {
+		background: url('themes/default/images/device/01_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-01-4 {
+		background: url('themes/default/images/device/01_4.png') no-repeat center center;
+	}
+
+	#deviceMoniter .icon-02-1 {
+		background: url('themes/default/images/device/02_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-02-2 {
+		background: url('themes/default/images/device/02_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-02-3 {
+		background: url('themes/default/images/device/02_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-02-4 {
+		background: url('themes/default/images/device/02_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-03-1 {
+		background: url('themes/default/images/device/03_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-03-2 {
+		background: url('themes/default/images/device/03_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-03-3 {
+		background: url('themes/default/images/device/03_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-03-4 {
+		background: url('themes/default/images/device/03_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-04-1 {
+		background: url('themes/default/images/device/04_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-04-2 {
+		background: url('themes/default/images/device/04_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-04-3 {
+		background: url('themes/default/images/device/04_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-04-4 {
+		background: url('themes/default/images/device/04_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-05-1 {
+		background: url('themes/default/images/device/05_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-05-2 {
+		background: url('themes/default/images/device/05_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-05-3 {
+		background: url('themes/default/images/device/05_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-05-4 {
+		background: url('themes/default/images/device/05_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-06-1 {
+		background: url('themes/default/images/device/06_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-06-2 {
+		background: url('themes/default/images/device/06_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-06-3 {
+		background: url('themes/default/images/device/06_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-06-4 {
+		background: url('themes/default/images/device/06_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-07-1 {
+		background: url('themes/default/images/device/07_1.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-07-2 {
+		background: url('themes/default/images/device/07_2.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-07-3 {
+		background: url('themes/default/images/device/07_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-07-4 {
+		background: url('themes/default/images/device/07_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-08-1 {
+		background: url('themes/default/images/device/08_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-08-2 {
+		background: url('themes/default/images/device/08_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-08-3 {
+		background: url('themes/default/images/device/08_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-08-4 {
+		background: url('themes/default/images/device/08_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-09-1 {
+		background: url('themes/default/images/device/09_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-09-2 {
+		background: url('themes/default/images/device/09_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-09-3 {
+		background: url('themes/default/images/device/09_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-09-4 {
+		background: url('themes/default/images/device/09_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-10-1 {
+		background: url('themes/default/images/device/10_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-10-2 {
+		background: url('themes/default/images/device/10_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-10-3 {
+		background: url('themes/default/images/device/10_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-10-4 {
+		background: url('themes/default/images/device/10_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-11-1 {
+		background: url('themes/default/images/device/11_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-11-2 {
+		background: url('themes/default/images/device/11_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-11-3 {
+		background: url('themes/default/images/device/11_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-11-4 {
+		background: url('themes/default/images/device/11_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-12-1 {
+		background: url('themes/default/images/device/12_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-12-2 {
+		background: url('themes/default/images/device/12_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-12-3 {
+		background: url('themes/default/images/device/12_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-12-4 {
+		background: url('themes/default/images/device/12_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-13-1 {
+		background: url('themes/default/images/device/13_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-13-2 {
+		background: url('themes/default/images/device/13_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-13-3 {
+		background: url('themes/default/images/device/13_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-13-4 {
+		background: url('themes/default/images/device/13_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-14-1 {
+		background: url('themes/default/images/device/14_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-14-2 {
+		background: url('themes/default/images/device/14_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-14-3 {
+		background: url('themes/default/images/device/14_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-14-4 {
+		background: url('themes/default/images/device/14_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-15-1 {
+		background: url('themes/default/images/device/15_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-15-2 {
+		background: url('themes/default/images/device/15_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-15-3 {
+		background: url('themes/default/images/device/15_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-15-4 {
+		background: url('themes/default/images/device/15_4.png') no-repeat center center;
+	}
+	/*1:正常状态图标*/
+	#deviceMoniter .icon-16-1 {
+		background: url('themes/default/images/device/16_1.png') no-repeat center center;
+	}
+	/*2:离线状态图标*/
+	#deviceMoniter .icon-16-2 {
+		background: url('themes/default/images/device/16_2.png') no-repeat center center;
+	}
+	/*3:故障状态图标*/
+	#deviceMoniter .icon-16-3 {
+		background: url('themes/default/images/device/16_3.png') no-repeat center center;
+	}
+	/*4:异常状态图标*/
+	#deviceMoniter .icon-16-4 {
+		background: url('themes/default/images/device/16_4.png') no-repeat center center;
+	}
+	#deviceMoniter .icon-empty {
+		width: 0px;
+	}
+	#deviceMoniter .nomalDev {
+		color: #02994D;
+	}
+	#deviceMoniter .exceptionDev {
+		color: #FFB400;
+	}
+	#deviceMoniter .bugDev {
+		color: #FF0C00;
+	}
+	#deviceMoniter .offlineDev {
+		color: #8F8F8F;
+	}
+	#deviceMoniter .tree-node-txt {
+		color: #333333;
+	}
+
+	#deviceMoniter #spatialQryDiv ul {
+		list-style: none;
+		float: left;
+		padding: 0px;
+	}
+	#deviceMoniter #spatialQryDiv li {
+		float: left;
+	}
+	#deviceMoniter #spatialQryDiv li a {
+		height: 24px;
+		width: 24px;
+		display: block;
+		margin: 0px 8px;
+		cursor: pointer;
+	}
+	#deviceMoniter .rect-draw-btn {
+		background: url('themes/default/images/find_rect.png') no-repeat center;
+	}
+	#deviceMoniter .rect-draw-btn:hover {
+		transform: scale(1.2);
+		-webkit-transform: scale(1.2);
+		-moz-transform: scale(1.2);
+		-o-transform: scale(1.2);
+		-ms-transform: scale(1.2);
+	}
+	#deviceMoniter .circle-draw-btn {
+		background: url('themes/default/images/find_circle.png') no-repeat center;
+	}
+	#deviceMoniter .circle-draw-btn:hover {
+		transform: scale(1.2);
+		-webkit-transform: scale(1.2);
+		-moz-transform: scale(1.2);
+		-o-transform: scale(1.2);
+		-ms-transform: scale(1.2);
+	}
+
+	#deviceMoniter .btn_clear {
+		background: url('themes/default/images/btn_clear.png') no-repeat center;
+	}
+	#deviceMoniter .btn_clear:hover {
+		transform: scale(1.2);
+		-webkit-transform: scale(1.2);
+		-moz-transform: scale(1.2);
+		-o-transform: scale(1.2);
+		-ms-transform: scale(1.2);
+	}
+	#deviceMoniter .qry-change {
+		height: 26px;
+		width: 26px;	
+		cursor: pointer;
+		background: url('themes/default/images/spatialQry.png') no-repeat center;
+	}
+</style>

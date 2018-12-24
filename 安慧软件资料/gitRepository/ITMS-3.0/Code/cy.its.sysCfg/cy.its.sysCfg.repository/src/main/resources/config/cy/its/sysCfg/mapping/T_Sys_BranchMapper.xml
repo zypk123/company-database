@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_BranchMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Branch" >
+    <id column="ROAD_BRANCH_ID" property="roadBranchId" jdbcType="VARCHAR" />
+    <result column="JUNCTION_ID" property="junctionId" jdbcType="VARCHAR" />
+    <result column="CENTRAL_LINE_ANGLE" property="centralLineAngle" jdbcType="CHAR" />
+    <result column="CANALIZATION" property="canalization" jdbcType="CHAR" />
+    <result column="RELATED_CROSS_CODE" property="relatedCrossCode" jdbcType="VARCHAR" />
+    <result column="LANE_NUM" property="laneNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROAD_BRANCH_ID, JUNCTION_ID, CENTRAL_LINE_ANGLE, CANALIZATION, RELATED_CROSS_CODE, 
+    LANE_NUM
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_BRANCH
+    where ROAD_BRANCH_ID = #{roadBranchId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_BRANCH
+    where ROAD_BRANCH_ID = #{roadBranchId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Branch" >
+    insert into T_SYS_BRANCH (ROAD_BRANCH_ID, JUNCTION_ID, CENTRAL_LINE_ANGLE, 
+      CANALIZATION, RELATED_CROSS_CODE, LANE_NUM
+      )
+    values (#{roadBranchId,jdbcType=VARCHAR}, #{junctionId,jdbcType=VARCHAR}, #{centralLineAngle,jdbcType=CHAR}, 
+      #{canalization,jdbcType=CHAR}, #{relatedCrossCode,jdbcType=VARCHAR}, #{laneNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Branch" >
+    insert into T_SYS_BRANCH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadBranchId != null" >
+        ROAD_BRANCH_ID,
+      </if>
+      <if test="junctionId != null" >
+        JUNCTION_ID,
+      </if>
+      <if test="centralLineAngle != null" >
+        CENTRAL_LINE_ANGLE,
+      </if>
+      <if test="canalization != null" >
+        CANALIZATION,
+      </if>
+      <if test="relatedCrossCode != null" >
+        RELATED_CROSS_CODE,
+      </if>
+      <if test="laneNum != null" >
+        LANE_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadBranchId != null" >
+        #{roadBranchId,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionId != null" >
+        #{junctionId,jdbcType=VARCHAR},
+      </if>
+      <if test="centralLineAngle != null" >
+        #{centralLineAngle,jdbcType=CHAR},
+      </if>
+      <if test="canalization != null" >
+        #{canalization,jdbcType=CHAR},
+      </if>
+      <if test="relatedCrossCode != null" >
+        #{relatedCrossCode,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNum != null" >
+        #{laneNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Branch" >
+    update T_SYS_BRANCH
+    <set >
+      <if test="junctionId != null" >
+        JUNCTION_ID = #{junctionId,jdbcType=VARCHAR},
+      </if>
+      <if test="centralLineAngle != null" >
+        CENTRAL_LINE_ANGLE = #{centralLineAngle,jdbcType=CHAR},
+      </if>
+      <if test="canalization != null" >
+        CANALIZATION = #{canalization,jdbcType=CHAR},
+      </if>
+      <if test="relatedCrossCode != null" >
+        RELATED_CROSS_CODE = #{relatedCrossCode,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNum != null" >
+        LANE_NUM = #{laneNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROAD_BRANCH_ID = #{roadBranchId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Branch" >
+    update T_SYS_BRANCH
+    set JUNCTION_ID = #{junctionId,jdbcType=VARCHAR},
+      CENTRAL_LINE_ANGLE = #{centralLineAngle,jdbcType=CHAR},
+      CANALIZATION = #{canalization,jdbcType=CHAR},
+      RELATED_CROSS_CODE = #{relatedCrossCode,jdbcType=VARCHAR},
+      LANE_NUM = #{laneNum,jdbcType=VARCHAR}
+    where ROAD_BRANCH_ID = #{roadBranchId,jdbcType=VARCHAR}
+  </update>
+</mapper>

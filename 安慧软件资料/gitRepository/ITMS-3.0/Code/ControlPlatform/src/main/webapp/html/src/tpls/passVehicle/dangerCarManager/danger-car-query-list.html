@@ -1,0 +1,385 @@
+<div id="dangerousVehicle" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:155"
+		style="border-bottom: solid 1px #ddd">
+		<form cy-form="dangerCarQuery" id="form1">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">行政区划：</div>
+						<div class="td">
+							<!--行政区划单选 -->
+							<input class="cy-district-radio" iscode="true" width="120px;"
+								name="districtCodes" data-options="required:true">
+						</div>
+						<div class="th">违法类型：</div>
+						<div class="td">
+							<input class="easyui-combobox" name="violationTypes"
+								id="violationTypes" style="width: 135px"
+								data-options="valueField:'value',textField:'text',panelHeight:'auto'"
+								cy-code="011" /> 
+						</div>
+						<div class="th" style="display: none" id="highSpeedTh">超速比：</div>
+						<div class="td" style="display: none" id="highSpeedTd">
+						<input type="radio" value="0" name='HighSpeed' checked>全部
+						<input type="radio" value="1" name='HighSpeed'>20%以下
+						<input type="radio" value="2" name='HighSpeed'>20%至50%
+						<input type="radio" value="3" name='HighSpeed'>50%以上
+						</div>
+						<div class="th" style="margin-left: 120px;">违法排名：</div>
+						<div class="td" >
+						前&nbsp;&nbsp;<select id="cc" class="easyui-combobox"
+							name="topN" style="width: 50px;">
+							<option value="10">10</option>
+							<option value="20">20</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+						</select>&nbsp;&nbsp;名
+						<input type="checkbox" value="true" name='isHighway' checked>高速
+						<input type="checkbox" value="false" name='isHighway' checked>非高速
+						</div>
+						<!-- <div class="th">
+						
+						</div> -->
+					</div>
+					<div class="tr">
+						<div class="th">
+							号牌类型：
+						</div>
+						<div class="td" style="width:145px;">
+							<input class="easyui-combobox" id="plateType" name="plateType" style="width:145px"
+							           cy-code="002" />
+						</div>
+						<div class="th">分析周期：</div>
+						<div class="td" style="width: 270px;">
+							<input name="startDateTime" id ="startDateTime" data-options="editable:false,required:true,prompt:'开始时间不能大于结束时间',validType:['maxDate[\'endDateTime\']','date']" 
+                                   class="easyui-datebox dispatchTime" style="width: 130px;" /> 至 
+                            <input name="endDateTime" id="endDateTime" data-options="editable:false,required:true,prompt:'结束时间不能小于开始时间',validType:['minDate[\'startDateTime\']','date']"
+                                class="easyui-datebox dispatchTime" style="width: 130px;" />
+						</div>
+						<div class="th" style="width: 100px;">
+							<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search('intg')" style="width:90px">按积分分析</a>
+						</div>
+						<div class="th" style="width: 100px;">
+							<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search('count')" style="width:120px">按违法次数分析</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-export button-main" data-options="iconCls:'icon-export'" cy-click="ExporterExcel">导出</a>
+        </div>
+	</div>
+	<div data-options="region:'center',border:false" id="datagridDiv">
+		<table id="datagrid" cy-datagrid="options" cy-querydata="dangerCarQuery"
+			cy-url="../dangerousVeh.rest?searchType=PageSearch">
+
+		</table>
+
+	</div>
+</div>
+<script type="text/javascript">
+    //启用严格模式
+    'use strict';
+    InitPage([],function($scope){
+    	//获得本页面需要的数据字典,依次：车辆外形，号牌颜色，车辆颜色
+		$scope.$getDefaultCode(["002", "003", "006"]);
+        //页面初始化动作
+        $scope.load = function(){
+        	//查询时间不能大于当前时间
+    		$scope.$('.dispatchTime').each(function(){
+    			$(this).datebox('calendar').calendar({
+        			validator: function(date){
+        				var now = new Date();
+        				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        				return date <= d1;
+        			}
+        		});
+    		});
+        	$scope.$("#violationTypes").combobox({
+        		onSelect:function(record){
+        			if(record.value == 7 || record.value ==1){
+        				$scope.$("#highSpeedTh").css("display","block");
+        				$scope.$("#highSpeedTd").css("display","block");
+        			}else{
+        				$scope.$("#highSpeedTh").css("display","none");
+        				$scope.$("#highSpeedTd").css("display","none")
+        			}
+        		},
+        		onChange:function(newValue, oldValue){
+        			$scope.$("#highSpeedTh").css("display","none");
+    				$scope.$("#highSpeedTd").css("display","none")
+        		}
+        	})
+        	 
+        	$scope.$updateData("dangerCarQuery");
+          
+        }
+
+        $.extend($scope, {
+            /**
+             * datagrid配置
+             * @type easyui的datagrid中的参数对象
+             */
+            options : {
+            	rownumbers:true,
+            	data:[],
+                columns:[[
+                    {field:"id",checkbox:false,hidden:true},
+                    {field:"plate_nbr",title:"号牌号码",width:100,sortable:true,align : 'center'},
+                    {field:"plate_type",title:"号牌种类",width:100,formatter:formatPlateType,align : 'center'},
+                    {field:"vioCount",title:"违法次数",width:100,sortable:true,hidden:true,align : 'center'},
+                    {field:"score",title:"违法积分",width:100,align : 'center'},
+                    /* {field:"image_url1",title:"图片",width:100,formatter:function(value,row,index){
+                    	return  '<img src='+value+'>';
+                    }}, */
+                    {field : 'cz',title : '操作',align : 'center',formatter :function(value,rowData,rowIndex) {
+                    	  if (value == undefined) {
+                    		  return $scope.operateUserCz(value,rowData,rowIndex);
+                    	  }
+                    	  
+    				},width : 100
+    			}
+                ]], //获取数据字典并填入选项
+   				pageSize:100,
+   				pageList:[100],
+   				pagination:false
+            },
+            
+            /**
+             * 查询操作
+             * @return {[type]} [description]
+             */
+            search : function(queryType){
+            	if(!$scope.$("#form1").form("validate")){
+					return;
+				}
+            	 var allData;
+            	 $scope.$updateData("dangerCarQuery");
+            	 //按积分统计
+            	if("intg"==queryType){
+            		$scope.$('#datagrid').datagrid('showColumn', 'score');
+            		$scope.$('#datagrid').datagrid('hideColumn', 'vioCount');
+            		$scope.dangerCarQuery.statBy = '1'
+            	}else{//按危险次数统计
+    				$scope.$('#datagrid').datagrid('showColumn', 'vioCount');
+            		$scope.$('#datagrid').datagrid('hideColumn', 'score');
+            		$scope.dangerCarQuery.statBy = '0'
+            	}
+            	 var vioType = $scope.dangerCarQuery.violationTypes;
+            	 var checkedRadioValue = $scope.$("[name='HighSpeed']:radio:checked").val();
+            	 var isHighWay  = $scope.$("[name='isHighway']:checkbox:checked");
+            	 if(isHighWay.length == 2){
+            		 isHighWay = "";
+            	 }else{
+            		 isHighWay = $scope.$("[name='isHighway']:checkbox:checked").val();
+            	 }
+            	 $scope.dangerCarQuery.isHighway = isHighWay;
+            	 //超高速
+            	 if(vioType ==1){
+            		 //20%一下
+            		 if("1" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '110c,120c';
+            		 }else if ("2" == checkedRadioValue){//20到50%
+            			 $scope.dangerCarQuery.violationTypes = '110b,120b';
+            		 }else if ("3" == checkedRadioValue){//50%以上
+            			 $scope.dangerCarQuery.violationTypes = '110a,120a';
+            		 }else if("0" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '1';
+            		 }
+            		 
+            	 }else if(vioType ==7){//区间超速
+            		//20%一下
+            		 if("1" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '710c,711c';
+            		 }else if ("2" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '710b,711b';
+            		 }else if ("3" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '710a,711a';
+            		 }else if("0" == checkedRadioValue){
+            			 $scope.dangerCarQuery.violationTypes = '7';
+            		 }
+            	 }
+            	//显示加载中。。
+				$scope.$('#datagrid').datagrid("loading");
+            	 $scope.dangerCarQuery.queryType = queryType
+            	 $scope.dangerCarQuery.startDateTime = $scope.dangerCarQuery.startDateTime +" 00:00";
+            	 $scope.dangerCarQuery.endDateTime =$scope.dangerCarQuery.endDateTime +" 23:59";
+            	 $scope.dangerCarQuery.pageSize =100;
+            	 $scope.dangerCarQuery.pageNumber =1;
+            	 $scope.dangerCarQuery.totalCount = 0;
+            	 //查询初始数据
+                 $scope.$ajaxRequest({
+                	  url: $scope.$restRoot+'vehTrack/violation/fingViolationCarInfo', 
+                	  /*url: "../../html/src/tpls/passVehicle/dangerCarManager/data.json",*/ 
+                     params:$scope.dangerCarQuery,
+                     type : "post",
+                     success : function(retData){
+                    	//数据加载完毕，关闭进度条
+                    	$scope.$('#datagrid').datagrid("loaded");
+                    	if (retData && retData.result.rows && retData.result.rows.length>0){
+                    	 allData = retData.result.rows;
+                    	  if("count"==queryType && vioType){
+                    		 allData=retData.result.rows[0].value;
+                    	 }
+                    	//查询成功 加载数据
+                    	//前台分页
+                         $scope.$('#datagrid').datagrid({loadFilter:pagerFilter}).datagrid('loadData', allData);
+                    	}else{
+                    		$scope.$('#datagrid').datagrid('loadData',{"total":0,"rows":[]});
+                    		$.messager.alert("提示","没有分析结果！");
+                    	}
+                     },
+                     fail : function(errTxt){
+                    	 $scope.$('#datagrid').datagrid('loadData',{"total":0,"rows":[]});
+                    	 $scope.$("#datagrid").datagrid("loaded");
+                    	 $.messager.alert("提示","服务器正忙！");
+                     }
+                 });
+        		
+            },
+            /**
+             * 设置默认时间，今天00:00到当前时间
+             * @type {Object}
+             */
+             dangerCarQuery : {
+            	 startDateTime : new Date().format("yyyy-MM-dd 00:00"),
+            	 endDateTime : new Date().format("yyyy-MM-dd HH:mm")
+            },
+            
+            //用户操作栏
+      		  operateUserCz : function(value, row, index) {
+      		  	//车辆轨迹
+      			var button1 = $('<a  title="违法明细" style="color:blue;font-size=14px;" cy-click="vioDetail(\'' + row.plate_nbr + '\',\'' + row.plate_type + '\')">违法明细</a>');
+      				//图片列表
+      			button1.linkbutton({
+      				//iconCls : "icon-edit-solid",
+      				plain : true
+      			});
+      			return $("<span/>").append(button1).html();
+      		},
+            
+         });
+
+
+        /**
+         * 格式化号牌种类
+         * @param  字符串 value 号牌编码 
+         * @return 字符串 号牌名称
+         */
+        function formatPlateType(value){
+            if(!value) return;
+            return $scope.$getCodeName("002",value);
+        }
+        
+
+        /**
+         * 格式化号牌种类
+         * @param  字符串 value 号牌编码 
+         * @return 字符串 号牌名称
+         */
+        function formatViolationType(value){
+            if(!value) return;
+            return $scope.$getCodeName("011",value);
+        }
+
+         /**
+          * 前台分页
+          * 
+          */
+         function pagerFilter(data){
+			if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
+				data = {
+					total: data.length,
+					rows: data
+				}
+			}
+			var dg = $(this);
+			var opts = dg.datagrid('options');
+			var pager = dg.datagrid('getPager');
+			pager.pagination({
+				onSelectPage:function(pageNum, pageSize){
+					opts.pageNumber = pageNum;
+					opts.pageSize = pageSize;
+					pager.pagination('refresh',{
+						pageNumber:pageNum,
+						pageSize:pageSize
+					});
+					dg.datagrid('loadData',data);
+				}
+			});
+			if (!data.originalRows){
+				data.originalRows = (data.rows);
+			}
+			var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
+			var end = start + parseInt(opts.pageSize);
+			data.rows = (data.originalRows.slice(start, end));
+			return data;
+		} ;
+		/**
+		 * 显示查询进度条
+		 */
+		$scope.searchProgress = function() {
+			$.messager.progress({
+				title : false,
+				msg : "正在分析，请稍后...",
+				interval : 1000,
+				text : "分析中..."
+			});
+		};
+		
+		/**
+	    *查看车辆违法明细
+	    */
+	    $scope.vioDetail = function(plateNbr,plateType){
+	    	 $scope.$setParam("districtCodes", $scope.dangerCarQuery.districtCodes);//
+	    	 $scope.$setParam("plateNbr", plateNbr);//
+	    	 $scope.$setParam("plateType", plateType);//
+	    	 $scope.$setParam("startDateTime", $scope.dangerCarQuery.startDateTime);//
+	    	 $scope.$setParam("endDateTime", $scope.dangerCarQuery.endDateTime);//
+	    	 $scope.$setParam("violationTypes", $scope.dangerCarQuery.violationTypes);//
+	    	 $scope.$setParam("isHighway", $scope.dangerCarQuery.isHighway);//
+	    	$scope.$openDialog("violationDialog", {
+                title: "违法信息",
+                width: 1000,
+               	height: 600,
+                href: "tpls/passVehicle/dangerCarManager/violationDetail.html"
+            }, true);
+
+		};
+		
+		//EasyUI datagrid 动态导出Excel
+		$scope.ExporterExcel = function () {
+			var headerRow = ['号牌号码','号牌种类','违法次数','操作'];
+			if("intg"==$scope.dangerCarQuery.queryType){
+				headerRow = ['号牌号码','号牌种类','违法积分','操作'];
+        	}
+				
+			var table = $scope.$('#datagridDiv').find("table").eq(3);
+			table.tableExport({ type: 'excel', separator: ';', escape: 'false' ,fileName:'危险驾驶车辆分析'+new Date()
+			,headerRow:headerRow});
+			
+            //获取Datagride的列
+            /* var rows = $('#datagrid').datagrid('getRows');
+            var columns = $("#datagrid").datagrid("options").columns[0]; */
+		};
+		
+		 
+    });
+   
+	
+</script>
+<style type="text/css">
+#dangerousVehicle .th {
+	margin-left: 30px;
+	width: 70px;
+	text-align: right;
+}
+
+#dangerousVehicle .td {
+	width: 120px;
+}
+</style>

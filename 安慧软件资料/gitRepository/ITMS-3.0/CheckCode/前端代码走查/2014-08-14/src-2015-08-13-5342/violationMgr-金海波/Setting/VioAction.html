@@ -1,0 +1,296 @@
+﻿
+<div id="vioActionDiv" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style=" height: 150px">
+        <div class="toolbar" style="float:left;width:100%">
+            <form class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">违法代码：</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" width="150" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                违法类型：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="violationType" name="ViolationType" style="width:150px"
+                                       data-options="valueField:'ID',textField:'NAME',multiple:true">
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                违法行为：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" width="150" />
+                            </div>
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="linkbutton_toolbar">
+                    <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="VioSysConfigMgr.QueryVioActionInfo();">查询</a>
+                    <a href="#" class="easyui-linkbutton  button-add" data-options="iconCls:'icon-add'" onclick="AddVioAction();">新增</a>
+                    <a href="#" class="easyui-linkbutton button-enable" data-options="iconCls:'icon-enable'" onclick="EditVioAction()">修改</a>
+                    <a href="#" class="easyui-linkbutton button-disable" data-options="iconCls:'icon-disable'">删除</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div data-options="region:'center'">
+        <table id="dgv" class="easyui-datagrid"
+               data-options="
+               fit:true,
+               fitColumns:true,
+               striped:true,
+               noHeader:true,
+               rownumbers:true,
+               pagination:true,
+               showfooter:true,
+               singleSelect:true,
+               scrollbarSize:0
+               ">
+            <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true">
+                    </th>
+                    <th data-options="field:'VIO_ACTION_CODE'">
+                        违法行为代码
+                    </th>
+                    <th data-options="field:'VIO_TYPE'">
+                        违法类型
+                    </th>
+                    <th data-options="field:'VIO_SUMMARY'">
+                        违法描述
+                    </th>
+                    <th data-options="field:'FINE_DEFAULT'">
+                        罚款金额
+                    </th>
+                    <th data-options="field:'FINE_SCORE'">
+                        扣分数
+                    </th>
+                    <th data-options="field:'DETAIN_DAYS_MIN'">
+                        有效期始
+                    </th>
+                    <th data-options="field:'DETAIN_DAYS_MAX'">
+                        有效期止
+                    </th>
+                    <th data-options="field:'RoadType'">
+                        适配道路类型
+                    </th>
+                    <th data-options="field:'LimitSmall'">
+                        最小超速比
+                    </th>
+                    <th data-options="field:'LimitLarge'">
+                        最大超速比
+                    </th>
+                    <th data-options="field:'LimitSpeed'">
+                        限速值
+                    </th>
+                    <th data-options="field:'Edit'">
+                        修改
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+
+<!--弹出的违法信息窗口-->
+<div id="childWin" class="easyui-window" title="违法详细信息" style="width:700px;height:450px" data-options="iconCls:'icon-save',modal:true">
+    <div data-options="region:'center'" style=" height: 400px">
+        <form class="searchForm" method="post">
+            <table style="width: 100%">
+                <tr>
+                    <td style="text-align: right;">
+                        违法代码：
+                    </td>
+                    <td>
+                        <input class="" type="text" style="width:150px">
+                    </td>
+                    <td style="text-align: right;">
+                        违法类型：
+                    </td>
+                    <td>
+                        <input class="easyui-combobox" name="" id="" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        扣分：
+                    </td>
+                    <td>
+                        3分
+                    </td>
+                    <td style="text-align: right;">
+                        默认罚款金额：
+                    </td>
+                    <td>
+                        200元
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        违法行为描述：
+                    </td>
+                    <td colspan="3">
+                        超速50%以上（9座以下小客车和小型越货车以下）
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        处罚依据：
+                    </td>
+                    <td colspan="3">
+                        <textarea style="width:70%">
+                            《中华人民共和国道路交通安全法》第九十九条第一款第四项、青海省实施《中华人民共和国道路交通安全法》办法第七十三条第三款
+                        </textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        开始日期：
+                    </td>
+                    <td>
+                        <input class="easyui-datebox" style="width:150px">
+                    </td>
+                    <td style="text-align: right;">
+                        截止日期：
+                    </td>
+                    <td>
+                        <input class="easyui-datebox" style="width:150px">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        超速比：
+                    </td>
+                    <td>
+                        20%
+                    </td>
+                    <td style="text-align: right;">
+                        到：
+                    </td>
+                    <td>
+                        50%
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        适用道路类型：
+                    </td>
+                    <td colspan="3">
+                        <input type="checkbox" />高速公路
+                        <input type="checkbox" />国道
+                        <input type="checkbox" />省道
+                        <input type="checkbox" />县道
+                        <input type="checkbox" />乡村道
+                        <input type="checkbox" />城市快速路
+                        <input type="checkbox" />城市主干道
+                        <input type="checkbox" />城市次干道
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        适用车辆类型：
+                    </td>
+
+                    <td colspan="3">
+                        <input type="checkbox" />高速公路
+                        <input type="checkbox" />国道
+                        <input type="checkbox" />省道
+                        <input type="checkbox" />县道
+                        <input type="checkbox" />乡村道
+                        <input type="checkbox" />城市快速路
+                        <input type="checkbox" />城市主干道
+                        <input type="checkbox" />城市次干道
+                        <a href="#" class="easyui-linkbutton" style="width: 50px">...</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height:50px">
+        <div class="row" style="text-align: center">
+            <a href="#" class="easyui-linkbutton" style="width: 50px">保存</a>
+            <a href="#" class="easyui-linkbutton" style="width: 50px" id="btnCancel" onclick="$('#win').window('close');">取消</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $.parser.onComplete = function () {
+        $.ajax({
+            url: "/ITS3Web.Service.Violation.CommonService/InitPageSysCode",
+            type: "POST",
+            data: {},
+            beforeSend: function (request) {
+                request.setRequestHeader("ContextID", ContextId);
+            },
+            contentType: 'application/json',
+            success: function (retData) {
+                VioSysConfigMgr.sysCodeDic = retData;
+                VioSysConfigMgr.initCombobox(retData);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        },
+        $('#childWin').window('close')
+        );
+        //重置加载器完成事件，防止在查询时多次运行
+        $.parser.onComplete = function () { };
+    };
+    var VioSysConfigMgr = {
+        defaultParams: {},
+        sysCodeDic: null,
+        frmSubmit: function (param) {
+            param.ContextId = ContextId;
+            return true;
+        },
+        initCombobox: function (initData) {
+            $('#vioActionDiv #violationType').combobox('loadData', initData["T_DIC_VIOTYPE"]);
+        },
+        QueryVioActionInfo: function () {
+            $('#vioActionDiv .searchForm').form('submit', {
+                url: "/ITS3Web.Service.Violation.ViolationSysConfigService/QueryVioActionInfo",
+                onSubmit: function (param) {
+                    param.ContextId = parent.ContextId;
+                    return true;
+                },
+                success: function (data) {
+                    var data = eval('(' + data + ')');
+                    if (data.Error != '') {
+                        alert(data.Error);
+                    }
+                    else {
+                        if (data.Result.length == 0) {
+                            alert("没有查询出符合条件的违法采集记录！");
+                        }
+                        var gridData = {};
+                        gridData.total = data.Result.length;
+                        gridData.rows = data.Result;
+                        $('#vioActionDiv #dgv').datagrid('loadData', data.Result);
+                        VioSysConfigMgr.plotBarChart(data.Result);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        }
+    }
+
+    var currentSaveMode = "ADD";
+    function AddVioAction() {
+        currentSaveMode = "ADD";
+        $('#childWin').window('open');
+    }
+    function EditVioAction() {
+        currentSaveMode = "EDIT";
+        var lstData = $('#vioActionDiv #dgv').datagrid('getRows');
+        $('#childWin').window('open');
+    }
+
+</script>

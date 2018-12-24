@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ContractorMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.Contractor">
+		<id column="CONTRACTOR_ID" property="contractorId" jdbcType="VARCHAR" />
+		<result column="CONTRACTOR_NAME" property="contractorName"
+			jdbcType="VARCHAR" />
+		<result column="ADDRESS_DESC" property="addressDesc" jdbcType="VARCHAR" />
+		<result column="CONTRACTOR_PERSON" property="contractorPerson"
+			jdbcType="VARCHAR" />
+		<result column="CONTRACTOR_TEL" property="contractorTel"
+			jdbcType="VARCHAR" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CONTRACTOR_ID, CONTRACTOR_NAME, ADDRESS_DESC, CONTRACTOR_PERSON, CONTRACTOR_TEL,
+		CREATE_BY, CREATE_TIME, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_CONTRACTOR
+		where CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_DEVICE_CONTRACTOR
+		where CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.Contractor">
+		insert into T_DEVICE_CONTRACTOR (CONTRACTOR_ID, CONTRACTOR_NAME,
+		ADDRESS_DESC,
+		CONTRACTOR_PERSON, CONTRACTOR_TEL, CREATE_BY,
+		CREATE_TIME, REMARK)
+		values (#{contractorId,jdbcType=VARCHAR},
+		#{contractorName,jdbcType=VARCHAR}, #{addressDesc,jdbcType=VARCHAR},
+		#{contractorPerson,jdbcType=VARCHAR},
+		#{contractorTel,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.Contractor">
+		insert into T_DEVICE_CONTRACTOR
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="contractorId != null">
+				CONTRACTOR_ID,
+			</if>
+			<if test="contractorName != null">
+				CONTRACTOR_NAME,
+			</if>
+			<if test="addressDesc != null">
+				ADDRESS_DESC,
+			</if>
+			<if test="contractorPerson != null">
+				CONTRACTOR_PERSON,
+			</if>
+			<if test="contractorTel != null">
+				CONTRACTOR_TEL,
+			</if>
+			<if test="createBy != null">
+				CREATE_BY,
+			</if>
+			CREATE_TIME,
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="contractorId != null">
+				#{contractorId,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorName != null">
+				#{contractorName,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDesc != null">
+				#{addressDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorPerson != null">
+				#{contractorPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorTel != null">
+				#{contractorTel,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			SYSDATE,
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Contractor">
+		update T_DEVICE_CONTRACTOR
+		<set>
+			<if test="contractorName != null">
+				CONTRACTOR_NAME = #{contractorName,jdbcType=VARCHAR},
+			</if>
+			<if test="addressDesc != null">
+				ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorPerson != null">
+				CONTRACTOR_PERSON = #{contractorPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorTel != null">
+				CONTRACTOR_TEL = #{contractorTel,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null">
+				CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Contractor">
+		update T_DEVICE_CONTRACTOR
+		set CONTRACTOR_NAME = #{contractorName,jdbcType=VARCHAR},
+		ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+		CONTRACTOR_PERSON = #{contractorPerson,jdbcType=VARCHAR},
+		CONTRACTOR_TEL = #{contractorTel,jdbcType=VARCHAR},
+		CREATE_BY = #{createBy,jdbcType=VARCHAR},
+		CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectContractors" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM (SELECT U.*, ROWNUM RN
+		FROM T_DEVICE_CONTRACTOR U
+		<where>
+			<if test="contractorName != null and contractorName != '' ">
+				AND U.CONTRACTOR_NAME like '%' || #{contractorName,jdbcType=VARCHAR} ||
+				'%'
+			</if>
+			<if test="contractorNameForExactFind != null and contractorNameForExactFind != '' ">
+				AND U.CONTRACTOR_NAME = #{contractorNameForExactFind,jdbcType=VARCHAR}
+			</if>
+			 
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		           <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="countContractors" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_DEVICE_CONTRACTOR U
+		<where>
+			<if test="contractorName != null and contractorName != '' ">
+				U.CONTRACTOR_NAME like '%' || #{contractorName,jdbcType=VARCHAR} ||
+				'%'
+			</if>
+			<if test="contractorNameForExactFind != null and contractorNameForExactFind != '' ">
+				AND U.CONTRACTOR_NAME = #{contractorNameForExactFind,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

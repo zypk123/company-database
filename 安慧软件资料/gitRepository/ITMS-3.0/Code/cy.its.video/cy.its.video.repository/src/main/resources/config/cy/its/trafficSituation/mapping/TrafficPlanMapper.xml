@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficPlanMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficPlan" >
+    <id column="VIDEO_PLAN_ID" property="videoPlanId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_NAME" property="videoPlanName" jdbcType="VARCHAR" />
+    <result column="ENABLE_FLAG" property="enableFlag" jdbcType="CHAR" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+    <result column="DEFAULT_CRUISE_TIMES" property="defaultCruiseTimes" jdbcType="DECIMAL" />
+    <result column="TOTAL_CRUISE_TIMES" property="totalCruiseTimes" jdbcType="DECIMAL" />
+    <result column="PLAN_EXECUTE_TIMES" property="planExecuteTimes" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIDEO_PLAN_ID, ORG_ID, VIDEO_PLAN_NAME, ENABLE_FLAG, CREATE_BY, CREATE_TIME, UPDATE_BY, 
+    UPDATE_TIME,DEFAULT_CRUISE_TIMES,TOTAL_CRUISE_TIMES,PLAN_EXECUTE_TIMES
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PLAN
+    where VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR}
+  </select> 
+  <select id="getTrafficPlanByCondition" resultMap="BaseResultMap"  parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PLAN P
+    <where> 
+    	
+     <if test="orgId != null and orgId != '' ">
+	EXISTS(
+		SELECT O.ORG_ID FROM T_SYS_ORG O WHERE O.ORG_PRIVILEGE_CODE LIKE
+		(SELECT ORG_PRIVILEGE_CODE || '%' FROM T_SYS_ORG WHERE ORG_ID =
+		#{orgId,jdbcType=VARCHAR}) AND O.ORG_ID = P.ORG_ID) 
+		</if>
+		<if test="videoPlanName != null and videoPlanName!=''" >
+        AND VIDEO_PLAN_NAME = #{videoPlanName,jdbcType=VARCHAR}
+      </if> 
+	 </where>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_PLAN
+    where VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficPlan" >
+    insert into T_TRAFFIC_PLAN (VIDEO_PLAN_ID, ORG_ID, VIDEO_PLAN_NAME, 
+      ENABLE_FLAG, CREATE_BY, CREATE_TIME, 
+      UPDATE_BY, UPDATE_TIME,DEFAULT_CRUISE_TIMES,TOTAL_CRUISE_TIMES,PLAN_EXECUTE_TIMES)
+    values (#{videoPlanId,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{videoPlanName,jdbcType=VARCHAR}, 
+      #{enableFlag,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{defaultCruiseTimes,jdbcType=DECIMAL}, 
+      #{totalCruiseTimes,jdbcType=DECIMAL}, #{planExecuteTimes,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficPlan" >
+    insert into T_TRAFFIC_PLAN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="videoPlanId != null" >
+        VIDEO_PLAN_ID,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="videoPlanName != null" >
+        VIDEO_PLAN_NAME,
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="defaultCruiseTimes != null" >
+        DEFAULT_CRUISE_TIMES,
+      </if>
+      <if test="totalCruiseTimes != null" >
+        TOTAL_CRUISE_TIMES,
+      </if>
+      <if test="planExecuteTimes != null" >
+        PLAN_EXECUTE_TIMES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="videoPlanId != null" >
+        #{videoPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanName != null" >
+        #{videoPlanName,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        #{enableFlag,jdbcType=CHAR},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="defaultCruiseTimes != null" >
+        #{defaultCruiseTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="totalCruiseTimes != null" >
+        #{totalCruiseTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="planExecuteTimes != null" >
+        #{planExecuteTimes,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficPlan" >
+    update T_TRAFFIC_PLAN
+    <set >
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanName != null" >
+        VIDEO_PLAN_NAME = #{videoPlanName,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG = #{enableFlag,jdbcType=CHAR},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+       	DEFAULT_CRUISE_TIMES = #{defaultCruiseTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        TOTAL_CRUISE_TIMES = #{totalCruiseTimes,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        PLAN_EXECUTE_TIMES = #{planExecuteTimes,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficPlan" >
+    update T_TRAFFIC_PLAN
+    set ORG_ID = #{orgId,jdbcType=VARCHAR},
+      VIDEO_PLAN_NAME = #{videoPlanName,jdbcType=VARCHAR},
+      ENABLE_FLAG = #{enableFlag,jdbcType=CHAR},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      DEFAULT_CRUISE_TIMES = #{defaultCruiseTimes,jdbcType=TIMESTAMP},
+      TOTAL_CRUISE_TIMES = #{totalCruiseTimes,jdbcType=TIMESTAMP},
+      PLAN_EXECUTE_TIMES = #{planExecuteTimes,jdbcType=TIMESTAMP}
+    where VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR}
+  </update>
+</mapper>

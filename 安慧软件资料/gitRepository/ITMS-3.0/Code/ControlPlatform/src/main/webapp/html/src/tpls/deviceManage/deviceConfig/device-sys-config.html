@@ -1,0 +1,152 @@
+<div id="deviceSysConfigTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div id="deviceInfo" title="设备信息">
+
+    </div>
+    <div title="相机信息" data-options="href:'tpls/deviceManage/deviceRecord/camera-info-list-public.html'">
+
+    </div>
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     * whichType ：设备类型
+     */
+    InitPage(["whichType","whichName","mode","saveData","closeSelf","deviceInfoDto","deviceId","equipmentNbr","certificationUnregistered"],function($scope) {
+        //传递设备类型
+        $scope.$setParam("deviceType",$scope.whichType);
+        if($scope.certificationUnregistered != undefined){
+        	$scope.$setParam("certificationUnregistered", $scope.certificationUnregistered);
+        }
+        if($scope.equipmentNbr){
+        	$scope.$setParam("equipmentNbr", $scope.equipmentNbr);
+        }
+         //传递卡口设备信息值
+        var url;
+        if($scope.whichType == '08'){//事件检测
+			url = 'tpls/deviceManage/deviceRecord/event-detection-info-input.html';
+			//隐藏年检信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '11' || $scope.whichType == '12'){//11违停,12大车占道
+			url = 'tpls/deviceManage/deviceRecord/illegally-parked-info-input.html';
+			//隐藏年检信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '16'){//车载
+			url = 'tpls/deviceManage/deviceRecord/vehicle-info-input.html';
+        }else if($scope.whichType == '05'){//气象
+			url = 'tpls/deviceManage/deviceRecord/meteorological-detection-info-input.html';
+		    //隐藏年检和相机信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',1).panel('options').tab.hide();
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '03'){//视频
+			url = 'tpls/deviceManage/deviceConfig/device-sys-video.html';
+			//隐藏年检和相机信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',1).panel('options').tab.hide();
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '04'){//固定测速
+			url = 'tpls/deviceManage/deviceConfig/device-sys-fixedSpeed.html';
+        }else if($scope.whichType == '09'){//流量检测
+        	url = 'tpls/deviceManage/deviceRecord/flow-check-input.html';
+        	//隐藏年检信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '07'){//诱导屏
+        	url = 'tpls/deviceManage/deviceRecord/induced-screen-input.html';
+        	//隐藏年检和相机信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',1).panel('options').tab.hide();
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+        }else if($scope.whichType == '10'){//短信基站
+			url = 'tpls/deviceManage/deviceRecord/short-message-station.html';
+			//隐藏年检和相机信息tab页
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',1).panel('options').tab.hide();
+			$scope.$('#deviceSysConfigTabs').tabs('getTab',2).panel('options').tab.hide();
+		}
+        $scope.load = function(){
+        	var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab',0);  // 获取选择的面板
+        	$scope.$('#deviceSysConfigTabs').tabs('update',{
+				tab: tab,
+				options: {
+					title: '设备信息',
+					href: url
+				}
+			});
+			tab.panel('refresh', url);
+        };
+        //编辑时传递deviceId到其他三个tab页
+        if($scope.mode != "ADD"){
+        	var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','设备信息');  // 获取设备信息的面板
+			$scope.$('#deviceSysConfigTabs').tabs('update', {
+				tab: tab,
+				options: {
+					cache : false,
+					href : url  // 新内容的URL
+				}
+			});
+			var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','相机信息');  // 获取相机信息的面板
+			$scope.$('#deviceSysConfigTabs').tabs('update', {
+				tab: tab,
+				options: {
+					cache : false,
+					href :'tpls/deviceManage/deviceRecord/camera-info-list-public.html'  // 新内容的URL
+				}
+			});
+       		$scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+            $scope.$setParam("deviceSysNbr",$scope.deviceInfoDto.deviceSysNbr);//年检信息设备编号
+        	$scope.$('#deviceSysConfigTabs').tabs({
+				onSelect: function(title,index){
+					$scope.$setParam("deviceId1",$scope.deviceId);//相机信息
+					$scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+					$scope.$setParam("destroyTab1",$scope.closeSelf);
+					$scope.$setParam("destroyTab2",$scope.closeSelf);
+					//传递保存卡口信息方法
+        			$scope.$setParam("saveData",$scope.saveData);
+			        var currentMode= $scope.mode;
+			        $scope.$setParam("remark",currentMode);
+				}
+			});
+			$scope.$setParam("deviceId",$scope.deviceId);//对应相应的设备信息
+	        $scope.$setParam("deviceId1",$scope.deviceId);//相机信息
+	        $scope.$setParam("deviceId2",$scope.deviceId);//年检信息
+	        $scope.$setParam("deviceSysNbr",$scope.deviceInfoDto.deviceSysNbr);//传设备编号到年检信息页面
+	        $scope.$setParam("deviceId3",$scope.deviceId);//实景图片
+        }
+        //刷新实景图片页面
+        var photoRefresh = function(deviceId){
+        	var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','实景图片');  // 获取相机信息的面板
+        	$scope.$setParam("deviceId3",deviceId);//实景图片
+        	$scope.$setParam("destroyTab4",$scope.closeSelf);
+        	$scope.$setParam("photoRefresh",photoRefresh);
+        	tab.panel('refresh', 'tpls/deviceManage/deviceRecord/bayonet-photo.html');
+        };
+        $scope.$setParam("photoRefresh",photoRefresh);
+       	//传递设备名称
+        $scope.$setParam("whichName",$scope.whichName);
+        //传递设备信息值
+        $scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+        //传递保存方法
+        $scope.$setParam("saveData",$scope.saveData);
+        //获取mode参数
+        var currentMode= $scope.mode;
+        $scope.$setParam("remark",currentMode);
+        //设置访问tab页
+        if(currentMode=="ADD"){
+            var deviceSysConfigTabs = $scope.$("#deviceSysConfigTabs");
+            $scope.$setParam("deviceSysConfigTabs",deviceSysConfigTabs);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 1);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 2);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 3);
+        }
+       
+        //传递关闭弹出框的方法
+        $scope.$setParam("destroyTab1",$scope.closeSelf);
+        if($scope.whichType !="05"){
+        	$scope.$setParam("destroyTab2",$scope.closeSelf);
+        	$scope.$setParam("destroyTab3",$scope.closeSelf);
+        }
+        $scope.$setParam("destroyTab4",$scope.closeSelf);
+    });
+</script>

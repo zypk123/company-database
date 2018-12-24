@@ -1,0 +1,551 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="0">
+    <title>超远控件预览</title>
+    <!--系统基本框架，jQuery，easyui等-->
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../../frameworks/easyui/themes/icon.css">
+    <script src="../../../frameworks/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../../frameworks/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 验证配置 -->
+    <script type="text/javascript" src="../../../js/validation.js"></script>
+    <!-- 自定义框架文件 -->
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/its3.css">
+    <link rel="stylesheet" type="text/css" href="../../../themes/default/css/violationMgr.css">
+    <script type="text/javascript" src="../../../js/rootScope.js"></script>
+    <script type="text/javascript" src="../../../js/templateInit.js"></script>
+    <script type="text/javascript" src="../../../js/date-util.js"></script>
+    <script type="text/javascript" src="../../../js/violationMgr.js"></script>
+
+    <title>实时预览Demo</title>
+    <style type="text/css">
+        div, td, input {
+            font-size: 12px;
+        }
+
+        .ptzBtn {
+            width: 32px;
+        }
+
+        #Select1 {
+            width: 67px;
+        }
+
+        #SelectWnd {
+            width: 70px;
+        }
+    </style>
+</head>
+<body>
+<div class="easyui-layout" id="preViewLayout" data-options='fit:true'>
+    <div data-options="region:'center'">
+        <object clsid="{4188fadd-e305-43e1-bcb2-da63682335dd}" type="application/x-itst-activex"
+                id="VMDPlayerOCX" width="100%" height="100%" name="ocx"></object>
+    </div>
+
+    <!--云台控制-->
+    <div data-options="region:'east',title:'搜索设置'" id="controlPanel" style="width:250px">
+        <div class="divPanel table">
+            <div class="title">
+                云台控制
+            </div>
+            <div class="tr" style="text-align: center">
+                <div class="td col-2">步长：</div>
+                <div class="td col-8">
+                    <input class="easyui-textbox" name="ctrlStep" id="tbCtrlStep"
+                           data-options="valueField:'preset',textField:'preset',panelHeight:'auto'"/>
+                </div>
+                <div class="td col-2">
+                    <a class="easyui-linkbutton button" id="" onclick="setCtrlStep()">设置</a>
+                </div>
+            </div>
+            <div class="col-6">
+
+                <div class="table">
+                    <div class="tr">
+                        <div class="td" style="width: 30px">
+                            <!--左上-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('LeftUp')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/LeftUp.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 30px">
+                            <!--上-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('Up')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/Up.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 30px">
+                            <!--右上-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('RightUp')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/RightUp.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td" style="width: 30px">
+                            <!--左-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('Left')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/Left.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width:30px">
+                            <!--<a class="easyui-linkbutton button" onclick="click1" onmousedown="mousedown1"-->
+                            <!--onmouseup="mouseup1">测试</a>-->
+                        </div>
+                        <div class="td" style="width: 30px">
+                            <!--右-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('Right')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/Right.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td" style="width: 30px">
+                            <!--左下-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('LeftDown')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/LeftDown.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 30px">
+                            <!--下-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('Down')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/Down.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 30px">
+                            <!--右下-->
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('RightDown')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/LeftDown.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+
+                <div class="table">
+                    <div class="tr">
+                        <div class="td">
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('JJminu')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/JJminu.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 50px; text-align: center">焦距</div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button" onmousedown="startPTZCtrl('JJadd')"
+                               onmouseup="stopPTZCtrol()"
+                               style="background:url('../../../themes/default/images/video/JJadd.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td"><a class="easyui-linkbutton button" onmousedown="startPTZCtrl('JDadd')"
+                                           onmouseup="stopPTZCtrol()"
+                                           style="background:url('../../../themes/default/images/video/JDadd.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 50px; text-align: center">焦点</div>
+                        <div class="td"><a class="easyui-linkbutton button" onmousedown="startPTZCtrl('JDminu')"
+                                           onmouseup="stopPTZCtrol()"
+                                           style="background:url('../../../themes/default/images/video/JDminu.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td"><a class="easyui-linkbutton button" onmousedown="startPTZCtrl('GQadd')"
+                                           onmouseup="stopPTZCtrol()"
+                                           style="background:url('../../../themes/default/images/video/GQadd.png') no-repeat center center;"></a>
+                        </div>
+                        <div class="td" style="width: 50px; text-align: center">光圈</div>
+                        <div class="td"><a class="easyui-linkbutton button" onmousedown="startPTZCtrl('GQminu')"
+                                           onmouseup="stopPTZCtrol()"
+                                           style="background:url('../../../themes/default/images/video/GQminu.png') no-repeat center center;"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table" style="text-align: center">
+                <div class="tr" style="text-align: center">
+                    <div class="td">预置点：</div>
+                    <div class="td">
+                        <input class="easyui-combogrid" name="presetList" id="combVideoPreset"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td">
+                        <a class="easyui-linkbutton button" onclick="previewPreset()"
+                                >调用预置点</a>
+                    </div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button" onclick="setPreset()"
+                                >设置预置点</a>
+                    </div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button" onclick="removePreset()"
+                                >删除预置点</a>
+                    </div>
+                    <!--<div class="td">雨刷:</div>-->
+                    <!--<div class="td">-->
+                    <!--<input type="checkbox" name="opBrush"/>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+        <div class="divPanel">
+            <div class="title">
+                抓图格式
+            </div>
+            <div class="table">
+                <div class="tr">
+                    <div class="td col-3">图片格式：</div>
+                    <div class="td col-6">
+                        <select id="cc" class="easyui-combobox" name="dept" style="width:120px;">
+                            <option value="aa">bmp</option>
+                            <option>jpg</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td col-3">抓图路径：</div>
+                    <div class="td col-7">
+                        <input class="easyui-textbox" id="txtCapturePath" name="place" style="width: 120px"/>
+                    </div>
+                    <div class="td col-2">
+                        <a class="easyui-linkbutton button" onclick="setPicPath()">设置</a>
+                    </div>
+                </div>
+                <!--<div class="tr" style="text-align: center">-->
+                <!--<div class="td" style="margin-left: 50px;margin-right: 10px">-->
+                <!--<a class="easyui-linkbutton button" id="btnCaptureVideo" onclick="captureVideo">抓拍</a>-->
+                <!--</div>-->
+                <!--<div class="td" style="margin-left: 50px;margin-right: 10px">-->
+                <!--<a class="easyui-linkbutton button" id="btnBeginTapeVideo" onclick="beginTapeVideo">录象</a>-->
+                <!--<a class="easyui-linkbutton button" id="btnEndTapeVideo" onclick="endTapeVideo">录象</a>-->
+                <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript">
+
+$(function ($) {
+
+    //根据传入参数决定是否显示云台控制控件
+    var local_url = document.location.href;
+    if(local_url.indexOf('realTimeMonitor')){//视频监控
+        $scope=parent.window.$rootScope.$tabs.tabs('getSelected').data('scopeObject');
+    }
+
+	//根据传入参数决定是否显示云台控制控件
+	var local_url = document.location.href;  
+	var u=local_url.split("?");
+    if(typeof(u[1]) == "string"){
+        u = u[1].split("&");
+        for(var i in u){
+            var j = u[i].split("=");//p1=val1 p1 val1
+            getPara[j[0]] = j[1];
+        }
+        if(getPara['singlePreview']&&getPara['singlePreview']=="1"){
+        	hideControl();
+        } 
+    }  
+    $("#combVideoPreset").combogrid(
+            {
+                editable: false,
+                idField: 'preset',
+                textField: 'preset',
+                panelHeight: 'auto',
+                loadMsg: '正在加载，请稍侯',
+                columns: [
+                    [
+                        {field: 'preset', width: 100,sortable:true,formatter: function (value, rowData, rowIndex) {
+                            return '预置点' + value;
+                        }}
+                        //                            {field:'1',formatter:function(value, rowData, rowIndex){
+                        //                                var callBtn = $("<a  title='调用' class='button'></a>");
+                        //                                callBtn.linkbutton({
+                        //                                    iconCls: "icon-export"
+                        //                                });
+                        //                                callBtn.attr('onclick', "previewGridPreset('" + rowIndex + "')");
+                        //                                return $("<span/>").append(callBtn).html();
+                        //                            }},
+                        //                            {field:'2',formatter:function(value,rowData,rowIndex){
+                        //                                var deleteBtn = $("<a  title='移除' class='button'></a>");
+                        //                                deleteBtn.linkbutton({
+                        //                                    iconCls: "icon-remove"
+                        //                                }).attr('onclick', "removeGridPreset('" + rowIndex + "')");
+                        //                                return $("<span/>").append(deleteBtn).html();
+                        //                            }}
+                    ]
+                ],
+                showHeader: false
+            }
+    );
+});
+getPara={};
+//34020000001320000002
+//播放的控件
+Ocx = document.getElementById("VMDPlayerOCX");
+
+curVideoDevice = {
+    deviceId: "",
+    deviceSysNbr: "44020000001320000002",
+    cameraServerTypeIp: "192.168.10.39",
+    videoDeviceName: "IPdome",
+    preViewParam:"",
+    playBackParam:''
+};
+var presetFun = function () {
+};
+initVideo = function (videoDevice) {
+    console.log(videoDevice);
+    curVideoDevice = videoDevice;
+    var ret = Ocx.SetVideoServerIp(curVideoDevice.cameraServerTypeIp);
+
+    if (ret != 0) {
+        console.log("初始化视频失败");
+    }
+    else {
+        $('#tbCtrlStep').textbox('setValue', '150');
+        Ocx.SetDeviceCtrlStep(150);
+        $("#txtCapturePath").textbox('setValue', 'E:\\ps');
+        Ocx.SetCapturePath('E:\\ps');
+        console.log("初始化视频成功");
+    }
+};
+$scope = {};
+
+    //预览预置位
+        previewGridPreset = function (rowIndex) {
+            var grid = $("#combVideoPreset").combogrid("grid");
+            var preset = grid.datagrid("getRows")[0];
+            console.log(preset);//puzzle
+        };
+
+//预览特定预置位
+function previewPreset(presetValue) {
+    console.log('preview preset:'+presetValue);
+    var presetVal=null;
+    if(presetValue){
+        presetVal = presetValue;
+    }
+    else{
+        presetVal=$("#combVideoPreset").combo('getValue');
+    }
+    if(presetVal&&presetVal!=''){
+        var ret = Ocx.PTZCtrlCallPreset(curVideoDevice.deviceSysNbr, parseInt(presetVal));
+        if (ret != 0) {
+            //window.external.notify("Exception:" + "抓图路径失败");
+        }
+        else {
+            //window.external.notify("Exception:" + "调用预置点成功");
+        }
+    }
+};
+changePreviewWindowLayout=function(gridNum){ 
+    Ocx.ChangePreviewWindowLayout(gridNum);
+};
+ 
+//移除预置位
+removeGridPreset = function (rowIndex) {
+    console.log(rowIndex);//puzzle
+};
+
+//移除预置位
+removePreset = function () {
+    var grid = $("#combVideoPreset").combogrid("grid");
+    var deletePreset = grid.datagrid("getSelected");
+    if (!deletePreset || deletePreset === 'undefined') {
+        alert('请选择预置位!');
+        return;
+    }
+    ;
+    $scope.PostAjax(
+            $scope.$restRoot + "/trafficSituation/video/cruisePlan/deleteVideoPreset",
+            {param: JSON.stringify(deletePreset)},
+            function (result) {
+                if (!result.errorMsg || result.errorMsg === '') { //成功
+                    //删除已删除的预置位
+                    var grid = $("#combVideoPreset").combogrid("grid");
+                    var rowIndex = grid.datagrid("getRowIndex", deletePreset);
+                    grid.datagrid("deleteRow", rowIndex);
+                    ////重新选定第一行
+                    grid.datagrid('selectRow', 0);
+                    //删除调用
+                    var ret = Ocx.PTZCtrlDeletePreset(curVideoDevice.deviceSysNbr, parseInt(deletePreset.preset));
+                    console.log('删除相机预置位,' + deletePreset.preset);
+                }
+                else {
+                    alert("删除预置位失败，原因:" + result.errorMsg);
+                }
+            },
+            function (errMsg) {
+                alert('加载预置位失败，原因：' + errMsg);
+            }
+    );
+};
+
+//设置预置点
+setPreset = function () {
+    //按从小大到的顺序选取未使用的值
+    var grid = $("#combVideoPreset").combogrid("grid");
+    var rows = grid.datagrid("getRows");
+    var newPresetValue =rows.length;
+    //$("#combVideoPreset").combobox('loadData', result.result);
+    for (var i =0; i<rows.length ; ++i) {
+        var presetValue = rows[i].preset;
+        if (presetValue!=(i+1)) {
+            newPresetValue=i+1;
+            break;
+        }
+    }
+    console.log("minPreset:" + newPresetValue);
+
+    var newPreset = {
+        deviceId: curVideoDevice.deviceId,
+        preset: newPresetValue
+    };
+    $scope.PostAjax(
+            $scope.$restRoot + "/trafficSituation/video/cruisePlan/createVideoPreset",
+            {param: JSON.stringify(newPreset)},
+            function (result) {
+                if (result && result.result) {//成功
+                    newPreset.presetRecordId = result.result;
+                    var grid = $("#combVideoPreset").combogrid("grid");
+                    grid.datagrid('appendRow', newPreset);
+                    grid.datagrid('sort',{
+                        sortName:'preset',
+                        sortOrder:'asc'
+                    });
+                    $("#combVideoPreset").combogrid('setValue', newPresetValue);
+                    //设置预置位
+                    var ret=Ocx.PTZCtrlSetPreset(curVideoDevice.deviceSysNbr, parseInt(newPresetValue));
+                    if (ret != 0) {
+                        alert("设置预置点失败");
+                        //window.external.notify("Exception:" + "设置预置点失败");
+                    }
+                    else {
+                        alert("设置预置点成功");
+                        //window.external.notify("Exception:" + "设置预置点成功");
+                    }
+                }
+            },
+            function (errMsg) {
+                alert('加载预置位失败，原因：' + errMsg);
+            }
+    );
+};
+
+//加载视频预置位
+loadPreset = function (deviceID) {
+    $scope.$ajaxRequest({
+        url: $scope.$restRoot + "/trafficSituation/video/cruisePlan/getVideoPresetList",
+        params: {param: deviceID},
+        method: "post",
+        success: function (result) {
+            var grid = $("#combVideoPreset").combogrid("grid");
+            grid.datagrid('loadData', result.result);
+            if (result && result.result.length > 0) {
+                grid.datagrid('sort',{
+                    sortName:'preset',
+                    sortOrder:'asc'
+                });
+            }
+        },
+        fail: function (errMsg) {
+            alert('加载预置位失败，原因：' + errMsg);
+        }
+    });
+}; 
+hideControl = function () {
+//   $("#controlPanel").hide();
+//    $("#controlPanel").panel('resize', {
+//        width: 0
+//    });
+    $(".easyui-layout").layout("remove", "east");
+};
+//开始云台控制
+var startPTZCtrl = function (cmdType) {
+    var cmdCode = 19;
+    switch (cmdType) {
+        case "Up":
+            cmdCode = 2;
+            break;
+        case "Down":
+            cmdCode = 3;
+            break;
+        case "Left":
+            cmdCode = 4;
+            break;
+        case "Right":
+            cmdCode = 5;
+            break;
+        case "LeftUp":
+            cmdCode = 6;
+            break;
+        case "LeftDown":
+            cmdCode = 7;
+            break;
+        case "RightUp":
+            cmdCode = 8;
+            break;
+        case "RightDown":
+            cmdCode = 9;
+            break;
+        case "GQminu":
+            cmdCode = 11;
+            break;
+        case "GQadd":
+            cmdCode = 12;
+            break;
+        case "JJminu":
+            cmdCode = 1;
+            break;
+        case "JJadd":
+            cmdCode = 0;
+            break;
+        case "JDminu":
+            cmdCode = 13;
+            break;
+        case "JDadd":
+            cmdCode = 14;
+            break;
+    }
+    console.log("pzctrol:" + cmdType);
+    Ocx.PTZDeviceCtrl(curVideoDevice.deviceSysNbr, cmdCode);
+};
+
+//终止控制
+stopPTZCtrol = function () {
+    console.log("stopPTZCtrol");
+    Ocx.PTZDeviceCtrl(curVideoDevice.deviceSysNbr, 10);
+    Ocx.PTZDeviceCtrl(curVideoDevice.deviceSysNbr, 19);
+};
+
+//设置抓图路径
+setPicPath = function () {
+    var capturePath = $("#txtCapturePath").val();
+    Ocx.SetCapturePath(capturePath);
+    //window.external.notify("Exception:" + "设置抓图路径成功");
+};
+
+//打开视频
+preViewVideo = function () {
+    Ocx.PlayRealTimeVideoEx(curVideoDevice.videoDeviceName, curVideoDevice.deviceSysNbr);
+};
+//设置步长
+setCtrlStep = function () {
+    var step = $('#tbCtrlStep').val();
+    Ocx.SetDeviceCtrlStep(parseInt(step));
+};
+</script>
+</html>
+
+

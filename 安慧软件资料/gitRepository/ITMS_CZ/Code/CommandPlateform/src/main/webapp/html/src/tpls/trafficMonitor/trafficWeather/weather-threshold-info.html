@@ -1,0 +1,148 @@
+<div class="easyui-layout" xmlns="http://www.w3.org/1999/html">
+    <form cy-form="codeData" id="form">
+        <div  id="code" data-options="region:'center',border:false" >
+            <div class="table"><br/>
+                <div class="tr">
+                    <div class="th">阀值类型：</div>
+                    <div class="td">
+                        <select name="alarmValueType"id="qxcs" class="easyui-combobox" cy-code="508" 
+                        style="width: 120px;" data-options="required:true,editable:false">
+                        </select>
+                    </div>                   
+                    <div class="th">子类型：</div>
+                    <div class="td">
+                        <select id="subType"  name="alarmGrade" class="easyui-combobox" style="width: 100px;" 
+                        data-options="required:true,editable:false">
+                        </select>
+                    </div>
+                </div>
+                 <div class="tr">
+                     <div class="th">道路类型：</div>
+                    <div class="td">
+                        <input name="roadType" class="easyui-combobox" cy-code="016" style="width: 120px;"
+                        data-options="editable:false"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">阀值最小值：</div>
+                    <div class="td">
+                        <input id="min" class="easyui-numberbox" name="min" class="easyui-numberbox" 
+                        data-options="min:0,precision:2,validType:'maxValue[\'max\']'" style="width: 120px;"/>
+                        <span id="minUnit"></span>
+                    </div>
+                    <div class="th">阀值最大值：</div>
+                    <div class="td">
+                        <input id="max" class="easyui-numberbox" name="max" class="easyui-numberbox" 
+                        data-options="min:0,precision:2,validType:'minValue[\'min\']'" style="width: 120px;"/>
+	                    <span id="maxUnit"></span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="height:45px;">描述：</div>
+                    <div class="td">
+                        <textarea name="remark" validType="length[0,128]" style="width: 375px;height:45px;"></textarea>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">限速值：</div>
+                    <div class="td">
+                        <input  name="limitSpeed" class="easyui-numberbox" style="width: 120px;"/>km/h
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">发布内容：</div>
+                    <div class="td">
+                        <textarea  name="diffusionContent" validType="length[0,128]" style="width: 375px;height:40px; "> </textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div data-options="region:'south',height:'38px',border:false" >
+                <div class="td" align="center">
+                    <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+                </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["codeData","saveData"],function($scope){
+    	$scope.$getDefaultCode(["501","507","509"]);
+    	 var unit={
+        	"01":"%",
+        	"02":"km/h",
+        	"03":"min",
+        	"04":"min",
+        	"05":"%",
+        	"06":"%",
+        	"31":"m",
+        	"32":"℃",
+        	"33":"mm",
+        	"34":"",
+        	"35":"m/s",
+        	"41":"km/h"
+        };
+        /*01 断面小时流量上升幅度
+		02 断面车速差
+		03 断面断流持续时间
+		04 平均旅行时间
+		05 区间饱和度
+		06 大型车辆占比
+		31 能见度
+		32 路面温度
+		33 水膜厚度
+		34 路面状况
+		35风速
+		41道路通行状态 */
+        $scope.save = function(){
+        	if($scope.$("#form").form("validate")){
+				//从form取数据
+				$scope.$updateData("codeData");
+				//对对象中的每个元素进行trim操作
+				trimObject($scope.newData);
+				//调用父页面方法
+				$scope.saveData($scope.codeData);
+			}
+		};
+        //根据气阀值参数变化改变子类型填充数据
+        $scope.$("#qxcs").combobox({
+            onChange:function(value){            	
+            	if(value=="41"){            		
+            		$scope.$("#subType").combobox("loadData",$rootScope.$code["501"]);
+            	}
+            	else if(value=="34"){
+            		$scope.$("#subType").combobox("loadData",$rootScope.$code["509"]);
+            	}
+            	else{
+            		$scope.$("#subType").combobox("loadData",$rootScope.$code["507"]);
+            	}
+            	console.log(unit[value]);
+            	$scope.$("#minUnit").text(unit[value]); 
+            	$scope.$("#maxUnit").text(unit[value]); 
+            }
+        });
+       
+        
+    });
+</script>
+<style type="text/css">
+
+    #code .th {
+        width: 135px;
+        text-align: right;
+    }
+    #code .red{
+        color: red;
+    }
+    #code .orange{
+        color: orange;
+    }
+    #code .yellow{
+        color:yellowgreen;
+    }
+    #code .blue{
+        color: blue;
+    }
+
+</style>

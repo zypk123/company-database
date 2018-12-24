@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Function_HabitMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Function_Habit" >
+    <id column="USE_HABITS_ID" property="useHabitsId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="INDIVIDUAL_ITEMS" property="individualItems" jdbcType="CHAR" />
+    <result column="INDIVIDUAL_ITEM_VALUE" property="individualItemValue" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    USE_HABITS_ID, USER_ID, INDIVIDUAL_ITEMS, INDIVIDUAL_ITEM_VALUE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_FUNCTION_HABIT
+    where USE_HABITS_ID = #{useHabitsId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_FUNCTION_HABIT
+    where USE_HABITS_ID = #{useHabitsId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function_Habit" >
+    insert into T_SYS_FUNCTION_HABIT (USE_HABITS_ID, USER_ID, INDIVIDUAL_ITEMS, 
+      INDIVIDUAL_ITEM_VALUE)
+    values (#{useHabitsId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{individualItems,jdbcType=CHAR}, 
+      #{individualItemValue,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function_Habit" >
+    insert into T_SYS_FUNCTION_HABIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="useHabitsId != null" >
+        USE_HABITS_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="individualItems != null" >
+        INDIVIDUAL_ITEMS,
+      </if>
+      <if test="individualItemValue != null" >
+        INDIVIDUAL_ITEM_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="useHabitsId != null" >
+        #{useHabitsId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="individualItems != null" >
+        #{individualItems,jdbcType=CHAR},
+      </if>
+      <if test="individualItemValue != null" >
+        #{individualItemValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function_Habit" >
+    update T_SYS_FUNCTION_HABIT
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="individualItems != null" >
+        INDIVIDUAL_ITEMS = #{individualItems,jdbcType=CHAR},
+      </if>
+      <if test="individualItemValue != null" >
+        INDIVIDUAL_ITEM_VALUE = #{individualItemValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where USE_HABITS_ID = #{useHabitsId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function_Habit" >
+    update T_SYS_FUNCTION_HABIT
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      INDIVIDUAL_ITEMS = #{individualItems,jdbcType=CHAR},
+      INDIVIDUAL_ITEM_VALUE = #{individualItemValue,jdbcType=VARCHAR}
+    where USE_HABITS_ID = #{useHabitsId,jdbcType=VARCHAR}
+  </update>
+</mapper>

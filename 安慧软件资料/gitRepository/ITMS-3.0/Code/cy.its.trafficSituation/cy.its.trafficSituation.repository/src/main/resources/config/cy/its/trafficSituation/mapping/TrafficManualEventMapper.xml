@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficManualEventMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficManualEvent" >
+    <id column="ROAD_EVENT_ID" property="roadEventId" jdbcType="VARCHAR" />
+    <result column="EVENT_TYPE" property="eventType" jdbcType="CHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_ID" property="roadSectionId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="LON_LAT" property="lonLat" jdbcType="VARCHAR" />
+    <result column="EVENT_DESC" property="eventDesc" jdbcType="VARCHAR" />
+    <result column="REPORT_BY" property="reportBy" jdbcType="VARCHAR" />
+    <result column="REPORT_TIME" property="reportTime" jdbcType="TIMESTAMP" />
+    <result column="EVENT_RELEASE_TYPE" property="eventReleaseType" jdbcType="CHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROAD_EVENT_ID, EVENT_TYPE, ROAD_ID, ROAD_SECTION_ID, DIRECTION_TYPE, DIRECTION_NAME, 
+    LON_LAT, EVENT_DESC, REPORT_BY, REPORT_TIME, EVENT_RELEASE_TYPE, ORG_ID, ORG_PRIVILEGE_CODE, 
+    REMARK
+  </sql>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_MANUAL_EVENT
+    <where> 1=1 
+    <if test="startTime!=null and startTime != ''" >
+    	<![CDATA[AND REPORT_TIME >= #{startTime,jdbcType=TIMESTAMP}]]> 
+    </if>
+    <if test="endTime!=null and endTime != ''" >
+    	 <![CDATA[AND REPORT_TIME <= #{endTime,jdbcType=TIMESTAMP}]]> 
+    </if>
+    <if test="roadId!=null and roadId != ''" >
+    	AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+    </if>
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+    </where>
+    ORDER BY REPORT_TIME DESC
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_MANUAL_EVENT
+    where ROAD_EVENT_ID = #{roadEventId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_MANUAL_EVENT
+    where ROAD_EVENT_ID = #{roadEventId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficManualEvent" >
+    insert into T_TRAFFIC_MANUAL_EVENT (ROAD_EVENT_ID, EVENT_TYPE, ROAD_ID, 
+      ROAD_SECTION_ID, DIRECTION_TYPE, DIRECTION_NAME, 
+      LON_LAT, EVENT_DESC, REPORT_BY, 
+      REPORT_TIME, EVENT_RELEASE_TYPE, ORG_ID, 
+      ORG_PRIVILEGE_CODE, REMARK)
+    values (#{roadEventId,jdbcType=VARCHAR}, #{eventType,jdbcType=CHAR}, #{roadId,jdbcType=VARCHAR}, 
+      #{roadSectionId,jdbcType=VARCHAR}, #{directionType,jdbcType=CHAR}, #{directionName,jdbcType=VARCHAR}, 
+      #{lonLat,jdbcType=VARCHAR}, #{eventDesc,jdbcType=VARCHAR}, #{reportBy,jdbcType=VARCHAR}, 
+      #{reportTime,jdbcType=TIMESTAMP}, #{eventReleaseType,jdbcType=CHAR}, #{orgId,jdbcType=VARCHAR}, 
+      #{orgPrivilegeCode,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualEvent" >
+    insert into T_TRAFFIC_MANUAL_EVENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadEventId != null" >
+        ROAD_EVENT_ID,
+      </if>
+      <if test="eventType != null" >
+        EVENT_TYPE,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT,
+      </if>
+      <if test="eventDesc != null" >
+        EVENT_DESC,
+      </if>
+      <if test="reportBy != null" >
+        REPORT_BY,
+      </if>
+      <if test="reportTime != null" >
+        REPORT_TIME,
+      </if>
+      <if test="eventReleaseType != null" >
+        EVENT_RELEASE_TYPE,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadEventId != null" >
+        #{roadEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        #{eventType,jdbcType=CHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionId != null" >
+        #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDesc != null" >
+        #{eventDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="reportBy != null" >
+        #{reportBy,jdbcType=VARCHAR},
+      </if>
+      <if test="reportTime != null" >
+        #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="eventReleaseType != null" >
+        #{eventReleaseType,jdbcType=CHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficManualEvent" >
+    update T_TRAFFIC_MANUAL_EVENT
+    <set >
+      <if test="eventType != null" >
+        EVENT_TYPE = #{eventType,jdbcType=CHAR},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDesc != null" >
+        EVENT_DESC = #{eventDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="reportBy != null" >
+        REPORT_BY = #{reportBy,jdbcType=VARCHAR},
+      </if>
+      <if test="reportTime != null" >
+        REPORT_TIME = #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="eventReleaseType != null" >
+        EVENT_RELEASE_TYPE = #{eventReleaseType,jdbcType=CHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROAD_EVENT_ID = #{roadEventId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficManualEvent" >
+    update T_TRAFFIC_MANUAL_EVENT
+    set EVENT_TYPE = #{eventType,jdbcType=CHAR},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      EVENT_DESC = #{eventDesc,jdbcType=VARCHAR},
+      REPORT_BY = #{reportBy,jdbcType=VARCHAR},
+      REPORT_TIME = #{reportTime,jdbcType=TIMESTAMP},
+      EVENT_RELEASE_TYPE = #{eventReleaseType,jdbcType=CHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ROAD_EVENT_ID = #{roadEventId,jdbcType=VARCHAR}
+  </update>
+</mapper>

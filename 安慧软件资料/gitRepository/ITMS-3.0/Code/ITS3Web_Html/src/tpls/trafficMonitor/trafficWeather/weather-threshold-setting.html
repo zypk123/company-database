@@ -1,0 +1,161 @@
+<div  class="easyui-layout">
+    <div data-options="region:'center',split:true" >
+        <div class="linkbutton_toolbar" id="dm-toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addDm">添加</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="deleteDm">删除</a>
+        </div>
+        <table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+               cy-url="data/trafficMonitor/trafficWeather/setting-data.json"></table>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope){
+        var qxcsData=[];
+        var yjjbData=[];
+        $scope.load=function(){
+            readDict();
+        };
+
+        $scope.optionsDm = {
+            columns: [
+                [
+                    {field: 'id',checkbox:true,align: 'center',width: 50},
+                    {field:'qxcs',title:'气象参数',align:'center',formatter:options_qxcs, width:40},
+                    {field: 'fzzxz',title: '阀值最小值',align: 'center',width: 30},
+                    {field: 'fzzdz',title: '阀值最大值',align: 'center',width: 30},
+                    {field: 'yjjb',title: '预警级别',align: 'center',formatter:options_yjjb,width: 30},
+                    {field: 'lmzk',title: '路面状况',align: 'center',width: 30},
+                    {field: 'ms',title: '描述',align: 'center',width: 70},
+                    {field: 'xsz',title: '限速值(km/h)',align: 'center',width: 30},
+                    {field: 'fbnr',title: '发布内容',align: 'center',width: 130},
+                    {field: 'cz',title: '操作',align: 'center',formatter: optionsDmCz,width: 40}
+                ]
+            ],
+            toolbar: $scope.$("#dm-toolbar")
+        };
+        function readDict(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/dict.json",
+                params :{},
+                success :function(data){
+                   qxcsData=data.qxcs;
+                    yjjbData=data.yjjb;
+                    //查询默认数据
+                    $scope.$search("deptQueryDm");
+                },
+                fail : function(){}
+            });
+        }
+        function options_qxcs(value,row,index){
+            return getDictTextByValue( value,qxcsData);
+        }
+        function options_yjjb(value,row,index){
+           return getDictTextByValue( value,yjjbData);
+        }
+        function getDictTextByValue(value,data){
+            for(var i in data){
+                if(value==data[i].value){
+                    return data[i].text;
+                }
+            }
+        }
+        function optionsCode(value,row,index){
+            var button1 = $("<a class='button-enable' cy-click='enable("+index+")'></a>");
+            var button2 = $("<a class='button-disable' cy-click='disable("+index+")'></a>");
+            button1.linkbutton({
+                iconCls: "icon-enable"
+            });
+            button2.linkbutton({
+                iconCls: "icon-disable"
+            });
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        //操作栏信息
+        function optionsDmCz(value, row, index) {
+            var button1 = $("<a class='button-edit' cy-click='editDm(" + index + ")'></a>");//编辑按钮
+            var button2 = $("<a class='button-remove' cy-click='removeDm(" + index + ")'></a>");//删除按钮
+
+            button1.linkbutton({
+                iconCls: "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls: "icon-remove"
+            });
+
+            return $("<span/>").append(button1).append(" ").append(button2).append(" ").html();
+        }
+        $scope.addDm=function(){
+            //保存按钮
+            // 通过Ajax提交和后台交互
+
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+            $scope.$setParam("dicts", {
+                qxcs : qxcsData,
+                yjjb : yjjbData
+            });
+            $scope.$openDialog("addDialog",{
+                title:"添加阀值信息",
+                width:600,
+                height:310,
+                href:"tpls/trafficMonitor/trafficWeather/weather-threshold-info.html?type=add"
+            })
+        };
+        //编辑页面
+        $scope.editDm=function(index){
+            //获取所有行数数据
+            var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+            //机构信息注入当前行数据
+            $scope.$setParam("codeData", rowDatas[index]);
+            //注入字典数据气象参数、预警级别
+            $scope.$setParam("dicts", {
+                qxcs : qxcsData,
+                yjjb : yjjbData
+            });
+            //保存按钮
+            // 通过Ajax提交和后台交互
+
+            $scope.$openDialog("editDialog",{
+                title:"修改阀值",
+                width:600,
+                height:310,
+                href:"tpls/trafficMonitor/trafficWeather/weather-threshold-info.html?type=edit"
+            })
+        };
+
+        //机构信息批量删除操作
+        $scope.deleteDm = function () {
+            //获得所有的行数
+            var rows = $scope.$("#dmData").datagrid("getChecked");
+            //选择要删除的行
+            if (rows.length > 0) {
+                $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                    if (r) {
+                        var ids = [];
+                        for (var i = 0; i < rows.length; i++) {
+                            ids.push(rows[i].ID);
+                        }
+                        //将选择到的行存入数组并用,分隔转换成字符串，
+                        //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id
+                        // alert(ids.join(','));
+                    }
+                });
+            } else {
+                $.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+            }
+        };
+        //删除当前行信息
+        $scope.removeDm = function (index) {
+            $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                if (r) {
+
+                }
+            });
+        };
+
+    })
+</script>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_JunctionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Junction" >
+    <id column="JUNCTION_ID" property="junctionId" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="JUNCTION_CODE" property="junctionCode" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="JUNCTION_NAME" property="junctionName" jdbcType="VARCHAR" />
+    <result column="JUNCTION_TYPE" property="junctionType" jdbcType="VARCHAR" />
+    <result column="IS_CROSS" property="isCross" jdbcType="CHAR" />
+    <result column="CROSS_ROAD_ID" property="crossRoadId" jdbcType="VARCHAR" />
+    <result column="ROAD_BRANCH_NUM" property="roadBranchNum" jdbcType="VARCHAR" />
+    <result column="ROAD_STRUCTURE" property="roadStructure" jdbcType="VARCHAR" />
+    <result column="ROAD_LINEAR" property="roadLinear" jdbcType="VARCHAR" />
+    <result column="ROAD_ISOLATION" property="roadIsolation" jdbcType="VARCHAR" />
+    <result column="PROTECT_FACILITIES" property="protectFacilities" jdbcType="VARCHAR" />
+    <result column="JUNC_BEGIN_METER" property="juncBeginMeter" jdbcType="DECIMAL" />
+    <result column="JUNC_END_METER" property="juncEndMeter" jdbcType="DECIMAL" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    JUNCTION_ID, ROAD_ID, JUNCTION_CODE, DISTRICT_CODE, JUNCTION_NAME, JUNCTION_TYPE, 
+    IS_CROSS, CROSS_ROAD_ID, ROAD_BRANCH_NUM, ROAD_STRUCTURE, ROAD_LINEAR, ROAD_ISOLATION, 
+    PROTECT_FACILITIES, JUNC_BEGIN_METER, JUNC_END_METER, UPDATE_TIME, ORG_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_JUNCTION
+    where JUNCTION_ID = #{junctionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_JUNCTION
+    where JUNCTION_ID = #{junctionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Junction" >
+    insert into T_SYS_JUNCTION (JUNCTION_ID, ROAD_ID, JUNCTION_CODE, 
+      DISTRICT_CODE, JUNCTION_NAME, JUNCTION_TYPE, 
+      IS_CROSS, CROSS_ROAD_ID, ROAD_BRANCH_NUM, 
+      ROAD_STRUCTURE, ROAD_LINEAR, ROAD_ISOLATION, 
+      PROTECT_FACILITIES, JUNC_BEGIN_METER, JUNC_END_METER, 
+      UPDATE_TIME, ORG_ID)
+    values (#{junctionId,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR}, #{junctionCode,jdbcType=VARCHAR}, 
+      #{districtCode,jdbcType=VARCHAR}, #{junctionName,jdbcType=VARCHAR}, #{junctionType,jdbcType=VARCHAR}, 
+      #{isCross,jdbcType=CHAR}, #{crossRoadId,jdbcType=VARCHAR}, #{roadBranchNum,jdbcType=VARCHAR}, 
+      #{roadStructure,jdbcType=VARCHAR}, #{roadLinear,jdbcType=VARCHAR}, #{roadIsolation,jdbcType=VARCHAR}, 
+      #{protectFacilities,jdbcType=VARCHAR}, #{juncBeginMeter,jdbcType=DECIMAL}, #{juncEndMeter,jdbcType=DECIMAL}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{orgId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Junction" >
+    insert into T_SYS_JUNCTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="junctionId != null" >
+        JUNCTION_ID,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="junctionCode != null" >
+        JUNCTION_CODE,
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE,
+      </if>
+      <if test="junctionName != null" >
+        JUNCTION_NAME,
+      </if>
+      <if test="junctionType != null" >
+        JUNCTION_TYPE,
+      </if>
+      <if test="isCross != null" >
+        IS_CROSS,
+      </if>
+      <if test="crossRoadId != null" >
+        CROSS_ROAD_ID,
+      </if>
+      <if test="roadBranchNum != null" >
+        ROAD_BRANCH_NUM,
+      </if>
+      <if test="roadStructure != null" >
+        ROAD_STRUCTURE,
+      </if>
+      <if test="roadLinear != null" >
+        ROAD_LINEAR,
+      </if>
+      <if test="roadIsolation != null" >
+        ROAD_ISOLATION,
+      </if>
+      <if test="protectFacilities != null" >
+        PROTECT_FACILITIES,
+      </if>
+      <if test="juncBeginMeter != null" >
+        JUNC_BEGIN_METER,
+      </if>
+      <if test="juncEndMeter != null" >
+        JUNC_END_METER,
+      </if>
+      UPDATE_TIME,
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="junctionId != null" >
+        #{junctionId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionCode != null" >
+        #{junctionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionName != null" >
+        #{junctionName,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionType != null" >
+        #{junctionType,jdbcType=VARCHAR},
+      </if>
+      <if test="isCross != null" >
+        #{isCross,jdbcType=CHAR},
+      </if>
+      <if test="crossRoadId != null" >
+        #{crossRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadBranchNum != null" >
+        #{roadBranchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="roadStructure != null" >
+        #{roadStructure,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLinear != null" >
+        #{roadLinear,jdbcType=VARCHAR},
+      </if>
+      <if test="roadIsolation != null" >
+        #{roadIsolation,jdbcType=VARCHAR},
+      </if>
+      <if test="protectFacilities != null" >
+        #{protectFacilities,jdbcType=VARCHAR},
+      </if>
+      <if test="juncBeginMeter != null" >
+        #{juncBeginMeter,jdbcType=DECIMAL},
+      </if>
+      <if test="juncEndMeter != null" >
+        #{juncEndMeter,jdbcType=DECIMAL},
+      </if>
+      SYSDATE,
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Junction" >
+    update T_SYS_JUNCTION
+    <set >
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionCode != null" >
+        JUNCTION_CODE = #{junctionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionName != null" >
+        JUNCTION_NAME = #{junctionName,jdbcType=VARCHAR},
+      </if>
+      <if test="junctionType != null" >
+        JUNCTION_TYPE = #{junctionType,jdbcType=VARCHAR},
+      </if>
+      <if test="isCross != null" >
+        IS_CROSS = #{isCross,jdbcType=CHAR},
+      </if>
+      <if test="crossRoadId != null" >
+        CROSS_ROAD_ID = #{crossRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadBranchNum != null" >
+        ROAD_BRANCH_NUM = #{roadBranchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="roadStructure != null" >
+        ROAD_STRUCTURE = #{roadStructure,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLinear != null" >
+        ROAD_LINEAR = #{roadLinear,jdbcType=VARCHAR},
+      </if>
+      <if test="roadIsolation != null" >
+        ROAD_ISOLATION = #{roadIsolation,jdbcType=VARCHAR},
+      </if>
+      <if test="protectFacilities != null" >
+        PROTECT_FACILITIES = #{protectFacilities,jdbcType=VARCHAR},
+      </if>
+      <if test="juncBeginMeter != null" >
+        JUNC_BEGIN_METER = #{juncBeginMeter,jdbcType=DECIMAL},
+      </if>
+      <if test="juncEndMeter != null" >
+        JUNC_END_METER = #{juncEndMeter,jdbcType=DECIMAL},
+      </if>
+      UPDATE_TIME = SYSDATE,
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where JUNCTION_ID = #{junctionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Junction" >
+    update T_SYS_JUNCTION
+    set ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      JUNCTION_CODE = #{junctionCode,jdbcType=VARCHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      JUNCTION_NAME = #{junctionName,jdbcType=VARCHAR},
+      JUNCTION_TYPE = #{junctionType,jdbcType=VARCHAR},
+      IS_CROSS = #{isCross,jdbcType=CHAR},
+      CROSS_ROAD_ID = #{crossRoadId,jdbcType=VARCHAR},
+      ROAD_BRANCH_NUM = #{roadBranchNum,jdbcType=VARCHAR},
+      ROAD_STRUCTURE = #{roadStructure,jdbcType=VARCHAR},
+      ROAD_LINEAR = #{roadLinear,jdbcType=VARCHAR},
+      ROAD_ISOLATION = #{roadIsolation,jdbcType=VARCHAR},
+      PROTECT_FACILITIES = #{protectFacilities,jdbcType=VARCHAR},
+      JUNC_BEGIN_METER = #{juncBeginMeter,jdbcType=DECIMAL},
+      JUNC_END_METER = #{juncEndMeter,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      ORG_ID = #{orgId,jdbcType=VARCHAR}
+    where JUNCTION_ID = #{junctionId,jdbcType=VARCHAR}
+  </update>
+</mapper>

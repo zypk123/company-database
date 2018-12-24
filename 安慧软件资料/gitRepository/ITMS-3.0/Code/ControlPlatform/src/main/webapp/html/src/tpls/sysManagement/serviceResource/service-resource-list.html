@@ -1,0 +1,134 @@
+<div class="easyui-layout" id="service-resource-list">
+	<div data-options="region:'north',border:false,height:120">
+		 <!-- 查询条件区 -->
+		 <form cy-form="formData" id="form">
+		 	<div class="searchPanel">
+		 		<div class="panel_title">查询条件</div>
+		 			<div class="table">
+		 				<div class="tr">
+		 					<div class="th">姓名:</div>
+		 					<div class="td">
+		 						<input class="easyui-textbox" name="name" style="width:100px;"/>
+		 					</div>
+		 					<div class="th">性别：</div>
+		 					<div class="td">
+		 						<input class="easyui-combobox" cy-code="105" name="sex" style="width:100px;"/>
+		 					</div>
+		 					<div class="th">生日:</div>
+		 					<div class="td">
+		 						<input class="easyui-datebox" name="birth" style="width:100px;"/>
+		 					</div>
+		 					<div class="td">
+		 						<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+		 					</div>
+		 				</div>
+		 			</div>
+		 	</div>
+		 </form>
+		 
+		 <!-- 按钮区 -->
+		 <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeData">删除</a>
+         </div>
+	</div>
+	
+	<!-- 数据展示区 -->
+	<div data-options="region:'center',border:false">
+		<table cy-datagrid="options" cy-querydata="queryData" cy-url="..."></table>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		
+		/**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+		$scope.options = {
+			columns:[[
+				{
+					field : 'id',
+					checkbox : true,
+					align : 'center',
+					width : 10
+				}, {
+					field : 'name',
+					title : '姓名',
+					align : 'center',
+					width : 20
+				}, {
+					field : 'sex',
+					title : '性别',
+					align : 'center',
+					width : 20
+				}, {
+					field : 'birth',
+					title : '生日',
+					align : 'center',
+					width : 20
+				}, {
+					field : 'option',
+					title : '操作',
+					align : "center",
+					width : 20
+				}]]
+		};
+		
+		/**
+		 * 初始化操作
+		 */
+		/* $scope.load = function() {
+			//添加默认参数
+			$scope.formData.name = "张三";
+			$scope.formData.sex = "1";
+			$scope.formData.birth = "2012-12-12";
+			$scope.$updateDom("formData");
+		}; */
+		
+		 //条件查询
+        $scope.searchData = function(){
+        	if ($scope.$("#form").form("validate")) {
+	            $scope.$updateData("formData");
+	            $scope.$search("formData");
+        	}
+        };
+        
+        //弹出添加窗口
+        $scope.addData = function(){
+        	debugger;
+        	$scope.$openDialog("addDialog",{
+				href : "tpls/sysManagement/serviceResource/service-resource-input.html",
+				height : 400,
+				width : 800,
+				title : "添加用户"
+			});
+        	
+        	//$scope.$setParam:用来各个页面间是的数据交互
+        	$scope.$setParam("saveData",function(data){
+				console.log(data);
+				//交互
+				// $.ajax({
+					// ...
+					// success : function(){
+						//新增保存
+						//关闭窗口
+						$scope.$getDialog("addDialog").dialog("close");
+						//刷新列表
+						$scope.$search('queryData');
+					// }
+				// });
+        });
+	};
+ });
+</script>
+
+<style>
+	#service-resource-list .th {
+		width: 60px;
+		text-align: right;
+	}
+	#service-resource-list .td {
+		width: 110px;
+	}
+</style>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.WfNoticeMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.WfNotice" >
+    <id column="NOTICE_ID" property="noticeId" jdbcType="VARCHAR" />
+    <result column="NOTICE_TILE" property="noticeTile" jdbcType="VARCHAR" />
+    <result column="NOTICE_CONTENT" property="noticeContent" jdbcType="VARCHAR" />
+    <result column="NOTICE_USER" property="noticeUser" jdbcType="VARCHAR" />
+    <result column="NOTICE_TIME" property="noticeTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    NOTICE_ID, NOTICE_TILE, NOTICE_CONTENT, NOTICE_USER, NOTICE_TIME, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_NOTICE
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="selectTop15Data" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.WfNotice" >
+    select 
+    <include refid="Base_Column_List" />
+	from (select  * from  T_WF_NOTICE  T WHERE T.NOTICE_USER = #{noticeUser,jdbcType=VARCHAR}  ORDER BY  T.NOTICE_TIME  DESC)
+	 where <![CDATA[ rownum < 15  ]]>  
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_NOTICE
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.WfNotice" >
+    insert into T_WF_NOTICE (NOTICE_ID, NOTICE_TILE, NOTICE_CONTENT, 
+      NOTICE_USER, NOTICE_TIME, REMARK
+      )
+    values (#{noticeId,jdbcType=VARCHAR}, #{noticeTile,jdbcType=VARCHAR}, #{noticeContent,jdbcType=VARCHAR}, 
+      #{noticeUser,jdbcType=VARCHAR}, #{noticeTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.WfNotice" >
+    insert into T_WF_NOTICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        NOTICE_ID,
+      </if>
+      <if test="noticeTile != null" >
+        NOTICE_TILE,
+      </if>
+      <if test="noticeContent != null" >
+        NOTICE_CONTENT,
+      </if>
+      <if test="noticeUser != null" >
+        NOTICE_USER,
+      </if>
+      <if test="noticeTime != null" >
+        NOTICE_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        #{noticeId,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeTile != null" >
+        #{noticeTile,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeUser != null" >
+        #{noticeUser,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeTime != null" >
+        #{noticeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertBatch" parameterType="java.util.Map" >
+    insert into T_WF_NOTICE 
+    select  
+    	NT_SQU.NEXTVAL,
+    	a.device_name||'-驳回通知',
+	  	c.name_||'的设备申请单，设备名称为：'||a.device_name||'，已被'||(select u.first_ from  act_id_user u where u.id_=#{user,jdbcType=VARCHAR})||'驳回，请查看流程！',
+	  	t.approval_user,
+	  	current_date,'程序生成' 
+	  	from  t_wf_check_record  t 
+	  	left join t_wf_device_approve  a  on a.device_approve_id  =  t.apply_id
+	  	left  join  act_id_group  c  on  a.unit  = c.id_ 
+	 	where  t.apply_id  =  #{applyId,jdbcType=VARCHAR}  
+	  	and t.approval_user != #{user,jdbcType=VARCHAR}  
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.WfNotice" >
+    update T_WF_NOTICE
+    <set >
+      <if test="noticeTile != null" >
+        NOTICE_TILE = #{noticeTile,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        NOTICE_CONTENT = #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeUser != null" >
+        NOTICE_USER = #{noticeUser,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeTime != null" >
+        NOTICE_TIME = #{noticeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.WfNotice" >
+    update T_WF_NOTICE
+    set NOTICE_TILE = #{noticeTile,jdbcType=VARCHAR},
+      NOTICE_CONTENT = #{noticeContent,jdbcType=VARCHAR},
+      NOTICE_USER = #{noticeUser,jdbcType=VARCHAR},
+      NOTICE_TIME = #{noticeTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where NOTICE_ID = #{noticeId,jdbcType=VARCHAR}
+  </update>
+</mapper>

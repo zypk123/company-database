@@ -1,0 +1,425 @@
+<div class="easyui-layout" id="dataPath">
+	 <!--左边列表区 -->
+    <div data-options="region:'west',border:false, title:'导航区域'" style="width: 200px">
+        <div class="easyui-layout">
+            <div data-options="region:'center',border:false">
+                <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+                    <div title="按机构">
+                        <ul id="orgTree"></ul>
+                    </div>
+                    <div title="按道路">
+                        <ul id="roadTree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div data-options="region:'center',border:true">
+        <div class="easyui-layout">
+            <!--查询条件区 -->
+			<div data-options="region:'north',border:false">
+				<form cy-name="formData" id="form">
+					<div class="searchPanel">
+	                <div class="panel_title">查询条件</div>
+						<div class="table">
+							<div class="tr">
+								<div class="th">设备编号：</div>
+								<div class="td">
+									<input id="deviceSysNbr" class="easyui-textbox" name="deviceSysNbr"/>
+								</div>
+								<div class="th">点位名称：</div>
+								<div class="td">
+									<input id="siteName" class="easyui-textbox" name="siteName"/>
+								</div>
+								<div class="th">过车时间：</div>
+			                    <div class="td">
+			                        <input id="start" class="easyui-datetimebox" name="passTimeFrom" style="width:150px" data-options="required: true, validType:['maxDate[\'end\']','date']"/>
+			                                                                                         到
+			                        <input id="end" class="easyui-datetimebox" name="passTimeTo" style="width:150px" data-options="required: true, validType:['minDate[\'start\']','date']"/>
+			                    </div>
+							</div>
+							<div class="tr">
+								<div class="th">平均延迟：</div>
+								<div class="td" style="width:415px;">
+									<input type="radio" name="avgDelay" value="" checked="checked"/>全部
+									<input type="radio" name="avgDelay" value="1"/>8秒内
+									<input type="radio" name="avgDelay" value="2"/>30秒内
+									<input type="radio" name="avgDelay" value="3"/>60秒内
+									<input type="radio" name="avgDelay" value="4"/>3分钟内
+									<input type="radio" name="avgDelay" value="5"/>3分钟以上
+								</div>
+								<div class="th">接入稽查布控：</div>
+								<div class="td">
+									<input type="radio" name="isConnectTrackSys" value="2" checked="checked"/>全部
+									<input type="radio" name="isConnectTrackSys" value="1"/>是
+									<input type="radio" name="isConnectTrackSys" value="0"/>否
+								</div>
+			                    <div class="td">
+			                        <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+			                    </div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div data-options="region:'center',border:true">
+				<div class="easyui-layout">
+					<div id="data-view-area" data-options="region:'center',border:false">
+						<table id="path" cy-datagrid="options" cy-querydata="formData" cy-url="device/deviceDataPath/queryDeviceDataPath">
+							
+						</table>
+					</div>
+					<div data-options="region:'south',border:false" style="height: 20px">
+						<span>共</span><span id="totalRes" style="color: blue">0</span><span>记录</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],function($scope){
+		/**
+		 * 页面加载完后一些初始化处理
+		 */
+		$scope.load = function() {
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			loadOrgTree();
+			loadRoadTree();
+			//设置查询条件默认过车时间
+			var nowTime = new Date();
+			var Y = nowTime.getFullYear();
+			var M = nowTime.getMonth() + 1;
+			var D = nowTime.getDate();
+			var h = nowTime.getHours();
+			var m = nowTime.getMinutes();
+			var s = nowTime.getSeconds();
+			var endTime = Y + '-' + M + '-' + D + ' ' + h + ':' + m + ':' + s;
+			var t = nowTime.getTime();//当前时间的毫秒数
+			var st = new Date(t - (1800 * 1000));//30分钟前日期
+			var startTime = (st.getFullYear()) + '-' + (st.getMonth() + 1) + '-'+ (st.getDate()) + ' ' + st.getHours() + ':' + st.getMinutes() + ':' + st.getSeconds();
+			$scope.$("#start").datetimebox("setValue",startTime);//过车开始时间
+			$scope.$("#end").datetimebox("setValue",endTime);//过车结束时间
+			$scope.formData.passTimeFrom = startTime;
+			$scope.formData.passTimeTo = endTime;
+			$scope.formData.isConnectTrackSys = $scope.$("input[name='isConnectTrackSys']:checked").val();
+			$scope.formData.orgPrivilegeCode = $scope.UserInfo.orgPrivCode;
+			$scope.formData.orderName = "deviceSysNbr";
+        	$scope.formData.orderType = "asc";
+			$scope.$search("formData");
+			
+			//切换tab页时查询
+			$scope.$('#tollgateTabs').tabs({
+				onSelect: function(title,index){
+					if(title == '按机构'){
+						//默认选中根节点
+						var root = $scope.$("#orgTree").tree("getRoots")[0];
+						$scope.$("#orgTree").tree("select", root.target);
+						var orgPrivCode = root.attribute.orgPrivCode;//机构权限过滤代码
+						var text = root.text;
+						$scope.formData.orgPrivilegeCode = orgPrivCode;
+						$scope.formData.roadId = null;
+						$scope.formData.roadType = null;
+						$scope.formData.siteId = null;
+						$scope.formData.roadCode = null;
+						$scope.formData.pageNumber = 1;
+						$scope.$updateData("formData");
+						changeAvgDelay();
+						$scope.$search("formData");
+					}else if(title == '按道路'){
+						//默认选中根节点
+						var root = $scope.$("#roadTree").tree("getRoots")[0];
+						$scope.$("#roadTree").tree("select", root.target);
+						//获取道路树的所有道路类型
+						var id = root.attribute.code;
+						var text = root.text;
+						var nodeType = root.attribute.nodeType;
+						$scope.formData.pageNumber = 1;
+						if (nodeType == "road") {
+							$scope.formData.roadCode = id;
+							$scope.formData.orgPrivilegeCode = $scope.UserInfo.orgPrivCode;//当前用户所在机构
+							$scope.formData.siteCode = null;
+						} else if (nodeType == "site") {
+							$scope.formData.siteCode = id;
+							$scope.formData.orgPrivilegeCode = $scope.UserInfo.orgPrivCode;//当前用户所在机构
+							$scope.formData.roadCode = null;
+						} else if (nodeType == "roadType") {//根据道路类型节点不做查询
+							return;
+						} else {
+							$scope.formData.orgPrivilegeCode = $scope.UserInfo.orgPrivCode;//当前用户所在机构
+							$scope.formData.roadCode = null;
+							$scope.formData.siteCode = null;
+						}
+						$scope.$updateData("formData");
+						changeAvgDelay();
+						$scope.$search("formData");
+					}
+				}
+			});
+		};
+		//加载机构树菜单
+		function loadOrgTree() {
+			//加载机构树
+			$scope.$("#orgTree").tree({
+				data : $scope.$org,
+				onClick : $scope.orgTreeNodeClick,
+				onContextMenu : $scope.showTreeContextMenu,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//收起全部节点
+					$(this).tree("collapseAll");
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					$scope.formData.userOrgId = root.id;
+				}
+			});
+		}
+		//加载道路树点位
+		function loadRoadTree() {
+			var queryParams = {
+				id : "", //默认根节点为空，表示查询基础数据
+				type : "0",//默认类型为0
+				currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode//当前用户所在机构
+			};
+			$scope.$("#roadTree").tree({
+				url : $scope.$restRoot + "/device/site/getSiteTreeByRootId",
+				queryParams : queryParams,
+				onClick : $scope.roadTreeNodeClick,
+				onContextMenu : $scope.showTreeContextMenu,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					if (queryParams.type == 0) {
+						//树类型为按道路展示时，删除第二级节点中的空节点
+						for (var index = 0; index < root.children.length; index++) {
+							var item = root.children[index];
+							if (!item.children || item.children.length == 0) {
+								//删除空节点
+								$(this).tree("pop", document.getElementById(item.domId));
+								index--;
+							}
+						}
+					}
+				}
+			});
+		}
+		/**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+		$scope.options = {
+			sortName : "deviceSysNbr",
+        	sortOrder : "asc",
+			columns:[[
+				{align : "center",title : "设备编号",field : "deviceSysNbr",width : 120,sortable : true},
+				{align : "center",title : "道路",field : "roadName",width : 120},
+				{align : "center",title : "点位",field : "siteName",width : 120},
+				{align : "center",title : "方向",field : "direction",width : 120},
+				{align : "center",title : "管理机构",field : "orgName",width : 120},
+				{align : "center",title : "期间上传数据（条）",field : "uploadTotal",width : 100,formatter : uploadTotalCheck},
+				{align : "center",title : "平均延迟（秒）",field : "avgDelay",width : 70,formatter : checkColor},
+				{align : "center",title : "接入稽查布控",field : "connectTrackSys",width : 70,formatter : getNameByCode},
+				{align : "center",title : "传输轨迹",field : "path",width : 60,formatter : lookPath}
+			]],
+			nowrap:false,
+			pagination : false,
+			onSortColumn : function(sortName,sortType){
+            	$scope.formData.orderName = sortName;
+           		$scope.formData.orderType = sortType;
+           		$scope.$search("formData");
+            },
+			onLoadSuccess : function(data) {
+				$scope.$("#totalRes").text(data.rows.length);
+			}
+		};
+		function lookPath(value, rowData, index){
+			var lookBtn = $("<a title='查看' class='button-look' cy-click='look(" + index + ")'></a>");
+			lookBtn.linkbutton({
+            	plain:true,
+                iconCls:"icon-look-solid"
+            });
+			if(rowData.avgDelay == ''){//无延迟时间
+				lookBtn.linkbutton('disable').removeAttr('cy-click');
+            }
+			return $("<span/>").append(lookBtn).html();
+		}
+		function uploadTotalCheck(value, rowData, rowIndex){
+			if(value == undefined){
+				return "--";
+			}else{
+				return value;
+			}
+		}
+		//根据延迟时间改变数字颜色
+		function checkColor(value, rowData, rowIndex){
+			if(value > 8 || value < 0){
+				//超过8秒或者小于0秒
+				return "<span style='color:red'>" + value + "</span>";
+			}else if(value == 0){
+				//未统计到延迟时间
+				return "--";
+			}else{
+				//未超出规定
+				return value;
+			}
+		}
+		function getNameByCode(value, rowData, rowIndex){
+			if(value == "是"){
+				return "<span style='color:blue'>" + value + "</span>";
+			}else{
+				return value;
+			}
+		}
+		/**
+		 *左击左边树查询 
+		 */
+		//左击机构树点击事件
+		$scope.orgTreeNodeClick = function(node) {
+			var orgPrivCode = node.attribute.orgPrivCode;//机构权限过滤代码
+			var text = node.text;
+			$scope.formData.orgPrivilegeCode = orgPrivCode;
+			$scope.formData.roadId = null;
+			$scope.formData.roadType = null;
+			$scope.formData.siteId = null;
+			$scope.formData.roadCode = null;
+			$scope.formData.pageNumber = 1;
+			$scope.$updateData("formData");
+			changeAvgDelay();
+			$scope.$search("formData");
+		};
+		//左击道路点位树点击事件
+		$scope.roadTreeNodeClick = function(node) {
+			var orgPrivCode = $scope.UserInfo.orgPrivCode;//机构权限过滤代码
+			var id = node.attribute.code;
+			var text = node.text;
+			var nodeType = node.attribute.nodeType;
+			$scope.formData.pageNumber = 1;
+			if (nodeType == "road") {
+				$scope.formData.roadCode = id;
+				$scope.formData.orgPrivilegeCode = orgPrivCode;
+				$scope.formData.siteCode = null;
+			} else if (nodeType == "site") {
+				$scope.formData.siteCode = id;
+				$scope.formData.orgPrivilegeCode = orgPrivCode;
+				$scope.formData.roadCode = null;
+			} else if (nodeType == "roadType") {//根据道路类型节点不做查询
+				return;
+			} else {
+				$scope.formData.orgPrivilegeCode = orgPrivCode;
+				$scope.formData.roadCode = null;
+				$scope.formData.siteCode = null;
+			}
+			$scope.$updateData("formData");
+			changeAvgDelay();
+			$scope.$search("formData");
+		};
+		//按钮条件查询
+		$scope.searchData = function(){
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("formData");
+				changeAvgDelay();
+				$scope.$search("formData");
+			}
+		};
+		/**
+		 *根据延迟时间的大小对参数进行赋值 
+		 */
+		function changeAvgDelay(){
+			var avgDelay = $scope.$("input[name='avgDelay']:checked").val();//获取选中的平均延迟时间值
+			if(avgDelay == '1'){
+				$scope.formData.maxDelay = 8;
+				$scope.formData.minDelay = null;
+			}else if(avgDelay == '2'){
+				$scope.formData.maxDelay = 30;
+				$scope.formData.minDelay = null;
+			}else if(avgDelay == '3'){
+				$scope.formData.maxDelay = 60;
+				$scope.formData.minDelay = null;
+			}else if(avgDelay == '4'){
+				$scope.formData.maxDelay = 180;
+				$scope.formData.minDelay = null;
+			}else if(avgDelay == '5'){
+				$scope.formData.maxDelay = null;
+				$scope.formData.minDelay = 180;
+			}else{
+				$scope.formData.maxDelay = null;
+				$scope.formData.minDelay = null;
+			}
+			var deviceSysNbr = $scope.$("#deviceSysNbr").textbox("getValue");
+			var siteName = $scope.$("#siteName").textbox("getValue");
+			$scope.formData.deviceSysNbr = deviceSysNbr;
+			$scope.formData.siteName = siteName;
+			var startTime = $scope.$("#start").datetimebox("getValue");//过车开始时间
+			var endTime = $scope.$("#end").datetimebox("getValue");//过车结束时间
+			$scope.formData.passTimeFrom = startTime;
+			$scope.formData.passTimeTo = endTime;
+			$scope.formData.isConnectTrackSys = $scope.$("input[name='isConnectTrackSys']:checked").val();
+		}
+		/**
+		 * 显示查询进度条
+		 */
+		var searchProgress = function() {
+			$.messager.progress({
+				title : false,
+				msg : "正在查询，请稍后...",
+				interval : 1000,
+				text : "查询中..."
+			});
+		};
+		$scope.look = function(index){
+			//显示查询进度条
+			searchProgress();
+			var rowData = $scope.$("#path").datagrid("getData").rows[index];
+			var data = {};
+			data.passTimeFrom = $scope.$("#start").datetimebox("getValue");
+			data.passTimeTo = $scope.$("#end").datetimebox("getValue");
+			data.deviceSysNbr = rowData.deviceSysNbr;
+			data.connectTrackSys = rowData.connectTrackSys;
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + 'device/deviceDataPath/dataPathDetailOfDevice',
+				params : data,
+				success : function(data){
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					data.startTime = $scope.$("#start").datetimebox("getValue");
+					data.endTime = $scope.$("#end").datetimebox("getValue");
+					$scope.$setParam("formData",data);
+					var url = "";
+					if(rowData.connectTrackSys == "是"){
+						url = "tpls/deviceManage/systemMaintainManage/data-transmission-path-details.html";
+					}else if(rowData.connectTrackSys == "否"){
+						url = "tpls/deviceManage/systemMaintainManage/data-transmission-path-details-other.html";
+					}
+					$scope.$openDialog("lookPath",{
+						title : "传输轨迹详情",
+						width : "750",
+						height : "420",
+						href : url
+					},true);
+				},
+				fail : function(errMsg){
+					$.messager.progress("close");
+					$.messager.alert('提示','查看传输轨迹失败！');
+				}
+			});
+		};
+	});
+</script>
+<style type="text/css">
+    #dataPath .th{
+        width: 80px;
+        text-align: right;
+    }
+    #dataPath .easyui-combobox{
+        width: 150px;
+    }
+    #dataPath .button-search{
+       margin-left: 10px;
+    }
+</style>

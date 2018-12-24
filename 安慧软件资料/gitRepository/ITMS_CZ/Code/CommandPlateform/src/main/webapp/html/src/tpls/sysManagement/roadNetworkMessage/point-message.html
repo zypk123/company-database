@@ -1,0 +1,356 @@
+<!--点位信息主页面-->
+<div class="easyui-layout" id="point-message">
+	<div data-options="region:'north',border:false" style="height: 120px;border-bottom: solid 1px #ddd">
+		<form cy-form="queryForm">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr" id="userId">
+						<div class="th">
+							点位编号：
+						</div>
+						<div class="td">
+							<input type="text" name="siteCode" class="easyui-textbox" style="width:120px;">
+						</div>
+						<div class="th">
+							点位名称：
+						</div>
+						<div class="td">
+							<input type="text" name="siteName" class="easyui-textbox" style="width: 120px;">
+						</div>
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td" style="width: 160px;">
+							<select type="text" name="orgIds" class="cy-org-checkbox" style="width: 150px;"></select>
+						</div>
+						<div class="th">
+							行政区划：
+						</div>
+						<div class="td" style="width: 160px;">
+							<input id="districts" name="districtCode" class="cy-district-radio" style="width: 150px;"/>
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="linkbutton_toolbar">
+				<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+				id="addSiteBtn" cy-click="addSiteMenu">新增点位</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+				cy-click="removeSites">批量删除</a>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="siteGrid" cy-datagrid="optionsPt" cy-querydata="queryForm"
+		cy-url="device/site/findSite"></table>
+	</div>
+	<!-- <div id="addSiteMenu">
+	<!-- <div cy-click="addSiteMenu" data-value="3" data-options="iconCls:'icon-add-solid'">
+			道路点位
+		</div> 
+		<div cy-click="addSiteMenu" data-value="2" data-options="iconCls:'icon-add-solid'">
+			路段点位
+		</div>
+		<div cy-click="addSiteMenu" data-value="1" data-options="iconCls:'icon-add-solid'">
+			路口点位
+		</div>
+	</div> -->
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+        $scope.load = function() {
+        	//新增按钮菜单初始化
+            // $scope.$("#addSiteBtn").menubutton({
+                // menu : $scope.$("#addSiteMenu")
+            // });
+            $scope.queryForm.orderName = "siteCode";
+            $scope.queryForm.orderType = "asc";
+            $scope.$search("queryForm");
+        };
+        $scope.optionsPt = {
+        	sortName : "siteCode",
+        	sortOrder : "asc",
+            columns : [[{
+                field : 'siteId',
+                checkbox : true,
+                align : 'center'
+            }, {
+                field : 'siteCode',
+                title : '点位编号',
+                align : 'center',
+                width : 15,
+                sortable : true
+            }, {
+                field : 'siteName',
+                title : '点位名称',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'orgId',
+                title : '所属机构',
+                align : 'center',
+                width : 15,
+                sortable : true,
+                formatter : $scope.$getOrgName
+            },{
+                field : 'districtCode',
+                title : '行政区划',
+                align : 'center',
+                width : 15,
+                formatter : $scope.$getDistrictName
+            }, {
+                field : 'siteLongitude',
+                title : '经度',
+                align : 'center',
+                width : 10,
+                formatter : function(value) {
+                    if (value == 0) {
+                        return "--";
+                    } else {
+                        return value;
+                    }
+                }
+            }, {
+                field : 'siteLatitude',
+                title : '纬度',
+                align : 'center',
+                width : 10,
+                formatter : function(value) {
+                    if (value == 0) {
+                        return "--";
+                    } else {
+                        return value;
+                    }
+                }
+            }, {
+                field : 'operate',
+                title : '操作',
+                align : 'center',
+                formatter : optionCz,
+                width : 15
+            }]],
+            onSortColumn : function(sortName,sortType){
+            	$scope.queryForm.orderName = sortName;
+           		$scope.queryForm.orderType = sortType;
+           		$(this).datagrid("getPager").pagination("select",1);
+            },
+            nowrap:false
+            /*onDblClickRow : function(rowIndex, rowData) {
+                $scope.$setParam("siteData", rowData);
+                $scope.$openDialog("viewSite", {
+                    title : "点位信息",
+                    height : 500,
+                    width : 800,
+                    href : "tpls/sysManagement/roadNetworkMessage/point-message-view.html"
+                });
+            }*/
+        };
+        function optionCz(value, row, index) {
+            var button1 = $("<a class='button-edit' title='编辑' cy-click='editSite(" + index + ")'></a>");
+            //编辑按钮
+            var button2 = $("<a class='button-remove' title='删除' cy-click='removeSite(" + index + ")'></a>");
+            //删除按钮
+            button1.linkbutton({
+                plain : true,
+                iconCls : "icon-edit-solid"
+            });
+            button2.linkbutton({
+                plain : true,
+                iconCls : "icon-remove-solid"
+            });
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        };
+        //添加点位信息
+        $scope.addSiteMenu = function(event) {
+            // var ele = event.currentTarget;
+            // var siteType = $(ele).attr("data-value");
+            // var siteTypeName = $(ele).text();
+            // $scope.$setParam("siteType",siteType);
+            // var url;
+            // if(siteType == '3'){//道路点位
+            	// url = "tpls/sysManagement/roadNetworkMessage/point-road-add.html";
+            // }else if(siteType == '2'){//路段点位
+            	// url = "tpls/sysManagement/roadNetworkMessage/point-segment-add.html";
+            // }else if(siteType == '1'){//路口点位
+            	// url = "tpls/sysManagement/roadNetworkMessage/point-crossing-add.html";
+            // }
+            //打开点位信息窗口
+            $scope.$openDialog("addDialog", {
+                title : "新增点位",
+                height : 600,
+                width : 800,
+                href : "tpls/sysManagement/roadNetworkMessage/point-segment-add.html"
+            });
+            //保存点位信息
+            $scope.$setParam("saveData", function(data) {
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "device/site/addSite",
+                    params : {jsonSitelString:JSON.stringify(data)},
+                    success : function(data) {
+						if(data == 'codeError'){
+							$.messager.alert("提示", "点位编号已存在，请重新输入！");
+						}else if(data == 'success'){
+	                        //关闭窗口
+	                        $scope.$getDialog("addDialog").dialog("close");
+	                        //刷新列表
+	                        $scope.$search("queryForm");
+						}
+                    },
+                    fail : function(errMsg){
+	                	$.messager.alert("提示","添加点位相关信息失败！");
+	                }
+                });
+            });
+        };
+        //查询点位信息
+        $scope.searchData = function() {
+            $scope.$updateData("queryForm");
+            $scope.$search("queryForm");
+        };
+
+        //编辑点位信息
+        $scope.editSite = function(index) {
+            var rowData = $scope.$("#siteGrid").datagrid("getRows")[index];
+            var siteId = rowData.siteId;
+            var siteType = rowData.siteType;
+            var url;
+            // if(siteType == '3'){//道路点位      	//url = "tpls/sysManagement/roadNetworkMessage/point-road-add.html";
+            // }else if(siteType == '2'){//路段点位      	
+            url = "tpls/sysManagement/roadNetworkMessage/point-segment-add.html";
+            // }else if(siteType == '1'){//路口点位
+            	// url = "tpls/sysManagement/roadNetworkMessage/point-crossing-add.html";
+            // }
+            $scope.$ajaxRequest({
+                url : $scope.$restRoot + "device/site/querySite",
+                params : {siteId : siteId},
+                success : function(data) {
+                    $scope.$setParam("siteInfo",data);
+                    //打开点位信息窗口
+			        $scope.$openDialog("editDialog", {
+			            title : "编辑点位信息",
+			            height : 600,
+			            width : 800,
+			            href : url
+			        });
+			        $scope.$setParam("saveData", function(data) {
+		                $scope.$ajaxRequest({
+		                    url : $scope.$restRoot + "device/site/editSite",
+		                    params : {jsonSitelString:JSON.stringify(data)},
+		                    success : function(data) {
+		                    	if(data.result){
+		                    		$.messager.alert("提示","修改点位相关信息成功！");
+			                        //关闭窗口
+			                        $scope.$getDialog("editDialog").dialog("close");
+			                        //刷新列表
+			                        $scope.$updateData("queryForm");
+			                        $scope.$search("queryForm");
+		                    	}else{
+									$.messager.alert("提示",data.message);		                    		
+		                    	}
+		                    },
+		                    fail : function(errMsg){
+			                	$.messager.alert("提示",errMsg);
+			                } 
+		                });
+		            });
+                },
+                fail : function(errMsg){
+                	$.messager.alert("提示","查询点位相关信息失败！");
+                } 
+            });
+        };
+
+        /**
+         * 按行删除点位
+         */
+        $scope.removeSite = function(index) {
+            var rowData = $scope.$("#siteGrid").datagrid("getRows")[index];
+            var siteId = rowData.siteId;//点位ID
+            //判断点位是否已绑定设备
+            $scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceConfig/queryDeviceBySiteId",
+				params : {siteId:siteId},
+				success : function(data){
+					if(data == ""){//未绑定设备
+						remove(rowData.siteId);
+					}else if(data != ""){//已绑定设备
+						$.messager.alert("提示","此点位已绑定设备，禁止删除！");
+					}
+				}
+			});
+        };
+
+        /**
+         * 批量删除点位
+         */
+        $scope.removeSites = function() {
+            var rows = $scope.$("#siteGrid").datagrid("getChecked");
+            if(rows.length == 0){
+            	$.messager.alert("提示","请选择需要删除的点位记录！");
+            }else{
+            	var ids = "";
+                for (var index in rows) {
+                    ids += rows[index].siteId + ",";
+                }
+                siteId = ids.substring(0, ids.length - 1);
+                $scope.$ajaxRequest({
+    				url : $scope.$restRoot + "device/deviceConfig/queryDeviceBySiteId",
+    				params : {siteId:siteId},
+    				success : function(data){
+    					if(data == ""){//未绑定设备
+               				remove(siteId);
+    					}else if(data != ""){//已绑定设备
+    						var siteName = "";
+    						for (var j = 0; j < rows.length; j++) {
+								if(rows[j].siteId == data){
+									siteName = rows[j].siteName;
+		    						$.messager.alert("提示",siteName + "已绑定设备，禁止删除！");
+									return false;
+								}
+							}
+    					}
+    				}
+    			});	
+            }
+        };
+
+        /**
+         * ajax删除
+         */
+        function remove(siteId) {
+			$.messager.confirm("警告","确定删除？",function(r){
+				if(r){
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/site/delete",
+						params : {siteId:siteId},
+						success : function(data){
+							if(data == "success"){
+								$scope.$search("queryForm");
+								$.messager.alert("提示","删除成功！");
+							}
+						},
+						fail : function(errMsg){
+							$.messager.alert("提示","删除失败！");
+						}					
+					});
+				}
+			});
+        };
+    }); 
+</script>
+<style type="text/css">
+    #point-message .th {
+        text-align: right;
+        width: 70px;
+    }
+    #point-message .td {
+        width: 130px;
+    }
+</style>

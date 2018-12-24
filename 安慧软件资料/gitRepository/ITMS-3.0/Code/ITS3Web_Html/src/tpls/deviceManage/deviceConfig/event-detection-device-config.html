@@ -1,0 +1,32 @@
+<div id="eventDetectionDeviceTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div title="设备信息" data-options="href:'tpls/deviceManage/deviceConfig/event-detection-device-base-info.html'">
+
+    </div>
+    <div title="相机信息" data-options="href:'tpls/deviceManage/deviceConfig/camera-info.html'">
+
+    </div>
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceConfig/event-detection-certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceConfig/device-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     */
+    InitPage(["mode"],function($scope) {
+        //获取mode参数
+        var currentMode= $scope.mode;
+        //设置访问tab页
+        if(currentMode=="ADD")
+        {
+            var tollgateTabs=$scope.$("#eventDetectionDeviceTabs");
+            $scope.$setParam("tollgateTabs",tollgateTabs);
+            $scope.$("#eventDetectionDeviceTabs").tabs('disableTab', 1);
+            $scope.$("#eventDetectionDeviceTabs").tabs('disableTab', 2);
+            $scope.$("#eventDetectionDeviceTabs").tabs('disableTab', 3);
+        }
+    });
+</script>

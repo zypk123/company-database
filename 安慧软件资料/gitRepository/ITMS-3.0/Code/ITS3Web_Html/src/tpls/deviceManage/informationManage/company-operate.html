@@ -1,0 +1,61 @@
+<div id="addmanufacturer" class="easyui-layout">
+    <form cy-form="formData">
+        <div class="searchPanel">
+            <div class="table">
+                <div class="tr">
+                    <div class="th">承建商：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="CONTRACTOR_NAME"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">联系地址：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="ADDRESS_DESC">
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">售后负责人：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="CONTRACTOR_PERSON">
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">售后负责人联系电话：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="CONTRACTOR_TEL">
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th"></div>
+                    <div class="td">
+                        <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+                        <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'"  cy-click="$destroySelf">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    /**
+     * formData ：页面数据，Object格式
+     * saveData ：保存数据的方法
+     */
+    InitPage(["formData","saveData"],function($scope){
+        $scope.save = function(){
+            //更新获取form中的数据
+            $scope.$update("formData");
+            $scope.saveData($scope.formData);
+        }
+    });
+</script>
+<style type="text/css">
+    #addmanufacturer .th{
+        width: 120px;
+        text-align: right;
+    }
+    #addmanufacturer .easyui-textbox{
+        width: 200px;
+    }
+</style>

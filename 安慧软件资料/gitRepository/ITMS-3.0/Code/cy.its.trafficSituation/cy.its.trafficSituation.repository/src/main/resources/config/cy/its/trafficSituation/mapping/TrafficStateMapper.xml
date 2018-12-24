@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficStateMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficState" >
+    <id column="ROAD_STATE_ID" property="roadStateId" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_ID" property="roadSectionId" jdbcType="VARCHAR" />
+    <result column="SETION_ID" property="setionId" jdbcType="VARCHAR" />
+    <result column="REGION_ID" property="regionId" jdbcType="VARCHAR" />
+    <result column="TRAFFIC_STATE" property="trafficState" jdbcType="CHAR" />
+    <result column="STATE_DURATION" property="stateDuration" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROAD_STATE_ID, ROAD_SECTION_ID, SETION_ID, REGION_ID, TRAFFIC_STATE, STATE_DURATION, 
+    UPDATE_TIME
+  </sql>
+  
+   <select id="selectByRoadSectionID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_STATE
+    where ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_STATE
+    where ROAD_STATE_ID = #{roadStateId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_STATE
+    where ROAD_STATE_ID = #{roadStateId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficState" >
+    insert into T_TRAFFIC_STATE (ROAD_STATE_ID, ROAD_SECTION_ID, SETION_ID, 
+      REGION_ID, TRAFFIC_STATE, STATE_DURATION, 
+      UPDATE_TIME)
+    values (#{roadStateId,jdbcType=VARCHAR}, #{roadSectionId,jdbcType=VARCHAR}, #{setionId,jdbcType=VARCHAR}, 
+      #{regionId,jdbcType=VARCHAR}, #{trafficState,jdbcType=CHAR}, #{stateDuration,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficState" >
+    insert into T_TRAFFIC_STATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadStateId != null" >
+        ROAD_STATE_ID,
+      </if>
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID,
+      </if>
+      <if test="setionId != null" >
+        SETION_ID,
+      </if>
+      <if test="regionId != null" >
+        REGION_ID,
+      </if>
+      <if test="trafficState != null" >
+        TRAFFIC_STATE,
+      </if>
+      <if test="stateDuration != null" >
+        STATE_DURATION,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadStateId != null" >
+        #{roadStateId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionId != null" >
+        #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="setionId != null" >
+        #{setionId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null" >
+        #{regionId,jdbcType=VARCHAR},
+      </if>
+      <if test="trafficState != null" >
+        #{trafficState,jdbcType=CHAR},
+      </if>
+      <if test="stateDuration != null" >
+        #{stateDuration,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficState" >
+    update T_TRAFFIC_STATE
+    <set >
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="setionId != null" >
+        SETION_ID = #{setionId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionId != null" >
+        REGION_ID = #{regionId,jdbcType=VARCHAR},
+      </if>
+      <if test="trafficState != null" >
+        TRAFFIC_STATE = #{trafficState,jdbcType=CHAR},
+      </if>
+      <if test="stateDuration != null" >
+        STATE_DURATION = #{stateDuration,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ROAD_STATE_ID = #{roadStateId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficState" >
+    update T_TRAFFIC_STATE
+    set ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+      SETION_ID = #{setionId,jdbcType=VARCHAR},
+      REGION_ID = #{regionId,jdbcType=VARCHAR},
+      TRAFFIC_STATE = #{trafficState,jdbcType=CHAR},
+      STATE_DURATION = #{stateDuration,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where ROAD_STATE_ID = #{roadStateId,jdbcType=VARCHAR}
+  </update>
+</mapper>

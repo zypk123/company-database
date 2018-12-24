@@ -1,0 +1,321 @@
+<!--路段信息主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="roadSectionForm" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table" id="roadSectionCondition">
+					<div class="tr">
+						<div class="th">
+							路段编号：
+						</div>
+						<div class="td">
+							<input  name="roadSectionCode" class="easyui-textbox" style="width:90px;" data-options="validType:['notBlank','length[0,4]']" />
+						</div>
+						<div class="th">
+							路段名称：
+						</div>
+						<div class="td">
+							<input  name="roadSectionName" class="easyui-textbox" style="width: 150px;" data-options="validType:['notBlank']"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input  name="roadId" class="cy-road-radio" style="width: 140px;"/>
+						</div>
+						<div class="th">
+							路段类型：
+						</div>
+						<div class="td">
+							<input  name="roadSectionType" cy-code="148" class="easyui-combobox" style="width: 100px;"/>
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+			cy-click="addRoadSection">添加</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+			cy-click="removeRoadSection">删除</a>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="roadSection" cy-datagrid="optionsRoadSection" cy-querydata="roadSectionForm"
+		cy-url="road/roadSection/searchRoadSection"></table>
+	</div>
+	<div data-options="region:'south'"></div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['148']);
+		$scope.load = function() {
+			$scope.roadSectionForm.orderName="roadSectionCode";
+			$scope.roadSectionForm.orderType="asc";
+			$scope.$updateData("roadSectionForm");
+			$scope.$search("roadSectionForm");
+		};
+		$scope.searchData = function() {
+			if($scope.$("#form").form("validate")){
+				$scope.$updateData("roadSectionForm");
+				//获得当前第几页数
+				var count = $scope.$("#roadSection").datagrid("getPager").pagination("options").pageNumber;
+				if (count > 1) {
+					//刷新,跳转到第一页
+					$scope.$("#roadSection").datagrid("getPager").pagination("select", 1);
+				} else {
+					$scope.$search("roadSectionForm");
+				}
+			}
+		};
+
+		$scope.optionsRoadSection = {
+			sortName : "roadSectionCode",
+			sortOrder : "asc",
+			columns : [[{
+				field : 'roadSectionId',
+				checkbox : true,
+				align : 'center'
+			}, {
+				field : 'roadSectionCode',
+				title : '路段编号',
+				align : 'center',
+				sortable : true, 
+				width : 25
+			}, {
+				field : 'roadSectionName',
+				title : '路段名称',
+				align : 'center',
+				width : 40
+			}, {
+				field : 'roadSectionType',
+				title : '路段类型',
+				formatter : roadSectionType,
+				align : 'center',
+				width : 20
+			}, {
+				field : 'roadId',
+				title : '所属道路',
+				align : 'center',
+				formatter : $scope.$getRoadName,
+				width : 35
+			}, {
+				field : 'districtCode',
+				title : '行政区划',
+				formatter : $scope.$getDistrictName,
+				align : 'center',
+				width : 35
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionCz,
+				width : 15
+			}]],
+			nowrap : false,
+			onSortColumn : function(sortName,sortType){
+				$scope.roadSectionForm.orderName = sortName;
+           		$scope.roadSectionForm.orderType = sortType;
+           		$scope.$(this).datagrid("getPager").pagination("select",1);
+			},
+			//双击查看详情
+			onDblClickRow : function(rowIndex, rowData) {
+				$scope.$setParam("roadSectionCheck", rowData);
+				$scope.$openDialog("viewDialog", {
+					title : '路段详情页面',
+					width : 700,
+					height : 250,
+					href : "tpls/sysManagement/roadNetworkMessage/road-section-message-check.html"
+				});
+			}
+		};
+		function optionCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='editRoadSection(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='button-remove' cy-click='deteleRoadSection(" + index + ")'></a>");
+			//删除按钮
+
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		};
+		/**
+		 *根据路段code获取name
+		 */
+		function roadSectionType(value, row, index) {
+			var roadSectionType = $scope.$getCodeName("148", value);
+			return roadSectionType;
+		}
+		$scope.addRoadSection = function() {
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/roadSection/saveRoadSection",
+					method : "post",
+					params : data,
+					success : function(data) {
+						if(data==0){
+							$.messager.alert("提示","该道路上已存在该路段编码,请重新输入！");
+						}else if(data==1){
+							$scope.$getDialog("addDialog").dialog("close");
+						//获得当前第几页数
+						var curr = $scope.$("#roadSection").datagrid("getPager").pagination("options").pageNumber;
+						if (curr > 1) {
+							//刷新,跳转到第一页
+							$scope.$("#roadSection").datagrid("getPager").pagination("select", 1);
+						} else {
+							$scope.$search("roadSectionForm");
+						}
+						}
+						
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+			$scope.$openDialog("addDialog", {
+				title : "新增路段信息",
+				width : 750,
+				height : 250,
+				href : "tpls/sysManagement/roadNetworkMessage/road-section-message-input.html?type=add"
+			}, true);
+		};
+		$scope.editRoadSection = function(index) {
+			//获取当前行数数据
+			var rowDatas = $scope.$("#roadSection").datagrid("getData").rows[index];
+			//获得当前行的Id
+			var roadSectoionId = rowDatas.roadSectoionId;
+			//系统代码信息注入当前行数据
+			$scope.$setParam("roadSectionData", rowDatas);
+			//设置保存方法
+			$scope.$setParam("editData", function(data) {
+				//向后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/roadSection/goUpdateRoadSection",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if(data == "0"){
+							$.messager.alert("提示","该道路上已存在该路段编码,请重新输入！");
+						}else if(data == "1") {
+							$scope.$getDialog("editDialog").dialog("close");
+							//刷新列表
+							$scope.$search("roadSectionForm");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "更新失败！");
+					}
+				});
+			});
+			//打开编辑窗口
+			$scope.$openDialog("editDialog", {
+				title : "修改路段信息",
+				width : 750,
+				height : 250,
+				href : "tpls/sysManagement/roadNetworkMessage/road-section-message-input.html?type=edit"
+			}, true);
+		};
+			//机构信息批量删除操作
+			$scope.removeRoadSection = function() {
+				//获得所有的行数
+				var rows = $scope.$("#roadSection").datagrid("getChecked");
+				if (rows.length == 0) {
+					$.messager.alert("提示", "至少选中一条信息！");
+					return false;
+				} else {
+					var ids = "";
+					for (var index in rows) {
+						ids += rows[index].roadSectionId + ",";
+					}
+					var roadSectionId = ids.substring(0, ids.length - 1);
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "road/roadSection/queryBySectionRoadId",
+						params : {
+							roadSectionId : roadSectionId
+						},
+						memoth : "post",
+						success : function(data) {
+							if (data == 0) {//未绑定设备
+								remove(roadSectionId);
+							} else if (data > 0) {//已绑定设备
+								$.messager.alert("提示", "某路段已绑定某点位,禁止删除！");
+							}
+						}
+					});
+				}
+			};
+
+		//删除当前行信息
+		$scope.deteleRoadSection = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#roadSection").datagrid("getData").rows[index];
+			//获得当前行的Id
+			var roadSectionId = rowDatas.roadSectionId;
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/roadSection/queryBySectionRoadId",
+					params : {
+						roadSectionId : roadSectionId
+					},
+					memoth : "post",
+					success : function(data) {
+						if(data==0){
+							remove(roadSectionId);
+						}else if(data==1){
+							$.messager.alert("提示", "该路段已绑定某点位,禁止删除！");
+						}
+						$scope.$search("roadSectionForm");
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "删除失败！");
+					}
+				});
+			};
+
+        /**
+         * ajax删除
+         */
+        var remove = function(ids) {
+        	if(!ids || ids == ""){
+				$.messager.alert("提示","请选择需要删除的点位记录！");
+			}else{
+				$.messager.confirm("警告","确定删除？",function(r){
+					if(r){
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "road/roadSection/goRemoveRoadSection",
+							params : {ids:ids},
+							success : function(data){
+								if(data == "success"){
+									$scope.$search("roadSectionForm");
+								}
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+        };
+	}); 
+</script>
+<style type="text/css">
+	#roadSectionCondition .th {
+		text-align: right;
+		width: 90px;
+	}
+</style>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficPlanLogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficPlanLog" >
+    <id column="VIDEO_PLAN_LOG_ID" property="videoPlanLogId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_ID" property="videoPlanId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_NBR" property="videoPlanNbr" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_START_TIME" property="videoPlanStartTime" jdbcType="TIMESTAMP" />
+    <result column="VIDEO_PLAN_END_TIME" property="videoPlanEndTime" jdbcType="TIMESTAMP" />
+    <result column="VIDEO_PLAN_PERSON" property="videoPlanPerson" jdbcType="VARCHAR" />
+    <result column="COMPUTER_IP" property="computerIp" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_NAME" property="videoPlanName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIDEO_PLAN_LOG_ID, VIDEO_PLAN_ID, VIDEO_PLAN_NBR, VIDEO_PLAN_START_TIME, VIDEO_PLAN_END_TIME, 
+    VIDEO_PLAN_PERSON, COMPUTER_IP,ORG_ID,VIDEO_PLAN_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PLAN_LOG
+    where VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR}
+  </select>
+  <select id="countLogByCondition" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    SELECT COUNT(1) 
+	FROM T_TRAFFIC_PLAN_LOG P	
+    	<where> 
+    	
+     <if test="orgId != null and orgId != '' ">
+				AND EXISTS(
+				SELECT O.ORG_ID FROM T_SYS_ORG O WHERE O.ORG_PRIVILEGE_CODE LIKE
+				(SELECT ORG_PRIVILEGE_CODE || '%' FROM T_SYS_ORG WHERE ORG_ID =
+				#{orgId,jdbcType=VARCHAR}) AND O.ORG_ID = P.ORG_ID)
+	 </if>
+      
+     <if test="cruisePlanId != null and cruisePlanId!=''" >
+        AND VIDEO_PLAN_ID = #{cruisePlanId,jdbcType=VARCHAR}
+      </if> 
+      
+     <if test="cruiseUser != null and cruiseUser!=''" >
+        AND VIDEO_PLAN_PERSON like #{cruiseUser,jdbcType=VARCHAR}
+      </if> 
+      
+     <if test="cruiseBeginTime != null and cruiseBeginTime!=''" >
+     	<![CDATA[ AND VIDEO_PLAN_START_TIME >= to_date(#{cruiseBeginTime},'yyyy-MM-dd hh24:mi:ss')]]>
+        
+      </if> 
+      
+     <if test="cruiseEndTime != null and cruiseEndTime!=''" >
+     	<![CDATA[ AND (VIDEO_PLAN_START_TIME <= to_date(#{cruiseEndTime},'yyyy-MM-dd hh24:mi:ss'))]]> 
+      </if> 
+    </where> 
+  </select>
+  <select id="getLogByCondition" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" /> 
+    FROM (SELECT C.*,ROWNUM RN
+    from (SELECT P.*
+		FROM T_TRAFFIC_PLAN_LOG P	
+    	<where> 
+    	
+     <if test="orgId != null and orgId != '' ">
+				AND EXISTS(
+				SELECT O.ORG_ID FROM T_SYS_ORG O WHERE O.ORG_PRIVILEGE_CODE LIKE
+				(SELECT ORG_PRIVILEGE_CODE || '%' FROM T_SYS_ORG WHERE ORG_ID =
+				#{orgId,jdbcType=VARCHAR}) AND O.ORG_ID = P.ORG_ID)
+	 </if>
+      
+     <if test="cruisePlanId != null and cruisePlanId!=''" >
+        AND VIDEO_PLAN_ID = #{cruisePlanId,jdbcType=VARCHAR}
+      </if> 
+      
+     <if test="cruiseUser != null and cruiseUser!=''" >
+        AND VIDEO_PLAN_PERSON like #{cruiseUser,jdbcType=VARCHAR}
+      </if> 
+      
+     <if test="cruiseBeginTime != null and cruiseBeginTime!=''" >
+     	<![CDATA[ AND VIDEO_PLAN_START_TIME >= to_date(#{cruiseBeginTime},'yyyy-MM-dd hh24:mi:ss')]]>
+        
+      </if> 
+      
+     <if test="cruiseEndTime != null and cruiseEndTime!=''" >
+     	<![CDATA[ AND (VIDEO_PLAN_START_TIME <= to_date(#{cruiseEndTime},'yyyy-MM-dd hh24:mi:ss'))]]> 
+      </if> 
+    </where>
+    ORDER BY VIDEO_PLAN_START_TIME DESC
+  	) C
+	<where>
+		<if test="to != null and to != '' ">
+		   <![CDATA[  AND  ROWNUM <= #{to, jdbcType=INTEGER} ]]>
+		</if>
+	</where>
+	)
+	<where> 
+		<if test="from != null and from != '' ">
+	       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+		</if>
+	</where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_PLAN_LOG
+    where VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficPlanLog" >
+    insert into T_TRAFFIC_PLAN_LOG (VIDEO_PLAN_LOG_ID, VIDEO_PLAN_ID, VIDEO_PLAN_NBR, 
+      VIDEO_PLAN_START_TIME, VIDEO_PLAN_END_TIME, 
+      VIDEO_PLAN_PERSON, COMPUTER_IP,ORG_ID,VIDEO_PLAN_NAME)
+    values (#{videoPlanLogId,jdbcType=VARCHAR}, #{videoPlanId,jdbcType=VARCHAR}, #{videoPlanNbr,jdbcType=VARCHAR}, 
+      #{videoPlanStartTime,jdbcType=TIMESTAMP}, #{videoPlanEndTime,jdbcType=TIMESTAMP}, 
+      #{videoPlanPerson,jdbcType=VARCHAR}, #{computerIp,jdbcType=VARCHAR},#{orgId,jdbcType=VARCHAR},#{videoPlanName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficPlanLog" >
+    insert into T_TRAFFIC_PLAN_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="videoPlanLogId != null" >
+        VIDEO_PLAN_LOG_ID,
+      </if>
+      <if test="videoPlanId != null" >
+        VIDEO_PLAN_ID,
+      </if>
+      <if test="videoPlanNbr != null" >
+        VIDEO_PLAN_NBR,
+      </if>
+      <if test="videoPlanStartTime != null" >
+        VIDEO_PLAN_START_TIME,
+      </if>
+      <if test="videoPlanEndTime != null" >
+        VIDEO_PLAN_END_TIME,
+      </if>
+      <if test="videoPlanPerson != null" >
+        VIDEO_PLAN_PERSON,
+      </if>
+      <if test="computerIp != null" >
+        COMPUTER_IP,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="videoPlanName != null" >
+        VIDEO_PLAN_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="videoPlanLogId != null" >
+        #{videoPlanLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanId != null" >
+        #{videoPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanNbr != null" >
+        #{videoPlanNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanStartTime != null" >
+        #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanEndTime != null" >
+        #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanPerson != null" >
+        #{videoPlanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="computerIp != null" >
+        #{computerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanName != null" >
+        #{videoPlanName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficPlanLog" >
+    update T_TRAFFIC_PLAN_LOG
+    <set >
+      <if test="videoPlanId != null" >
+        VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanNbr != null" >
+        VIDEO_PLAN_NBR = #{videoPlanNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanStartTime != null" >
+        VIDEO_PLAN_START_TIME = #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanEndTime != null" >
+        VIDEO_PLAN_END_TIME = #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanPerson != null" >
+        VIDEO_PLAN_PERSON = #{videoPlanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="computerIp != null" >
+        COMPUTER_IP = #{computerIp,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanName != null" >
+        VIDEO_PLAN_NAME = #{videoPlanName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficPlanLog" >
+    update T_TRAFFIC_PLAN_LOG
+    set VIDEO_PLAN_ID = #{videoPlanId,jdbcType=VARCHAR},
+      VIDEO_PLAN_NBR = #{videoPlanNbr,jdbcType=VARCHAR},
+      VIDEO_PLAN_START_TIME = #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      VIDEO_PLAN_END_TIME = #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      VIDEO_PLAN_PERSON = #{videoPlanPerson,jdbcType=VARCHAR},
+      COMPUTER_IP = #{computerIp,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      VIDEO_PLAN_NAME = #{videoPlanName,jdbcType=VARCHAR}
+    where VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,108 @@
+<div class="easyui-layout">
+    <div data-options="region:'north'">
+        <form cy-form="searchLog">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div id="cxLog" class="table">
+                    <div class="tr">
+                        <div class="th">操作用户：</div>
+                        <div class="td">
+                            <input id="yhLog"/>
+                        </div>
+                        <div class="th">操作类型：</div>
+                        <div class="td">
+                            <input id="lxLog"/>
+                        </div>
+                        <div class="th">操作时间：</div>
+                        <div class="td">
+                            <input type="text" name="czlx" class="easyui-datetimebox" style="width: 150px;"/>
+                            到：
+                            <input type="text" name="czlx" class="easyui-datetimebox" style="width: 150px;"/>
+                        </div>
+                        <div class="td" style="width: 90px;">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                               cy-click="searchData" style="width: 70px;float: right;">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'center'">
+        <table id="logData" cy-datagrid="optionsRz" cy-querydata="deptQueryRz"
+               cy-url="data/sysManagement/log-data.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        //初始化
+        $scope.load = function () {
+            $scope.$search("deptQueryRz");
+        };
+        $scope.$('#yhLog').combotree({
+            required: true,
+            url: "data/sysManagement/rz-yh-tree.json"
+        });
+        $scope.$('#lxLog').combotree({
+            required: true,
+            url: "data/sysManagement/rz-lx-tree.json"
+        });
+
+        $scope.optionsRz = {
+            columns: [
+                [
+                    {field: "id", checkbox: true, align: 'center', width: 100},
+                    {field: "czyh", title: "操作用户", align: 'center', width: 50},
+                    {field: "czlx", title: "操作类型", align: 'center', width: 50},
+                    {field: "czsj", title: "操作时间", align: 'center', width: 50},
+                    {field: "czsjl", title: "操作数据量", align: 'center', width: 50},
+                    {field: "czhs", title: "操作耗时", align: 'center', width: 50},
+                    {field: "yhip", title: "用户IP", align: 'center', width: 50},
+                    {field: "czsbms", title: "操作失败描述", align: 'center', width: 50},
+                    {field: "hg", title: "回滚", formatter: operationHg, align: 'center', width: 50},
+                    {field: "cznrxq", title: "操作内容详情", formatter: operationXq, align: 'center', width: 50}
+                ]
+            ]
+        };
+        function operationHg(value, row, index) {
+            var button1 = $("<a class='button-add' cy-click='rollBack(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls: "icon-add"
+            });
+            return $("<span/>").append(button1).append(" ").html();
+        }
+
+        function operationXq(value, row, index) {
+            var button1 = $("<a class='button-add' cy-click='check(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls: "icon-add"
+            });
+            return $("<span/>").append(button1).append(" ").html();
+        }
+
+        $scope.rollBack = function (index) {
+            $.messager.confirm("提示", "你确定要回滚吗?", function (r) {
+                if (r) {
+
+                }
+            });
+        };
+        $scope.check = function () {
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("check").dialog("close");
+            });
+            $scope.$openDialog("check", {
+                title: "操作内容",
+                width: 600,
+                height: 500,
+                href: "tpls/sysManagement/operationLog/check-log.html"
+            })
+        }
+    })
+</script>
+<style type="text/css">
+    #cxLog .th {
+        width: 110px;
+        text-align: right;
+    }
+</style>

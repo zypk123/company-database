@@ -1,0 +1,794 @@
+<div class="ViolationQueryView" style="height: 100%;">
+<div class="easyui-layout" id="queryView">
+    <div data-options="region:'north'" style="height: 155px">
+        <form cy-form="cyFrmCond" id="searchForm" class="searchForm" method="post">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">号牌号码：</div>
+                        <div class="td">
+                            <input class="cy-vehNumberbox" name="plateNbr" style="width: 135px">
+                        </div>
+                        <div class="th">号牌种类：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="cmbPlateTypeQ" name="plateType" cy-code="002"
+                                   style="width: 135px"
+                                   data-options="valueField:'value',textField:'text',panelHeight:'auto'"/>
+                        </div>
+                        <div class="th">违法时间：</div>
+                        <div class="td">
+                            <input class="easyui-datetimebox" type="text"
+                                   data-options="required:true,validType:['maxDate[\'violationEndTime\']','date']"
+                                   name="violationBeginTime" id="violationBeginTime" style="width: 150px"/>
+                        </div>
+                        <div class="th" style="width: 50px">到</div>
+                        <div class="td">
+                            <input class="easyui-datetimebox" type="text"
+                                   data-options="required:true,validType:['minDate[\'violationBeginTime\']','maxEndDate','date']"
+                                   name="violationEndTime" id="violationEndTime" style="width: 150px"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">采集机构：</div>
+                        <div class="td">
+                            <input class="cy-org-radio" name="orgId" iscode="false" width="120px;">
+
+                        </div>
+
+                        <div class="th">采集点位：</div>
+                        <div class="td">
+                            <input class="cy-site-checkbox" name="siteCodes" iscode="true" style="width: 135px"/>
+                            </select>
+                        </div>
+
+                        <div class="th">违法类型：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name="violationType" id="violationType"
+                                   style="width: 135px"
+                                   data-options="valueField:'value',textField:'text',panelHeight:'auto',multiple:true" cy-code="011"/>
+                        </div>
+                        <div class="th">采集方式：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name="collectionType" id="collectionType"
+                                   style="width: 135px"
+                                   data-options="valueField:'value',textField:'text',panelHeight:'auto',editable:false,multiple:true"
+                                   cy-code="013"/>
+                            </select>
+                        </div>
+
+                        <div class="td" style="text-align: right;width: 100px">
+                            <!--<a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown"-->
+                            <!--cy-click="searchSlideDown">更多</a>-->
+                            <a class="easyui-linkbutton button" cy-click="SearchAsync" id="searchButton"
+                               data-options="iconCls:'icon-search'">查询</a>
+
+                        </div>
+                    </div>
+                    <!--<div class="tr hide" style="display:none"> -->
+                    <!--<div class="th hide" style="display:none">记录状态:</div>-->
+                    <!--<div class="td hide" style="display:none">-->
+                    <!--<input class="easyui-combobox" id="cmbStatusQ" name="statusFlag" style="width: 135px"-->
+                    <!--data-options="valueField:'value',textField:'text',panelHeight:'auto'" cy-code="301"/>-->
+                    <!--</select>-->
+                    <!--</div>-->
+
+                    <!--<div class="td" style="width: 170px"/>-->
+                    <!--<div class="td" style="text-align: right;width: 180px">-->
+                    <!--<a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"-->
+                    <!--cy-click="searchSlideUp">收起</a>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+
+            <div class="linkbutton_toolbar">
+                <a class="easyui-menubutton button" id="btnExport"
+                   data-options="iconCls:'icon-export'">导出</a>
+
+                <div id="mbtnExport" style="width: 150px;display: none">
+                    <div cy-click="SelectExport">选择导出</div>
+                    <div cy-click="AllExport">全部导出</div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div data-options="region:'center'">
+        <table id="gridViolation" cy-datagrid="options" cy-querydata="cyFrmCond" cy-url="/violation/queryViolationSet">
+        </table>
+    </div>
+
+    <div data-options="region:'east'" style="width: 250px" >
+        <!--<div id="imageCtrlLst">-->
+
+        <!--</div>-->
+        <div class="easyui-panel" id="imageArea0"></div>
+
+        <div class="easyui-panel" id="imageArea1"></div>
+
+        <div class="easyui-panel" id="imageArea2"></div>
+        <!--<div style="overflow-y: auto;height: auto;width:250px;">-->
+        <!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_0.jpg"/>-->
+        <!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_1.jpg"/>-->
+        <!--</div>-->
+    </div>
+</div>
+<div class="easyui-layout" id="detailView">
+
+<!--左边图片-->
+<div data-options="region:'center'" id="imgAreaDetail">
+    <!--<img style="width: 100%;height: 100%" src="themes/default/images/nopic.jpg"/>-->
+</div>
+<!--右边详细-->
+
+<div data-options="region:'east'" style="width: 400px;">
+<div class="easyui-layout" data-options="fit:true">
+<div data-options="region:'north'" style="height:30px;">
+    <div>
+        <a class="easyui-linkbutton" cy-click="returnToListView">显示列表</a>
+        <a class="easyui-linkbutton" cy-click="selectPre" id="btnPreRecord" style="width: 60px">上一条</a>
+        <a class="easyui-linkbutton" cy-click="selectNext" id="btnNextRecord" style="width: 60px">下一条</a>
+    </div>
+</div>
+<div data-options="region:'center'">
+<form cy-form="VioDetail" method="post" class="detailForm">
+<!--车辆信息-->
+<div class="searchPanel">
+    <div class="panel_title">车辆信息</div>
+    <div class="table">
+        <div class=" tr">
+            <div class="td col-2">号牌号码：</div>
+            <div class="td col-4"  cy-name="VioDetail.plateNbr">
+                <!--<input class="inputlabel" name="plateNbr" type="text" style="width: 120px"/>-->
+            </div>
+            <div class="td col-2">号牌种类：</div>
+            <div class="td col-4" cy-name="VioDetail.plateType" cy-filter="Formatter.getCyFilterSysCodeFmt('002')">
+            </div>
+        </div>
+        <div class=" tr">
+            <div class="td col-2">号牌颜色：</div>
+            <div class="td col-4" cy-name="VioDetail.plateColor" cy-filter="Formatter.getCyFilterSysCodeFmt('003')">
+            </div>
+            <div class="td col-2">发证机关：</div>
+            <div class="td col-4" cy-name="VioDetail.vehicleIssueOrg"
+                 cy-filter="Formatter.getCyFilterSysCodeFmt('008')">
+            </div>
+            <!--<input class="easyui-combobox" id="cmbVehicleIssueOrg" name="PLATE_TYPE"-->
+            <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'"/>-->
+        </div>
+        <div class=" tr">
+            <label class="td col-2">车辆品牌：</label>
+
+            <div class="td col-4" cy-name="VioDetail.vehicleBrand" cy-filter="Formatter.getCyFilterSysCodeFmt('012')">
+            </div>
+            <label class="td col-2">车身颜色：</label>
+
+            <div class="td col-4" cy-name="VioDetail.vehicleColor" cy-filter="Formatter.getCyFilterSysCodeFmt('006')">
+                <!--<input class="inputlabel" name="VEHICLE_COLOR" type="text" readonly="true" />-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="searchPanel">
+    <div class="panel_title">违法采集信息</div>
+    <div class="table">
+        <div class=" tr">
+            <div class="td col-2">
+                违法类型：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.violationType" cy-filter="Formatter.getCyFilterSysCodeFmt('011')">
+            </div>
+            <div class="td col-2">
+                违法代码：
+            </div>
+            <div class="td col-4"  cy-name="VioDetail.violationCode">
+
+            </div>
+        </div>
+        <div class="tr">
+
+            <div class="td col-2">
+                违法内容：
+            </div>
+            <div class="td col-6" cy-name="VioDetail.violationDesc">
+                <!--<input class="inputlabel" type="text" name="violationDesc"/>-->
+                <!--<input class="easyui-combobox" id="cmbVioAction" name="VIOLATION_CODE"-->
+                <!--data-options="valueField:'VIO_ACTION_CODE',textField:'VIO_SUMMARY',panelHeight:'auto'"  style="width: 200px"/>-->
+            </div>
+        </div>
+        <div class="tr">
+            <div class="td col-2">
+                违法道路：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.roadCode" cy-filter="Formatter.CyFilterRoadFmt" >
+            </div>
+            <div class="td col-2">
+                路口/路段：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.junctionCode" cy-filter="Formatter.RoadJunctionFmt">
+
+            </div>
+        </div>
+        <div class="tr">
+
+            <div class="td col-2">
+                违法时间：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.violationTime">
+
+            <div class="td col-2">
+                米数：
+            </div>
+            <div class="td col-4">
+                <input class="inputlabel" name="mileage" type="text" readonly="true" style="width: 30px"/>米
+            </div>
+        </div>
+        <div class="tr">
+            <div class="td col-2">
+                地点描述：
+            </div>
+            <div class="td col-10"  cy-name="VioDetail.addressDesc">
+                <!--<input class="inputlabel" type="text" name="addressDesc"/>-->
+            </div>
+        </div>
+        <div class="tr">
+            </div>
+            <!--<input class="easyui-datebox" type="text" name="VIOLATION_TIME" style="width: 120px"/>-->
+            <div class="td col-2">
+                采集机构：
+            </div>
+            <div class="td col-10" cy-name="VioDetail.orgCode" cy-filter="Formatter.CyFilterOrgFmt">
+                <!--<input class="easyui-combobox" id="cmbOrg" name="ORG_CODE"-->
+                <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width: 120px"/>-->
+            </div>
+        </div>
+
+        <div class=" tr redLightVioInfo">
+            <div class="td col-2">
+                红灯时间：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.redLightBeginTime">
+            </div>
+
+            <div class="td col-2">
+                到：
+            </div>
+            <div class="td col-4" cy-name="VioDetail.redLightEndTime">
+            </div>
+        </div>
+        <div class="tr speedVioInfo">
+            <div class="td col-2">
+                车辆速度：
+            </div>
+            <div class="td col-2"  cy-name="VioDetail.speed">
+                <!--<input class="inputlabel" name="speed" type="text" readonly="true"/>-->
+            </div>
+            <div class="td col-2">
+                (km/h)
+            </div>
+            <div class="td col-2">
+                超速比例：
+            </div>
+            <div class="td col-2"  cy-name="VioDetail.overSpeedPercent">
+                <!--<input class="inputlabel" name="overSpeedPercent" type="text" readonly="true"/>-->
+            </div>
+            <div class="td col-2">
+                (%)
+            </div>
+        </div>
+
+        <div class="tr speedVioInfo">
+            <div class="td col-2">
+                大车限速：
+            </div>
+            <div class="td col-2"  cy-name="VioDetail.limitLarge">
+                <!--<input class="inputlabel" name="limitLarge" type="text" readonly="true"/>-->
+            </div>
+            <div class="td col-2">
+                (km/h)
+            </div>
+
+            <div class="td col-2">
+                小车限速：
+            </div>
+            <div class="td col-2"  cy-name="VioDetail.limitSmall">
+                <!--<input class="inputlabel" name="limitSmall" type="text" readonly="true"/>-->
+            </div>
+            <div class="td col-2">
+                (km/h)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="searchPanel">
+    <div class="panel_title">记录状态信息</div>
+    <div class="table">
+        <div class="tr">
+            <div class="td col-2">记录状态：</div>
+            <div class="td col-2" cy-name="VioDetail.statusFlag" cy-filter="Formatter.getCyFilterSysCodeFmt('301')"></div>
+            <div class="td col-2 entryInfo">录入人：</div>
+            <div class="td col-2 entryInfo" cy-name="VioDetail.entryBy"></div>
+            <div class="td col-2 entryInfo">录入时间：</div>
+            <div class="td col-2 entryInfo" cy-name="VioDetail.entryTime"></div>
+        </div>
+        <div class="tr uploadInfo">
+            <div class="td col-2">上传状态：</div>
+            <div class="td col-2" cy-name="VioDetail.uploadFlag" cy-filter="Formatter.getCyFilterSysCodeFmt('305')"></div>
+            <div class="td col-2">上传人：</div>
+            <div class="td col-2" cy-name="VioDetail.uploadBy"></div>
+            <div class="td col-2">上传时间：</div>
+            <div class="td col-2" cy-name="VioDetail.uploadTime"></div>
+        </div>
+        <div class="tr discardInfo">
+            <div class="td col-2">废弃类型：</div>
+            <div class="td col-2" cy-name="VioDetail.discardedReason"
+                 cy-filter="Formatter.getCyFilterSysCodeFmt('312')"></div>
+            <div class="td col-2">废弃人：</div>
+            <div class="td col-2" cy-name="VioDetail.discardedBy"></div>
+            <div class="td col-2">废弃时间：</div>
+            <div class="td col-2" cy-name="VioDetail.discardedTime"></div>
+        </div>
+        <div class="tr">
+            <div class="td col-2" >备注</div>
+            <div class="td col-10" cy-name="VioDetail.remark"></div>
+        </div>
+    </div>
+</div>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+InitPage([], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+    $.extend($scope, {
+
+        //详情表单
+        VioDetail: {},
+        //查询表单
+        cyFrmCond: {
+            plateNbr: $scope.DefaultPlateNbr,
+            violationBeginTime: ((new Date()).dateAdd('d', -$scope.QueryTimeRange
+            )).format('yyyy-MM-dd HH:mm:ss'),
+            violationEndTime: (new Date()).format('yyyy-MM-dd HH:mm:ss')
+        },
+        /**
+         * 加载
+         */
+        load: function () {
+            $scope.$("#btnDiscard").menubutton({
+                menu: $scope.$("#mbtnDiscard")
+            });
+
+            $scope.$("#btnExport").menubutton({
+                menu: $scope.$("#mbtnExport")
+            });
+            $("#violationEndTime").datebox('calendar').calendar({
+                validator: function (date) {
+                    var now = new Date();
+                    var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    return date <= d1;
+                }
+            });
+
+            $scope.selectViewFn("ViolationQueryView", "queryView");
+            //console.log("load success ");
+        },
+
+        /**
+         * 收起剩余搜索项
+         * @return {[type]} [description]
+         */
+        searchSlideUp: function () {
+            $scope.$(".hide").hide();
+            $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                height: 170
+            });
+            $scope.$("#queryView").layout("resize");
+            $scope.$("#searchSlideUp").hide();
+            $scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" ");
+        },
+        /**
+         * 展开剩余搜索项
+         * @return {[type]} [description]
+         */
+        searchSlideDown: function () {
+            $scope.$(".hide").slideDown("fast");
+            $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                height: 200
+            });
+            $scope.$("#queryView").layout("resize");
+            $scope.$("#searchSlideDown").hide();
+            $scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+        },
+        enter: function () {
+            //console.log("enter");
+        },
+        leave: function () {
+            //console.log("leave");
+        },
+        close: function () {
+            //console.log("close");
+        },
+        //选择下一条
+        selectNext: function () {
+            var len = $scope.$('#gridViolation').datagrid('getRows').length;
+            var row = $scope.$('#gridViolation').datagrid('getSelected');
+            if (row) {
+                var index = $scope.$('#gridViolation').datagrid('getRowIndex', row);
+                $scope.$('#gridViolation').datagrid('selectRow', index + 1);
+                row = $scope.$('#gridViolation').datagrid('getSelected');
+                if (row) {
+                    $scope.VioDetail = row;
+                    $scope.LoadDetailViolation($scope.VioDetail);
+                }
+                if ((index + 2) < len) { //启用下一条
+                    $scope.$("#btnNextRecord").linkbutton('enable').attr('cy-click', 'selectNext');
+                }
+                else {//禁用
+                    $scope.$("#btnNextRecord").linkbutton('disable').removeAttr('cy-click');
+                }
+                if (len > 1) {//启用上一条
+                    $scope.$("#btnPreRecord").linkbutton('enable').attr('cy-click', 'selectPre');
+                }
+            }
+            else {
+                $.messager.alert('提示', '已到最后一条');
+            }
+        },
+        //选择上一条
+        selectPre: function () {
+            var len = $scope.$('#gridViolation').datagrid('getRows').length;
+            var row = $scope.$('#gridViolation').datagrid('getSelected');
+            if (row) {
+                var index = $scope.$('#gridViolation').datagrid('getRowIndex', row);
+                var obj = $scope.$('#gridViolation').datagrid('selectRow', index - 1);
+                row = $scope.$('#gridViolation').datagrid('getSelected');
+                if (row) {
+                    $scope.VioDetail = row;
+                    $scope.LoadDetailViolation($scope.VioDetail);
+                }
+                if ((index - 2) >= 0) {//启用上一条
+                    $scope.$("#btnPreRecord").linkbutton('enable').attr('cy-click', 'selectPre');
+                }
+                else {//禁用
+                    $scope.$("#btnPreRecord").linkbutton('disable').removeAttr('cy-click');
+                }
+                if (len > 1) {//启用下一条
+                    $scope.$("#btnNextRecord").linkbutton('enable').attr('cy-click', 'selectNext');
+                }
+            }
+            else {
+                alert('已到第一条');
+            }
+        },
+        //对违法详细界面显示元素进行控制
+        LoadDetailViolation: function (violation) {
+            //根据记录状态显示相关元素
+            if (violation.statusFlag == $scope.ConstantSysCode.STATUS.Discard) {
+                $scope.$(".discardInfo").show();
+            }
+            else {
+                $scope.$(".discardInfo").hide();
+            }
+            if (violation.statusFlag == $scope.ConstantSysCode.STATUS.Entry) {
+                $scope.$(".uploadInfo").show();
+                $scope.$(".entryInfo").show();
+            }
+            else {
+                $scope.$(".uploadInfo").hide();
+                $scope.$(".entryInfo").hide();
+            }
+            //根据违法类型显示相关元素
+            if (violation.violationType == $scope.ConstantSysCode.VIOLATION_TYPE.CHAO_GS
+                    || violation.violationType == $scope.ConstantSysCode.VIOLATION_TYPE.QU_JCS) {
+                $scope.$(".speedVioInfo").show();
+            }
+            else {
+                $scope.$(".speedVioInfo").hide();
+            }
+            if (violation.violationType == $scope.ConstantSysCode.VIOLATION_TYPE.CHUANG_HD) {
+                $scope.$(".redLightVioInfo").show();
+            }
+            else {
+                $scope.$(".redLightVioInfo").hide();
+            }
+            //todo 图片加载
+            //图片列表
+            console.log('load detail image');
+            if (violation.image) {
+                $scope.timeout = setTimeout(function () {
+                    var imageArr=[];
+                    var urlArr = violation.image.split(';');
+                    for (var index in urlArr) {
+                        imageArr.push($scope.getImageAddress(urlArr[index]));
+                    }
+                    console.log(imageArr);
+                    $scope.$setParam("images", imageArr);
+                    $scope.$("#imgAreaDetail").panel("refresh", "tpls/public/image-view.html");
+                }, 500);//
+            }
+            $scope.$updateDom('VioDetail');
+        },
+        //列表绑定选项
+        options: {
+            columns: [
+                [//注意，此处是二维数组
+                    {field: 'id', checkbox: true},
+                    {title: "号牌号码", field: "plateNbr", width: 10},
+                    {title: "号牌种类", field: "plateType", width: 8, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.PLATETYPE)},//
+                    {title: "违法类型", field: "violationType", width: 7, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.VIOLATION_TYPE)},//
+                    {title: "违法时间", field: "violationTime", width: 15, formatter: function (value, row, index) {
+                        var html = "<div title='" + value + "' style='max-height:40px;height:auto;white-space:normal;'>" + value + "</div>";
+                        return $("<span/>").append($(html)).html();
+                    }},
+                    {title: "违法地点", field: "addressDesc", width: 15, formatter: function (value, row, index) {
+                        var html = "<div title='" + value + "' style='max-height:40px;height:auto;white-space:normal;word-wrap:break-word;word-break:break-all'>" + value + "</div>";
+                        return $("<span/>").append($(html)).html();
+                    }},//
+                    {title: "违法行为", field: "violationDesc", width: 20, formatter: function (value, row, index) {
+                        var html = "<div title='" + value + "' style='max-height:40px;height:auto;white-space:normal;'>" + value + "</div>";
+                        return $("<span/>").append($(html)).html();
+                    }},
+                    {title: "采集机构", field: "orgCode", width: 15, formatter: function (value, row, index) {
+                        if (value && value != '') {
+                            var name = $scope.$getOrgName(value);
+                            if (!name || name == '') {
+                                return '机构编码[' + value + ']不存在';
+                            }
+                            var html = "<div title='" + name + "' style='max-height:40px;height:auto;white-space:normal;'>" + name + "</div>";
+                            return $("<span/>").append($(html)).html();
+                        }
+                        else {
+                            return '';
+                        }
+                    }},
+                    {title: "采集方式", field: "collectionType", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.VIOLATION_SOURCE)},
+                    {title: "记录状态", field: "statusFlag", width: 7, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.STATUS)}
+                ]
+            ],
+//            singleSelect: true,
+//            method: 'get',
+//            fitColumns: true,
+//            striped: true,
+//            selectOnCheck: false,
+//            pagination: true,
+            nowrap: false,
+            //双击进入详细页面
+            onDblClickRow: function (index, row) {
+                clearTimeout($scope.timeout);
+                $scope.selectViewFn("ViolationQueryView", "detailView");
+                var row = $scope.$('#gridViolation').datagrid('getSelected');
+                if (row) {
+                    $scope.VioDetail = row;
+                    $scope.$updateDom('VioDetail');
+                    $scope.LoadDetailViolation($scope.VioDetail);
+                }
+                else {
+                    console.log("nodata");
+                }
+                var len = $scope.$('#gridViolation').datagrid('getRows').length;
+                if (len == 1) {
+                    $scope.$("#btnPreRecord").linkbutton('disable').removeAttr('cy-click');
+                    $scope.$("#btnNextRecord").linkbutton('disable').removeAttr('cy-click');
+                }
+                else {
+                    console.log(index + 1);
+                    if (index == 0) {
+                        $scope.$("#btnPreRecord").linkbutton('disable').removeAttr('cy-click');
+                        $scope.$("#btnNextRecord").linkbutton('enable').attr('cy-click', 'selectNext');
+                    }
+                    else if ((index + 1) == len) {
+                        $scope.$("#btnPreRecord").linkbutton('enable').attr('cy-click', 'selectPre');
+                        $scope.$("#btnNextRecord").linkbutton('disable').removeAttr('cy-click');
+                    }
+                    else {
+                        $scope.$("#btnPreRecord").linkbutton('enable').attr('cy-click', 'selectPre');
+                        $scope.$("#btnNextRecord").linkbutton('enable').attr('cy-click', 'selectNext');
+                    }
+                }
+            },
+            //单击加载图片
+            onClickRow: function (index, row) {
+                $scope.displayListImage(row);
+            }
+        },
+        //显示图片
+        displayListImage: function (data) {
+//            var imgC1="<div class='easyui-panel' id='imageArea"+6+"'></div>"
+//            $scope.$("#imageCtrlLst").html(imgC1);
+            $scope.timeout = setTimeout(function () {
+                if (data && data.image) {
+                    $scope.displayImageIteral(0,data.image.split(';'));
+                }
+            }, 500);
+        },
+        /**
+         * 递归异步调用图片
+         */
+        displayImageIteral:function(index,urlArr){
+            if(urlArr&&urlArr[index]){
+                $scope.$setParam("images", [$scope.getImageAddress(urlArr[index])]);
+                $scope.$("#imageArea"+index).panel("refresh", "tpls/public/image-view.html");
+                $scope.timeout = setTimeout(function () {
+                    index=index+1;
+                    $scope.displayImageIteral(index,urlArr);
+                }, 200);
+            }
+        },
+        /**
+         * 获取拼接的图片地址参数
+         */
+        getImageAddress:function(dataBaseValue){
+            var url='';
+            if(dataBaseValue){
+                if(dataBaseValue.indexOf("http")>-1){
+                    url=dataBaseValue;
+                }
+                else{
+                    url=$rootScope.$servletRoot + '/VioImage?imageUrl=' + dataBaseValue;
+                }
+            }
+            return url;
+        },
+        /**
+         *选择导出
+         * @constructor
+         */
+        SelectExport: function () {
+            var arr = $scope.$('#gridViolation').datagrid('getChecked');
+            if (arr.length == 0) {
+                $scope.alertMessage("请选择需要导出的记录");
+                return;
+            }
+            $scope.PostAjax(
+                            $scope.$restRoot + "violation/exportViolationSet",
+                    {param: JSON.stringify(
+                            {
+                                arrayData: $scope.$('#gridViolation').datagrid('getChecked')
+                            })
+                    },
+                    function (data) {
+                        if (data.error && data.error != '') {
+                            alert(data.error);
+                        }
+                        else {
+                            $scope.$goto("080701");
+                        }
+                    }
+            )
+        },
+        /**
+         *全部导出
+         * @constructor
+         */
+        AllExport: function () {
+            $scope.$updateData("cyFrmCond");
+            $scope.PostAjax(
+                            $scope.$restRoot + "violation/exportViolationSet",
+                    {param: JSON.stringify(
+                            {
+                                opCondition: $scope.cyFrmCond
+                            })
+                    },
+                    function (data) {
+                        if (data.error && data.error != '') {
+                            $scope.alertMessage(data.error);
+                        }
+                        else {
+                            $scope.$goto("080701");
+                        }
+                    })
+        },
+
+
+        /**
+         * 查询
+         * @constructor
+         */
+        SearchAsync: function () {
+            $scope.$("#imageArea0").panel('clear');
+            $scope.$("#imageArea1").panel('clear');
+            $scope.$("#imageArea2").panel('clear');
+            $scope.$updateData("cyFrmCond");
+            if($scope.cyFrmCond.plateNbr){
+                $scope.cyFrmCond.plateNbr=$.trim($scope.cyFrmCond.plateNbr);
+            }
+            if (!$scope.$("#searchForm").form("validate")) {
+                return;
+            }
+            $scope.cyFrmCond.pageNumber=1;
+            $scope.$("#gridViolation").datagrid("getPager").pagination({
+                pageNumber:1
+            });
+            if($scope.$("#violationType").combobox('getValues')!=""){
+                $scope.cyFrmCond.violationType=$scope.$("#violationType").combobox('getValues').join(",");
+            }
+            if($scope.$("#collectionType").combobox('getValues')!=""){
+                $scope.cyFrmCond.collectionType=$scope.$("#collectionType").combobox('getValues').join(",");
+            }
+
+            $scope.$search("cyFrmCond", "", function (data) {
+                if (data && data != null && data.rows.length > 0) {
+                    $scope.$('#gridViolation').datagrid('selectRow', 0);
+                    $scope.displayListImage($scope.$('#gridViolation').datagrid('getSelected'));
+                }
+                else {
+                    $scope.VioDetail = {};
+                    $scope.$updateDom('VioDetail');
+                }
+                ;
+            });
+        },
+        /**
+         * 返回列表页面
+         */
+        returnToListView:function(){
+            $scope.selectViewFn('ViolationQueryView','queryView');
+            $scope.displayListImage($scope.$('#gridViolation').datagrid('getSelected'));
+        },
+
+        showMessage: function (msg) {
+            $.messager.show({
+                title: '提示',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        },
+
+        alertMessage: function (msg) {
+            $.messager.alert({
+                title: '提示',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        }
+    });
+});
+
+</script>
+<style type="text/css">
+
+    #queryView .th {
+        text-align: center;
+        margin-left: 20px;
+    }
+
+    #queryView .td {
+        text-align: left;
+        width: 130px;
+    }
+
+    .detailForm .td{
+        white-space: normal;
+        line-height: 16px !important;
+        vertical-align: middle;
+    }
+    .detailForm .tr{
+        clear: both;
+    }
+
+    .detailForm .panel_title {
+        position: relative !important;
+        width:100px;
+    }
+</style>

@@ -1,0 +1,113 @@
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: auto;">
+		<form cy-form="useStatusForm">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div id="useStatusMessage" class="table">
+					<div class="tr">
+						<div class="th">变更时间：</div>
+						<div class="td">
+							<input class="easyui-datetimebox"
+								data-options="showSeconds:true,prompt:'开始时间不能大于结束时间',validType:['maxDate[\'updateEndTime\']','date']" type="text"
+								id="updateStartTime" name="updateStartTime" style="width: 160px" />
+						</div>
+						<div class="th" style="width:40px;align:center">至：</div>
+						<div class="td">
+							<input class="easyui-datetimebox"
+								data-options="showSeconds:true,prompt:'结束时间不能小于开始时间',validType:['minDate[\'updateStartTime\']','date']" type="text"
+								id="updateEndTime" name="updateEndTime" style="width: 160px" />
+						</div>
+						<div class="td" style="width: 80px;">
+							<a class="easyui-linkbutton button-search"
+								data-options="iconCls:'icon-search'" cy-click="searchData"
+								style="width: 60px; float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dmData" cy-datagrid="optionsDm"
+			cy-querydata="useStatusForm"
+			cy-url="device/bayonetManage/selectSysUseStatusList"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([ "deivceId" ], function($scope) {
+		$scope.$getDefaultCode(["405"]);
+        $.extend($scope, {
+            //默认日期初始化
+            useStatusForm: {
+            	updateStartTime: new Date(new Date().dateAdd('d',-7).toString()).format('yyyy-MM-dd HH:mm:ss'),
+            	updateEndTime: new Date().format('yyyy-MM-dd HH:mm:ss')
+            }
+        });
+		$scope.load = function() {
+			$scope.$updateData("useStatusForm");
+			$scope.useStatusForm.deviceId = $scope.deivceId;
+			$scope.$search("useStatusForm");
+		};
+
+		$scope.searchData = function() {
+			$scope.$updateData("useStatusForm");
+			$scope.$search("useStatusForm");
+		};
+		//
+		$scope.optionsDm = {
+			columns : [ [ {
+				field : 'originalStatus',
+				title : '变更前状态',
+				align : 'center',
+				formatter:originalStatus,
+				width : 50
+			}, {
+				field : 'updateStatus',
+				title : '变更后状态',
+				align : 'center',
+				formatter:updateStatus,
+				width : 30
+			}, {
+				field : 'updateTime',
+				title : '变更时间',
+				align : 'center',
+				width : 60
+			}, {
+				field : 'updateBy',
+				title : '更新人员',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'updateReason',
+				title : '更新原因',
+				align : 'center',
+				width : 50
+			} ] ],
+			pagination : false
+		};
+		
+		function originalStatus(value,rowData,rowIndex)
+		{
+	        var originStatus ='--';
+			if (rowData.originalStatus != "") {
+				originStatus = $scope.$getCodeName("405", rowData.originalStatus);
+			}
+			return originStatus;
+		}
+		
+		function updateStatus(value,rowData,rowIndex)
+		{
+	        var updateStatus ='--';
+			if (rowData.updateStatus != "") {
+				updateStatus = $scope.$getCodeName("405", rowData.updateStatus);
+			}
+			return updateStatus;
+		}
+	});
+</script>
+<style type="text/css">
+#useStatusMessage .th {
+	text-align: right;
+	width: 80px;
+}
+</style>

@@ -1,0 +1,153 @@
+<div id="sysApplication" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">申报单位：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name=""/>
+                        </div>
+                        <div class="th">申报日期：</div>
+                        <div class="td">
+                            <input id="startTime" class="easyui-datebox" name=""/>
+                            到
+                            <input id="endTime" class="easyui-datebox" name=""/>
+                        </div>
+                        <div class="th">当前状态：</div>
+                        <div class="td">
+                            <input type="checkbox" name=""/>报备
+                            <input type="checkbox" name=""/>申报审批
+                            <input type="checkbox" name=""/>已验收
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">系统名称：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name=""/>
+                        </div>
+                        <div class="th"></div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="add">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeAll">批量删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="datagrid" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/deviceApplicationEndorsement/sysApplication.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.options = {
+            columns:[[
+                {halign:'center',field:"id",checkbox:true},
+                {halign:'center',field:"auditState",title:"审核状态",width:100},
+                {halign:'center',field:"applicationUnits",title:"申报单位",width:100},
+                {halign:'center',field:"sysName",title:"系统名称",width:100},
+                {halign:'center',field:"sysPerson",title:"系统负责人",width:100},
+                {halign:'center',field:"phone",title:"联系电话",width:100},
+                {halign:'center',field:"applicationTime",title:"申报时间",width:100},
+                {halign:'center',field:"currentSate",title:"当前状态",width:100},
+                {halign:'center',field:"useUnits",title:"使用单位",width:100},
+                {halign:'center',field:"operate",title:"操作",width:100,formatter:operate}
+            ]]
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            var button3 = $("<a title='查看审核状态' class='button-save' cy-click='onDblClickRow(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            button3.linkbutton({
+                iconCls:"icon-save"
+            });
+            //采用以下的方式添加按钮到页面中，按照从左到右的顺序，按钮键要增加一个空格
+            return  $("<span/>").append(button1).append(" ").append(button2).append(" ").append(button3).html();
+        }
+        /**
+         * 编辑系统申报审批信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            alert(index);
+        };
+        /**
+         * 删除系统申报审批信息
+         * @param index  整数类型 删除行下标
+         */
+        $scope.removeData = function(index){
+            $.messager.confirm("提示","确认删除信息？",function(flag){
+                if(flag){
+                    $.messager.alert("提示",index+"删除成功！");
+                }
+            });
+        };
+        /**
+         * 查看审核状态
+         */
+        $scope.onDblClickRow = function(){
+            $scope.$openDialog("sysAuditStateDialog",{
+                title : "审核状态信息",
+                width : 700,
+                height : 550,
+                href : "tpls/deviceManage/deviceSystemApplicationEndorsement/systemApplicationEndorsement/sys-audit-state.html"
+            });
+        };
+        /**
+         * 条件查询
+         */
+        $scope.search = function(){
+            $scope.$search("queryData");
+        };
+        /**
+         * 新增
+         */
+        $scope.add = function(){
+            $scope.$openDialog("entranceChooseDialog",{
+                title:"入口选择",
+                width:300,
+                height:200,
+                href:"tpls/deviceManage/deviceSystemApplicationEndorsement/systemApplicationEndorsement/entrance-choose.html"
+            });
+        };
+        /**
+         * 批量删除系统申报审批信息
+         */
+        $scope.removeAll = function(){
+            var rows = $scope.$("#datagrid").datagrid("getChecked");
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息!");
+            }else{
+                $.messager.confirm("提示","确认删除？",function(flag){
+                    if(flag){
+                        $.messager.alert("提示","删除成功!");
+                    }
+                });
+            }
+        };
+    });
+</script>
+<style type="text/css">
+    #sysApplication .th{
+        width: 80px;
+        text-align: right;
+    }
+</style>

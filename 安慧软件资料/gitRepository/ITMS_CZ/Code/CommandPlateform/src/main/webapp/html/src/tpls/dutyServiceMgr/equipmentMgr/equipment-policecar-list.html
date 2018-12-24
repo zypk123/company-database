@@ -1,0 +1,164 @@
+<div class="easyui-layout" id="equipment-policecar-list">
+    <div data-options="region:'center',border:false" style="border-left: solid 1px #ddd;">
+        <div class="easyui-layout">
+            <div data-options="region:'north',border:false" style="height: 90px;">
+                <div class="searchPanel">
+                    <div class="panel_title">
+                        查询条件
+                    </div>
+                    <form cy-form="formPoliceCarData" id="formPoliceCar">
+                        <div class="table">
+                            <div class="tr">
+                                <div class="th">
+                                    使用部门：
+                                </div>
+                                <div class="td">
+                                    <input  name="orgName" class="cy-org-radio">
+                                </div>
+
+                                <div class="th">
+                                    号牌种类：
+                                </div>
+                                <div class="td">
+                                    <select  name="plateType " class="easyui-combobox">
+                                        <option>请选择</option>
+                                        <option>手枪</option>
+                                        <option>警棍</option>
+                                        <option>对讲机</option>
+                                    </select>
+                                </div>
+
+                                <div class="th">
+                                    号牌号码：
+                                </div>
+                                <div class="td">
+                                    <input  name="PlateNBR" class="easyui-textbox">
+                                </div>
+
+                                <div class="th">
+                                    <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                                    cy-click="searchData">查询</a>
+                                </div>
+
+                                <div class="th">
+                                    <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-search'"
+                                    cy-click="addPoliceCarDialog" style="width: 100px;margin-left:20px">添加警车</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+                <table id="yhData" cy-datagrid="optionsPoliceCar" cy-querydata="queryPoliceCarData"
+                cy-url="sysCfg/userAction/selectUser"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+        /**
+         * 查找警车登记信息
+         */
+        $scope.searchData = function() {
+            if ($scope.$("#form").form("validate")) {
+                trimObject($scope.formPoliceCarData);
+                $scope.$updateData("formPoliceCarData");
+                //获得当前第几页页数
+                var count = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+                if (count > 1) {
+                    //刷新,跳转到第一页
+                    $scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+                } else {
+                    $scope.$search(" ");
+                }
+            }
+        };
+
+        //弹出添加装备界面
+        $scope.addPoliceCarDialog = function() {
+            $scope.$setParam("saveData", function(data) {
+                //使用ajac将新增装备登记信息传入数据库
+                $.ajax({
+                    url : '',
+                    success : function() {
+                        //关闭添加警车子窗口
+                        $scope.$getDialog("addPoliceCarDialog").dialog("close");
+                        //刷新列表
+                        $scope.$search('queryPoliceCarData');                        
+                    }
+                });
+
+            });
+            $scope.$openDialog("addPoliceCarDialog", {
+                href : "tpls/dutyServiceMgr/equipmentMgr/equipment-policecar-input.html",
+                height : 350,
+                width : 650,
+                title : "警车备案登记"
+            });
+        };
+
+        /*
+         * 为装备领用信息登记表绑定头字段
+         * 对于数据库中暂时没有的字段先自行命名
+         */
+        $scope.optionsPoliceCar = {
+            columns : [[{
+                field : 'PLATE_NBR',
+                title : '号牌号码',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'PLATE_TYPE',
+                title : '号牌种类',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'ORG_NAME',
+                title : '使用部门',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'POLICE_CAR_TYPE',
+                title : '车辆种类',
+                align : "center",
+                width : 20
+            }, {
+                field : 'CAR_PHONE_NBR',
+                title : '随车手机',
+                align : "center",
+                width : 20
+            }, {
+                field : 'GPS_NBR',
+                title : 'GPS编号',
+                align : "center",
+                width : 20
+            }, {
+                field : 'AUDIT_STATUS',
+                title : '审核状态',
+                align : "center",
+                width : 20
+            }, {
+                field : 'operation',
+                title : '操作',
+                align : "center",
+                width : 20
+            }]]
+        };
+    }); 
+</script>
+<style type="text/css">
+    #equipment-policecar-list .td input, select {
+        width: 120px;
+    }
+
+    #equipment-policecar-list .th {
+        width: 80px;
+        text-align: right;
+    }
+    #equipment-policecar-list .td {
+        width: 130px;
+    }
+</style>

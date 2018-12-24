@@ -1,0 +1,102 @@
+<div id="sectionFlowStop" class="easyui-layout"  >
+
+    <div class="table" >
+        <div class="tr">
+            <div class="th">
+                位置：
+            </div>
+            <div class="td"style="width: 150px;">
+                <span cy-name=newData.dwwz></span>
+            </div>
+
+        </div>
+
+        <div  class="searchPanel" id="up">
+
+            <div class="panel_title">方向：
+                <span cy-name=newData.fx></span>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    前一周期流量：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qyxsll></span>&nbsp;辆&nbsp;
+                </div>
+
+                <div class="th">
+                    当前周期流量：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.dqll></span>&nbsp;辆&nbsp;
+                </div>
+
+            </div>
+            <div class="tr">
+                <div class="th">
+                    更新时间：
+                </div>
+                <div class="td" >
+                    <span cy-name=newData.gxsj></span>
+                </div>
+                <div class="th">
+                    处理方式：
+                </div>
+                <div class="td">
+                    <label ><input name="layer" type="checkbox" value="1" cy-change="addInfoForUp" />忽略</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+        //页面登录时调用
+        $scope.load = function(){
+            $scope.initState();
+        }
+
+        //根据上行speed、下行speedx的值显示不同的交通状况和颜色
+        $scope.initState=function(){
+            //上行信息选择是否显示
+
+        }
+        $scope.openDialog = function(obj) {
+            $scope.$setParam("history",obj);
+
+            $scope.$openDialog("createDialog", {
+                title: "历史信息",
+                height: 500,
+                width: 500,
+                href: "tpls/trafficMonitor/trafficState/section-flow-history.html"
+            }, true);
+        }
+
+    });
+</script>
+
+<style type="text/css">
+    #sectionFlowStop .th{
+        width : 95px;
+        text-align: right;
+    }
+    #sectionFlowStop .td{
+        width : 50px;
+    }
+
+    #sectionFlowStop span[cy-name]{
+        color:#0000ff;
+    }
+
+</style>

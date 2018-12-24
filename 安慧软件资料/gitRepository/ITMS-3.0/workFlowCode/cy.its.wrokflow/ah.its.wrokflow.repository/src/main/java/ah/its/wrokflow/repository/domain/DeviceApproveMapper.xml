@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.DeviceApproveMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.DeviceApprove" >
+    <id column="DEVICE_APPROVE_ID" property="deviceApproveId" jdbcType="VARCHAR" />
+    <result column="UNIT" property="unit" jdbcType="VARCHAR" />
+    <result column="PROCESS_ID" property="processId" jdbcType="VARCHAR" />
+    <result column="CONTACTS" property="contacts" jdbcType="VARCHAR" />
+    <result column="APPROVE_TIME" property="approveTime" jdbcType="TIMESTAMP" />
+    <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+    <result column="APPROVE_TYPE" property="approveType" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="APPROVE_SYS" property="approveSys" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="SECTION" property="section" jdbcType="VARCHAR" />
+    <result column="METER" property="meter" jdbcType="DECIMAL" />
+    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" />
+    <result column="VEHICLE_LIMIT" property="vehicleLimit" jdbcType="DECIMAL" />
+    <result column="CAR_LIMIT" property="carLimit" jdbcType="DECIMAL" />
+    <result column="OTHER_LIMIT" property="otherLimit" jdbcType="DECIMAL" />
+    <result column="ROAD_TYPE" property="roadType" jdbcType="VARCHAR" />
+    <result column="ROAD_LEVEL" property="roadLevel" jdbcType="VARCHAR" />
+    <result column="PAVEMENT_LEVEL" property="pavementLevel" jdbcType="VARCHAR" />
+    <result column="TERRAIN" property="terrain" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="DEVICE_POSITION" property="devicePosition" jdbcType="VARCHAR" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+    <result column="ROAD_STATUS_IMG" property="roadStatusImg" jdbcType="VARCHAR" />
+    <result column="SIGNATURE_IMG" property="signatureImg" jdbcType="VARCHAR" />
+    <result column="SOLUTION_FILE" property="solutionFile" jdbcType="VARCHAR" />
+    <result column="DISABLED" property="disabled" jdbcType="VARCHAR" />
+    <result column="KMETER" property="kmeter" jdbcType="DECIMAL" />
+    <result column="EKMETER" property="ekmeter" jdbcType="DECIMAL" />
+    <result column="EMETER" property="emeter" jdbcType="DECIMAL" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="ELONGITUDE" property="elongitude" jdbcType="DECIMAL" />
+    <result column="ELATITUDE" property="elatitude" jdbcType="DECIMAL" />
+    <result column="UNIT_NAME" property="unitName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_APPROVE_ID, UNIT, PROCESS_ID, CONTACTS, APPROVE_TIME, PHONE, APPROVE_TYPE, 
+    CONTENT, APPROVE_SYS, ROAD_ID, SECTION, METER, DEVICE_NAME, VEHICLE_LIMIT, CAR_LIMIT, 
+    OTHER_LIMIT, ROAD_TYPE, ROAD_LEVEL, PAVEMENT_LEVEL, TERRAIN, LONGITUDE, LATITUDE, 
+    DEVICE_POSITION, REASON, ROAD_STATUS_IMG, SIGNATURE_IMG, SOLUTION_FILE, DISABLED, 
+    KMETER, EKMETER, EMETER, STATUS, ELONGITUDE, ELATITUDE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+     DEVICE_APPROVE_ID, UNIT, PROCESS_ID, CONTACTS, APPROVE_TIME, PHONE, APPROVE_TYPE, 
+     CONTENT, APPROVE_SYS, ROAD_ID, SECTION, METER, DEVICE_NAME, VEHICLE_LIMIT, CAR_LIMIT, 
+     OTHER_LIMIT, ROAD_TYPE, ROAD_LEVEL, PAVEMENT_LEVEL, TERRAIN, LONGITUDE, LATITUDE, 
+     DEVICE_POSITION, REASON, ROAD_STATUS_IMG, SIGNATURE_IMG, SOLUTION_FILE, DISABLED, 
+     KMETER, EKMETER, EMETER, STATUS, ELONGITUDE,ELATITUDE,a.name_ UNIT_NAME 
+    from T_WF_DEVICE_APPROVE T 
+    LEFT JOIN  ACT_ID_GROUP  A ON A.ID_  = T.UNIT  
+    where DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR}
+  </select>
+   <select id="selectAllData" resultMap="BaseResultMap" parameterType="java.lang.String" >
+      select   
+		  a.name_ unit,
+		  t.device_name,
+		  t.status,
+		  t.approve_time,
+		  t.device_approve_id,
+		  t.process_id,
+		  t.contacts,
+		  t.phone,
+		  b.code_name  device_position,
+		  t.reason 
+		from T_WF_DEVICE_APPROVE T 
+		left  join act_id_group  a  on  t.unit = a.id_ 
+		left  join  t_wf_sys_code  b  on  b.code_id = t.device_position  
+		where  T.DISABLED  = '0' 
+	    <if test="deviceName != null and deviceName != '' " > 
+	           and  T.device_name  like  '%'||#{deviceName,jdbcType=VARCHAR}||'%' 
+	    </if>
+	    <if test="startTime!=null and startTime != ''" >
+			   <![CDATA[AND T.approve_time >= #{startTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="endTime!=null and endTime != ''" >
+			<![CDATA[AND T.approve_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="approveStatus!=null and approveStatus!= ''" >
+			AND T.status = #{approveStatus,jdbcType=VARCHAR} 
+		</if>
+		<if test="groupId!=null and groupId != ''" >
+			AND T.unit like #{groupId,jdbcType=VARCHAR}||'%' 
+		</if>
+		order by t.approve_time desc 
+  </select>
+  
+  <select id="queryDeviceApproveHistory" resultMap="BaseResultMap" parameterType="java.lang.String" >
+      select   
+		  a.name_ unit,
+		  t.device_name,
+		  t.status,
+		  t.approve_time,
+		  t.device_approve_id,
+		  t.process_id,
+		  t.contacts,
+		  t.phone,
+		  b.code_name  device_position,
+		  t.reason 
+		from T_WF_DEVICE_APPROVE T 
+		left  join act_id_group  a  on  t.unit = a.id_ 
+		left  join  t_wf_sys_code  b  on  b.code_id = t.device_position  
+		where  T.DISABLED  = '0' 
+	    <if test="deviceName != null and deviceName != '' " > 
+	           and  T.device_name  like  '%'||#{deviceName,jdbcType=VARCHAR}||'%' 
+	    </if>
+	    <if test="startTime!=null and startTime != ''" >
+			   <![CDATA[AND T.approve_time >= #{startTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="endTime!=null and endTime != ''" >
+			<![CDATA[AND T.approve_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="approveStatus==null or approveStatus== ''" >
+			AND (T.status = '2' or T.status = '3')
+		</if>
+		<if test="approveStatus!=null and approveStatus!= ''" >
+			AND T.status = #{approveStatus,jdbcType=VARCHAR} 
+		</if>
+		<if test="groupId!=null and groupId != ''" >
+			AND T.unit = #{groupId,jdbcType=VARCHAR} 
+		</if>
+		order by t.approve_time desc 
+  </select>
+  <select id="queryDeviceApproveHistoryDetail" resultType="ah.its.wrokflow.repository.dao.ApproveChk" parameterType="java.lang.String" >
+    select 
+    b.first_ approvalUser,a.approval_comments approvalComments,
+    a.approval_result approvalResult,a.approval_time approvalTime,e.name_ groupName
+    from T_WF_CHECK_RECORD A 
+    LEFT JOIN ACT_ID_USER b ON b.ID_ = A.APPROVAL_USER
+    left join ACT_ID_MEMBERSHIP C ON C.USER_ID_= b.ID_  
+    LEFT JOIN  ACT_ID_GROUP  e ON e.ID_  = c.group_id_
+    where a.APPLY_ID = #{deviceApproveId,jdbcType=VARCHAR}
+    <!-- select 
+     DEVICE_APPROVE_ID, UNIT, PROCESS_ID, CONTACTS, APPROVE_TIME, PHONE, APPROVE_TYPE, 
+     CONTENT, APPROVE_SYS, ROAD_ID, SECTION, METER, DEVICE_NAME, VEHICLE_LIMIT, CAR_LIMIT, 
+     OTHER_LIMIT, ROAD_TYPE, ROAD_LEVEL, PAVEMENT_LEVEL, TERRAIN, LONGITUDE, LATITUDE, 
+     DEVICE_POSITION, REASON, ROAD_STATUS_IMG, SIGNATURE_IMG, SOLUTION_FILE, DISABLED, 
+     KMETER, EKMETER, EMETER, STATUS, ELONGITUDE,ELATITUDE,a.name_ UNIT_NAME 
+    from T_WF_DEVICE_APPROVE T 
+    LEFT JOIN  ACT_ID_GROUP  A ON A.ID_  = T.UNIT  
+    where DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR} -->
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_DEVICE_APPROVE
+    where DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.DeviceApprove" >
+    insert into T_WF_DEVICE_APPROVE (DEVICE_APPROVE_ID, UNIT, PROCESS_ID, 
+      CONTACTS, APPROVE_TIME, PHONE, 
+      APPROVE_TYPE, CONTENT, APPROVE_SYS, 
+      ROAD_ID, SECTION, METER, 
+      DEVICE_NAME, VEHICLE_LIMIT, CAR_LIMIT, 
+      OTHER_LIMIT, ROAD_TYPE, ROAD_LEVEL, 
+      PAVEMENT_LEVEL, TERRAIN, LONGITUDE, 
+      LATITUDE, DEVICE_POSITION, REASON, 
+      ROAD_STATUS_IMG, SIGNATURE_IMG, SOLUTION_FILE, 
+      DISABLED, KMETER, EKMETER, 
+      EMETER, STATUS, ELONGITUDE, 
+      ELATITUDE)
+    values (#{deviceApproveId,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, #{processId,jdbcType=VARCHAR}, 
+      #{contacts,jdbcType=VARCHAR}, #{approveTime,jdbcType=TIMESTAMP}, #{phone,jdbcType=VARCHAR}, 
+      #{approveType,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{approveSys,jdbcType=VARCHAR}, 
+      #{roadId,jdbcType=VARCHAR}, #{section,jdbcType=VARCHAR}, #{meter,jdbcType=DECIMAL}, 
+      #{deviceName,jdbcType=VARCHAR}, #{vehicleLimit,jdbcType=DECIMAL}, #{carLimit,jdbcType=DECIMAL}, 
+      #{otherLimit,jdbcType=DECIMAL}, #{roadType,jdbcType=VARCHAR}, #{roadLevel,jdbcType=VARCHAR}, 
+      #{pavementLevel,jdbcType=VARCHAR}, #{terrain,jdbcType=VARCHAR}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, #{devicePosition,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, 
+      #{roadStatusImg,jdbcType=VARCHAR}, #{signatureImg,jdbcType=VARCHAR}, #{solutionFile,jdbcType=VARCHAR}, 
+      #{disabled,jdbcType=VARCHAR}, #{kmeter,jdbcType=DECIMAL}, #{ekmeter,jdbcType=DECIMAL}, 
+      #{emeter,jdbcType=DECIMAL}, #{status,jdbcType=VARCHAR}, #{elongitude,jdbcType=DECIMAL}, 
+      #{elatitude,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.DeviceApprove" >
+    insert into T_WF_DEVICE_APPROVE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceApproveId != null" >
+        DEVICE_APPROVE_ID,
+      </if>
+      <if test="unit != null" >
+        UNIT,
+      </if>
+      <if test="processId != null" >
+        PROCESS_ID,
+      </if>
+      <if test="contacts != null" >
+        CONTACTS,
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME,
+      </if>
+      <if test="phone != null" >
+        PHONE,
+      </if>
+      <if test="approveType != null" >
+        APPROVE_TYPE,
+      </if>
+      <if test="content != null" >
+        CONTENT,
+      </if>
+      <if test="approveSys != null" >
+        APPROVE_SYS,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="section != null" >
+        SECTION,
+      </if>
+      <if test="meter != null" >
+        METER,
+      </if>
+      <if test="deviceName != null" >
+        DEVICE_NAME,
+      </if>
+      <if test="vehicleLimit != null" >
+        VEHICLE_LIMIT,
+      </if>
+      <if test="carLimit != null" >
+        CAR_LIMIT,
+      </if>
+      <if test="otherLimit != null" >
+        OTHER_LIMIT,
+      </if>
+      <if test="roadType != null" >
+        ROAD_TYPE,
+      </if>
+      <if test="roadLevel != null" >
+        ROAD_LEVEL,
+      </if>
+      <if test="pavementLevel != null" >
+        PAVEMENT_LEVEL,
+      </if>
+      <if test="terrain != null" >
+        TERRAIN,
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE,
+      </if>
+      <if test="latitude != null" >
+        LATITUDE,
+      </if>
+      <if test="devicePosition != null" >
+        DEVICE_POSITION,
+      </if>
+      <if test="reason != null" >
+        REASON,
+      </if>
+      <if test="roadStatusImg != null" >
+        ROAD_STATUS_IMG,
+      </if>
+      <if test="signatureImg != null" >
+        SIGNATURE_IMG,
+      </if>
+      <if test="solutionFile != null" >
+        SOLUTION_FILE,
+      </if>
+      <if test="disabled != null" >
+        DISABLED,
+      </if>
+      <if test="kmeter != null" >
+        KMETER,
+      </if>
+      <if test="ekmeter != null" >
+        EKMETER,
+      </if>
+      <if test="emeter != null" >
+        EMETER,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="elongitude != null" >
+        ELONGITUDE,
+      </if>
+      <if test="elatitude != null" >
+        ELATITUDE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceApproveId != null" >
+        #{deviceApproveId,jdbcType=VARCHAR},
+      </if>
+      <if test="unit != null" >
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null" >
+        #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null" >
+        #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="approveType != null" >
+        #{approveType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="approveSys != null" >
+        #{approveSys,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="section != null" >
+        #{section,jdbcType=VARCHAR},
+      </if>
+      <if test="meter != null" >
+        #{meter,jdbcType=DECIMAL},
+      </if>
+      <if test="deviceName != null" >
+        #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleLimit != null" >
+        #{vehicleLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="carLimit != null" >
+        #{carLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="otherLimit != null" >
+        #{otherLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="roadType != null" >
+        #{roadType,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLevel != null" >
+        #{roadLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="pavementLevel != null" >
+        #{pavementLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="terrain != null" >
+        #{terrain,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="devicePosition != null" >
+        #{devicePosition,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="roadStatusImg != null" >
+        #{roadStatusImg,jdbcType=VARCHAR},
+      </if>
+      <if test="signatureImg != null" >
+        #{signatureImg,jdbcType=VARCHAR},
+      </if>
+      <if test="solutionFile != null" >
+        #{solutionFile,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        #{disabled,jdbcType=VARCHAR},
+      </if>
+      <if test="kmeter != null" >
+        #{kmeter,jdbcType=DECIMAL},
+      </if>
+      <if test="ekmeter != null" >
+        #{ekmeter,jdbcType=DECIMAL},
+      </if>
+      <if test="emeter != null" >
+        #{emeter,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="elongitude != null" >
+        #{elongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="elatitude != null" >
+        #{elatitude,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.DeviceApprove" >
+    update T_WF_DEVICE_APPROVE
+    <set >
+      <if test="unit != null and unit != '' " >
+        UNIT = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null and processId != ''" >
+        PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null" >
+        CONTACTS = #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        PHONE = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="approveType != null" >
+        APPROVE_TYPE = #{approveType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="approveSys != null" >
+        APPROVE_SYS = #{approveSys,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="section != null" >
+        SECTION = #{section,jdbcType=VARCHAR},
+      </if>
+      <if test="meter != null" >
+        METER = #{meter,jdbcType=DECIMAL},
+      </if>
+      <if test="deviceName != null" >
+        DEVICE_NAME = #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleLimit != null" >
+        VEHICLE_LIMIT = #{vehicleLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="carLimit != null" >
+        CAR_LIMIT = #{carLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="otherLimit != null" >
+        OTHER_LIMIT = #{otherLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="roadType != null" >
+        ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLevel != null" >
+        ROAD_LEVEL = #{roadLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="pavementLevel != null" >
+        PAVEMENT_LEVEL = #{pavementLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="terrain != null" >
+        TERRAIN = #{terrain,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="devicePosition != null" >
+        DEVICE_POSITION = #{devicePosition,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        REASON = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="roadStatusImg != null and roadStatusImg != ''" >
+        ROAD_STATUS_IMG = #{roadStatusImg,jdbcType=VARCHAR},
+      </if>
+      <if test="signatureImg != null and signatureImg != '' " >
+        SIGNATURE_IMG = #{signatureImg,jdbcType=VARCHAR},
+      </if>
+      <if test="solutionFile != null and solutionFile != '' " >
+        SOLUTION_FILE = #{solutionFile,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        DISABLED = #{disabled,jdbcType=VARCHAR},
+      </if>
+      <if test="kmeter != null" >
+        KMETER = #{kmeter,jdbcType=DECIMAL},
+      </if>
+      <if test="ekmeter != null" >
+        EKMETER = #{ekmeter,jdbcType=DECIMAL},
+      </if>
+      <if test="emeter != null" >
+        EMETER = #{emeter,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="elongitude != null" >
+        ELONGITUDE = #{elongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="elatitude != null" >
+        ELATITUDE = #{elatitude,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.DeviceApprove" >
+    update T_WF_DEVICE_APPROVE
+    set UNIT = #{unit,jdbcType=VARCHAR},
+      PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      CONTACTS = #{contacts,jdbcType=VARCHAR},
+      APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      PHONE = #{phone,jdbcType=VARCHAR},
+      APPROVE_TYPE = #{approveType,jdbcType=VARCHAR},
+      CONTENT = #{content,jdbcType=VARCHAR},
+      APPROVE_SYS = #{approveSys,jdbcType=VARCHAR},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      SECTION = #{section,jdbcType=VARCHAR},
+      METER = #{meter,jdbcType=DECIMAL},
+      DEVICE_NAME = #{deviceName,jdbcType=VARCHAR},
+      VEHICLE_LIMIT = #{vehicleLimit,jdbcType=DECIMAL},
+      CAR_LIMIT = #{carLimit,jdbcType=DECIMAL},
+      OTHER_LIMIT = #{otherLimit,jdbcType=DECIMAL},
+      ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+      ROAD_LEVEL = #{roadLevel,jdbcType=VARCHAR},
+      PAVEMENT_LEVEL = #{pavementLevel,jdbcType=VARCHAR},
+      TERRAIN = #{terrain,jdbcType=VARCHAR},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      DEVICE_POSITION = #{devicePosition,jdbcType=VARCHAR},
+      REASON = #{reason,jdbcType=VARCHAR},
+      ROAD_STATUS_IMG = #{roadStatusImg,jdbcType=VARCHAR},
+      SIGNATURE_IMG = #{signatureImg,jdbcType=VARCHAR},
+      SOLUTION_FILE = #{solutionFile,jdbcType=VARCHAR},
+      DISABLED = #{disabled,jdbcType=VARCHAR},
+      KMETER = #{kmeter,jdbcType=DECIMAL},
+      EKMETER = #{ekmeter,jdbcType=DECIMAL},
+      EMETER = #{emeter,jdbcType=DECIMAL},
+      STATUS = #{status,jdbcType=VARCHAR},
+      ELONGITUDE = #{elongitude,jdbcType=DECIMAL},
+      ELATITUDE = #{elatitude,jdbcType=DECIMAL}
+    where DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR}
+  </update>
+</mapper>

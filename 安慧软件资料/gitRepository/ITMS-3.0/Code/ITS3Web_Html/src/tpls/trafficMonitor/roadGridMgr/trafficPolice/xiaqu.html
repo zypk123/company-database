@@ -1,0 +1,75 @@
+<div id="xiaqu" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    辖区代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="xqdm">
+                </div>
+                <div class="th">
+                    交警机构：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    高速起点公里数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="qdgls">
+                </div>
+                <div class="th">
+                    高速终点公里数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="zdgls" >
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    国省道条数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="gsdts" >
+                </div>
+                <div class="th">
+                    其他道路条数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="qtdlts" >
+                </div>
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #xiaqu .th{
+        width : 100px;
+        text-align: right;
+    }
+    #xiaqu .td{
+        width : 150px;
+    }
+
+</style>

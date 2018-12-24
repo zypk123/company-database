@@ -1,0 +1,312 @@
+<div id="homeOrg" class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height: 30px">
+		<div style="height: 27px;">
+			<div style="float: left;margin-top: 5px;">
+				<a class="devGenalTxt">设备概况</a>
+			</div>
+			<div style="float: left">
+				<a id="back">返回</a>
+			</div>
+			<div style="float: left">
+				<a id="btnRefresh">刷新</a>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-panel" data-options="cls:'gridPanel',height:'100%',width:'99%',border:false">
+			<table id="deviceMainGrd" style="height:auto"></table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(['loadHomePage','orgCodeClick'], function($scope) {
+		//定时刷新时间间隔，单位分钟
+		var intervalTime = 2;
+		var orgCodeClick = $scope.orgCodeClick;//记录点击时的机构code
+		$scope.load = function() {
+			getDevGenalSituation(orgCodeClick);
+		};
+
+		var columns = null;
+		var grdData = null;
+		var columnArry = [];
+		var orgPrivCodeArry = [];
+
+		var hasCerti = false;
+		var setTimeoutId = null;
+		function getDevGenalSituation(orgCodeClick) {
+			if(orgCodeClick == $scope.UserInfo.orgPrivCode){
+				$scope.$("#back").hide();
+			}else{
+				$scope.$("#back").show();
+			}
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituation",
+				params : {orgPrivilegeCode : orgCodeClick},
+				success : function(result) {
+					getParms(result.forGrdColumn, result.forGrdData);
+					initGrid(result);
+					hasCerti = result.hasCerti;
+				},
+				fail : function(errMsg) {
+					alert(errMsg);
+				}
+			});
+		}
+		//返回
+		$scope.$("#back").click(function() {
+			getDevGenalSituation(orgCodeClick);
+		});
+		//刷新
+		$scope.$("#btnRefresh").click(function() {
+			getDevGenalSituationIntervalTime();
+		});
+		
+		function getDevGenalSituationIntervalTime() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituationIntervalTime",
+				params : {
+					"columns" : columnArry.join(","),
+					"orgPrivCodes" : orgPrivCodeArry.join(","),
+					"isNeetCerti" : hasCerti
+				},
+				success : function(result) {
+					$scope.$('#deviceMainGrd').datagrid("loadData", result);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+		//点击机构进入查看具体设备统计（钻取的方法实现）
+		$scope.getMainInfo = function(index){
+			var rowDatas = $scope.$("#deviceMainGrd").datagrid("getData").rows[index];
+			var orgPrivCode = rowDatas.orgPriviCode;//点击当前的这个机构orgPrivCode
+			if(orgPrivCode == orgCodeClick){
+				href = 'tpls/home/home-dev.html';
+				$scope.loadHomePage(href,orgPrivCode);
+				return;
+			}
+			if(orgPrivCode.length <= 4){//支队下的机构
+				getDevGenalSituation(orgPrivCode);
+			}else{
+				//根据点击的当前机构orgPrivCode获取其父机构的orgPrivCode
+				var orgInfo = $scope.$org;
+				var org = orgInfo[0];
+				var orgPrivCodeParent = $scope.UserInfo.orgPrivCode;
+				getOrgPrivCodeParent(org,orgPrivCodeParent);
+				function getOrgPrivCodeParent(org,orgPrivCodeParent){
+					if (org.attribute && org.attribute.orgPrivCode == orgPrivCode) {
+			            return orgPrivCodeParent;
+			        } else {
+		            	var orgPrivCodeParent = org.attribute.orgPrivCode;
+			            for (var index in org.children) {
+			                var orgPrivCodeParentt = getOrgPrivCodeParent(org.children[index],orgPrivCodeParent);
+			                if (orgPrivCodeParentt) {
+			                	orgCodeClick = orgPrivCodeParent;
+			                }
+			            }
+			        }
+				}
+				href = 'tpls/home/home-dev.html';
+				$scope.loadHomePage(href,orgPrivCode);
+			}
+		};
+		
+		function getParms(columns, grdData) {
+			columnArry.length=0;
+			orgPrivCodeArry.length=0;
+			for (var c in columns) {
+				columnArry.push(c);
+			}
+			var currentUserOrgPrivCode = $scope.orgPrivCodeRemark;
+			for (var o in grdData) {
+				if (grdData[o].orgPriviCode != currentUserOrgPrivCode) {
+					orgPrivCodeArry.push(grdData[o].orgPriviCode);
+				}
+			}
+		}
+
+		function initGrid(result) {
+			var firstRowHeader = [];
+			var colums = [];
+
+			firstRowHeader.push({
+				rowspan : 2,
+				field : 'orgName',
+				title : '机构',
+				align : 'center',
+				formatter : function(value, row, index){
+					if (value != null && value != undefined) {
+						var span = $("<a style='cursor: pointer;color:blue' cy-click='getMainInfo("+ index +")'>" + value + "</a>");
+						return  $("<span/>").append(span).html();
+					}
+					return "--";
+				}
+			});
+
+			var cls = result.forGrdColumn;
+			for (var c in cls) {
+				var field = c;
+				var title = cls[c];
+				colums.push({
+					field : field,
+					title : title,
+					align : 'center',
+					width : 120,
+					align : 'center',
+					formatter : function(value, row, index) {
+						if (value != null && value != undefined) {
+							return value.normal + "/" + value.total;
+						}
+						return "--";
+					}
+				});
+			}
+			colums.push({
+				field : 'devTotal',
+				title : '总计',
+				align : 'center',
+				width : 100,
+				align : 'center',
+				formatter : function(value, row, index) {
+					if (value != null && value != undefined) {
+						return value.normal + "/" + value.total;
+					}
+					return "--";
+				}
+			});
+			colums.push({
+				field : 'devTotalPercent',
+				title : '在线率',
+				align : 'center',
+				width : 130,
+				align : 'center',
+				formatter : getPercentFormat,
+				styler : function(value, row, index) {
+					return 'background-color:#e4e4e4;';
+				}
+			});
+			var devColumSpan = columnArry.length + 2;
+			firstRowHeader.push({
+				colspan : devColumSpan,
+				title : '在线情况（当前在线数/应在线数）',
+				align : 'center'
+			});
+			if (result.hasCerti) {
+				colums.push({
+					field : 'certification',
+					title : '已检定',
+					align : 'center',
+					width : 100,
+					align : 'center',
+					formatter : function(value, row, index) {
+						if (value != null && value != undefined) {
+							return value.normal + "/" + value.total;
+						}
+						return "--";
+					}
+				});
+				colums.push({
+					field : 'certificationPercent',
+					title : '检定率',
+					align : 'center',
+					width : 130,
+					align : 'center',
+					formatter : getPercentFormat,
+					styler : function(value, row, index) {
+						return 'background-color:#e4e4e4;';
+					}
+				});
+				firstRowHeader.push({
+					colspan : 2,
+					title : '检定情况',
+					align : 'center'
+				});
+			}
+			firstRowHeader.push({
+				rowspan : 2,
+				field : 'devBugPercent',
+				title : '故障率',
+				align : 'center',
+				formatter : function(value, row, index) {//故障率越低越好
+					if (value != null && value != undefined) {
+						var vl = value.replace("%", "");
+						if (parseFloat(vl) > 60) {
+							return "<span style='color:red'>" + value + "</span>";
+						} else {
+							return value;
+						}
+					}
+					return "--";
+				},
+				styler : function(value, row, index) {
+					return 'background-color:#e4e4e4;';
+				}
+			});
+			$scope.$('#deviceMainGrd').datagrid({
+				data : result.forGrdData,
+				columns : [firstRowHeader, colums],
+				striped : true,
+				border : true,
+				pagination : false,
+				onSelect : function(index, row) {
+					// curSelectedRowIndex = index;
+					// showUnnormalDevice(row);
+					// showCertiDevice(row);
+					// showBugDevice(row);
+				},
+				onLoadSuccess : function(data){
+					$scope.$eventProxy();//重新做事件代理
+				}
+			});
+		}
+		
+		function getPercentFormat(value, row, index) {
+			if (value != null && value != undefined) {
+				var vl = value.replace("%", "");
+				if (parseFloat(vl) < 60) {
+					return "<span style='color:red'>" + value + "</span>";
+				} else {
+					return value;
+				}
+			}
+			return "--";
+		}
+
+	});
+
+</script>
+<style>
+	#homeOrg {
+		height: 100%;
+		width: 100%;
+	}
+
+	#homeOrg .gridPanel {
+		height: 100%;
+		width: 99%;
+		margin-left: 1%;
+	}
+	#homeOrg .devGenalTxt {
+		font-size: 13px;
+		letter-spacing: 3px;
+		font-weight: bold;
+	}
+	#homeOrg #btnRefresh {
+		margin-top: 5px;
+		color: #0000FF;
+		font-size: 13px;
+		position: absolute;
+		right: 20px;
+		cursor: pointer;
+	}
+	#homeOrg #back {
+		margin-top: 5px;
+		color: #0000FF;
+		font-size: 13px;
+		position: absolute;
+		right: 60px;
+		cursor: pointer;
+	}
+</style>

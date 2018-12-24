@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Operation_TypeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Operation_Type" >
+    <id column="OPERATION_TYPE_ID" property="operationTypeId" jdbcType="VARCHAR" />
+    <result column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+    <result column="OPERATION_TYPE_CODE" property="operationTypeCode" jdbcType="VARCHAR" />
+    <result column="OPERATION_TYPE_NAME" property="operationTypeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OPERATION_TYPE_ID, FUNCTION_CODE, OPERATION_TYPE_CODE, OPERATION_TYPE_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_OPERATION_TYPE
+    where OPERATION_TYPE_ID = #{operationTypeId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_OPERATION_TYPE
+    where OPERATION_TYPE_ID = #{operationTypeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Type" >
+    insert into T_SYS_OPERATION_TYPE (OPERATION_TYPE_ID, FUNCTION_CODE, OPERATION_TYPE_CODE, 
+      OPERATION_TYPE_NAME)
+    values (#{operationTypeId,jdbcType=VARCHAR}, #{functionCode,jdbcType=VARCHAR}, #{operationTypeCode,jdbcType=VARCHAR}, 
+      #{operationTypeName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Type" >
+    insert into T_SYS_OPERATION_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operationTypeId != null" >
+        OPERATION_TYPE_ID,
+      </if>
+      <if test="functionCode != null" >
+        FUNCTION_CODE,
+      </if>
+      <if test="operationTypeCode != null" >
+        OPERATION_TYPE_CODE,
+      </if>
+      <if test="operationTypeName != null" >
+        OPERATION_TYPE_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operationTypeId != null" >
+        #{operationTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionCode != null" >
+        #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTypeCode != null" >
+        #{operationTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTypeName != null" >
+        #{operationTypeName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Type" >
+    update T_SYS_OPERATION_TYPE
+    <set >
+      <if test="functionCode != null" >
+        FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTypeCode != null" >
+        OPERATION_TYPE_CODE = #{operationTypeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTypeName != null" >
+        OPERATION_TYPE_NAME = #{operationTypeName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where OPERATION_TYPE_ID = #{operationTypeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Operation_Type" >
+    update T_SYS_OPERATION_TYPE
+    set FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR},
+      OPERATION_TYPE_CODE = #{operationTypeCode,jdbcType=VARCHAR},
+      OPERATION_TYPE_NAME = #{operationTypeName,jdbcType=VARCHAR}
+    where OPERATION_TYPE_ID = #{operationTypeId,jdbcType=VARCHAR}
+  </update>
+</mapper>

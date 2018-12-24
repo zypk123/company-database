@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.UserSignatureMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.duty.UserSignature" >
+    <id column="signature_id" property="signatureId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="signature_index" property="signatureIndex" jdbcType="INTEGER" />
+    <result column="signature_image" property="signatureImage" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="findSignatureByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select *
+  	from t_sys_user_signature
+  	where user_id = #{userId}
+  </select>
+   <insert id="saveUserSignature" parameterType="cy.its.syscfg.domain.model.duty.UserSignature" >
+   	 insert into t_sys_user_signature (signature_id,user_id,signature_index,signature_image)
+     values (#{signatureId},#{userId},#{signatureIndex},#{signatureImage})
+  </insert>
+  <delete id="removeUserSignature" parameterType="java.lang.String">
+  	delete from t_sys_user_signature where user_id = #{userId}
+  </delete>
+</mapper>

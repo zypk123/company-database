@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Code_TypeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Code_Type" >
+    <id column="CODE_TYPE" property="codeType" jdbcType="VARCHAR" />
+    <result column="CODE_TYPE_NAME" property="codeTypeName" jdbcType="VARCHAR" />
+    <result column="EDITABLE" property="editable" jdbcType="CHAR" />
+    <result column="REGEX" property="regex" jdbcType="VARCHAR" />
+    <result column="ENABLE_FLAG" property="enableFlag" jdbcType="CHAR" />
+    <result column="ENGLISH_NAME" property="englishName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE_TYPE, CODE_TYPE_NAME, EDITABLE, REGEX, ENABLE_FLAG, ENGLISH_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_CODE_TYPE
+    where CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_CODE_TYPE
+    where CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code_Type" >
+    insert into T_SYS_CODE_TYPE (CODE_TYPE, CODE_TYPE_NAME, EDITABLE, 
+      REGEX, ENABLE_FLAG, ENGLISH_NAME
+      )
+    values (#{codeType,jdbcType=VARCHAR}, #{codeTypeName,jdbcType=VARCHAR}, #{editable,jdbcType=CHAR}, 
+      #{regex,jdbcType=VARCHAR}, #{enableFlag,jdbcType=CHAR}, #{englishName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code_Type" >
+    insert into T_SYS_CODE_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="codeType != null" >
+        CODE_TYPE,
+      </if>
+      <if test="codeTypeName != null" >
+        CODE_TYPE_NAME,
+      </if>
+      <if test="editable != null" >
+        EDITABLE,
+      </if>
+      <if test="regex != null" >
+        REGEX,
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG,
+      </if>
+      <if test="englishName != null" >
+        ENGLISH_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="codeType != null" >
+        #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeTypeName != null" >
+        #{codeTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="editable != null" >
+        #{editable,jdbcType=CHAR},
+      </if>
+      <if test="regex != null" >
+        #{regex,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        #{enableFlag,jdbcType=CHAR},
+      </if>
+      <if test="englishName != null" >
+        #{englishName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code_Type" >
+    update T_SYS_CODE_TYPE
+    <set >
+      <if test="codeTypeName != null" >
+        CODE_TYPE_NAME = #{codeTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="editable != null" >
+        EDITABLE = #{editable,jdbcType=CHAR},
+      </if>
+      <if test="regex != null" >
+        REGEX = #{regex,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG = #{enableFlag,jdbcType=CHAR},
+      </if>
+      <if test="englishName != null" >
+        ENGLISH_NAME = #{englishName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code_Type" >
+    update T_SYS_CODE_TYPE
+    set CODE_TYPE_NAME = #{codeTypeName,jdbcType=VARCHAR},
+      EDITABLE = #{editable,jdbcType=CHAR},
+      REGEX = #{regex,jdbcType=VARCHAR},
+      ENABLE_FLAG = #{enableFlag,jdbcType=CHAR},
+      ENGLISH_NAME = #{englishName,jdbcType=VARCHAR}
+    where CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+  </update>
+</mapper>

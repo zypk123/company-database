@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ModelFunctionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.ModelFunction" >
+    <id column="DEVICE_SYS_FUNCTION_ID" property="deviceSysFunctionId" jdbcType="VARCHAR" />
+    <id column="DEVICE_SYS_MODEL_ID" property="deviceSysModelId" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_SYS_FUNCTION_ID, DEVICE_SYS_MODEL_ID, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="cy.its.device.domain.model.ModelFunctionKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_MODEL_FUNCTION
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+      and DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="cy.its.device.domain.model.ModelFunctionKey" >
+    delete from T_DEVICE_MODEL_FUNCTION
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+      and DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.ModelFunction" >
+    insert into T_DEVICE_MODEL_FUNCTION (DEVICE_SYS_FUNCTION_ID, DEVICE_SYS_MODEL_ID, 
+      REMARK)
+    values (#{deviceSysFunctionId,jdbcType=VARCHAR}, #{deviceSysModelId,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.ModelFunction" >
+    insert into T_DEVICE_MODEL_FUNCTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceSysFunctionId != null" >
+        DEVICE_SYS_FUNCTION_ID,
+      </if>
+      <if test="deviceSysModelId != null" >
+        DEVICE_SYS_MODEL_ID,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceSysFunctionId != null" >
+        #{deviceSysFunctionId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysModelId != null" >
+        #{deviceSysModelId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.ModelFunction" >
+    update T_DEVICE_MODEL_FUNCTION
+    <set >
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+      and DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.ModelFunction" >
+    update T_DEVICE_MODEL_FUNCTION
+    set REMARK = #{remark,jdbcType=VARCHAR}
+    where DEVICE_SYS_FUNCTION_ID = #{deviceSysFunctionId,jdbcType=VARCHAR}
+      and DEVICE_SYS_MODEL_ID = #{deviceSysModelId,jdbcType=VARCHAR}
+  </update>
+</mapper>

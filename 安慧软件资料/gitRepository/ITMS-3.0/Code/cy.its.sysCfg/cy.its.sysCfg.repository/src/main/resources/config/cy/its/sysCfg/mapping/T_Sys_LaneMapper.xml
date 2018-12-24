@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_LaneMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Lane" >
+    <id column="LANE_ID" property="laneId" jdbcType="VARCHAR" />
+    <result column="LANE_NBR" property="laneNbr" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="LANE_TYPE" property="laneType" jdbcType="CHAR" />
+    <result column="IS_RESTRICT" property="isRestrict" jdbcType="CHAR" />
+    <result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+    <result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LANE_ID, LANE_NBR, DIRECTION_TYPE, LANE_TYPE, IS_RESTRICT, LIMIT_LARGE, LIMIT_SMALL, 
+    LIMIT_LOWER, DIRECTION_NAME, SECTION_ID, SITE_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_LANE
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_LANE
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Lane" >
+    insert into T_SYS_LANE (LANE_ID, LANE_NBR, DIRECTION_TYPE, 
+      LANE_TYPE, IS_RESTRICT, LIMIT_LARGE, 
+      LIMIT_SMALL, LIMIT_LOWER, DIRECTION_NAME, 
+      SECTION_ID, SITE_ID)
+    values (#{laneId,jdbcType=VARCHAR}, #{laneNbr,jdbcType=VARCHAR}, #{directionType,jdbcType=CHAR}, 
+      #{laneType,jdbcType=CHAR}, #{isRestrict,jdbcType=CHAR}, #{limitLarge,jdbcType=DECIMAL}, 
+      #{limitSmall,jdbcType=DECIMAL}, #{limitLower,jdbcType=DECIMAL}, #{directionName,jdbcType=VARCHAR}, 
+      #{sectionId,jdbcType=VARCHAR}, #{siteId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Lane" >
+    insert into T_SYS_LANE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="laneId != null" >
+        LANE_ID,
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="laneType != null" >
+        LANE_TYPE,
+      </if>
+      <if test="isRestrict != null" >
+        IS_RESTRICT,
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE,
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL,
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+      <if test="sectionId != null" >
+        SECTION_ID,
+      </if>
+      <if test="siteId != null" >
+        SITE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="laneId != null" >
+        #{laneId,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="laneType != null" >
+        #{laneType,jdbcType=CHAR},
+      </if>
+      <if test="isRestrict != null" >
+        #{isRestrict,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="sectionId != null" >
+        #{sectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Lane" >
+    update T_SYS_LANE
+    <set >
+      <if test="laneNbr != null" >
+        LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="laneType != null" >
+        LANE_TYPE = #{laneType,jdbcType=CHAR},
+      </if>
+      <if test="isRestrict != null" >
+        IS_RESTRICT = #{isRestrict,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="sectionId != null" >
+        SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null" >
+        SITE_ID = #{siteId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Lane" >
+    update T_SYS_LANE
+    set LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      LANE_TYPE = #{laneType,jdbcType=CHAR},
+      IS_RESTRICT = #{isRestrict,jdbcType=CHAR},
+      LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      SECTION_ID = #{sectionId,jdbcType=VARCHAR},
+      SITE_ID = #{siteId,jdbcType=VARCHAR}
+    where LANE_ID = #{laneId,jdbcType=VARCHAR}
+  </update>
+</mapper>

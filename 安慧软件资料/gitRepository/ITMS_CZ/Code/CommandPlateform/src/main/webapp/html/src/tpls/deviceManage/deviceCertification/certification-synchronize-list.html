@@ -1,0 +1,384 @@
+<div class="easyui-layout">
+    <div data-options="region:'north',border:false" style="height: 149px;">
+      <!--一行按钮区域-->
+        <div class="linkbutton_toolbar" style="margin-top:113px">
+            <a class="easyui-linkbutton button-main" id="uploadExcel" data-options="iconCls:'icon-add'">检定同步</a>
+            <a class="easyui-linkbutton button"  data-options="iconCls:'icon-export'" cy-click="exportExcel">导出</a>
+            <a class="easyui-linkbutton button"  data-options="iconCls:'icon-export'" cy-click="exportTemplate">模板下载</a>
+       </div> 
+        <form cy-form="formData" id="form" style="margin-top:-149px">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div id="certificationSyschronize" class="table">
+                    <div class="tr">
+                        <div class="th">证书批次：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="importDate" name="importDate" data-options="valueField:'value',textField:'text'"/>
+                        </div>
+                        <div class="th">委托单位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" id="orgName" name="orgName" style="width:150px"/>
+                        </div>
+                        <div class="th">检定日期：</div>
+                        <div class="td">
+                            <input class="easyui-datebox"
+                                   data-options="showSeconds:false,validType:['maxDate[\'endCertificatedDate\']','date']"
+                                   type="text" id="beginCertificatedDate"
+                                   name="beginCertificatedDate"/>
+                        </div>
+                        <div class="th" style="width: 30px">至：</div>
+                        <div class="td">
+                            <input class="easyui-datebox"
+                                   data-options="showSeconds:false,validType:['minDate[\'beginCertificatedDate\']','date']"
+                                   type="text" id="endCertificatedDate"
+                                   name="endCertificatedDate"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备类型：</div>
+                        <div class="td">
+                            <input id="equipmentType" name="equipmentType" cy-code="488" class="easyui-combobox"
+                                   data-options="valueField:'value',textField:'text',multiple:true"/>
+                        </div>
+                        <div class="th">设备编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" id="equipmentNbr" name="equipmentNbr" style="width:150px"/>
+                        </div>
+                        <div class="th">同步标记：</div>
+                        <div class="td" style="width:300px">
+                            <input type="checkbox" name="exportFlag" value="1" style="margin-left: 5px">导入成功
+                            <input type="checkbox" name="exportFlag" value="2" style="margin-left: 5px">未登记
+                            <input type="checkbox" name="exportFlag" value="3" style="margin-left: 5px">非交警设备
+                            <input type="checkbox" name="exportFlag" value="4" style="margin-left: 5px">其他原因
+                        </div>
+                        <div class="th">
+                            <a class="easyui-linkbutton" cy-click="searchData"
+                               data-options="iconCls:'icon-search'">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>  
+    </div>
+    <div data-options="region:'center'">
+        <table id="certificationGrd" cy-datagrid="optionsDm"
+               cy-querydata="formData"
+               cy-url="device/certificationManage/getCertificatioRecordnList"></table>
+    </div>
+    <!-- <div id="progressbar" class="easyui-progressbar" style="width:400px; top:30%; margin-left:30%;display:none"></div>      -->
+</div>
+<script type="text/javascript">
+    InitPage([],function ($scope) {
+                var deviceId = null;
+                var uploadUrl = "";
+                getImportDateList();
+                $scope.$getDefaultCode([ '488' ]);
+                $scope.uploader = initUpload();
+                $scope.uploader.init();
+                //初始化查询
+                $scope.load = function () {
+                	$scope.formData.orderName = "importDate";
+        			$scope.formData.orderType = "asc";
+                    $scope.$updateData("formData");
+                    $scope.$search("formData");
+                };
+                $scope.searchData = function () {
+                	if ($scope.$("#form").form("validate")) {
+                    $scope.$updateData("formData");
+                    $scope.formData.equipmentTypeArray = $scope.$("#equipmentType").combobox("getValues").join(",");
+					$scope.formData.importMarkArray = $("input[name='exportFlag']:checked").map(function() {
+							return $(this).val();
+					}).get().join(',');
+					//获得当前第几页页数
+					var count = $scope.$("#certificationGrd").datagrid("getPager").pagination("options").pageNumber;
+					if (count > 1) {
+						//刷新,跳转到第一页
+						$scope.$("#certificationGrd").datagrid("getPager").pagination("select", 1);
+					} 
+					else{
+				    $scope.$search("formData");
+			    	  }
+                	}
+                };
+            	$scope.$('.easyui-datebox').each(function() {
+            		$(this).datebox('calendar').calendar({
+            			validator : function(date) {
+            				var now = new Date();
+            				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            				return date <= d1;
+            			}
+            		});
+            	});
+                //检定信息列表字段
+                $scope.optionsDm = {
+                	sortName : "importDate",
+        			sortOrder : "asc",
+                    columns: [
+                        [
+                            {
+                                field: 'recordId',
+                                checkbox: true,
+                                align: 'center',
+                                width: 30
+                            },
+                            {
+                                field: 'certificationNbr',
+                                title: '证书编号',
+                                align: 'center',
+                                width: 50,
+                                sortable : true
+                            },
+                            {
+                                field: 'equipmentNbr',
+                                title: '设备编号/出厂编号',
+                                align: 'center',
+                                width: 60,
+                                sortable : true
+                            },
+                            {
+                                field: 'orgName',
+                                title: '委托单位',
+                                align: 'center',
+                                //formatter: optionsOrgName,
+                                width: 70
+                            },
+                            {
+                                field: 'deviceName',
+                                title: '器具名称',
+                                align: 'center',
+                                width: 60
+                            },
+                            {
+                                field: 'modelName',
+                                title: '设备型号',
+                                align: 'center',
+                                width: 60
+                            },
+                            {
+                                field: 'certificatedDate',
+                                title: '检定日期',
+                                align: 'center',
+                                width: 50,
+                                sortable : true
+                            },
+                            {
+                                field: 'expireDate',
+                                title: '证书有效期',
+                                align: 'center',
+                                width: 50,
+                                sortable : true
+                            },
+                            {
+                                field: 'importDate',
+                                title: '证书批次',
+                                align: 'center',
+                                width: 50,
+                                sortable : true
+                            },
+                            {
+                                field: 'importMark',
+                                title: '同步标记',
+                                align: 'center',
+                                formatter: importMark,
+                                width: 40
+                            }
+                        ]
+                    ],
+                    onSortColumn : function(sortName,sortType){
+		            	$scope.formData.orderName = sortName;
+		           		$scope.formData.orderType = sortType;
+		           		$(this).datagrid("getPager").pagination("select",1);
+		            },
+                    pagination: true,
+                    nowrap : false
+                };
+
+			    function importMark(value, row, index) {
+			    	var importMark = value;
+			    	if(importMark == null || importMark == undefined){
+			    		return "<span/>";
+			    	}
+			    	if(importMark != "导入成功"){
+			    		return "<span style='color:red'>"+ importMark + " </span>";
+			    	}
+			    	else{
+			    		return "<span style='color:green'>" + importMark + "</span>";	
+			    	}
+			    }
+			    
+                $scope.exportCertification = function () {
+                	//后台保存数据
+                      $scope.$ajaxRequest({
+                          url: $scope.$restRoot+"device/certificationManage/importCertification",
+                          params: {upLoadPath:uploadUrl},
+                          method: "post",
+                          success: function(data){
+                        	  if(data != null){
+                        		  if(data.errMsg == "SUCCESS"){
+                        			  $scope.searchData();
+                        			  getImportDateList();
+                        			  var result = "标记导入成功 " + data.importSucessCount + " 条，未登记设备 " + data.unRegisteredCount + " 条，非交警设备 " + data.unPoliceCount + " 条，其他原因 " + data.otherCount + " 条！"
+                        			  $.messager.alert("提示","检定同步成功！"+result);
+                        		  }
+                        		  else{
+                        			  if(data.errMsg ==""){
+                        				  $.messager.alert("提示","程序出现异常！ERROR！");
+                        			  }
+                        			  else{
+                        				  $.messager.alert("提示",data.errMsg+"！"); 
+                        			  }
+                        		  }
+                        	  }
+                          },
+                          fail: function(errMsg){
+                              $.messager.alert("提示","检定同步失败！");
+                          }
+                      });
+                  	uploadUrl ="";
+              }; 
+              
+              $scope.exportExcel = function () {
+            	  var params;
+
+            	  var recordList = $scope.$('#certificationGrd').datagrid('getChecked');
+            	  
+            	  if(recordList != null && recordList.length > 0){
+            	  var recordIds = "";
+            	  $.each(recordList,function(n,value){
+            		  recordIds += value.recordId+",";
+            	  });
+            	  $scope.formData.recordIdArray = recordIds.substring(0,recordIds.length-1);
+            	}else{
+            		 $scope.formData.recordIdArray="";
+            	}
+            	  $scope.$updateData("formData");
+                  $scope.formData.equipmentTypeArray = $scope.$("#equipmentType").combobox("getValues").join(",");
+				  $scope.formData.importMarkArray = $("input[name='exportFlag']:checked").map(function() {
+							return $(this).val();
+					}).get().join(',');
+            	  //后台保存数据
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/certificationManage/exportCertificatioRecordExcel",
+                        params: $scope.formData,
+                        method: "post",
+                        success: function(data){
+                        	if(data.url != undefined){
+                        	$scope.download(data);
+                        	}else{
+                        		$.messager.alert("提示","请确认是否勾选导出或该查询结果列表是否为空！");
+                        		$scope.searchData();
+                        	}
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","检定导出失败！");
+                        }
+                    });
+            }; 
+            
+            $scope.exportTemplate = function () {
+          	  //后台保存数据
+                  $scope.$ajaxRequest({
+                      url: $scope.$restRoot+"device/certificationManage/downLoadExcelTemplate",
+                      params: $scope.formData,
+                      method: "post",
+                      success: function(data){
+                      	$scope.download(data);
+                      },
+                      fail: function(errMsg){
+                          $.messager.alert("提示","下载模板失败！");
+                      }
+                  });
+          }; 
+            
+         // Ajax 文件下载
+         $scope.download = function(data){    // 获得url
+            if(data){
+                // request发送请求
+                $('<form action="' + data.url + '" method="post"></form>')
+                .appendTo('body').submit().remove();
+            };
+        };
+        		//查询导入批次
+                function getImportDateList(){
+                	$scope.$ajaxRequest({
+                        url:$scope.$restRoot+"device/certificationManage/getImportDateList",
+                        params:{},
+                        method:"post",
+                        success:function(data){
+                        	if(data!=null && data.length!=0){
+                        		var dataList = [];
+                        		$.each(data,function(index,obj){
+                        			dataList.push({"value":obj,"text":obj});
+                        		})
+                        	}
+                            $scope.$("#importDate").combobox("loadData",dataList);
+                        },
+                        fail:function(errMsg){
+                            $.messager.alert("提示","初始化检定批次失败，请重新打开此页面！");
+                        }
+                    });
+                }
+        		
+                function initUpload() {
+                    return new plupload.Uploader({ //实例化一个plupload上传对象
+                        runtimes: 'html5',
+                        browse_button: $scope.$("#uploadExcel")[0],
+                        url: 'cosUploadServlet',
+                        filters: {
+                            mime_types: [ //只允许上传excel文件
+                                { title: "excel文件", extensions: "xls,xlsx" }
+                            ],
+                            max_file_size: '1000kb', //最大只能上传1000kb的文件
+                            prevent_duplicates: false //不允许队列中存在重复文件
+                        },
+                        init: {
+                            FilesAdded: function (uploader, files) {
+                                var file_name = "";
+                                for (var i = 0, len = files.length; i < len; i++) {
+                                    file_name = files[i].name; //文件名
+                                }
+                                uploader.start();
+                            },
+ 
+/*                             UploadProgress: function (uploader, file) {
+                            	    $scope.$('#progressbar').show();
+                                    var value = $scope.$('#progressbar').progressbar('getValue');
+                                    if (value < 100){
+                                        value += file.percent;
+                                        $('#progressbar').progressbar('setValue', value);
+                                        setTimeout(arguments.callee, 200);
+                                    }      	
+                            }, */
+                            //当队列中的某一个文件上传完成后触发
+                            FileUploaded: function (up, file, responseObject) {
+                                var urlObject = $.parseJSON(responseObject.response)[0];
+                                uploadUrl += "http://"+urlObject.url+",";//服务器返回的url地址
+                            },
+                            StateChanged: function (up) {
+                                if (up.files.length === (up.total.uploaded + up.total.failed))//文件上传完毕
+                                {
+                                    var failedNum = "";
+                                    if (up.total.failed != 0) {
+                                        failedNum = up.total.failed + "文件上传失败！";
+                                    }
+                                    $scope.exportCertification();
+/*                                     $scope.$('#progressbar').fadeToggle("fast",function(){
+                              		   alert("检定同步上传完成！");
+                                	 }); */
+                                }
+                            }
+                        }
+                    })
+                }
+            });
+</script>
+<style type="text/css">
+    #certificationSyschronize .th {
+        text-align: right;
+        width: 80px;
+    }
+    /* #certificationSyschronize .td>input[class^='easyui-'] { */
+    /* 	text-align: left; */
+    /* 	width: 150px; */
+    /* } */
+</style>

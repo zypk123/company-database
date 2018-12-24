@@ -1,0 +1,1703 @@
+<div id="bayonetOperate" class="easyui-layout" style="overflow:auto;">
+	<div data-options="region:'north',height:45,border:false">
+		<!--保存按钮-->
+		<div style="margin: 8px;">
+			<a class="easyui-linkbutton button-save button-main" id="button-save" data-options="iconCls:'icon-save'"  cy-click="saveOnly">保存</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="destroyTab1">关闭</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					基本信息
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							设备编号：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="deviceSysNbr" id="deviceSysNbr" data-options="prompt:'选择机构后可自动生成',validType:['numOrLetter','fixedLength[18]'],required:true"/>
+						</div>
+						<div class="th">
+							设备名称：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" id="deviceName" name="deviceName" data-options="prompt:'选择点位后可自动生成',validType:['length[0,128]','blank'],required:true"/>
+						</div>
+						<div class="th">
+							设备品牌：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="deviceBrand" validType="length[0,16]"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td">
+							<input id="orgId" class="cy-org-radio" after-change="getSiteAndDeviceByOrg" name="orgId" style="width: 180px;" data-options="required:true"/>
+						</div>
+						<div class="th">
+							所属合同：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="contract" name="contractId" data-options="valueField:'id',textField:'text'" style="width:150px"/>
+							<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addContract"></a>
+						</div>
+						<div class="th">
+							所属厂商：
+						</div>
+						<div class="td">
+							<input id="contractor" class="easyui-combobox" name="contractorId" data-options="valueField:'contractorId',textField:'contractorName',required:true" style="width:150px"/>
+							<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addCompany"></a>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							卡口类型：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="tollgateType" name="tollgateType" cy-code="421" data-options="required:true"/>
+						</div>
+						<div class="th">
+							建设归属：
+						</div>
+						<div class="td" style="width: 180px;">
+							<input type="radio" name="ownership" value="1" style="width: 10px" checked="checked"/>
+							交警
+							<input type="radio" name="ownership" value="2" style="width: 10px"/>
+							公安
+							<input type="radio" name="ownership" value="3" style="width: 10px"/>
+							其它
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							工控式卡口：
+						</div>
+						<div class="td" style="width: 180px;">
+							<input type="radio" name="isIndustrialControl" value="1" style="width: 10px" checked="checked"/>
+							是
+							<input type="radio" name="isIndustrialControl" value="2" style="width: 10px"/>
+							否
+						</div>
+						<div class="th">
+							安装方式：
+						</div>
+						<div class="td">
+							<input type="radio" name="mountingFacilityType" value="1" style="width: 10px" checked="checked"/>
+							L杆
+							<input type="radio" name="mountingFacilityType" value="2" style="width: 10px"/>
+							M型龙门架
+							<input type="radio" name="mountingFacilityType" value="3" style="width: 10px"/>
+							N型龙门架
+							<input type="radio" name="mountingFacilityType" value="4" style="width: 10px"/>
+							F杆
+							<input type="radio" name="mountingFacilityType" value="5" style="width: 10px"/>
+							其它
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							安装人：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="installBy" validType="length[0,16]"/>
+						</div>
+						<div class="th">
+							安装日期：
+						</div>
+						<div class="td">
+							<input class="easyui-datebox" name="installDate" validType="date"/>
+						</div>
+						<div class="th">
+							备注：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" data-options="validType:'length[0,16]',multiline:true" name="remark" style="width:180px;height:40px"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="searchPanel">
+				<div class="panel_title">
+					联网接入
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							联网类型：
+						</div>
+						<div class="td" style="width: 220px;">
+							<input type="radio" name="networkType" value="1" style="width: 10px" checked="checked"/>
+							公安网
+							<input type="radio" name="networkType" value="2" style="width: 10px"/>
+							专网
+							<input type="radio" name="networkType" value="3" style="width: 10px"/>
+							互联网
+							<input type="radio" name="networkType" value="4" style="width: 10px"/>
+							未联网
+						</div>
+						<div class="th">
+							供电类型：
+						</div>
+						<div class="td" style="width: 160px;">
+							<input type="radio" name="powerType" value="1" style="width: 10px" checked="checked"/>
+							农电
+							<input type="radio" name="powerType" value="2" style="width: 10px"/>
+							市电
+							<input type="radio" name="powerType" value="3" style="width: 10px"/>
+							太阳能
+						</div>
+						<div class="th">
+							传输方式：
+						</div>
+						<div class="td" style="width: 180px;">
+							<input type="radio" name="transmissionMode" value="1" style="width: 10px" checked="checked"/>
+							专线
+							<input type="radio" name="transmissionMode" value="2" style="width: 10px"/>
+							3G
+							<input type="radio" name="transmissionMode" value="3" style="width: 10px"/>
+							4G
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							接入方式：
+						</div>
+						<div class="td" style="width:220px">
+							<input type="radio" name="safeConnectMeans" value="1" style="width: 10px" checked="checked"/>
+							安全接入平台
+							<input type="radio" name="safeConnectMeans" value="2" style="width: 10px"/>
+							双网卡
+							<input type="radio" name="safeConnectMeans" value="3" style="width: 10px"/>
+							直接接入
+						</div>
+						<div class="th">
+							网络带宽：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="bandwidth"  style="width:160px" validType="length[0,32]"/>
+						</div>
+						<div class="th">
+							接入平台：
+						</div>
+						<div class="td">
+							<input id="serverPlatId" name="serverPlatId" data-options="valueField:'id',textField:'text'" style="width:150px"/>
+							<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addPlatform"></a>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							设备IP：
+						</div>
+						<div class="td" style="width:220px">
+							<input class="easyui-textbox" name="deviceIp" validType="ip"/>
+						</div>
+						<div class="th">
+							端口号：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="devicePort" style="width:160px" data-options="validType:['length[0,20]','number']"/>
+						</div>
+						<div class="th">
+							出厂序列号：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="manufactureSn" data-options="validType:'length[0,32]'"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							软件版本：
+						</div>
+						<div class="td" style="width:220px">
+							<input class="easyui-textbox" name="softwareVersion" data-options="validType:['length[0,16]']"/>
+						</div>
+						<div class="th">
+							SIM卡号：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" name="simNbr" style="width:160px" data-options="validType:['length[0,32]','number']"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="searchPanel">
+				<div class="panel_title">
+					功能与参数
+				</div>
+				<div class="table">
+					<div class="tr" style="margin-left: 10px;">
+						<div class="th" style="width: 120px;margin-left: 20px;">
+							<input type="checkbox" cy-change="connectTrackSysChecked" style="width: 10px" id="isConnectTrackSys" name="isConnectTrackSys" value="0"/>
+							接入缉查布控系统
+						</div>
+						<div class="td" style="width: 150px;margin-left: 20px;">
+							<input type="checkbox" cy-change="conditionsChecked" style="width: 10px" id="interceptConditions" name="interceptConditions" value="0"/>
+							具备拦截条件
+						</div>
+						<div class="td" style="width: 150px;margin-left: 20px;">
+							<input type="checkbox" cy-change="vioSupportChecked" style="width: 10px" id="isVioSupport" name="isVioSupport" value="0"/>
+							具备违法取证
+						</div>
+						<div class="td" style="width: 150px;margin-left: 20px;">
+							<input type="checkbox" cy-change="flowChecked" style="width: 10px" id="flowChecked" name="isFlowSupport" value="0"/>
+							支持流量采集
+						</div>
+						<div class="td" style="width: 150px;margin-left: 20px;">
+							<input type="checkbox" cy-change="verificationMarkChecked" style="width: 10px" id="verificationMark" name="verificationMark" value="0"/>
+							检定标识
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							抓拍模式：
+						</div>
+						<div class="td" style="width: 180px;">
+							<input type="radio" name="photoModel" value="1" style="width: 10px" checked="checked"/>
+							车头
+							<input type="radio" name="photoModel" value="2" style="width: 10px"/>
+							车尾
+							<input type="radio" name="photoModel" value="3" style="width: 10px"/>
+							车头车尾
+						</div>
+						<div class="th">
+							检测方式：
+						</div>
+						<div class="td">
+							<input type="radio" name="detectionMode" value="1" style="width: 10px" checked="checked"/>
+							视频
+							<input type="radio" name="detectionMode" value="2" style="width: 10px"/>
+							线圈
+							<input type="radio" name="detectionMode" value="3" style="width: 10px"/>
+							雷达
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th" style="width:116px;">
+							高速公路卡口标识：
+						</div>
+						<div class="td" style="width:147px">
+							<input type="radio" name="highwayEntranceExit" value="1" style="width: 10px" checked="checked"/>
+							进高速
+							<input type="radio" name="highwayEntranceExit" value="2" style="width: 10px"/>
+							出高速
+						</div>
+						<div class="identification">
+							<div class="th">
+								服务区卡口标识：
+							</div>
+							<div class="td">
+								<input type="radio" name="serviceEntranceExit" value="1" style="width: 10px" checked="checked"/>
+								进服务区
+								<input type="radio" name="serviceEntranceExit" value="2" style="width: 10px"/>
+								出服务区
+							</div>
+						</div>
+						<div class="th" style="width:136px;">
+							大车图片抓拍张数：
+						</div>
+						<div class="td">
+							<input type="radio" name="largeCarSnapImages" value="1" style="width: 10px" checked="checked"/>
+							一张
+							<input type="radio" name="largeCarSnapImages" value="2" style="width: 10px"/>
+							两张
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							上行关联视频：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox videoCombox" name="upRelatedVideoList" data-options="valueField:'id',textField:'text',multiple:true"/>
+						</div>
+						<div class="th">
+							下行关联视频：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox videoCombox" name="downRelatedVideoList" data-options="valueField:'id',textField:'text',multiple:true"/>
+						</div>
+						<div class="th">
+							缉查布控编号：
+						</div>
+						<div class="td">
+							<input id="trackSysTollgateNbr" class="easyui-textbox" name="trackSysTollgateNbr" disabled="true" data-options="validType:['length[0,32]','number']"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							综合平台编号：
+						</div>
+						<div class="td">
+							<input id="integratePlatformNbr" class="easyui-textbox" name="integratePlatformNbr" disabled="true"  data-options="validType:['length[0,32]','number']"/>
+						</div>
+						<div class="th">
+							采集单位：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" id="collcetionOrg" name="collcetionOrg" disabled="true" data-options="validType:'length[0,16]'"/>
+						</div>
+						<div class="th">
+							采集人：
+						</div>
+						<div class="td">
+							<input class="easyui-textbox" id="collectionPerson" name="collectionPerson" disabled="true" data-options="validType:'length[0,16]'"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						所在道路：
+					</div>
+					<div class="td">
+						<input class="cy-road-radio" after-change="getSiteByRoad" name="roadId"  style="width:180px;" id="roadId" filter="getRoadByOrg"/>
+					</div>
+					<div class="th">
+						所在点位：
+					</div>
+					<div class="td">
+						<input id="siteId" class="easyui-combobox" name="siteId" style="width:150px" data-options="valueField:'siteId',textField:'siteName',required:true"/>
+						<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addSite"></a>
+					</div>
+					<div class="th">
+						方向名称：
+					</div>
+					<div class="td">
+						<input class="easyui-combobox" id="derictionName" name="sectionIdList" data-options="valueField:'id',textField:'text',required:true"/>
+					</div>
+				</div>
+			</div>
+			<div class="searchPanel" style="border:0px solid #cccccc;">
+				<div class="panel_title">
+					相机设置
+				</div>
+				<div id="cameraConfig">
+					<div id="upSection">
+
+					</div>
+					<div id="line">
+
+					</div>
+					<div id="downSection">
+
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="js/device/bayonet.js"></script>
+<script type="text/javascript">
+	InitPage(["deviceSysConfigTabs", "saveData", "destroyTab1", "deviceInfoDto","equipmentNbr","certificationUnregistered"], function($scope) {
+		$scope.$getDefaultCode(["141","421"]);
+		//定义上行断面和下行断面
+		$scope.upSection = null;
+		$scope.downSection = null;
+		var isChangeRoad = 1;
+		var textChangeRoad = true;//判断文本是否变化
+		$scope.load = function() {
+			//编辑设备时对不同状态的设备不予编辑的选项
+			if($scope.deviceInfoDto){
+				if($scope.deviceInfoDto.useStatusFlag == 1 || $scope.deviceInfoDto.useStatusFlag == 2  || $scope.deviceInfoDto.useStatusFlag == 3){//启用，停用，报废的设备
+					$scope.$("#orgId").textbox("disable");
+					$scope.$("#roadId").textbox("disable");
+					$scope.$("#siteId").combobox("disable");
+					$scope.$("#derictionName").combobox("disable");
+				}
+			}else if($scope.equipmentNbr){
+            	$scope.$("#deviceSysNbr").textbox("setValue",$scope.equipmentNbr);
+            	$scope.$("#orgId").textbox("setValue",$scope.UserInfo.orgId);//当前用户所在机构
+            }
+            if ($scope.certificationUnregistered == "certificationUnregistered") {
+            	$scope.$("#deviceSysNbr").textbox("readonly",true);
+            }
+			//加载合同
+			queryContract();
+			var deviceInfoDto = $scope.deviceInfoDto;
+			//删除对象字段值为null的字段
+			for (var key in deviceInfoDto) {
+				if (deviceInfoDto[key] == null) {
+					delete deviceInfoDto[key];
+				}
+			}
+			$scope.formData = deviceInfoDto ? deviceInfoDto : {};
+			$scope.$updateDom("formData");
+			//将formData中的数据加载到页面
+			if ($scope.formData.interceptConditions == "1") {
+				$scope.$("#interceptConditions").get(0).checked = true;
+				$scope.conditionsChecked();
+			}else{
+				$scope.$("#interceptConditions").get(0).checked = false;
+				$scope.conditionsChecked();
+			}
+			if ($scope.formData.isVioSupport == "1") {
+				$scope.$("#isVioSupport").get(0).checked = true;
+				$scope.vioSupportChecked();
+			}else{
+				$scope.$("#isVioSupport").get(0).checked = false;
+				$scope.vioSupportChecked();
+			}
+			if ($scope.formData.isConnectTrackSys == "1") {
+				$scope.$("#isConnectTrackSys").get(0).checked = true;
+				$scope.connectTrackSysChecked();
+			}else{
+				$scope.$("#isConnectTrackSys").get(0).checked = false;
+				$scope.connectTrackSysChecked();
+			}
+			if ($scope.formData.verificationMark == "1") {
+				$scope.$("#verificationMark").get(0).checked = true;
+				$scope.verificationMarkChecked();
+			}else{
+				$scope.$("#verificationMark").get(0).checked = false;
+				$scope.verificationMarkChecked();
+			}
+			if ($scope.formData.isFlowSupport == "1") {
+				$scope.$("#flowChecked").get(0).checked = true;
+				$scope.flowChecked();
+			}else{
+				$scope.$("#flowChecked").get(0).checked = false;
+				$scope.flowChecked();
+			}
+			
+		};
+		//根据道路加载点位
+		$scope.getSiteByRoad = function(newValue,oldValue){
+			if(textChangeRoad == false){
+				textChangeRoad = true;
+				return;
+			}
+			if(isChangeOrg == 2){
+				roadChange(oldValue);
+			}else{
+				if(oldValue != "" && hasCamera()){
+					$.messager.confirm("提示","更改后需重新配置相机信息，是否确认更改？",function(flag){
+						if(flag){
+							isChangeRoad = 2;
+							if($scope.deviceInfoDto){
+								$scope.$ajaxRequest({
+									url : $scope.$restRoot + 'device/cameraManage/deleteCameraByDeviceId',
+									params : {
+										deviceId : $scope.deviceInfoDto.deviceId
+									},
+									method : 'post',
+									success : function(data) {
+										roadChange(oldValue);
+									}
+								});
+							}else{
+								roadChange(oldValue);
+							}
+						}else{
+							textChangeRoad = false;
+							$scope.$("#roadId").textbox("setValue",oldValue);
+							
+						}
+					});
+				}else{
+					isChangeRoad = 3;
+					roadChange(oldValue);
+				}
+			}
+		};
+		//查询合同信息加载
+		function queryContract() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/contractManage/queryAllContract",
+				params : {},
+				method : "post",
+				success : function(data) {
+					$scope.$("#contract").combobox("loadData", data);
+					queryContractor();
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "初始化合同失败，请重新打开此页面！");
+				}
+			});
+			
+		}
+
+		//查询厂商信息加载
+		function queryContractor() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/companyManage/queryCompany",
+				params : {},
+				method : "post",
+				success : function(data) {
+					$scope.$("#contractor").combobox("loadData", data);
+					queryAccessPlatform();
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "初始化厂商失败，请重新打开此页面！");
+				}
+			});
+		}
+		//查询接入平台加载
+		function queryAccessPlatform() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/monitorPlatformManage/queryMonitorAndPlatform",
+				params : {},
+				method : "post",
+				success : function(data) {
+					//判断是否选择的是接入平台
+					$scope.$('#serverPlatId').combotree({
+						data : data,
+						onChange : function(newValue, oldValue) {
+							var t = $scope.$('#serverPlatId').combotree('tree');// 获取树对象
+							var node = t.tree('getSelected');//获取选中的节点
+							if(node != null && node.attribute.type == 'monitor'){
+								$.messager.alert("提示","请选择接入平台！");
+								$scope.$('#serverPlatId').combotree('clear');//清除combotree组件中的值
+								return false;
+							}
+						}
+					});
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "初始化接入平台失败，请重新打开此页面！");
+				}
+			});
+		}
+
+		//保存卡口设备，关闭窗口
+		$scope.saveOnly = function() {
+			$scope.$(".videoCombox").each(function() {
+				if ($(this).length != 0) {
+					var relatedVideoListStr = $(this).combobox("getValues").join(",");
+					$(this).combobox("setValue", relatedVideoListStr);
+				}
+			});
+			if ($scope.$("#form").form("validate")) {
+				$scope.$updateData("formData");
+				trimObject($scope.formData);//对对象中的每个元素进行trim操作
+				//设备基本信息保存到数据库todo
+				if ($scope.deviceInfoDto != undefined) {//编辑保存数据
+					$scope.formData.oldDeviceSysNbr = $scope.deviceInfoDto.deviceSysNbr;//编辑时原先的设备编号
+					$scope.formData.isConnectTrackSys = $scope.$("#isConnectTrackSys").val();
+					$scope.formData.interceptConditions = $scope.$("#interceptConditions").val();
+					$scope.formData.isVioSupport = $scope.$("#isVioSupport").val();
+					$scope.formData.verificationMark = $scope.$("#verificationMark").val();
+					$scope.formData.isFlowSupport = $scope.$("#flowChecked").val();
+					$scope.saveData($scope.formData);
+				} else {//添加保存数据
+					var downCameraInfoList = [];
+					var upCameraInfoList = [];
+					if($scope.downSection != null){
+						downCameraInfoList = $scope.downSection.getCameras();
+					}
+					if($scope.upSection != null){
+						upCameraInfoList = $scope.upSection.getCameras();
+					}
+					var cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+					$scope.formData.cameraInfoList = JSON.stringify(cameraInfoList);//将存的相机信息数组转成字符串
+					$scope.formData.isConnectTrackSys = $scope.$("#isConnectTrackSys").val();
+					$scope.formData.interceptConditions = $scope.$("#interceptConditions").val();
+					$scope.formData.isVioSupport = $scope.$("#isVioSupport").val();
+					$scope.formData.verificationMark = $scope.$("#verificationMark").val();
+					$scope.formData.isFlowSupport = $scope.$("#flowChecked").val();
+					$scope.formData.deviceSysNbr = $scope.$("#deviceSysNbr").textbox("getValue");
+					$scope.formData.deviceName = $scope.$("#deviceName").textbox("getValue");
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/bayonetManage/addBayonet",
+						params : $scope.formData,
+						method : "post",
+						success : function(data) {
+							if (data != "nbrError" && data != "keyError") {
+								$.messager.alert("提示", "添加基本信息成功！");
+								$scope.$setParam("deviceId1", data);
+								$scope.$setParam("deviceId2", data);
+								$scope.$setParam("deviceSysNbr",$scope.formData.deviceSysNbr);//年检信息设备编号
+								$scope.$setParam("deviceId3", data);
+								//检定tab页可用
+								$scope.deviceSysConfigTabs.tabs('enableTab', 1);
+								$scope.deviceSysConfigTabs.tabs('enableTab', 2);
+								$scope.deviceSysConfigTabs.tabs('enableTab', 3);
+								//$scope.deviceSysConfigTabs.tabs('select', 1);
+								//按钮禁用
+								$scope.$("#button-save").linkbutton('disable').removeAttr("cy-click");
+							} else if (data == "nbrError") {
+								$.messager.alert("提示", "设备编号已存在，请重新输入！");
+								return false;
+							} else if (data == "keyError") {
+								$.messager.alert("提示", "某相机唯一性序列号已存在，请重新添加相机！");
+								return false;
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "添加失败，可能是某相机唯一性序列号已存在！");
+						}
+					});
+				}
+			}
+		};
+
+		/**
+		 * 新增合同
+		 */
+		$scope.addContract = function() {
+			//新建新增合同弹出框
+			$scope.$openDialog("addDialog", {
+				title : "新增合同信息",
+				width : 600,
+				height : 480,
+				href : "tpls/deviceManage/informationManage/contract-operate.html"
+			}, true);
+			/**
+			 * 新增保存
+			 */
+			$scope.$setParam("saveData", function(data) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/contractManage/addContract",
+					params : data,
+					method : "post",
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "device/contractManage/queryAllContract",
+							params : {},
+							method : "post",
+							success : function(data) {
+								$scope.$("#contract").combobox("loadData", data);
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "初始化合同失败！");
+							}
+						});
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", errMsg + ",添加失败！");
+					}
+				});
+			});
+		};
+		/**
+		 * 新增厂商
+		 */
+		$scope.addCompany = function() {
+			//建立弹出框
+			$scope.$openDialog("addDialog", {
+				title : "新增厂商信息",
+				width : 450,
+				height : 380,
+				href : "tpls/deviceManage/informationManage/company-operate.html"
+			}, true);
+			/**
+			 * 新增保存
+			 */
+			$scope.$setParam("saveData", function(data) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/companyManage/addCompany",
+					params : data,
+					method : "post",
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "device/companyManage/queryCompany",
+							params : {},
+							method : "post",
+							success : function(data) {
+								$scope.$("#contractor").combobox("loadData", data);
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "初始化厂商失败！");
+							}
+						});
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+		};
+
+		/**
+		 * 新增接入平台
+		 */
+		$scope.addPlatform = function() {
+			$scope.$setParam("clickId", '');
+			$scope.$setParam("remark", "add");
+			$scope.$openDialog("addDialog", {
+				title : "新增接入平台",
+				width : 640,
+				height : 560,
+				href : "tpls/deviceManage/accessPlatform/access-platform-operate.html"
+			});
+			/**
+			 * 新增保存
+			 */
+			$scope.$setParam("saveData", function(data) {
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/monitorPlatformManage/addPlatform",
+					params : data,
+					method : "post",
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "device/monitorPlatformManage/queryMonitorAndPlatform",
+							params : {},
+							method : "post",
+							success : function(data) {
+								$scope.$("#serverPlatId").combotree("loadData", data);
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "初始化接入平台失败！");
+							}
+						});
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+		};
+		
+		//添加点位
+		$scope.addSite = function() {
+			/*$scope.$openDialog("selectedDialog", {
+				title : "入口选择",
+				height : 220,
+				width : 200,
+				href : "tpls/deviceManage/deviceConfig/site-entrance-choose.html"
+			});*/
+			$scope.$openDialog("addDialog", {
+                title : "新增点位",
+                height : 600,
+                width : 800,
+                href : 'tpls/sysManagement/roadNetworkMessage/point-segment-add.html'
+            });
+            //保存点位信息
+            $scope.$setParam("saveData", function(data) {
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "device/site/addSite",
+                    params : {jsonSitelString:JSON.stringify(data)},
+                    success : function(data) {
+                        //关闭窗口
+                        $scope.$getDialog("addDialog").dialog("close");
+                        $.messager.alert("提示","添加点位相关信息成功！");
+                        var roadId = $scope.$("#roadId").textbox("getValue");
+						var orgId = $scope.$("#orgId").textbox("getValue");
+						if(roadId != "" || orgId != ""){
+							var datas = {};//存机构或道路
+							datas.roadId = roadId;
+							datas.orgId = orgId;
+							$scope.$ajaxRequest({
+				        		url: $scope.$restRoot+'device/site/querySites',
+				        		params: datas,
+				        		success: function(data){
+				        			if(data!= undefined){//如果返回数据，加载数据，并清空之前选择的点位	        				
+					        			$scope.$("#siteId").combobox("loadData",data);
+				            		}
+			                    },
+			                });
+			             }
+			        },
+                    fail : function(errMsg){
+	                	$.messager.alert("提示","添加点位相关信息失败！");
+	                }
+                });
+            });
+		};
+
+		//根据卡口类型判断进出城的显示
+		$scope.$('#tollgateType').combobox({
+			onChange : function(newValue, oldValue) {
+				if (!newValue || newValue != '') {
+					if (newValue == '10') {
+						$scope.$(".identification").show();
+					} else {
+						$scope.$(".identification").hide();
+					}
+				}
+			}
+		});
+		var isChangeSite = 1;
+		var textChangeSite = true;
+		//根据点位ID查询断面的方向
+		$scope.$('#siteId').combobox({
+			onChange : function(newValue, oldValue) {
+				//根据点位生成设备名称
+				if($scope.deviceInfoDto == undefined){
+					var deviceName = $scope.$('#siteId').combobox('getText');
+					$scope.$('#deviceName').textbox('setValue',deviceName+"卡口");
+				}
+				if(textChangeSite == false){
+					textChangeSite = true;
+					return;
+				}
+				if (isChangeOrg == 2 || isChangeRoad == 2) {
+					siteChange(oldValue);
+				}else{
+					if(oldValue != "" && hasCamera()){
+						$.messager.confirm("提示","更改后需重新配置相机信息，是否确认更改？",function(flag){
+							if(flag){
+								isChangeSite = 2;
+								if($scope.deviceInfoDto){
+									$scope.$ajaxRequest({
+										url : $scope.$restRoot + 'device/cameraManage/deleteCameraByDeviceId',
+										params : {
+											deviceId : $scope.deviceInfoDto.deviceId
+										},
+										method : 'post',
+										success : function(data) {
+											siteChange(oldValue);
+										}
+									});
+								}else{
+									siteChange(oldValue);
+								}
+							}else{
+								textChangeSite = false;
+								$scope.$("#siteId").combobox("setValue",oldValue);
+							}
+						});
+					}else{
+						isChangeSite = 3;
+						siteChange(oldValue);
+					}
+				}
+			}
+		});
+		
+		function siteChange(oldValue){
+			$scope.$("#derictionName").combobox("clear");//清空方向名称值
+				var siteId = $scope.$("#siteId").textbox("getValue");
+				if (!siteId || siteId != '') {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/deviceConfig/querySectionBySiteId',
+						params : {
+							siteId : siteId
+						},
+						success : function(data) {
+							if(data.length != 0){
+								if (data.length == 2) {
+									var ids = "";
+									for (var i = 0; i < data.length; i++) {
+										if(i > 0){
+											ids = ids + "," + data[i].id;
+										}else{
+											ids = ids + data[i].id;
+										}
+									}
+									var datas = {
+										id : ids,
+										text : "全部"
+									};
+									data.splice(0,0, datas);//将全部添加到数组开始
+								}
+								$scope.$("#derictionName").combobox("loadData", data);//加载方向名称
+								var sectionIds = $scope.$("#derictionName").combobox("getValue").split(",");
+								if(sectionIds.length == 2){
+									$scope.$("#derictionName").combobox("select", data[0].id);//选中全部
+								}
+							}else{
+								$scope.$("#derictionName").combobox("loadData", data);//加载方向名称
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "方向加载失败！");
+						}
+					});
+				}
+		}
+		var isDerictionNameChange = 1;
+		var textChangeDerictionName = true;
+		//根据断面加载车道
+		$scope.$('#derictionName').combobox({
+			onChange : function(newValue, oldValue) {
+				if(textChangeDerictionName == false){
+					textChangeDerictionName = true;
+					return;
+				}
+				if (isChangeOrg == 2 || isChangeRoad == 2 || isChangeSite == 2) {
+					derictionNameChange(newValue);
+				}else{
+					if(oldValue != "" && hasCamera()){
+						$.messager.confirm("提示","更改后需重新配置相机信息，是否确认更改？",function(flag){
+							if(flag){
+								isDerictionNameChange = 2;
+								if($scope.deviceInfoDto){
+									$scope.$ajaxRequest({
+										url : $scope.$restRoot + 'device/cameraManage/deleteCameraByDeviceId',
+										params : {
+											deviceId : $scope.deviceInfoDto.deviceId
+										},
+										method : 'post',
+										success : function(data) {
+											derictionNameChange(newValue);
+										}
+									});
+								}else{
+									derictionNameChange(newValue);
+								}
+							}else{
+								textChangeDerictionName = false;
+								$scope.$("#derictionName").combobox("setValue",oldValue);
+							}
+						});
+					}else{
+						isDerictionNameChange = 3;
+						derictionNameChange(newValue);
+					}
+				}
+			}
+		});
+		
+		function derictionNameChange(newValue){
+			if (newValue != "") {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + 'device/site/queryLaneBySectionId',
+					params : {
+						sectionIdStr : newValue
+					},
+					method : 'post',
+					success : function(data) {
+						if ($scope.downSection) {
+							//销毁并还原下行断面
+							$scope.downSection.distroy();
+							$scope.downSection = null;
+						}
+						if ($scope.upSection) {
+							//销毁并还原上行断面
+							$scope.upSection.distroy();
+							$scope.upSection = null;
+						}
+						//两个断面
+						for (var index in data) {
+							var sectionInfo = data[index];
+							if (sectionInfo.directionType == "1" && !$scope.upSection) {
+								//初始化上行断面
+								$scope.upSection = new Bayonet({
+									content : $scope.$("#upSection"),
+									directionType : sectionInfo.directionType,
+									directionName : sectionInfo.directionName,
+									laneList : sectionInfo.laneList,
+									onAddButtonClick : function(laneNbr) {
+										openCameraAddPage(laneNbr,this.directionType,this.directionName);
+									},
+									onCameraButtonClick : function(cameraInfo){
+										openCameraEditPage(cameraInfo);
+									},
+									onDeleteButtonClick : function(laneNbr){
+										if($scope.deviceInfoDto != undefined){
+											//删除上行相机
+											$scope.$ajaxRequest({
+								        		url: $scope.$restRoot+'device/cameraManage/deleteCameraInfo',
+								        		params: $scope.upSection.getCamera(laneNbr),
+								        		success: function(data){
+								        			$.messager.alert("提示","删除相机成功！");
+								        			$scope.upSection.deleteCamera(laneNbr);
+								        		},
+								        		fail:function(errMsg){
+									                $.messager.alert("提示","删除相机失败！");
+									            }
+								      		});
+										} else {
+											$scope.upSection.deleteCamera(laneNbr);
+										}
+									}
+								});
+							} else if (sectionInfo.directionType == "2" && !$scope.downSection) {
+								//初始化下行断面
+								$scope.downSection = new Bayonet({
+									content : $scope.$("#downSection"),
+									directionType : sectionInfo.directionType,
+									directionName : sectionInfo.directionName,
+									laneList : sectionInfo.laneList,
+									onAddButtonClick : function(laneNbr) {
+										openCameraAddPage(laneNbr,this.directionType,this.directionName);
+									},
+									onCameraButtonClick : function(cameraInfo){
+										openCameraEditPage(cameraInfo);
+									},
+									onDeleteButtonClick : function(laneNbr){
+										if($scope.deviceInfoDto != undefined){
+											//删除上行相机
+											$scope.$ajaxRequest({
+								        		url: $scope.$restRoot+'device/cameraManage/deleteCameraInfo',
+								        		params: $scope.downSection.getCamera(laneNbr),
+								        		success: function(data){
+								        			$.messager.alert("提示","删除相机成功！");
+								        			$scope.downSection.deleteCamera(laneNbr);
+								        		},
+								        		fail:function(errMsg){
+									                $.messager.alert("提示","删除相机失败！");
+									            }
+								      		});
+										} else {
+											$scope.downSection.deleteCamera(laneNbr);
+										}
+									}
+								});
+							}
+						}
+						//查找相机信息并添加
+						if ($scope.deviceInfoDto) {
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/cameraManage/queryCameraInfo',
+								params : {
+									deviceId : $scope.deviceInfoDto.deviceId
+								},
+								method : 'post',
+								success : function(data) {
+									var cameras = data.result.rows;
+									for(var index in cameras){
+										var camera = cameras[index];
+										if(camera.directionType == "1"){
+											$scope.upSection.addCamera(camera);
+										}else if(camera.directionType == "2"){
+											$scope.downSection.addCamera(camera);
+										}
+									}
+								}
+							});
+						}
+					}
+				});
+			}else{
+				if($scope.downSection){
+					//销毁并还原下行断面
+					$scope.downSection.distroy();
+					$scope.downSection = null;
+				}
+				if($scope.upSection){
+					//销毁并还原下行断面
+					$scope.upSection.distroy();
+					$scope.upSection = null;
+				}
+			}
+		}
+		
+		/**
+		 * 打开添加相机界面
+		 */
+		function openCameraAddPage(laneNbr,directionType,directionName){
+			$scope.$setParam("cameraInfo",{
+				laneNbr : laneNbr,
+				directionType : directionType,
+				directionName : directionName
+			});
+			$scope.$setParam("saveData",function(cameraInfo){
+				if(cameraInfo.directionType == "1"){
+					if($scope.deviceInfoDto != undefined){
+						cameraInfo.deviceId = $scope.deviceInfoDto.deviceId;
+						//添加上行相机
+						$scope.$ajaxRequest({
+			        		url: $scope.$restRoot+'device/cameraManage/addCameraInfo',
+			        		params: cameraInfo,
+			        		success: function(data){
+			        			if(data == "keyError"){
+			        				$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+			        				return false;
+			        			}else{
+			        				$.messager.alert("提示","添加相机成功！");
+				        			cameraInfo.sysComponentId = data;
+									$scope.upSection.addCamera(cameraInfo);
+									$scope.$getDialog("addCamera").dialog("close");
+			        			}
+			        		},
+			        		fail:function(errMsg){
+				                $.messager.alert("提示","添加相机失败！");
+				            }
+			      		});
+					} else {
+						var downCameraInfoList = [];
+						var upCameraInfoList = [];
+						if($scope.downSection != null){
+							downCameraInfoList = $scope.downSection.getCameras();
+						}
+						if($scope.upSection != null){
+							upCameraInfoList = $scope.upSection.getCameras();
+						}
+						var cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+						if(cameraInfoList.length != 0){
+							for (var i = 0; i < cameraInfoList.length; i++) {
+								if(cameraInfo.deviceKey != "" && !cameraInfo.deviceKey){
+									if(cameraInfo.deviceKey == cameraInfoList[i].deviceKey){
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										return false;
+									}
+								}
+							}
+						}
+						//根据相机唯一性序列号查相机
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + 'device/cameraManage/queryCameraByKey',
+							params :{deviceKey : cameraInfo.deviceKey},
+							success : function(data){
+								if(data == 0){//存在相机
+									$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+									return false;
+								}else if(data == 1){//不存在相机
+									$scope.upSection.addCamera(cameraInfo);
+									$scope.$getDialog("addCamera").dialog("close");
+								}
+							}
+						});
+					}
+				}else if(cameraInfo.directionType == "2"){
+					if($scope.deviceInfoDto != undefined){
+						cameraInfo.deviceId = $scope.deviceInfoDto.deviceId;
+						//添加下行相机
+						$scope.$ajaxRequest({
+			        		url: $scope.$restRoot+'device/cameraManage/addCameraInfo',
+			        		params: cameraInfo,
+			        		success: function(data){
+			        			if(data == "keyError"){
+			        				$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+			        				return false;
+			        			}else{
+				        			$.messager.alert("提示","添加相机成功！");
+				        			cameraInfo.sysComponentId = data;
+									$scope.downSection.addCamera(cameraInfo);
+									$scope.$getDialog("addCamera").dialog("close");
+			        			}
+			        		},
+			        		fail:function(errMsg){
+				                $.messager.alert("提示","添加相机失败！");
+				            }
+			      		});
+					} else {
+						var downCameraInfoList = [];
+						var upCameraInfoList = [];
+						if($scope.downSection != null){
+							downCameraInfoList = $scope.downSection.getCameras();
+						}
+						if($scope.upSection != null){
+							upCameraInfoList = $scope.upSection.getCameras();
+						}
+						var cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+						if(cameraInfoList.length != 0){
+							for (var i = 0; i < cameraInfoList.length; i++) {
+								if(cameraInfo.deviceKey != "" && !cameraInfo.deviceKey){
+									if(cameraInfo.deviceKey == cameraInfoList[i].deviceKey){
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										return false;
+									}
+								}
+							}
+						}
+						//根据相机唯一性序列号查相机
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + 'device/cameraManage/queryCameraByKey',
+							params :{deviceKey : cameraInfo.deviceKey},
+							success : function(data){
+								if(data == 0){//存在相机
+									$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+									return false;
+								}else if(data == 1){//不存在相机
+									$scope.downSection.addCamera(cameraInfo);
+									$scope.$getDialog("addCamera").dialog("close");
+								}
+							}
+						});
+					}
+				}
+			});
+			$scope.$openDialog("addCamera",{
+				title : "添加相机",
+				href : "tpls/deviceManage/deviceRecord/camera-info-operate.html",
+				height : 380,
+				width : 630
+			});
+		};
+		
+		function openCameraEditPage(cameraInfo){
+			$scope.$setParam("cameraInfo",cameraInfo);
+			var oldDeviceKey = cameraInfo.deviceKey;
+			$scope.$setParam("saveData",function(cameraInfoNew){
+				cameraInfoNew.oldDeviceKey = oldDeviceKey;
+				if(cameraInfoNew.directionType == "1"){
+					if($scope.deviceInfoDto != undefined){
+						//编辑上行相机
+						$scope.$ajaxRequest({
+			        		url: $scope.$restRoot+'device/cameraManage/editCameraInfo',
+			        		params: cameraInfoNew,
+			        		success: function(data){
+			        			if(data == 0){
+				        			$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+			        			}else if(data == 1){
+				        			$.messager.alert("提示","修改相机成功！");
+				        			$scope.upSection.updateCamera(cameraInfoNew);
+				        			$scope.$getDialog("editCamera").dialog("close");
+			        			}
+			        		},
+			        		fail:function(errMsg){
+				                $.messager.alert("提示","修改相机失败！");
+				            }
+			      		});
+					} else {
+						var downCameraInfoList = [];
+						var upCameraInfoList = [];
+						if($scope.downSection != null){
+							downCameraInfoList = $scope.downSection.getCameras();
+						}
+						if($scope.upSection != null){
+							upCameraInfoList = $scope.upSection.getCameras();
+						}
+						var cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+						var flag = 0;//判断是相机唯一序列号重复的标志，0表示无重复，1表示重复
+						if(cameraInfoList.length != 0){
+							for (var i = 0; i < cameraInfoList.length; i++) {
+								if(cameraInfo.deviceKey != "" && !cameraInfo.deviceKey){
+									if(cameraInfoNew.deviceKey == cameraInfoList[i].deviceKey){
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										flag = 1;
+										return false;
+									}
+								}
+							}
+						}
+						if(flag == 0){
+							//根据相机唯一性序列号查相机
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/cameraManage/queryCameraByKey',
+								params :{deviceKey : cameraInfoNew.deviceKey},
+								success : function(data){
+									if(data == 0){//存在相机
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										return false;
+									}else if(data == 1){//不存在相机
+										$scope.upSection.updateCamera(cameraInfoNew);
+										$scope.$getDialog("editCamera").dialog("close");
+									}
+								}
+							});
+						}
+					}
+				}else if(cameraInfoNew.directionType == "2"){
+					if($scope.deviceInfoDto != undefined){
+						//编辑上行相机
+						$scope.$ajaxRequest({
+			        		url: $scope.$restRoot+'device/cameraManage/editCameraInfo',
+			        		params: cameraInfoNew,
+			        		success: function(data){
+			        			if(data == 0){
+				        			$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+			        			}else if(data == 1){
+			        				$.messager.alert("提示","修改相机成功！");
+				        			$scope.downSection.updateCamera(cameraInfoNew);
+				        			$scope.$getDialog("editCamera").dialog("close");
+			        			}
+			        		},
+			        		fail:function(errMsg){
+				                $.messager.alert("提示","修改相机失败！");
+				            }
+			      		});
+					} else {
+						var downCameraInfoList = [];
+						var upCameraInfoList = [];
+						if($scope.downSection != null){
+							downCameraInfoList = $scope.downSection.getCameras();
+						}
+						if($scope.upSection != null){
+							upCameraInfoList = $scope.upSection.getCameras();
+						}
+						var cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+						var flag = 0;//判断是相机唯一序列号重复的标志，0表示无重复，1表示重复
+						if(cameraInfoList.length != 0){
+							for (var i = 0; i < cameraInfoList.length; i++) {
+								if(cameraInfo.deviceKey != "" && !cameraInfo.deviceKey){
+									if(cameraInfoNew.deviceKey == cameraInfoList[i].deviceKey){
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										flag = 1;
+										return false;
+									}
+								}
+							}
+						}
+						if(flag == 0){
+							//根据相机唯一性序列号查相机
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/cameraManage/queryCameraByKey',
+								params :{deviceKey : cameraInfoNew.deviceKey},
+								success : function(data){
+									if(data == 0){//存在相机
+										$.messager.alert("提示","相机唯一序列号重复，请重新输入！");
+										return false;
+									}else if(data == 1){//不存在相机
+										$scope.downSection.updateCamera(cameraInfoNew);
+										$scope.$getDialog("editCamera").dialog("close");
+									}
+								}
+							});
+						}
+					}
+				}
+			});
+			$scope.$openDialog("editCamera",{
+				title : "编辑相机",
+				href : "tpls/deviceManage/deviceRecord/camera-info-operate.html",
+				height : 380,
+				width : 630
+			});
+		}
+		
+		var isChangeOrg = 1;
+		var textChangeOrg = true;//判断文本是否变化
+		//根据机构加载点位或加载相关设备
+		$scope.getSiteAndDeviceByOrg = function(newValue,oldValue){
+			//根据所选机构自动生成设备编号
+			if ($scope.deviceInfoDto == undefined && $scope.certificationUnregistered != 'certificationUnregistered') {
+				if(newValue == ""){
+					$scope.$('#deviceSysNbr').textbox('setValue',null);
+				}else{
+					var orgId = $scope.$('#orgId').textbox('getValue');
+					//根据机构ID获取机构编码
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'sysCfg/org/queryOrgInfoById',
+						params : {orgId : orgId},
+						method : 'post',
+						success : function(org) {
+							//查询该机构下该类型的设备有多少
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/deviceConfig/queryDeviceByOrgId',
+								params : {orgId : orgId, deviceType : "01"},
+								method : 'post',
+								success : function(data) {
+									var code = "";//存储设备编号后四位
+									if(data != ""){
+										var deviceSysNbr = data.split(",");//该机构下所有卡口设备的后四位设备编号数组
+										var deviceSysNbrMax = parseInt(deviceSysNbr[deviceSysNbr.length]);
+										if(deviceSysNbrMax + 1 <= 9999){
+											if(deviceSysNbrMax >= 0 && deviceSysNbrMax < 9){
+												code = "000" + (deviceSysNbrMax + 1).toString();
+											}else if(deviceSysNbrMax >= 9 && deviceSysNbrMax < 99){
+												code = "00" + (deviceSysNbrMax + 1).toString();
+											}else if(deviceSysNbrMax >= 99 && deviceSysNbrMax < 999){
+												code = "0" + (deviceSysNbrMax + 1).toString();
+											}else if(deviceSysNbrMax >= 999 && deviceSysNbrMax < 9999){
+												code = (deviceSysNbrMax + 1).toString();
+											}
+										}else{
+											while(true){
+												code = parseInt(Math.random()*9999+1).toString();//取0到9999之前的随机整数 
+												if(deviceSysNbr.indexOf(code) == -1){
+													break;
+												}
+											}
+											if(parseInt(code) >= 0 && parseInt(code) < 9){
+												code = "000" + code;
+											}else if(parseInt(code) >= 9 && parseInt(code) < 99){
+												code = "00" + code;
+											}else if(parseInt(code) >= 99 && parseInt(code) < 999){
+												code = "0" + code;
+											}
+										}
+									}else{
+										code = "0000";
+									}
+									var orgCode = org.orgCode + "01" + code;
+									$scope.$('#deviceSysNbr').textbox('setValue',orgCode);
+								}
+							});
+						}
+					});	
+				}
+			}
+			if(textChangeOrg == false){
+				textChangeOrg = true;
+				return;
+			}
+			if(oldValue != "" && hasCamera()){
+				$.messager.confirm("提示","更改后需重新配置相机信息，是否确认更改？",function(flag){
+					if(flag){
+						isChangeOrg = 2;
+						if($scope.deviceInfoDto){
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/cameraManage/deleteCameraByDeviceId',
+								params : {
+									deviceId : $scope.deviceInfoDto.deviceId
+								},
+								method : 'post',
+								success : function(data) {
+									orgChange(oldValue);
+								}
+							});
+						}else{
+							orgChange(oldValue);
+						}
+					}else{
+						textChangeOrg = false;
+						$scope.$("#orgId").textbox("setValue",oldValue);
+					}
+				});
+			}else{
+				isChangeOrg = 3;
+				orgChange(oldValue);
+			}
+		};
+		
+		function hasCamera(){
+			var downCameraInfoList = null;
+			var upCameraInfoList = null;
+			var cameraInfoList = null;
+			if($scope.downSection != null){
+				downCameraInfoList = $scope.downSection.getCameras();
+			}
+			if($scope.upSection != null){
+				upCameraInfoList = $scope.upSection.getCameras();
+			}
+			if(upCameraInfoList != null && downCameraInfoList != null){
+				cameraInfoList = upCameraInfoList.concat(downCameraInfoList);
+			}else if(upCameraInfoList == null && downCameraInfoList != null){
+				cameraInfoList = downCameraInfoList;
+			}else if(upCameraInfoList != null && downCameraInfoList == null){
+				cameraInfoList = upCameraInfoList;
+			}
+			if(cameraInfoList != null && cameraInfoList.length > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		function orgChange(oldValue){
+			if($scope.deviceInfoDto != undefined){
+				if(oldValue != ""){
+					$scope.$("#roadId").textbox("clear");//清空原来加载的道路
+				}
+			}else{
+				$scope.$("#roadId").textbox("clear");//清空原来加载的道路
+			}
+			$scope.$(".videoCombox").combobox("clear");//清空原来加载的视频设备
+			var roadId = $scope.$("#roadId").textbox("getValue");
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			if(roadId != "" || orgId != ""){
+				var datas = {};//存机构或道路
+				datas.roadId = roadId;
+				datas.orgId = orgId;
+				$scope.$ajaxRequest({
+	        		url: $scope.$restRoot+'device/site/querySites',
+	        		params: datas,
+	        		success: function(data){
+	        			if(data!= undefined){//如果返回数据，加载数据，并清空之前选择的点位	        				
+		        			$scope.$("#siteId").combobox("loadData",data);
+	            		}else{
+	        				$scope.$("#siteId").combobox("loadData",[]);
+	        			}
+	        			if(orgId != ""){
+	        				//根据机构ID查询加载关联视频
+	               			var privCode = $scope.$getOrgPrivCode(orgId);//根据机构ID查机构过滤代码
+	       		    		$scope.$ajaxRequest({
+	       			            url:$scope.$restRoot + "device/deviceConfig/queryRelevanceDevice",
+	       			            params:{orgPrivilegeCode : privCode},
+	       			            method:"post",
+	       			            success:function(data){
+	       			            	if(data != undefined && data["03"]){
+	       			        			$scope.$(".videoCombox").each(function(){
+	       			               	   		$(this).combobox("loadData",data["03"]);//视频设备
+	       				               	});
+	       			            	}else{
+	       			            		$scope.$(".videoCombox").each(function(){
+	       			               	   		$(this).combobox("loadData",[]);//视频设备
+	       				               	});
+	       			            	}
+	       			            },
+	       			            fail:function(errMsg){
+	       			                $.messager.alert("提示","初始关联设备失败，请重新打开此页面！");
+	       			            }
+	       			        });
+	        			}else{
+	        				$scope.$(".videoCombox").each(function(){
+		               	   		$(this).combobox("loadData",[]);//视频设备
+			               	});
+	        			}
+	        		},
+	        		fail: function(errMsg){
+	        			$.messager.alert("提示","点位加载失败！");
+	        		}	
+	        	});	
+			}else{
+				$scope.$("#siteId").combobox("loadData",[]);//点位
+				$scope.$(".videoCombox").each(function(){
+           	   		$(this).combobox("loadData",[]);//视频设备
+               	});
+			}
+		}
+		
+		function roadChange(oldValue){
+			if($scope.deviceInfoDto != undefined){
+				if(oldValue!=""){
+					$scope.$("#siteId").combobox("clear");
+				}
+			}else{
+				$scope.$("#siteId").combobox("clear");
+			}			
+			var roadId = $scope.$("#roadId").textbox("getValue"); 
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var datas = {};//存机构或道路
+			datas.roadId = roadId;
+			datas.orgId = orgId;
+			$scope.$ajaxRequest({
+        		url: $scope.$restRoot+'device/site/querySites',
+        		params: datas,
+        		success: function(data){
+        			if(data.length != 0){	        				
+        				$scope.$("#siteId").combobox("loadData",data);
+        			}else{
+        				$scope.$("#siteId").combobox("loadData",[]);
+        			}
+        		},
+        		fail: function(errMsg){
+        			$.messager.alert("提示","点位加载失败！");
+        		}	
+        	});	
+		}
+		
+		
+		/**
+		 *联动
+		 */
+		//机构和道路的联动
+		$scope.getRoadByOrg = function(id, text, attribute) {
+			var orgId = $scope.$("#orgId").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if (!orgId || orgId == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for (var i in orgPrivCodes) {
+					if (orgPrivCodes[i].startWith(privCode)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+		//根据是否接入缉查布控系统判断是否禁用稽查布控编号的输入
+		$scope.connectTrackSysChecked = function() {
+			if ($scope.$("#isConnectTrackSys").is(":checked")) {
+				$scope.$("#isConnectTrackSys").val(1);
+				$scope.$("#trackSysTollgateNbr").textbox("enable");
+			} else if (!$scope.$("#isConnectTrackSys").is(":checked")) {
+				$scope.$("#isConnectTrackSys").val(0);
+				$scope.$("#trackSysTollgateNbr").textbox("disable");
+			}
+		};
+		//根据是否支持违法取证判断是否禁用综合平台编号的输入
+		$scope.vioSupportChecked = function() {
+			if ($scope.$("#isVioSupport").is(":checked")) {
+				$scope.$("#isVioSupport").val(1);
+				$scope.$("#integratePlatformNbr").textbox("enable");
+				$scope.$("#collcetionOrg").textbox("enable");
+				$scope.$("#collectionPerson").textbox("enable");
+			} else if (!$scope.$("#isVioSupport").is(":checked")) {
+				$scope.$("#isVioSupport").val(0);
+				$scope.$("#integratePlatformNbr").textbox("disable");
+				$scope.$("#collcetionOrg").textbox("disable");
+				$scope.$("#collectionPerson").textbox("disable");
+			}
+		};
+		$scope.verificationMarkChecked = function() {
+			if ($scope.$("#verificationMark").is(":checked")) {
+				$scope.$("#verificationMark").val(1);
+			} else if (!$scope.$("#verificationMark").is(":checked")) {
+				$scope.$("#verificationMark").val(0);
+			}
+		};
+		$scope.conditionsChecked = function(){
+			if ($scope.$("#interceptConditions").is(":checked")) {
+				$scope.$("#interceptConditions").val(1);
+			} else if (!$scope.$("#interceptConditions").is(":checked")) {
+				$scope.$("#interceptConditions").val(0);
+			}
+		};
+		$scope.flowChecked = function() {
+			if ($scope.$("#flowChecked").is(":checked")) {
+				$scope.$("#flowChecked").val(1);
+			} else if (!$scope.$("#flowChecked").is(":checked")) {
+				$scope.$("#flowChecked").val(0);
+			}
+		};
+	}); 
+</script>
+<style type="text/css">
+	#bayonetOperate .th {
+		width: 90px;
+		text-align: right;
+	}
+	#bayonetOperate .td > input[class^='easyui-'] {
+		width: 174px;
+	}
+	#bayonetOperate .panel_title {
+		position: relative;
+		width: 60px;
+	}
+	#bayonetOperate .selectedLane {
+		background: orange;
+	}
+	#bayonetOperate .containerDown {
+		display: -moz-box;
+		display: -webkit-box;
+		display: box;
+		width: 100%;
+		-moz-box-align: center;
+		-webkit-box-align: center;
+		box-align: center;
+		-moz-box-pack: center;
+		-webkit-box-pack: center;
+		box-pack: center;
+		background: rgba(10, 94, 121, 0.93);
+	}
+	#bayonetOperate .leftDown {
+		width: 150px;
+		text-align: center;
+		vertical-align: middle;
+		height: 100%;
+		font-size: 18px;
+		color: #ffffff;
+	}
+	#bayonetOperate .centerDown {
+		-moz-box-flex: 1;
+		-webkit-box-flex: 1;
+		box-flex: 1;
+	}
+	#bayonetOperate .centerDown div {
+		border-bottom: dashed #ffffff 2px;
+		height: 30px;
+		text-align: center;
+		color: #ffffff;
+	}
+	#bayonetOperate .rightDown {
+		width: 150px;
+		height: 100%;
+		text-align: center;
+		vertical-align: middle;
+		font-size: 18px;
+		color: #ffffff;
+	}
+	#bayonetOperate .centerDown div:nth-last-child(1) {
+		border-bottom: 0px
+	}
+
+	#bayonetOperate #upSection {
+		width: 100%;
+		height: 30px;
+		background-color: #1B6982;
+	}
+	#bayonetOperate #downSection {
+		width: 100%;
+		height: 30px;
+		background-color: #1B6982;
+	}
+	#bayonetOperate #line {
+		width: 100%;
+		height: 1px;
+		border-top: 2px dashed orange;
+		background-color: #1B6982;
+	}
+</style>

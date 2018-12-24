@@ -1,0 +1,75 @@
+<div id="noticeDetail" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<form cy-form="formData" id="form">
+			<div class="table">
+				<div class="tr">
+					<div class="th">
+						公告标题：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="noticeTitle" style="width:286px;" data-options="required:true,validType:'length[0,256]'"/>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">
+						公告内容：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" data-options="multiline:true,validType:'length[0,512]'" name="noticeContent" style="width:286px;height:70px"/>
+					</div>
+				</div>	
+				<div class="tr" id="createTimeDiv" style="display: none">
+					<div class="th">
+						创建时间：
+					</div>
+					<div class="td">
+						<input class="easyui-textbox" name="createTime" style="width:286px;" disabled="disabled"/>
+					</div>
+				</div>					
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar"  style="text-align: center">
+			<a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'"  cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["formData","saveData","viewMode"],function($scope){
+        $scope.load = function(){
+            //判断是编辑的标识
+            var viewMode = $scope.viewMode;
+            if(viewMode)
+            {
+            	$scope.$("#createTimeDiv").show();
+            }
+            if(viewMode=="view")
+            {
+            	$scope.$("#save").hide();
+            	$scope.$("#cancel").linkbutton({
+            		text:"关闭"
+            	});
+            }           
+        };
+        $scope.save = function(){
+        	if ($scope.$("#form").form("validate")) {
+		        //更新获取form中的数据
+		        $scope.$updateData("formData");
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+		        $scope.saveData($scope.formData);
+	        }
+        };
+    });
+</script>
+<style type="text/css">
+	#noticeDetail .td {
+		height: auto;
+	}
+	#noticeDetail .th {
+		width: 80px;
+		text-align: right;
+	}
+
+</style>

@@ -1,0 +1,61 @@
+<div ng-controller="OrgManageController" style="height: 99%">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-3" id="orgTree">
+                    <div class="panel panel-default" style="margin-right: 1px">
+                        <div class="panel-body" style="height: 99%;">
+                            <div style="height:99%;overflow:auto;">
+                                <!-- <div data-angular-treeview="true" data-tree-id="mytree" data-tree-model="roleList" data-node-id="value" data-node-label="name" data-node-isLeaf="isLeaf" data-node-children="children">
+                                </div> -->
+                                <div z-tree style="font:normal 12px/35px 'Arial';color:#dcdcdc;" class="ztree" ng-model="selectNode"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9" id="dataPanel" style="margin-left:-20px;">
+                    <div class="panel panel-default" style="height:99%;margin-right: -20px;">
+                        <div class="panel-body" style="height: 99%;width:100%">
+                            <div style="height:96%;overflow:auto;margin-top:5px;">
+                                <table class="table table-bordered table-show table-striped">
+                                    <tbody>
+                                        <tr class="active">
+                                            <td class="table-unite">机构代码</td>
+                                            <td class="table-unite">机构名称</td>
+                                            <td class="table-unite">操作</td>
+                                        </tr>
+                                        <tr ng-repeat="info in showInfo" ng-click="userDetail(info)">
+                                            <td class="table-unite " width="15%">{{info.id}}
+                                            </td>
+                                            <td class="table-unite" width="25%">{{info.name}}</td>
+                                            <td class="table-unite" width="15%">
+                                                <button class="btn btn-default btn-xs" type="button" ng-click="assignAuthority(info);$event.stopPropagation()">分配权限</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.table-show > thead > tr > th,
+.table-show > tbody > tr > th,
+.table-show > tfoot > tr > th,
+.table-show > thead > tr > td,
+.table-show > tbody > tr > td,
+.table-show > tfoot > tr > td {
+    font-size: 13px;
+    padding: 5px 12px 5px 12px;
+    /*vertical-align: middle;*/
+    border: 1px solid #EEE;
+}
+
+.table-unite {
+    text-align: center;
+}
+</style>

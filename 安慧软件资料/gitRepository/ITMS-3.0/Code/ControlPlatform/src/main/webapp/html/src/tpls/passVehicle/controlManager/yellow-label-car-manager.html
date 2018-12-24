@@ -1,0 +1,80 @@
+<!--黄标车主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+	<form cy-form="yellowLabelCarManager">
+		<div class="searchPanel">
+			<div class="panel_title">查询条件</div>
+			<div id="yellowLabelCarChecked" class="table">
+				<div class="tr">
+					<div class="th">号牌号码：</div>
+					<div class="td">
+						<input type="title" name="flapperCode"  class="easyui-textbox"/>
+					</div>
+					<div class="th">号牌种类：</div>
+					<div class="td">
+						<select name="flapperType" class="easyui-combobox" style="width: 100px;"></select>
+					</div>
+					<div class="th">布控时间 从：</div>
+					<div class="td">
+						<input name="flapperType" class="easyui-datebox" />到
+						<input name="flapperType" class="easyui-datebox" />
+					</div>
+					<div class="th" style="width: 100px;text-align: right">布控状态：</div>
+					<div class="td">
+						<input type="radio" value="1"/>已布控
+						<input type="radio" value="2"/>已撤控
+					</div>
+					<div class="td" style="width: 100px;">
+						  <a class="easyui-linkbutton " data-options="iconCls:'icon-search'"
+                                  cy-click="searchData" style="width: 60px;float: right;">查询</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			 <a class="easyui-linkbutton " data-options="iconCls:'icon-remove'"
+                       cy-click="deleteYellowCar">删除</a>
+             <a class="easyui-linkbutton " data-options="iconCls:'icon-import'"
+                       cy-click="importYellowCar">导入</a>
+		</div>
+	</div>
+	<div data-options="region: 'center'">
+	  <table cy-datagrid="optionsYellowCar" cy-querydata="deptYellowCar"
+              cy-url="../html/src/data/passvehicle/yellow-label-car.json"></table>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		//初始化加载数据
+		$scope.load=function(){
+			$scope.$search("deptYellowCar");
+		};
+		//列表主字段
+		$scope.optionsYellowCar = {
+				 columns: [
+					[
+						{field: 'id', checkbox: true, align: 'center', width: 100},
+                    	{field: 'hphm', title: '号牌号码', align: 'center', width: 25},
+                    	{field: 'hpzl', title: '号牌种类', align: 'center', width: 20},
+                    	{field: 'hpys', title: '号牌颜色', align: 'center', width: 20},
+                    	{field: 'syxz', title: '使用性质', align: 'center', width: 20},
+                    	{field: 'clpp', title: '车辆品牌', align: 'center', width: 30},
+                    	{field: 'czlxr', title: '车主联系人', align: 'center', width: 20},
+                    	{field: 'lxrdh', title: '联系人电话', align: 'center', width: 20},
+                    	{field: 'bkjg', title: '布控机关', align: 'center', width: 20},
+                    	{field: 'bkkssj', title: '布控开始时间', align: 'center', width: 20},
+                    	{field: 'bkjssj', title: '布控结束时间', align: 'center', width: 20},
+                    	{field: 'bkzt', title: '布控状态', align: 'center', width: 20}
+                    	
+					]
+				]
+			};
+	});
+</script>
+<style type="text/css">
+	#yellowLabelCarChecked .th{
+		text-align: right;
+		width: 100px;
+	}
+</style>

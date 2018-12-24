@@ -1,0 +1,212 @@
+<div class="easyui-layout" id="equipment-list">
+    <div data-options="region:'center',border:false" style="border-left: solid 1px #ddd;">
+        <div class="easyui-layout">
+            <div data-options="region:'north',border:false" style="height: 90px;">
+                <div class="searchPanel">
+                    <div class="panel_title">
+                        查询条件
+                    </div>
+                    <form cy-form="formQueryEquipment" id="form" >
+                        <div class="table">
+                            <div class="tr">
+                                <div class="th">
+                                    管理部门：
+                                </div>
+                                <div class="td">
+                                    <input  name="orgName" class="cy-org-radio" style="width:120px">
+                                </div>
+
+                                <div class="th">
+                                    装备类型：
+                                </div>
+                                <div class="td">
+                                    <select  name="equipmentType " class="easyui-combobox" style="width:120px">
+                                        <option>请选择</option>
+                                        <option>手枪</option>
+                                        <option>警棍</option>
+                                        <option>对讲机</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="th" style="width: 70px;">
+                                    使用状态：
+                                </div>
+                                <div class="td" style="width: 170px;">
+                                    <input type="checkbox" name="isEmpty" value="0"/>
+                                    空闲
+                                    <input type="checkbox" name="isUsed" value="1"/>
+                                    已领用
+                                </div>
+                                
+                                <div class="th">
+                                    <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                                    cy-click="searchData">查询</a>
+                                </div>
+                                <div class="th">
+                                    <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-search'"
+                                    cy-click="addEquipment" style="width: 100px;margin-left:20px">添加装备</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+                <table id="yhData" cy-datagrid="optionsEquipment" cy-querydata="formQueryEquipment"
+                cy-url="sysCfg/userAction/selectUser"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+        /**
+         * 查找装备领用登记信息
+         */
+        $scope.searchData = function() {
+            if ($scope.$("#form").form("validate")) {
+                trimObject($scope.formQueryEquipment);
+                $scope.$updateData("formQueryEquipment");
+                console.log($scope.formQueryEquipment);
+                //获得当前第几页页数
+                var count = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+                if (count > 1) {
+                    //刷新,跳转到第一页
+                    $scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+                } else {
+                    $scope.$search(" ");
+                }
+            }
+        };
+
+        //弹出添加装备界面
+        $scope.addEquipment = function() {
+            $scope.$setParam("saveData", function(data) {
+                //使用ajac将新增装备登记信息传入数据库
+                $.ajax({
+                    url : '',
+                    success : function() {
+                        //关闭窗口
+                        $scope.$getDialog("addequipDialog").dialog("close");
+                        //刷新列表
+                        $scope.$search('queryData');
+                    }
+                });
+
+            });
+            $scope.$openDialog("addequipDialog", {
+                href : "tpls/dutyServiceMgr/equipmentMgr/equipment-list-input.html",
+                height : 260,
+                width : 380,
+                title : "装备备案登记"
+            });
+        };
+
+        /*
+         * 为装备领用信息登记表绑定头字段
+         * 对于数据库中暂时没有的字段先自行命名
+         */
+        $scope.optionsEquipment = {            
+            columns : [[{
+                field : 'EQUIPMENT_NBR',
+                title : '装备编号',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'EQUIPMENT_TYPE',
+                title : '装备类型',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'equipmentBrand',
+                title : '装备品牌',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'equipmentCode',
+                title : '装备型号',
+                align : "center",
+                width : 20
+            }, {
+                field : 'ORG_NAME',
+                title : '管理部门',
+                align : "center",
+                width : 20
+            }, {
+                field : 'CREATE_TIME',
+                title : '登记日期',
+                align : "center",
+                width : 20
+            }, {
+                field : 'USE_MODE',
+                title : '使用方式',
+                align : "center",
+                width : 20
+            }, {
+                field : 'EQUIPMENT_STATUS',
+                title : '使用状态',
+                align : "center",
+                width : 20
+            }, {
+                field : 'EQUIPMENT_USE_PERSON',
+                title : '使用人员',
+                align : "center",
+                width : 20
+            }, {
+                field : 'USE_ORG',
+                title : '使用部门',
+                align : "center",
+                width : 20
+            }, {
+                field : 'RECIPIENT_DATE',
+                title : '领用/配发日期',
+                align : "center",
+                width : 20
+            }, {
+                field : 'operation',
+                title : '操作',
+                align : "center",
+                width : 20
+            }]]
+        };
+
+        // //用户操作栏
+        // function operateUserCz(value, row, index) {
+        // //编辑删除
+        // var button1 = $("<a class='button-edit' title='编辑' cy-click='editUser(" + index + ")'></a>");
+        // //重置密码按钮
+        // var button2 = $('<a class="button-remove" title="重置密码" cy-click="resetPassword(\'' + row.userId + '\')"></a>');
+        // //删除按钮
+        // var button3 = $('<a class="button-remove" title="删除" cy-click="removeById(\'' + row.userId + '\')"></a>');
+        // button1.linkbutton({
+        // iconCls : "icon-edit-solid",
+        // plain : true
+        // });
+        // button2.linkbutton({
+        // iconCls : "icon-reload-solid",
+        // plain : true
+        // });
+        // button3.linkbutton({
+        // iconCls : "icon-remove-solid",
+        // plain : true
+        // });
+        // if(row.loginName == "ADMIN"){
+        // //隐藏删除按钮
+        // button3.hide();
+        // //记录当前行号
+        // $scope.index = index;
+        // }
+        // return $("<span/>").append(button1).append(" ").append(button2).append(" ").append(button3).html();
+        // }
+    }); 
+</script>
+<style type="text/css">   
+    #equipment-list .th {
+        width: 80px;
+        text-align: right;
+    }
+    #equipment-list .td {
+        width: 130px;
+    }
+</style>

@@ -1,0 +1,727 @@
+<div class="easyui-layout" data-options="fit:true,border:false" id="case-collison-plateNbr">
+	<div data-options="region:'north',border:false">
+		<div class="linkbutton_toolbar" style="font-size: 14px;height: 45px;overflow-x:hidden ">
+			<span style="margin-left: 20px;">
+				<!-- <a class="easyui-linkbutton" data-options="iconCls:'icon-list',group:'model',toggle:true,selected:true">导出</a> -->
+				<!-- <div class="table" >
+				<div class="tr" >
+				<div class="td" style="width:100px;">
+				号牌
+				</div>
+				<div class="td" style="width:450px">
+				案件1
+				</div>
+				<div class="td" style="width:450px;">
+				
+				案件2
+				</div>	
+				<div class="td" style="width:130px;">
+				操作</div>
+				</div>
+				</div> -->
+				<table style="width: 98%;" id="imageTable">
+				<tr>
+				<td style="width:95px;">号牌 </td>
+				<td style="width:445px;">案件1 </td>
+				<td style="width:445px;">案件2 </td>
+				<td >操作 </td>
+				</tr>
+				</table>
+			</span>
+		</div>
+	</div>
+	<div id="passInfoContent" class="cy-imageContent" data-options="region:'center',border:false"  >
+		<div id="container" >
+    
+    	</div>
+	</div>
+	<div data-options="region:'south',border:false,height:30">
+		<div  id="pagination" style="border-top: solid 1px #ddd" >
+			&nbsp;
+		</div>
+	</div>
+</div>
+<script>
+	/**
+	 * searchData : 查询参数
+	 * searchProgress ：显示进度条方法 
+	 * changeViewModule ： 切换显示模式
+	 * passData : 过车数据
+	 */
+	InitPage(["data","searchProgress"], function($scope) {
+		var minStartTime = $scope.data.beginTime1;
+		var maxEndTime = $scope.data.endTime1;
+		$scope.load = function() {
+			//初始化分页
+			$scope.$("#pagination").pagination({
+				pageNumber : $scope.data.pageNumber ? $scope.data.pageNumber : 1,
+				pageSize : $scope.data.pageSize ? $scope.data.pageSize : 50,
+				total : 0,
+				pageList : [20, 50, 100],
+				onSelectPage : function() {
+					$scope.searchProgress();
+					refreshData($scope.data);
+				}
+			});
+			
+			var start1=new Date($scope.data.beginTime1.replace(/-/g,"/"));  
+		    var start2=new Date($scope.data.beginTime2.replace(/-/g,"/")); 
+		    var end1=new Date($scope.data.endTime1.replace(/-/g,"/"));  
+		    var end2=new Date($scope.data.endTime2.replace(/-/g,"/")); 
+		    //找出开始时间最小的
+		    if (start1.getTime()>start2.getTime()){
+		    	minStartTime = $scope.data.beginTime2;
+		    }
+		     //找出结束时间最大的
+		    if(end1.getTime()<end2.getTime()){
+		    	maxEndTime = $scope.data.endTime2;
+		    }
+			//没有初始数据，是查询操作，开始查询数据
+			refreshData($scope.data);
+		};
+
+		/**
+		 * 导出
+		 */
+		$scope.export = function() {
+			if ($scope.$hasAuth("01020202")) {
+				console.log(123);
+			}
+		};
+		/**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+		/**
+		 * 号牌颜色过滤器
+		 */
+		$scope.plateColorFilter = function(value, data) {
+			var colorCode = data.plate_color;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			}
+			return '<div class="plate ' + className + '" style="width:80px;">' + value + '</div>';
+		};
+
+		/**
+		 * 获得道路名称和方向名称
+		 */
+		$scope.getRoadAndDirection = function(value, data) {
+			var roadName = $scope.$getRoadName(value);
+			var directionName = data.directionName;
+			return roadName + " " + directionName;
+		};
+		
+		/**
+		 * 全选方法 
+		 */
+		$scope.checkAll = function(e){
+			var target = e.currentTarget;
+			if($(target).attr("checked")){
+				$scope.$(".checkbox:visible").not("#checkAll").each(function(){
+					if($(this).attr("checked")){
+						$(this).click();
+					}
+				});
+			}else{ 
+				$scope.$(".checkbox:visible").not("#checkAll").each(function(){
+					if(!$(this).attr("checked")){
+						$(this).click();
+					}
+				});
+			}
+		};
+		
+		/**
+		 * 点击checkbox
+		 */
+		$scope.checkOption = function(e){
+			var target = e.currentTarget;
+			if($(target).attr("checked")){
+				$(target).removeClass("checked");
+				$(target).attr("checked",false);
+				updateCheckAllState();
+			}else{
+				$(target).addClass("checked");
+				$(target).attr("checked",true);
+				updateCheckAllState();
+			}
+		};
+		
+		/**
+		 * 图片html格式化 
+		 */
+		$scope.imageHtmlFormatter = function(value){
+			var image = $("<img height='100%' cy-click='viewPassInfo'/>");
+			image.attr("cy-src",$scope.$servletRoot + "/PassImage?imageUrl=" + value);
+			return image[0].outerHTML;
+		};
+		
+		/**
+	    *查看车辆轨迹 
+	    */
+	    $scope.viewTrack = function(plateNbr,plateType){
+	    	$scope.$goto("010301",
+	                {
+			    		plateNbr: plateNbr,
+			    		plateType:plateType,
+			    		passTimeStart:minStartTime,
+			    		passTimeEnd:maxEndTime,
+			    		initSearch:true
+	                });
+		};
+		
+		/**
+		 * 更改全选按钮状态 
+		 */
+		var updateCheckAllState = function(){
+			var checkedNum = $scope.$(".checkbox[checked=checked]:visible").not("#checkAll").length;
+			var allNum = $scope.$(".checkbox:visible").not("#checkAll").length;
+			if(checkedNum == allNum){
+				$scope.$("#checkAll").attr("checked",true).addClass("checked");
+			}else{
+				$scope.$("#checkAll").attr("checked",false).removeClass("checked");
+			}
+		};	
+		
+		/**
+		 * 刷新数据
+		 */
+		var refreshData = function(params,callback) {
+			//获取分页信息
+			params.pageSize = $scope.$("#pagination").pagination("options").pageSize;
+			params.pageNumber = $scope.$("#pagination").pagination("options").pageNumber;
+			params.totalCount = $scope.$("#pagination").pagination("options").total;
+			if(params.pageNumber == 0){
+				params.pageNumber = 1;
+			}
+			if(params.totalCount == 1){
+				params.totalCount == 0;
+			}
+			$scope.searchProgress();
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot +"/vehTrack/areaCollision/areaCollisionAnaly",
+				params : params,
+				success : function(data) {
+					//更新数据
+					updatePassData(data);
+					//滚动条滚动到顶部
+					$scope.$("#passInfoContent").scrollTop(0);
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+					$scope.$excute(callback,data);
+				},
+				fail : function(){
+					$.messager.progress("close");
+					$.messager.alert("提示","服务器繁忙");
+				}
+			});
+		};
+		
+		/**
+		 * 更新数据 
+		 */
+		var updatePassData = function(data){
+			if(!data.result.rows || data.result.rows.length == 0){
+				if(data.result.errMsgs){
+					$.messager.alert("提示",data.result.errMsgs);
+					return false;
+				}
+				$.messager.alert("提示","没有数据");
+				return false;
+			}
+			//更新数据
+			$scope.passInfoList = data.result.rows;
+			$scope.$updateDom("passInfoList");
+			$scope.$("#container").empty();
+			for(var i =0;i<$scope.passInfoList.length;i++){
+				createNewRecord($scope.passInfoList[i]);
+			}
+			//更改分页信息
+			$scope.$("#pagination").pagination("refresh", {
+				total : data.result.total
+			});
+		};
+		
+		
+		/**
+         * 创建一条证书记录显示列表
+         * @param certificationDetailInfo
+         */
+      	 //$scope.createNewRecord = function(value){
+        function createNewRecord(value){
+			var $containDiv= $('<div id="container"></div>')
+      		var fileUrl = "";
+      		var fileArray = [];
+      		var fileUrl2 = "";
+      		var fileArray2 = [];
+      		var areaList1 = value.detailList[$scope.data.siteCode1]
+      		var areaList2 = value.detailList[$scope.data.siteCode2]
+      		if(areaList1 && areaList1.length>0){
+      			var length = areaList1.length;
+      			if(length > 3){
+      				length = 3;
+      			}
+      			for(var i=0;i<length;i++){
+      			fileArray.push($scope.$servletRoot + "/PassImage?imageUrl=" + areaList1[i].image_url_path)
+      			}
+      		}
+      		if(areaList2 && areaList2.length>0){
+      			var length = areaList2.length;
+      			if(length > 3){
+      				length = 3;
+      			}
+      		for(var j=0;j<length;j++){
+      			fileArray2.push($scope.$servletRoot + "/PassImage?imageUrl=" + areaList2[j].image_url_path)
+      		}
+      		}
+	      	if(fileArray.length>0){
+	      		fileUrl = fileArray[0];//获取该检定证书的一张图片
+	      	}else{
+	      		fileUrl = "themes/default/images/noPic.jpg";
+	      	}
+	      	
+	      	if(fileArray2.length>0){
+	      		fileUrl2 = fileArray2[0];//获取该检定证书的一张图片
+	      	}else{
+	      		fileUrl2 = "themes/default/images/noPic.jpg";
+	      	}
+	      	
+		    var $recordDiv=$('<div class="recordDiv"></div>');
+		    //存放图片的div
+		    var $imgDiv=$('<div id="ps_container" class="ps_container">'+
+					'<div class="ps_image_wrapper">'+
+						'<img src="'+fileUrl+'" alt="" />'+
+					'</div>'+
+					'<div class="ps_next"></div>'+
+					'<div class="ps_prev"></div>'+
+					'<ul class="ps_nav" style="margin-left: 200px;">'+
+						'<li class="selected"><a href="'+fileUrl+'" rel="">Image 1</a></li>'+
+						
+					'</ul>'+
+				'</div>');
+			if(fileArray.length>0){
+ 		    	for(i=fileArray.length-1;i>0;i--){
+	    			var filePath =  fileArray[i];
+	    			var img = $('<li><a href="'+filePath+'" rel="'+(i+1)+'">Image '+(i+1)+'</a></li>');
+	    		    img.insertAfter($imgDiv.find('.ps_nav .selected'));
+	    		}
+ 		    }
+			
+			var $imgDiv2=$('<div id="ps_container2" class="ps_container2">'+
+					'<div class="ps_image_wrapper">'+
+						'<img src="'+fileUrl2+'" alt="" />'+
+					'</div>'+
+					'<div class="ps_next"></div>'+
+					'<div class="ps_prev"></div>'+
+					'<ul class="ps_nav" style="margin-left: 200px;">'+
+						'<li class="selected"><a href="'+fileUrl2+'" rel="">Image 1</a></li>'+
+						
+					'</ul>'+
+				'</div>');
+			if(fileArray2.length>0){
+ 		    	for(i=fileArray2.length-1;i>0;i--){
+	    			var filePath =  fileArray2[i];
+	    			var img2 = $('<li><a href="'+filePath+'" rel="'+(i+1)+'">Image '+(i+1)+'</a></li>');
+	    		    img2.insertAfter($imgDiv2.find('.ps_nav .selected'));
+	    		}
+ 		    }
+			
+		    //存放信息的div
+		    var $infoDiv=$('<div class="infoDiv">' +
+		    		'<span >'+
+		    		$scope.plateColorFilter(value.plate_nbr,value)
+		                +'</span></div>');
+		    //var button1 = $('<a  title="车辆轨迹" style="color:blue;font-size=14px;" cy-click="viewTrack(\'' + value.plate_nbr + '\',\'' + value.plate_type + '\')">车辆轨迹</a>');
+		    //存放按钮的div
+		    var $btnDiv=$('<div class="btnDiv"></div>');
+		    var $editBtn=$('<a >查看轨迹</a>');
+		    $editBtn.linkbutton({
+		        iconCls:"icon-search"
+		    });
+			//车辆轨迹
+		     $editBtn.click(function(event){
+		    	  $scope.$goto("010301",
+		                 {
+		 		    		plateNbr: value.plate_nbr,
+		 		    		plateType:value.plate_type,
+		 		    		passTimeStart:minStartTime,
+		 		    		passTimeEnd:maxEndTime,
+		 		    		initSearch:true
+		                 }); 
+		    });
+		    
+		    $btnDiv.append($editBtn);
+		    $recordDiv.append($infoDiv);
+		    $recordDiv.append($imgDiv);
+		    $recordDiv.append($imgDiv2);
+		    $recordDiv.append($btnDiv);
+		    $scope.$("#container").append($recordDiv);
+		    
+		    //图片变量
+			$ps_prev			= $imgDiv.find('.ps_prev'),
+			$ps_next			= $imgDiv.find('.ps_next'),
+	 		$ps_nav				= $imgDiv.find('.ps_nav');
+	   		$tooltip			= $imgDiv.find('.ps_preview'),
+	   		$links				= $ps_nav.children('li').not($tooltip),
+	   		
+	   		$ps_prev2			= $imgDiv2.find('.ps_prev'),
+			$ps_next2			= $imgDiv2.find('.ps_next'),
+	 		$ps_nav2			= $imgDiv2.find('.ps_nav');
+	   		$tooltip2			= $imgDiv2.find('.ps_preview'),
+	   		$links2				= $ps_nav2.children('li').not($tooltip),
+	   		
+	   		total_images		= $links.length,
+	   		currentHovered		= -1,
+			current				= 0;
+	   		var width = 18 * $links.length + 6;
+	   		$ps_nav.css({ width: width});
+	   		$imgDiv.show();
+	   		$imgDiv2.show();
+	   		$tooltip.css({ opacity	: 0}).show();
+	   		
+	   		$links.bind('mouseenter',showTooltip).
+	   		bind('mouseleave',hideTooltip).
+	   		bind('click',showImage);
+	   		
+	   		$ps_next.bind('click',1,nextImage);
+			$ps_prev.bind('click',1,prevImage);
+			
+			$links2.bind('mouseenter',showTooltip).
+	   		bind('mouseleave',hideTooltip).
+	   		bind('click',showImage2);
+	   		
+	   		$ps_next2.bind('click',2,nextImage);
+			$ps_prev2.bind('click',2,prevImage);
+			
+		    function showTooltip(){
+	      		var $link			= $(this),
+	      			idx				= $link.index(),
+	      			linkOuterWidth	= $link.outerWidth(),
+	      			left			= parseFloat(idx * linkOuterWidth) - $imgDiv.find('.ps_preview').width()/2 + linkOuterWidth/2,
+	      			imageLeft;
+	      		//if we are not hovering the current one
+	      		if(currentHovered != idx){
+	      			//check if we will animate left->right or right->left
+	      			if(currentHovered != -1){
+	      				if(currentHovered < idx){
+	      					imageLeft = 75;
+	      				}else{
+	      					imageLeft = -75;
+	      				}
+	      			}
+	      			currentHovered = idx;
+	      		}
+	      		//if we are not using a "browser", we just show the tooltip,otherwise we fade it
+ 	      		$imgDiv.find('.ps_preview').stop().animate({
+  					left : left + 'px',
+  					opacity	: 1
+  				},150); 
+	      	}
+
+		    function hideTooltip(){
+	      		//hide , fade out the tooltip
+ 	      		$imgDiv.find('.ps_preview').stop()
+	      			    .animate({
+	      					opacity		: 0
+	      				},150); 
+	      	}
+
+		    function showImage(e){      
+	      		var $link				= $(this),
+	      			idx					= $link.index(),
+	      			$image				= $link.find('a').attr('href'),
+	      			$currentImage 		= $imgDiv.find('img'),
+	      			currentImageWidth	= $currentImage.width();
+	      		//if we click the current one return
+	      		current	= $imgDiv.find('.ps_nav .selected').index();
+	      		if(current == idx) return false;
+	      		//add class selected to the current page / dot
+	      		$links = $imgDiv.find('.ps_nav').children('li').not($tooltip);
+	      		$links.eq(current).removeClass('selected');
+	      		$link.addClass('selected');
+	      		
+	      		//the new image element
+	      		var $newImage = $('<img/>').css('left',currentImageWidth + 'px').attr('src',$image);
+	      		var $ps_image_wrapper 	= $imgDiv.find('.ps_image_wrapper');
+	      		//if the wrapper has more than one image, remove oldest
+	      		if($ps_image_wrapper.children().length > 1)
+	      			$ps_image_wrapper.children(':last').remove();
+	      		
+	      		//prepend the new image
+	      		$ps_image_wrapper.prepend($newImage);
+	      		
+	      		//the new image width. 
+	      		//This will be the new width of the ps_image_wrapper
+	      		var newImageWidth	= $newImage.width();
+
+	      		//check animation direction
+	      		if(current > idx){
+	      			$newImage.css('left',-newImageWidth + 'px');
+	      			currentImageWidth = -newImageWidth;
+	      		}	
+	      		current = idx;
+	      		//animate the new width of the ps_image_wrapper 
+	      		//(same like new image width)
+	      		$ps_image_wrapper.stop().animate({
+	      		    width	: newImageWidth + 'px'
+	      		},350);
+	      		//animate the new image in
+	      		$newImage.stop().animate({
+	      		    left	: '0px'
+	      		},350);
+	      		//animate the old image out
+	      		$currentImage.stop().animate({
+	      		    left	: -currentImageWidth + 'px'
+	      		},350);
+
+	      		e.preventDefault();
+	      	}
+		    
+		    function showImage2(e){      
+	      		var $link				= $(this),
+	      			idx					= $link.index(),
+	      			$image				= $link.find('a').attr('href'),
+	      			$currentImage 		= $imgDiv2.find('img'),
+	      			currentImageWidth	= $currentImage.width();
+	      		//if we click the current one return
+	      		current	= $imgDiv2.find('.ps_nav .selected').index();
+	      		if(current == idx) return false;
+	      		//add class selected to the current page / dot
+	      		$links = $imgDiv2.find('.ps_nav').children('li').not($tooltip);
+	      		$links.eq(current).removeClass('selected');
+	      		$link.addClass('selected');
+	      		
+	      		//the new image element
+	      		var $newImage = $('<img/>').css('left',currentImageWidth + 'px').attr('src',$image);
+	      		var $ps_image_wrapper 	= $imgDiv2.find('.ps_image_wrapper');
+	      		//if the wrapper has more than one image, remove oldest
+	      		if($ps_image_wrapper.children().length > 1)
+	      			$ps_image_wrapper.children(':last').remove();
+	      		
+	      		//prepend the new image
+	      		$ps_image_wrapper.prepend($newImage);
+	      		
+	      		//the new image width. 
+	      		//This will be the new width of the ps_image_wrapper
+	      		var newImageWidth	= $newImage.width();
+
+	      		//check animation direction
+	      		if(current > idx){
+	      			$newImage.css('left',-newImageWidth + 'px');
+	      			currentImageWidth = -newImageWidth;
+	      		}	
+	      		current = idx;
+	      		//animate the new width of the ps_image_wrapper 
+	      		//(same like new image width)
+	      		$ps_image_wrapper.stop().animate({
+	      		    width	: newImageWidth + 'px'
+	      		},350);
+	      		//animate the new image in
+	      		$newImage.stop().animate({
+	      		    left	: '0px'
+	      		},350);
+	      		//animate the old image out
+	      		$currentImage.stop().animate({
+	      		    left	: -currentImageWidth + 'px'
+	      		},350);
+
+	      		e.preventDefault();
+	      	}
+      	
+			function nextImage(index){
+				$links  = $imgDiv.find('.ps_nav').children('li').not($tooltip);
+				current	= $imgDiv.find('.ps_nav .selected').index();
+				if(index.data == 2){
+					$links  = $imgDiv2.find('.ps_nav').children('li').not($tooltip);
+					current	= $imgDiv2.find('.ps_nav .selected').index();
+				}
+				if(current < $links.length){
+					$links.eq(current+1).trigger('click');
+				}
+			}
+			
+			function prevImage(index){
+				 $links = $imgDiv.find('.ps_nav').children('li').not($tooltip);
+				 current = $imgDiv.find('.ps_nav .selected').index();
+				if(index.data == 2){
+					$links  = $imgDiv2.find('.ps_nav').children('li').not($tooltip);
+					current	= $imgDiv2.find('.ps_nav .selected').index();
+				}
+				if(current > 0){
+					$links.eq(current-1).trigger('click');
+				}
+			}
+        };
+	}); 
+</script>
+</script>
+<style>
+#case-collison-plateNbr .recordDiv{
+    width: 97%;
+    margin-left:8px;
+    margin-top: 5px;
+    border: solid 1px silver;
+    height: 350px
+}
+#case-collison-plateNbr .infoDiv{
+    float: left;
+    margin-left: 15px;
+    margin-top:10px;
+    width:90px;
+}
+#case-collison-plateNbr .infoDiv div{
+    height: 30px;
+     margin-top: 130px;
+    position: relative;
+    text-align: center;
+}
+#case-collison-plateNbr .infoDiv span{
+    font-size: 14px
+}
+#case-collison-plateNbr .btnDiv {
+    float: left;
+    margin-top: 128px;
+    margin-left:20px;
+    width:90px;
+}
+/* 图片显示 */
+#case-collison-plateNbr .ps_container{
+	display:none;
+	margin:0px auto 0px auto;
+    float:left;
+    position:relative;
+    border: dashed 1px silver;
+}
+/* 图片显示 */
+#case-collison-plateNbr .ps_container2{
+	display:none;
+	/* width:455px;
+	height:330px; */
+    float:left;
+    position:relative;
+    border: dashed 1px silver;
+}
+#case-collison-plateNbr .ps_image_wrapper{
+	width:450px;
+	height:330px;
+	overflow:hidden;
+	position:relative;
+	margin:0 auto;
+	align:center;
+}
+#case-collison-plateNbr .ps_image_wrapper img{
+	position:absolute;
+	width:450px;
+	height:330px;
+	left:0px;
+	top:0px;
+}
+#case-collison-plateNbr .ps_prev,
+#case-collison-plateNbr .ps_next{
+	width:30px;
+	height:59px;
+	position:absolute;
+	top:50%;
+	margin-top:-40px;
+	/* padding-left:100px; */
+	cursor:pointer;
+	opacity:0.5;
+}
+#case-collison-plateNbr .ps_prev{
+	background:transparent url('themes/default/images/02.png') no-repeat top center;
+	left:-3px;
+}
+#case-collison-plateNbr .ps_next{
+	background:transparent url('themes/default/images/01.png') no-repeat top center;
+	right:-3px;
+}
+#case-collison-plateNbr .ps_prev:hover,
+#case-collison-plateNbr .ps_next:hover{
+	opacity:0.9;
+}
+#case-collison-plateNbr ul.ps_nav{
+	list-style:none;
+	padding:0;
+	width:100px;
+	margin:5px auto;
+	position:relative;
+}
+#case-collison-plateNbr ul.ps_nav li{
+	float:left;
+}
+#case-collison-plateNbr ul.ps_nav li a{
+	display:block;
+	text-indent:-9000px;
+	width:11px;
+	height:11px;
+	outline:none;
+	padding:0px 3px;
+	background:transparent url('themes/default/images/dot.png') no-repeat top center;
+}
+#case-collison-plateNbr ul.ps_nav li a:hover,
+#case-collison-plateNbr ul.ps_nav li.selected a{
+	background-position:50% -11px;
+}
+#case-collison-plateNbr ul.ps_nav li.ps_preview span{
+	background:transparent url('themes/default/images/triangle.png') no-repeat top center;
+	width:15px;
+	height:6px;
+	position:relative;
+	top:85px;
+	left:35px;
+}
+#imageTable .td{
+border-style:solid; 
+border-width:1px;
+ border-color:RGB(192,192,192);
+ text-align: center;
+
+}
+
+#case-collison-plateNbr .plate-yellow {
+	background-color: yellow;
+	color: #00000;
+}
+#case-collison-plateNbr .plate-black {
+	background-color: black;
+	color: #FFFFFF;
+}
+#case-collison-plateNbr .plate-white {
+	background-color: white;
+	color: red;
+}
+#case-collison-plateNbr .plate-other {
+	background-color: #888888;
+	color: #FFFFFF;
+}
+
+#imageTable td{
+border-style:solid; 
+border-width:1px;
+ border-color:RGB(192,192,192);
+ text-align: center;
+
+}
+</style>

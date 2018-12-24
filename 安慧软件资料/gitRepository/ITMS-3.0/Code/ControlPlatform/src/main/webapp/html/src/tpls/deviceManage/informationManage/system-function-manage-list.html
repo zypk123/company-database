@@ -1,0 +1,186 @@
+<div id="sysFunction" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="add" >新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeAll" >批量删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="dataGrid" cy-datagrid="options" cy-querydata="formData" cy-url="device/sysFunctionManage/querySysFunction">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //页面初始化加载
+        $scope.load = function(){
+            //加载列表数据
+            $scope.$search("formData");
+        };
+        $scope.options = {
+            columns:[[
+                {field : "deviceSysFunctionId",checkbox : true},
+                {field : "functionCode",title : "功能代码",align: 'center',width : 100},
+                {field : "functionName",title : "功能名称",align: 'center',width : 100},
+                {field : "functionDesc",title : "功能描述",align: 'center',width : 150},
+                {field : "operater",title : "操作",align: 'center',width : 100,formatter : operate}
+            ]],
+            pagination : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain:true,
+                iconCls:"icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain:true,
+                iconCls:"icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+
+        /**
+         * 新增系统功能
+         */
+        $scope.add = function(){
+            $scope.$openDialog("addSysFunction",{
+                title:"新增系统功能信息",
+                width:350,
+                height:260,
+                href:"tpls/deviceManage/informationManage/system-function-operate.html"
+            },true);
+            //保存
+            $scope.$setParam("saveData",function(data){
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"device/sysFunctionManage/addSysFunction",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                        $scope.$getDialog("addSysFunction").dialog("close");
+                        $scope.$search("formData");
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","添加失败！");
+                    }
+                });
+            });
+        };
+        /**
+         * 编辑系统功能
+         */
+        $scope.editData = function(index){
+            var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];
+            $scope.$setParam("formData",rowDatas);
+            $scope.$openDialog("editSysFunction",{
+                title:"编辑系统功能信息",
+                width:350,
+                height:260,
+                href:"tpls/deviceManage/informationManage/system-function-operate.html"
+            },true);
+            $scope.$setParam("saveData",function(data){
+               $scope.$ajaxRequest({
+                   url: $scope.$restRoot+"device/sysFunctionManage/editSysFunction",
+                   params: data,
+                   method: "post",
+                   success: function(data){
+                       $.messager.alert("提示","修改成功！");
+                       $scope.$getDialog("editSysFunction").dialog("close");
+                       $scope.$search("formData");
+                   },
+                   fail: function(errMsg){
+                       $.messager.alert("提示","修改失败！");
+                   }
+               });
+            });
+        };
+        /**
+         * 删除系统功能
+         */
+        $scope.removeData = function(index){
+            var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];//选中的数据
+            var deviceSysFunctionId = rowDatas.deviceSysFunctionId;
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/sysFunctionManage/removeSysFunction",
+                        params: {deviceSysFunctionId: deviceSysFunctionId},
+                        method: "post",
+                        success: function(data){
+                            $.messager.alert("提示","删除成功！");
+                            $scope.$search("formData");
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+        /**
+         * 批量删除系统功能
+         */
+        $scope.removeAll = function(){
+            var rows = $scope.$('#dataGrid').datagrid('getChecked');//勾选选中的行数组
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                var deviceSysFunctionIdStr = "";
+                for(var i = 0; i < rows.length; i++){
+                    if(i > 0){
+                        deviceSysFunctionIdStr = deviceSysFunctionIdStr + "," + rows[i].deviceSysFunctionId;
+                    }else{
+                        deviceSysFunctionIdStr = deviceSysFunctionIdStr + rows[i].deviceSysFunctionId;
+                    }
+                }
+                $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                    if(flag){
+                        $scope.$ajaxRequest({
+                            url: $scope.$restRoot+"device/sysFunctionManage/removeSomeSysFunction",
+                            params: {deviceSysFunctionIdStr: deviceSysFunctionIdStr},
+                            method: "post",
+                            success: function(data){
+                                $.messager.alert("提示","删除成功！");
+                                $scope.$search("formData");
+                            },
+                            fail: function(errMsg){
+                                $.messager.alert("提示","删除失败！");
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        /**
+         *查看系统功能信息 
+         */
+        $scope.$('#dataGrid').datagrid({
+            onDblClickCell: function(index,field,value){
+                var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];
+                $scope.$setParam("formData",rowDatas);
+                $scope.$setParam("remark","look");
+                $scope.$openDialog("lookSysFunction",{
+                    title:"查看系统功能信息",
+                    width:350,
+                    height:260,
+                    href:"tpls/deviceManage/informationManage/system-function-operate.html"
+                },true);
+            }
+        });
+    });
+</script>
+<style type="text/css">
+    #sysFunction .th{
+        width: 100px;
+        text-align: right;
+    }
+</style>

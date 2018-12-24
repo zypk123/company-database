@@ -1,0 +1,96 @@
+<div ng-controller="SysApproveCompleteFormController">
+    <div style='display: flex; margin-top: 5px;'>
+        <div class="input-group" style='width: 220px; margin-left: 15px;'>
+            <span class="input-group-addon">系统名称</span>
+            <input type="text" class="form-control" ng-model="systemName">
+        </div>
+        <div class="input-group" style='width:200px; margin-left: 10px;'>
+            <span class="input-group-addon">审批结果</span>
+            <select class="form-control" name="status" ng-model="status" style='width:130px;'>
+                <option value=''>--请选择--</option>
+                <option value='0'>新建</option>
+                <option value='1'>审批中</option>
+                <option value='2'>通过</option>
+                <option value='3'>不通过</option>
+            </select>
+        </div>
+        <div class="input-group" style='width: 240px; margin-left: 10px;'>
+            <span class="input-group-addon">申请日期</span>
+            <input id="startTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',maxDate:'#F{$dp.$D(\'endTime\') || \'%y-%M-%d\'}',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onChange="" ng-model="startTime" />
+        </div>
+        <div class="input-group" style='width: 180px; margin-left: 10px;'>
+            <span class="input-group-addon">到</span>
+            <input id="endTime" class="Wdate input-sm" type="text" onClick="WdatePicker({skin:'whyGreen',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd HH:mm:ss'})" onChange="" ng-model="endTime" />
+        </div>
+        <div style='margin-left: 20px; display: flex;'>
+            <button type="button" class="btn btn-default btn-sm" ng-click='getApproveList()'>查询</button>&nbsp;&nbsp;
+            <!-- <button type="button" class="btn btn-info btn-sm" ng-click='newSysApprove()'>新建</button> -->
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div style="width: 100%; height: 2px; border-top: 1px dashed #9c9c9c; clear: both; margin-top: 5px;"></div>
+        <div style='height:90%;overflow:auto;'>
+            <table style="border-collapse: separate; border-spacing: 10px; width: 100%; font-size: 14;">
+                <tr ng-repeat="info in showInfo">
+                    <td>
+                        <div>
+                            <span style='font-size: 14px; font-weight:600;font-family:"Microsoft YaHei" ! important;color:#333333'>【系统验收申请】
+                    {{info.unitName}}申请{{info.systemName}}</span> &nbsp; &nbsp;（<span style='font-size: 14px;color:#008000'>{{formater(info.status)}}</span>）&nbsp; &nbsp;
+                            <span style='font-size: 14px;font-family:"Microsoft YaHei" ! important;color:#999999'>{{info.approveTime}}</span>
+                            <span ng-show="info.status=='0'">&nbsp;
+                    &nbsp;<a href='' style='font-size: 14px;margin-left:30px;'
+                    ng-click='subApprove(info)'>提交审批</a>
+                  </span> <span ng-show="info.status=='0'">&nbsp; &nbsp;<a href=''
+                    ng-click='editData(info)' style='font-size: 14px;margin-left:30px;'>修改</a></span> <span ng-show="info.status=='0'">&nbsp; &nbsp;<a href=''
+                    ng-click='deleteApprove(info.id)' style='font-size: 14px;margin-left:30px;'>取消</a></span> <span ng-show="info.status=='1'||info.status=='2'">&nbsp; &nbsp;<a
+                    href='' ng-click='openImg(info.processId)' style='font-size: 14px;margin-left:30px;'>申请进度</a></span>
+                    <span ng-show="info.status==''||info.status==null">&nbsp; &nbsp;<a
+                    href='' ng-click='newSysCheck(info)' style='font-size: 14px;margin-left:30px;'>创建验收申请</a></span>
+                    <span ng-show="info.status==3">&nbsp; &nbsp;<a
+                    href='' ng-click='newSysCheck(info)' style='font-size: 14px;margin-left:30px;'>重新申请</a></span>
+                            <span>&nbsp; &nbsp;<a href=''
+                    ng-click='viewData(info.id)' style='font-size: 14px;margin-left:30px;'>查看</a></span>
+                            <br>
+                            <div style="width: 100%; height: 2px; border-top: 1px dashed #9C9C9C; clear: both; margin-top: 2px;" /></div>
+                        <span style='font-size: 13px;font-family:"Microsoft YaHei" ! important;color:#999999 ! important'>申请单位： {{info.unitName}}&nbsp; &nbsp; &nbsp; &nbsp;系统负责人：
+                    {{info.systemManageer}}&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; </span><span style='font-size: 13px;font-family:"Microsoft YaHei" ! important;color:#999999 ! important'>申请时间：</span>
+                        <span style="color:#999999;">{{info.approveTime}}&nbsp;
+                    &nbsp; &nbsp; </span>
+                        <span style='font-size: 13px;font-family:"Microsoft YaHei" ! important;color:#999999 ! important'>联系电话：</span><span style="color: #999999;">{{info.phone}}</span> </br>
+                        <div style="height:10px;" /></div>
+        <span style='font-size: 13px;font-family:"Microsoft YaHei" ! important;color:#333333'>申请详细：
+                    {{info.unitName}}建设{{info.systemName}}&nbsp;系统主要功能：{{info.systemFunction}}&nbsp;使用部门：{{info.userDepartments}}</span>
+        <div style="width: 100%; height:8px; clear: both;" /></div>
+</div>
+</td>
+</tr>
+</table>
+<div style="margin-top:20px">
+    <div style="float: left;">
+        <uib-pagination boundary-links="true" total-items="totalItems" max-size="maxSize" items-per-page="pageSize" force-ellipses="true" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+    </div>
+    <div style="float: left; line-height:70px;font-size: 13px">共{{totalItems}}条</div>
+</div>
+</div>
+</div>
+</div>
+<div style='margin-left: -200px'>
+    <script type="text/ng-template" id="prcossImg">
+        <div class="modal-body" style="width: 99%;height:80%;overflow: auto;">
+            <img ng-src="{{imgUrl}}" ng-dblclick='enlarge()' style='width:{{imgwd}}px'></img>
+        </div>
+    </script>
+</div>
+<style>
+.input {
+    width: 200px;
+}
+
+.form-control {
+    height: 30px;
+}
+
+.btn {
+    height: 30px;
+}
+</style>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficPresetMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficPreset" >
+    <id column="PRESET_RECORD_ID" property="presetRecordId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+    <result column="PRESET" property="preset" jdbcType="DECIMAL" />
+    <result column="PRESET_DESC" property="presetDesc" jdbcType="VARCHAR" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PRESET_RECORD_ID, DEVICE_ID, SYS_COMPONENT_ID, PRESET, PRESET_DESC, CREATE_BY, CREATE_TIME, 
+    UPDATE_BY, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PRESET
+    where PRESET_RECORD_ID = #{presetRecordId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByCondition" resultMap="BaseResultMap"   parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_PRESET
+    <where> 
+     <if test="deviceId != null and deviceId!=''" >
+        AND DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+      </if> 
+     <if test="sysComponentId != null and sysComponentId!=''" >
+        AND SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+      </if> 
+    </where> 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_PRESET
+    where PRESET_RECORD_ID = #{presetRecordId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficPreset" >
+    insert into T_TRAFFIC_PRESET (PRESET_RECORD_ID, DEVICE_ID, SYS_COMPONENT_ID, 
+      PRESET, PRESET_DESC, CREATE_BY, 
+      CREATE_TIME, UPDATE_BY, UPDATE_TIME
+      )
+    values (#{presetRecordId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{sysComponentId,jdbcType=VARCHAR}, 
+      #{preset,jdbcType=DECIMAL}, #{presetDesc,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficPreset" >
+    insert into T_TRAFFIC_PRESET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="presetRecordId != null" >
+        PRESET_RECORD_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="sysComponentId != null" >
+        SYS_COMPONENT_ID,
+      </if>
+      <if test="preset != null" >
+        PRESET,
+      </if>
+      <if test="presetDesc != null" >
+        PRESET_DESC,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="presetRecordId != null" >
+        #{presetRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysComponentId != null" >
+        #{sysComponentId,jdbcType=VARCHAR},
+      </if>
+      <if test="preset != null" >
+        #{preset,jdbcType=DECIMAL},
+      </if>
+      <if test="presetDesc != null" >
+        #{presetDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficPreset" >
+    update T_TRAFFIC_PRESET
+    <set >
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysComponentId != null" >
+        SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR},
+      </if>
+      <if test="preset != null" >
+        PRESET = #{preset,jdbcType=DECIMAL},
+      </if>
+      <if test="presetDesc != null" >
+        PRESET_DESC = #{presetDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null" >
+        UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where PRESET_RECORD_ID = #{presetRecordId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficPreset" >
+    update T_TRAFFIC_PRESET
+    set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR},
+      PRESET = #{preset,jdbcType=DECIMAL},
+      PRESET_DESC = #{presetDesc,jdbcType=VARCHAR},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where PRESET_RECORD_ID = #{presetRecordId,jdbcType=VARCHAR}
+  </update>
+</mapper>

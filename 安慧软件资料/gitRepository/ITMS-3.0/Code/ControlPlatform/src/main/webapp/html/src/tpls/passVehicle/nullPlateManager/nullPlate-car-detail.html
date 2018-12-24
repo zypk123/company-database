@@ -1,0 +1,183 @@
+<div class="easyui-layout">
+    <form cy-form="nullNumberCarChecked">
+        <div data-options="region:'center',border:false">
+            <div class="easyui-layout">
+                <div  id="imageArea" data-options="region:'center',border:false" ></div>
+                <div data-options="region:'south',height:'50px;'">
+                    &nbsp;
+                    <div class="td" style="text-align: center">
+                        <a class="easyui-linkbutton"  style="width: 60px" cy-click="selectPre">上一条</a>
+                        <a class="easyui-linkbutton"  style="width: 60px" cy-click="selectNext">下一条</a>
+                        <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" style="width: 60px;"
+                           cy-click="$closeSelf">关闭</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'east'" style="width: 250px;">
+            <div id="nullNumberCarId" class="table">
+                <div class="tr">
+                    <div class="th">号牌号码:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.plate_nbr"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">号牌颜色:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.plate_color" cy-filter="plateColor"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">号牌类型:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.plate_type" cy-filter="plateTypeName"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">车辆品牌:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.vehicle_brand" cy-filter="vehicleBrandName"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">车辆外形:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.vehicle_shape" cy-filter="vehicleShape"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">车辆类型:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.vehicle_type" cy-filter="vehicleType"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">车辆用途:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.veh_charcter" cy-filter="vehCharcter"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">车身颜色:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.vehicle_color"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">过车次数:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.times"></div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 60px;">归属地:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.veh_localization" cy-filter="vehLocalization"></div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 46px;">点位:</div>
+                    <div class="td" cy-name="nullNumberCarChecked.site_name"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    InitPage(["nullNumberCarChecked","currentData","searchData","index"], function ($scope) {
+        $scope.$getDefaultCode(['001','002','003','004','010','012','228']);
+        //车辆类型	
+		$scope.vehicleType=function(value){
+				return $scope.$getCodeName("001", value);
+		};
+		//号牌类型
+		$scope.plateTypeName=function(value) {
+				return $scope.$getCodeName("002", value);
+		};
+        //号牌颜色
+        $scope.plateColor=function(value) {
+				return $scope.$getCodeName("003", value); 	
+		};	
+		//车辆外形
+		$scope.vehicleShape=function(value){
+				return $scope.$getCodeName("004", value);
+		};
+		//车辆用途
+		$scope.vehCharcter=function(value){
+			return $scope.$getCodeName("010", value);
+		};
+		//车辆品牌
+		$scope.vehicleBrandName=function(value) {
+				return $scope.$getCodeName("012", value);
+		};
+		//归属地
+		$scope.vehLocalization=function(value){
+			    return $scope.$getCodeName("228", value);
+		};
+        var total;
+        $scope.load=function(){
+           updateDom($scope.nullNumberCarChecked);
+            //判断是查看的标识
+//            $scope.$(".easyui-textbox").each(function(){
+//                $(this).textbox('readonly',true);
+//            });
+            $scope.displayListImage($scope.nullNumberCarChecked);
+            //获得所有数据的长度
+            total = $scope.currentData.length;
+            			
+       };
+        //显示图片
+        $scope.displayListImage = function (data) {
+            $scope.timeout = setTimeout(function () {
+                        if (data && data.image_url_path) {
+                            $scope.$setParam("images", [data.image_url_path]);
+                            $scope.$("#imageArea").panel("refresh", "tpls/public/image-view.html");
+                        }
+                    },
+                    500);
+        };
+        //选择下一条
+        $scope.selectNext=function () {
+            if ($scope.index == total - 1) {
+                //已经是最后一条数据，查询下一页数据
+                $scope.searchData("next", function(data) {
+                    if (data) {
+                        $scope.currentData = data;
+                        $scope.index = 0;
+                        //更新图片
+                        $scope.displayListImage($scope.currentData[$scope.index]);
+                        updateDom($scope.currentData[$scope.index]);
+                    }else{
+                    }
+                });
+            } else {
+                //更新图片
+                $scope.displayListImage($scope.currentData[++$scope.index]);
+                //更新页面数据
+                updateDom($scope.currentData[$scope.index]);
+            }
+        };
+        //选择上一条
+        $scope.selectPre=function () {
+            if ($scope.index == 0) {
+                //已经是最后一条数据，查询下一页数据
+                $scope.searchData("pre", function(data) {
+                    if (data) {
+                        $scope.currentData = data;
+                        $scope.index = $scope.currentDatalength - 1;;
+                        //更新图片
+                        $scope.displayListImage($scope.currentData[$scope.index]);
+                        updateDom($scope.currentData[$scope.index]);
+                    }else{
+                        return false;
+                    }
+                });
+            } else {
+                //更新图片
+                $scope.displayListImage($scope.currentData[--$scope.index]);
+                //更新页面数据
+                updateDom($scope.currentData[$scope.index]);
+            }
+        };
+        $scope.confirmInvalid = function(){
+            alert("in");
+        };
+        //更新页面数据
+        var updateDom = function(data) {
+            $scope.nullNumberCarChecked = data;
+            //更新其他数据
+            $scope.$updateDom("nullNumberCarChecked");
+        };
+    });
+</script>
+<style type="text/css">
+    .table .th {
+        text-align: right;
+        width: 70px;
+    }
+
+    .table .td {
+
+    }
+</style>

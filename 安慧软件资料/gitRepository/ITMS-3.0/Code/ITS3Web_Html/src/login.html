@@ -1,0 +1,132 @@
+﻿<div class="loginTop">
+    <div class="lgdiv">
+        <img src="themes/default/images/login_bg.jpg"/>
+        <div class="loginBg">
+            <div class="loginTitle">
+                <table>
+                    <tr>
+                        <td class="td1">智能交通设备管控平台</td>
+                    </tr>
+                    <tr>
+                        <td class="td2">—安徽 合肥交警支队—</td>
+                    </tr>
+                </table>
+            </div>
+            <form id="ff" class="easyui-form table" method="post" data-options="novalidate:true">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">用户名</div>
+                    </div>
+                    <div class="tr">
+                        <div class="td">
+                            <input id="name" class="easyui-textbox" name="LoginName" 
+                            data-options="
+                            prompt:'用户名',
+                            iconCls:'icon-man',
+                            iconAlign:'left',
+                            iconWidth:34,
+                            height:40,
+                            required:true,
+                            validType:'length[1,12]'" />
+                        </div>
+
+                    </div>
+                    <div class="tr">
+                        <div class="th">密码</div>
+                    </div>
+                    <div class="tr">
+                        <div class="td">
+                            <input id="password" class="easyui-textbox" name="PassWord" type="password" 
+                            data-options="
+                            prompt:'密码',
+                            iconCls:'icon-lock',
+                            iconAlign:'left',
+                            iconWidth:34,
+                            height:40,
+                            required:true,
+                            validType:'length[1,10]'" />
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td loginButton">
+                            <a class="easyui-linkbutton button" cy-click="loginSubmit">
+                                <pre>登   录</pre>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+InitPage([],function($scope){
+    /**
+     * 登录方法
+     * @return {[type]} [description]
+     */
+    $scope.loginSubmit = function() {
+        var win = $.messager.progress({
+            title: '请稍候',
+            msg: '登录中...'
+        });
+
+        // 测试用
+       /* if (window.location.href.toLowerCase().indexOf("http://") > -1) {
+            FormSubmit(
+                {
+                    formId: "#ff",
+                    actionUrl: "/cy.com.web.loginService.IndexControl/Login",
+                    onSubmit: function (frm) {
+                        if (!frm.form('enableValidation').form('validate')) {
+                            $.messager.progress('close');
+                            return false;
+                        }
+                        return true;
+                    },
+                    success: function (result) {
+                        if (result.IsOK) {
+                            logIn(result);
+                            $("#error").html(JSON.stringify(result));
+                        }
+                        $.messager.progress('close');
+                    },
+                    fail: function (errMsg) {
+                        $.messager.progress('close');
+                        alert(errMsg);
+                    }
+                });
+} else {*/
+        $.getJSON("data/menu/result.json?a=" + new Date().getTime(), function (rslt) {
+            try {
+                if (rslt.AuthenrizeResult.IsOK) {
+                    logIn(rslt.AuthenrizeResult);
+                }
+            } catch (e) {
+                alert(e.toString());
+            }
+
+            $.messager.progress('close');
+        });
+    }
+    /**
+     * 登录处理
+     * @param  {[type]} logInfo [description]
+     * @return {[type]}         [description]
+     */
+    function logIn(logInfo) {
+
+        $rootScope.ContextId = logInfo.Token;
+
+        $rootScope.UserInfo = new User(logInfo);
+
+        //保存参数
+        $rootScope.menus = logInfo.Menus
+
+        //保存参数到浏览页页面session对象中
+        sessionStorage["logInfo"] = JSON.stringify(logInfo);
+        //跳转到页面
+        $scope.$gotoPage("main.html");
+    }
+});
+</script>

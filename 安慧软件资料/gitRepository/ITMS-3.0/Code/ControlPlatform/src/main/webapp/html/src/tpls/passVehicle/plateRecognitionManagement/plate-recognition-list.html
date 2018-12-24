@@ -1,0 +1,172 @@
+<div class="easyui-layout">
+	<form cy-form="formPlateRecogData" id ="formPlateRecogData">
+		<div data-options="region:'north'" style="height: 120px;">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="searchId" class="table">
+					<div class="tr">
+						<div class="th">承建商：</div>
+								<div class="td">
+								<input id="contractorId" class="easyui-combobox"
+									name="contractorId"
+									data-options="valueField:'contractorId',textField:'contractorName'"
+									style="width: 120px" />
+								</div>
+						<div class="th">管理单位：</div>
+						<div class="td">
+							<input id="orgCodes" name="orgCodes" class="cy-org-checkbox" iscode="true" style="width: 120px" />
+						</div>	
+						<div class="th">
+							道路：
+						</div>
+						<div class="td">
+							<input name="roadCodes" class="cy-road-checkbox" iscode="true"/>
+						</div>
+						<div class="th">
+							卡口点位：
+						</div>
+						<div class="td">
+							<input name="siteCodes" class="cy-site-checkbox" iscode="true" bayonet="true"/>
+						</div>
+						<div class="th">
+							卡口编号：
+						</div>
+						<div class="td">
+							<input name="deviceSysNbr" class="easyui-textbox" style="width: 100px;"/>
+						</div>
+						<div class="th">
+							卡口类型：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="tollgateType" cy-code="421"
+								name="tollgateType" style="width: 80px"
+								data-options="valueField:'value',textField:'text'" />
+						</div>
+						
+					</div>
+					<div class="tr">
+						<div class="th" style="width: 120px;">
+							接入稽查布控系统:
+						</div>
+						<div class="td">
+						<input type="radio" name ="isConnectTrackSys"  value="2" checked>全部
+						<input type="radio" name ="isConnectTrackSys"  value="1">是
+						<input type="radio" name ="isConnectTrackSys"  value="0">否
+						</div>
+						<div class="th">
+							<span class="red">*</span>分析周期：
+						</div>
+						<div class="td" style="width: 220px;">
+							<input name="startDateTime" id="startDateTime" data-options="prompt:'开始时间不能大于结束时间',editable:false,validType:['maxDate[\'endDateTime\']','date'],required:true" 
+							class="easyui-datebox dispatchTime" style="width:110px;" id="start"/>
+							至
+							<input name="endDateTime" id="endDateTime" data-options="prompt:'结束时间不能小于开始时间',editable:false,validType:['minDate[\'startDateTime\']','date'],required:true"
+							class="easyui-datebox dispatchTime" style="width:110px;" id="end"/>
+						</div>
+						<div class="th" style="margin-left: 25px;">
+							统计方式：
+						</div>
+						<div id="statById" class="td" style="width: 240px;">
+							<input type="radio" name="statBy" value="deviceSysNbr" checked="true" title="卡口" />
+						 	按卡口
+							<input type="radio" name="statBy" value="deviceNbr"  title="按设备" />
+							按设备
+							<input type="radio" name="statBy" value="season" title="按季度"/>
+							按季度
+							<input type="radio" name="statBy" value="month" title="按月份"/>
+							按月
+							<input type="radio" name="statBy" value="week" title="按周"/>
+							按周
+							<input type="radio" name="statBy" value="day" title="按日期天"/>
+							按天
+							<input type="radio" name="statBy" value="hourd" title="按日期小时"/>
+							按小时
+						</div>
+						<div class="th" style="margin-left: 190px;">
+							<a class="easyui-linkbutton button-search" cy-click="searchForm" id="searchButton"
+							data-options="iconCls:'icon-search'">查询&nbsp;</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center'"  id="centerDiv" style="display: block">
+			<!-- <table id="datagrid" cy-datagrid="optionsPlateRecog" cy-querydata="formPlateRecogData"
+			cy-url="vehTrack/plateRecog/findPlateRecognitionRate"></table> -->
+		</div>
+		
+	</form>
+</div>
+<script>
+	InitPage([], function($scope) {
+		var selectedStatType;
+		
+		$scope.load = function(){
+			loadContractor();
+			//查询时间不能大于当前时间
+    		$scope.$('.dispatchTime').each(function(){
+    			$(this).datebox('calendar').calendar({
+        			validator: function(date){
+        				var now = new Date();
+        				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        				return date <= d1;
+        			}
+        		});
+    		});
+		}
+		
+		$scope.formPlateRecogData = {
+			startDateTime:new Date().format("yyyy-MM-dd 00:00:00"),
+			endDateTime:new Date().format("yyyy-MM-dd HH:mm:ss")
+		} ;		
+			
+		$scope.searchForm = function() {
+			if(!$scope.$("#formPlateRecogData").form("validate")){
+				return;
+			}
+			$scope.$updateData("formPlateRecogData");
+			selectedStatType = $scope.formPlateRecogData.statBy;
+			//var checkbox = $scope.$("input[name='isConnectTrackSys']:checked");
+			
+			//$scope.$updateData("formPlateRecogData");
+			//全选和全部选，我们都查询所有的
+			if($scope.formPlateRecogData.isConnectTrackSys=="2"){
+				$scope.formPlateRecogData.isConnectTrackSys ='';
+			}
+			$scope.formPlateRecogData.startDateTime = $scope.formPlateRecogData.startDateTime+" 00:00:00";
+			$scope.formPlateRecogData.endDateTime = $scope.formPlateRecogData.endDateTime+" 23:59:59";
+			$scope.$setParam("data", $scope.formPlateRecogData);
+			$scope.$setParam("selectedStatType", selectedStatType);
+			if("deviceNbr" == selectedStatType || "deviceSysNbr" == selectedStatType){
+				$scope.$("#centerDiv").panel("refresh","tpls/passVehicle/plateRecognitionManagement/plate-recogniton-datagrid.html");
+			}else{
+				$scope.$("#centerDiv").panel("refresh", "tpls/passVehicle/plateRecognitionManagement/plate-recogniton-graph.html");
+			}
+		};
+		//加载厂商
+		function loadContractor(){
+			$scope.$ajaxRequest({
+	            url:$scope.$restRoot+"device/companyManage/queryCompany",
+	            params:{},
+	            method:"post",
+	            success:function(data){
+	                $scope.$("#contractorId").combobox("loadData",data);
+	                contractorData = data;
+	            },
+	            fail:function(errMsg){
+	                $.messager.alert("提示","初始化承建商失败！");
+	            }
+	        	});
+			
+		}
+		
+	});
+</script>
+<style type="text/css">
+	#searchId .th{
+		width:90px;
+		text-align:right;
+	}
+</style>

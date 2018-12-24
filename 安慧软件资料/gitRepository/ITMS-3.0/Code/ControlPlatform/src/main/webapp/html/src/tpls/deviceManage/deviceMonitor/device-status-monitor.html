@@ -1,0 +1,788 @@
+<div id="deviceStatusMonitor" class="easyui-layout">
+	<!--左边列表区 -->
+	<div data-options="region:'west',border:false, title:'导航区域'"
+	style="width: 200px">
+		<div class="easyui-layout">
+			<div data-options="region:'center',border:false">
+				<div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+					<div title="按机构">
+						<ul id="orgTree"></ul>
+					</div>
+					<div title="按道路">
+						<ul id="roadTree"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',border:true">
+		<div class="easyui-layout">
+			<!--查询条件区 -->
+			<div data-options="region:'north',border:false" style="height: 158px">
+				<form method="post" cy-form="formData">
+					<div class="searchPanel">
+						<div class="panel_title">
+							查询条件
+						</div>
+						<div class="table">
+							<div class="tr">
+								<div class="td">
+									设备类型：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" id="deviceType" name="devType"
+									cy-code="400" />
+								</div>
+								<!-- <div class="td">使用状态：</div>
+								<div class="td">
+								<input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:100px" cy-code="405"/>
+								</div> -->
+								<div class="td">
+									设备名称：
+								</div>
+								<div class="td">
+									<input class="easyui-textbox" id="deviceSysName" name="devName" />
+								</div>
+								<div class="td">
+									设备厂家：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" id="deviceContrator"
+									name="contractor"
+									data-options="valueField:'contractorId',textField:'contractorName'" />
+								</div>
+								<div class="td">
+									建设归属：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" id="ownership" name="ownership"
+									cy-code="419" />
+								</div>
+							</div>
+							<div class="tr">
+								<div class="td">
+									校时情况：
+								</div>
+								<div class="td">
+									<input type="checkbox" name="correctTime" value="1"
+									checked="checked" />
+									正常
+									<input type="checkbox"
+									name="correctTime" value="0" checked="checked" />
+									异常
+								</div>
+								<div class="td">
+									网络状态：
+								</div>
+								<div class="td">
+									<input type="checkbox" name="netStatus" value="1"
+									checked="checked" />
+									在线
+									<input type="checkbox"
+									name="netStatus" value="0" checked="checked" />
+									离线
+								</div>
+								<div class="td">
+									供电状态：
+								</div>
+								<div class="td">
+									<input type="checkbox" name="elcStatus" value="1"
+									checked="checked" />
+									正常 <!-- <input type="checkbox"  name="elcStatus" value="2" checked="checked"/>UPS -->
+									<input type="checkbox" name="elcStatus" value="0"
+									checked="checked" />
+									断电
+								</div>
+								<!-- <div class="td">传输情况：</div>
+								<div class="td">
+								<input type="checkbox" name="sendStatus" value="1" checked="checked"/>正常
+								<input type="checkbox" name="sendStatus" value="0" checked="checked"/>异常
+								</div> -->
+							</div>
+							<div class="tr">
+								<div class="td">
+									设备故障：
+								</div>
+								<div class="td">
+									<input type="checkbox" name="devBug" value="1"
+									checked="checked" />
+									有
+									<input type="checkbox" name="devBug"
+									value="0" checked="checked" />
+									无
+								</div>
+								<div class="td">
+									故障类型：
+								</div>
+								<div class="td">
+									<input class="easyui-combobox" id="bugType" name="bugType"
+									cy-code="442" />
+								</div>
+								<div class="td">
+									维护状态：
+								</div>
+								<div class="td">
+									<input type="checkbox" name="matainceStatus" value="0"
+									checked="checked" />
+									未派单
+									<input type="checkbox"
+									name="matainceStatus" value="1" checked="checked" />
+									已派单
+								</div>
+								<div class="td">
+									<!-- <auth resourceCode="06010103"> -->
+									<a class="easyui-linkbutton" cy-click="searchData" data-options="iconCls:'icon-search'">查询</a>
+									<a class="easyui-linkbutton button" style="margin-left:10px" data-options="iconCls:'icon-export'" cy-click="exportExcel">导出</a>
+									<!-- </auth> -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!--数据展示区 -->
+			<div data-options="region:'center',border:true">
+				<div class="easyui-layout">
+					<div id="data-view-area" data-options="region:'center',border:false">
+						<table id="devGrd" cy-datagrid="options" cy-querydata="formData"
+						cy-url="device/deviceMoniter/queryRunDeviceLst"></table>
+					</div>
+					<div data-options="region:'south',border:false" style="height: 20px">
+						<span>共</span><span id="totalRes" style="color: blue">0</span><span>记录</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		var currentTreeSelectedNode = {
+			nodeType : "org", //org roadType road site
+			nodeId : $scope.UserInfo.orgId
+		};
+		$.extend($scope, {
+			options : {
+				sortName : "deviceSysNbr",
+				sortOrder : "asc",
+				columns : [[{
+					align : 'center',
+					title : "设备编号",
+					field : "deviceSysNbr",
+					width : 115,
+					sortable : true
+				}, {
+					align : 'center',
+					title : "设备类型",
+					field : "deviceType",
+					formatter : deviceTypeFormat,
+					width : 50
+				}, {
+					align : 'center',
+					title : "安装地点",
+					field : "address",
+					width : 150
+
+				}, {
+					align : 'center',
+					title : "校时",
+					field : "correctTime",
+					width : 80
+
+				}, {
+					align : 'center',
+					title : "网络",
+					field : "netStatus",
+					width : 40
+
+				}, {
+					align : 'center',
+					title : "供电",
+					field : "elcStatus",
+					width : 40
+
+				}, {
+					align : 'center',
+					title : "设备故障",
+					field : "devBug",
+					width : 45
+				}, {
+					align : 'center',
+					title : "最近上传",
+					field : "latestUploadTime",
+					formatter : latestUploadTimeFormat,
+					width : 98
+				}, {
+					align : 'center',
+					title : "维护信息",
+					field : "mantaince",
+					formatter : mantainceFormat,
+					width : 120
+				}, {
+					align : 'center',
+					title : "操作",
+					field : "opt",
+					formatter : opteratersForamt,
+					width : 80
+				}]],
+				pagination : false,
+				nowrap : false,
+				onLoadSuccess : function(data) {
+					$scope.$("#totalRes").text(data.total);
+				},
+				onSortColumn : function(sortName, sortType) {
+					$scope.formData.orderName = sortName;
+					$scope.formData.orderType = sortType;
+					$scope.$search("formData");
+				}
+			},
+			formData : {
+
+			},
+			/**
+			 * 查询数据
+			 */
+			searchData : function() {
+				getQryParam();
+				//$scope.formData.deviceType = $scope.$("#deviceType").combobox("getValues").join(",");
+				$scope.$search("formData");
+			},
+			exportExcel : function() {
+				getQryParam();
+				//后台保存数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "device/deviceMoniter/exportRunStatusRecordExcel",
+					params : $scope.formData,
+					method : "post",
+					success : function(data) {
+						if (data.url != undefined) {
+							$scope.download(data);
+						} else {
+							$.messager.alert("提示", "请确认查询结果列表是否为空！");
+							$scope.searchData();
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "检定导出失败！");
+					}
+				});
+			},
+			//左击机构树点击事件
+			orgTreeNodeClick : function(node) {
+				currentTreeSelectedNode.nodeType = "org";
+				currentTreeSelectedNode.nodeId = node.id;
+				getQryParam();
+				$scope.$search("formData");
+			},
+			//左击道路点位树点击事件
+			roadTreeNodeClick : function(node) {
+				var nodeType = node.attribute.nodeType;
+				// $scope.formData.pageNumber = 1;
+				currentTreeSelectedNode.nodeType = nodeType;
+				if (nodeType == 'root') {
+					var roadTypes = $scope.$('#roadTree').tree('getChildren');
+					//获取所有子节点
+					var roadType = [];
+					for (var i = 0; i < roadTypes.length; i++) {
+						if (roadTypes[i].attribute.nodeType == 'roadType') {
+							roadType.push(roadTypes[i].id);
+						}
+					};
+					currentTreeSelectedNode.nodeId = roadType.join(",");
+				} else {
+					currentTreeSelectedNode.nodeId = node.id;
+				}
+				getQryParam();
+				$scope.$search("formData");
+			},
+		});
+		function deviceTypeFormat(value, row, index) {
+			return $scope.$getCodeName("400", value);
+		}
+
+		function mantainceFormat(value, row, index) {
+			if (value == undefined || value == null) {
+				return "-";
+			}
+			var noMataince = [];
+			//未派单
+			var hasMataince = [];
+			//已派单
+			var notMataince = [];
+			//无需维护
+			for (var m in value) {
+				var name = $scope.$getCodeName("442", m);
+				if (value[m] == "0") {
+					if (name != "") {
+						noMataince.push(name);
+					}
+				} else if (value[m] == "1") {
+					if (name != "") {
+						hasMataince.push(name);
+					}
+				} else if (value[m] == "2") {
+					if (name != "") {
+						notMataince.push(name);
+					}
+				}
+			}
+			var div = $("<div></div>");
+			if (noMataince.length > 0) {
+				div.append(CreateMatainceItem("未派单：", noMataince));
+			}
+			if (hasMataince.length > 0) {
+				div.append(CreateMatainceItem("已派单：", hasMataince));
+			}
+			if (notMataince.length > 0) {
+				div.append(CreateMatainceItem("无需派单：", notMataince));
+			}
+			return div.html();
+		}
+
+		function CreateMatainceItem(itemName, data) {
+			var divItem = $("<div style='text-align:left'></div>");
+			var name = $("<a>" + itemName + "</a>");
+			var noMatainceStr = data.join("、");
+			var newStr = noMatainceStr;
+			if (noMatainceStr.length > 80) {
+				newStr = newStr.substr(0, 80) + "...";
+			}
+			var content = $("<a>" + newStr + "</a>");
+
+			divItem.append(name).append(content);
+			divItem.attr("title", itemName + noMatainceStr);
+			return divItem;
+		}
+
+		function opteratersForamt(value, rowData, rowIndex) {
+			var returnHtml = $("<span/>");
+			if ($scope.$hasAuth("06010101")) {
+				var monitorBtn = $("<a  title='监控' class='easyui-linkbutton'></a>");
+				monitorBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-monitor-solid"
+				}).attr('cy-click', "monitorInfo('" + rowIndex + "')");
+				returnHtml.append(monitorBtn).append("  ");
+			}
+			if ($scope.$hasAuth("06010102") && $scope.$hasAuth("060501")) {
+				var bugBtn = $("<a  title='故障' class='easyui-linkbutton'></a>");
+				bugBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-alert-solid"
+				}).attr('cy-click', "breakdownInfo('" + rowIndex + "')");
+				returnHtml.append(bugBtn).append("  ");
+			}
+			if ($scope.$hasAuth("06010103") && $scope.$hasAuth("060502")) {
+				var matainceBtn = $("<a  title='维护单' class='easyui-linkbutton'></a>");
+				matainceBtn.linkbutton({
+					plain : true,
+					iconCls : "icon-save-solid"
+				}).attr('cy-click', "maintainInfo('" + rowIndex + "')");
+				returnHtml.append(matainceBtn);
+			}
+			return returnHtml.html();
+		}
+
+		// Ajax 文件下载
+		$scope.download = function(data) {// 获得url
+			if (data) {
+				// request发送请求
+				$('<form action="' + data.url + '" method="post"></form>').appendTo('body').submit().remove();
+			};
+		};
+		//点击监控（操作），获取本条数据，并根据数据内容跳转
+		$scope.monitorInfo = function(index) {
+			var url;
+			var dialogName;
+			var titleName;
+
+			//获取datgrid中的一条数据
+			var rowData = $scope.$("#devGrd").datagrid("getData").rows[index];
+
+			var devId = rowData.deviceId;
+			var devSysNbr = rowData.deviceSysNbr;
+			var devType = rowData.deviceType;
+			var devName = $scope.$getCodeName("400", rowData.devType);
+			var alarmType;
+			switch (devType) {
+			case '01':
+				{
+					//alarmType = "4";
+					url = "tpls/public/device-vehicle-monitor.html";
+					dialogName = "deviceVehicleMonitor";
+					titleName = "设备过车监控";
+					$scope.$setParam("deviceSysNbr", devSysNbr);
+					$scope.$setParam("alarmType", alarmType);
+					$scope.$openDialog("dialogName", {
+						title : titleName,
+						width : 700,
+						height : 400,
+						href : url
+					});
+				}
+				break;
+			case '02':
+				{
+					//titleName = "电警监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			case '03':
+				{
+					var devIds = [];
+					devIds.push(devId);
+					$scope.$setParam("deviceIds", devIds);
+					$scope.$openDialog("videoDialog", {
+						title : "查看视频",
+						draggable : false,
+						width : 600,
+						height : 600,
+						href : "tpls/video/popPreView.html"
+					}, true);
+				}
+				break;
+			case '04':
+				{
+					//titleName = "测速设备监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			case '05':
+				{
+					//气象设备
+					getMeteorologicType(devId, devSysNbr);
+
+				}
+				break;
+			case '06':
+				{
+					url = "tpls/deviceManage/deviceConfig/speed-limit-look.html";
+					dialogName = "speedLimitMonitor";
+					titleName = "可变限速牌监控";
+					publicMonitor(dialogName, titleName, url, devSysNbr);
+				}
+				break;
+
+			case '07':
+				{
+					url = "tpls/deviceManage/deviceConfig/LED-board-look.html";
+					dialogName = "LEDBordMonitor";
+					titleName = "诱导屏监控";
+					publicMonitor(dialogName, titleName, url, devSysNbr);
+				}
+				break;
+			case '08':
+				{
+					alarmType = "4";
+					url = "tpls/deviceManage/deviceConfig/event-detection-look-config.html";
+					dialogName = "eventDetectionMonitor";
+					titleName = "事件检测监控";
+					publicMonitor(dialogName, titleName, url, devSysNbr, alarmType);
+				}
+				break;
+			case '09':
+				{
+					url = "tpls/deviceManage/deviceConfig/flow-detection-look-config.html";
+					dialogName = "flowDetetctionMonitor";
+					titleName = "流量检测监控";
+					publicMonitor(dialogName, titleName, url, devSysNbr);
+				}
+				break;
+			case '11':
+				{
+					//titleName = "违停设备监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			case '12':
+				{
+					//url = "tpls/deviceManage/deviceConfig/speed-measure-look-config.html";
+					//dialogName = "speedMeasureMonitor";
+					//titleName = "大车占道设备监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			case '13':
+				{
+					//titleName = "逆行设备监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			case '16':
+				{
+					//titleName = "车载设备监控";
+					illegalDevice(devSysNbr);
+				}
+				break;
+			}
+		};
+
+		//监控设备弹出框
+		function publicMonitor(dialogName, titleName, url, devSysNbr, alarmType) {
+			//debugger;
+			$scope.$setParam("deviceSysNbr", devSysNbr);
+			$scope.$setParam("alarmType", alarmType);
+			console.log(alarmType);
+			$scope.$openDialog("dialogName", {
+				title : titleName,
+				width : 1000,
+				height : 560,
+				href : url
+			});
+		};
+
+		//dialog of illegal device
+		function illegalDevice(devSysNbr) {
+			//debugger;
+			$scope.$setParam("deviceSysNbr", devSysNbr);
+			//$scope.$setParam("alarmType", alarmType);
+			var res = $scope.$openDialog("violationDialog", {
+				title : "设备违法信息",
+				width : 1000,
+				height : 600,
+				href : "tpls/violationMgr/popViolation.html"
+			}, true);
+
+		}
+
+		//点击故障（操作），获取本条数据，并根据数据内容跳转
+		$scope.breakdownInfo = function(index) {
+			//获取datgrid中的一条数据
+			var rowData = $scope.$("#devGrd").datagrid("getData").rows[index];
+			var devId = rowData.deviceId;
+			var devSysNbr = rowData.deviceSysNbr;
+			//页面跳转，第一个参数为menuCode
+			$scope.$goto('060501', {
+				deviceSysNbr : devSysNbr,
+				deviceId : devId
+			});
+
+		};
+
+		//点击维护单（操作），获取本条数据，并根据数据内容跳转
+		$scope.maintainInfo = function(index) {
+			//获取datgrid中的一条数据
+			var rowData = $scope.$("#devGrd").datagrid("getData").rows[index];
+
+			var devId = rowData.deviceId;
+			var devSysNbr = rowData.deviceSysNbr;
+
+			//debugger;
+			$scope.$setParam("deviceId", devId);
+			$scope.$openDialog("miantainInformation", {
+				title : "维护单信息",
+				width : 1000,
+				height : 550,
+				href : "tpls/deviceManage/deviceMaintenance/query-maintain.html",
+				onClose : function() {
+					$scope.$getDialog("miantainInformation").data("winScope").subsribe.remove();
+				}
+			});
+		};
+
+		//判断气象设备支持哪种采集类型
+		function getMeteorologicType(deviceId, devSysNbr) {
+			//debugger;
+			var alarmType = null;
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "trafficSituation/trafficAllEventAction/queryMeteorologicType",
+				params : {
+					deviceId : deviceId
+				},
+				success : function(data) {
+					console.log(data);
+					//debugger;
+					alarmType = data;
+					//根据不同的气象类型到不同的展示页面
+					if (alarmType != null && alarmType != '' && alarmType != undefined) {
+						if ("1" == alarmType) {
+							titleName = "气象仪监控";
+							url = "tpls/deviceManage/deviceConfig/weather-look-config.html";
+						} else if ("2" == alarmType) {
+							titleName = "能见度监控";
+							url = "tpls/deviceManage/deviceConfig/weather-visibility.html";
+						} else if ("3" == alarmType) {
+							titleName = "路感监控";
+							url = "tpls/deviceManage/deviceConfig/weather-road-feel.html";
+						}
+					}
+					dialogName = "weatherLookMonitor";
+					publicMonitor(dialogName, titleName, url, devSysNbr, alarmType);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function latestUploadTimeFormat(value, row, index) {
+			return formatDateTimeStamp(value);
+		}
+
+		/**
+		 *把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		 */
+		function formatDateTimeStamp(dateTimeStamp) {
+			if (dateTimeStamp == undefined) {
+				return "-";
+			}
+			var newDate = new Date();
+			newDate.setTime(dateTimeStamp);
+			return newDate.format('yyyy-MM-dd hh:mm:ss');
+		}
+
+		function getQryParam() {
+			//var devType = $scope.$("#deviceType").combobox("getValue");
+			//var devName=$scope.$("#deviceType").textbox("getText");
+
+			var p = $scope.$("form[cy-form='formData']").getParams();
+			$.extend($scope.formData, p, currentTreeSelectedNode);
+
+			changeFormData("correctTime");
+			changeFormData("netStatus");
+			changeFormData("elcStatus");
+			changeFormData("devBug");
+			changeFormData("matainceStatus");
+			//$scope.formData["matainceStatus"]="-1";
+		}
+
+		function changeFormData(name) {
+			var chk = $scope.$("input[name='" + name + "']:checked");
+			if (chk.length == 2) {
+				$scope.formData[name] = "-1";
+			} else {
+				$scope.formData[name] = $(chk[0]).val();
+			}
+		}
+
+		//加载机构树菜单
+		function loadOrgTree() {
+			//加载机构树
+			$scope.$("#orgTree").tree({
+				data : $scope.$org,
+				onClick : $scope.orgTreeNodeClick,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//收起全部节点
+					$(this).tree("collapseAll");
+					//展开根节点
+					$(this).tree("expand", root.target);
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					//$scope.formData.userOrgId = root.id;
+				}
+			});
+		}
+
+		//加载道路树点位
+		function loadRoadTree() {
+			var queryParams = {
+				id : "", //默认根节点为空，表示查询基础数据
+				type : "0", //默认类型为0
+				currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode//当前用户所在机构
+			};
+			$scope.$("#roadTree").tree({
+				url : $scope.$restRoot + "/device/site/getSiteTreeByRootId",
+				queryParams : queryParams,
+				onClick : $scope.roadTreeNodeClick,
+				onLoadSuccess : function() {
+					var root = $(this).tree("getRoots")[0];
+					//默认选中根节点
+					$(this).tree("select", root.target);
+					if (queryParams.type == 0) {
+						//树类型为按道路展示时，删除第二级节点中的空节点
+						for (var index = 0; index < root.children.length; index++) {
+							var item = root.children[index];
+							if (!item.children || item.children.length == 0) {
+								//删除空节点
+								$(this).tree("pop", document.getElementById(item.domId));
+								index--;
+							}
+						}
+					}
+				}
+			});
+		}
+
+		function loadContractor() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceMoniter/queryContrator",
+				params : {},
+				success : function(result) {
+					result.splice(0, 0, {
+						"contractorId" : "",
+						"contractorName" : "请选择"
+					});
+					$scope.$("#deviceContrator").combobox("loadData", result);
+					$scope.$("#deviceContrator").combobox({
+						onChange : function(newValue, oldValue) {							
+							if (newValue == "") {
+								$(this).combobox("setText", "");
+							}
+						}
+					});
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+
+		$scope.load = function() {
+			$scope.formData.orderName = "deviceSysNbr";
+			$scope.formData.orderType = "asc";
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			loadOrgTree();
+			loadRoadTree();
+			loadContractor();
+			$scope.searchData();
+			//切换tab页时查询
+			$scope.$('#tollgateTabs').tabs({
+				onSelect : function(title, index) {
+					if (title == '按机构') {
+						var node = $scope.$("#orgTree").tree('getSelected');
+						currentTreeSelectedNode.nodeType = "org";
+						currentTreeSelectedNode.nodeId = node.id;
+						getQryParam();
+						$scope.$search("formData");
+					} else if (title == '按道路') {
+						var node = $scope.$("#roadTree").tree('getSelected');
+						var nodeType = node.attribute.nodeType;
+						// $scope.formData.pageNumber = 1;
+						currentTreeSelectedNode.nodeType = nodeType;
+						if (nodeType == 'root') {
+							var roadTypes = $scope.$('#roadTree').tree('getChildren');
+							//获取所有子节点
+							var roadType = [];
+							for (var i = 0; i < roadTypes.length; i++) {
+								if (roadTypes[i].attribute.nodeType == 'roadType') {
+									roadType.push(roadTypes[i].id);
+								}
+							};
+							currentTreeSelectedNode.nodeId = roadType.join(",");
+						} else {
+							currentTreeSelectedNode.nodeId = node.id;
+						}
+						getQryParam();
+						$scope.$search("formData");
+					}
+				}
+			});
+		};
+	}); 
+</script>
+<style>
+	#deviceStatusMonitor .td > input[class^='easyui-'] {
+		width: 150px;
+	}
+
+	#deviceStatusMonitor .searchPanel .td:nth-child(odd) {
+		margin-left: 20px;
+	}
+
+	#deviceStatusMonitor .tr:nth-child(n+1) .td:nth-child(even) {
+		width: 150px;
+	}
+</style>

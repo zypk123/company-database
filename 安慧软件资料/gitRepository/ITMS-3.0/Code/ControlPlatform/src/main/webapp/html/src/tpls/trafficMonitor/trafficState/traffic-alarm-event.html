@@ -1,0 +1,197 @@
+<div id="trafficAlarmHistory" class="easyui-layout">
+	<div data-options="region:'north',height:'130px'">
+		<div class="searchPanel">
+			<div class="panel_title">
+				查询条件
+			</div>
+			<form cy-form="queryHistoryData" id="form">
+				<div class="table">
+					<div class="tr">
+						<div class="th" >
+							开始时间：
+						</div>
+						<div class="td" style="height: 45px">
+							<input class="easyui-datetimebox"  name="startTime"  id="start" style="width:170px" 
+							data-options="prompt:'开始时间',validType:['maxDate[\'end\']','date']"/>
+							至
+							<div>
+							<input class="easyui-datetimebox"  name="endTime" id="end" style="width:170px" 
+							data-options="prompt:'结束时间',validType:['minDate[\'start\']','date']"/>
+							</div>
+						</div>
+
+					</div>
+					<div class="tr" >
+						<div class="th">
+							事件类型：
+						</div>
+						<div class="td">
+							<input  class="easyui-combobox" name="subAlarmEvent"cy-code="434" style="width:95px">
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-search'"
+							cy-click="searchData" style="width: 60px;float: right;">查询</a>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="historyData" cy-datagrid="optionsHis" cy-querydata="queryHistoryData"
+		cy-url="trafficSituation/alarmEvent/searchEvents"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["locationSite"], function($scope) {
+		//路况预警事件类别。506流量预警502气象预警434 交通事件500 人工记录
+		$scope.$getDefaultCode(["434"]);
+		$scope.load = function() {
+			var now = new Date();
+			var nowStrTo = now.format("yyyy-MM-dd HH:mm:ss");
+			var nowStrFr = now.dateAdd('d', -1).format("yyyy-MM-dd HH:mm:ss");
+			$scope.$("#start").datetimebox('setValue', nowStrFr);
+			$scope.$("#end").datetimebox('setValue', nowStrTo);
+			//查询默认数据
+			//$scope.$search("queryHistoryData");
+		};
+		$scope.optionsHis = {
+			columns : [[{
+				field : 'siteName',
+				title : '名称',
+				align : 'left',
+				width : 40
+			}, {
+				field : 'subAlarmEvent',
+				title : '事件类型',
+				align : 'center',
+				formatter : options_type,
+				width : 20
+			}, {
+				field : 'startAlarmTime',
+				title : '时间',
+				align : 'center',
+				width : 25
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 15
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if(rowData.siteLongitude!=null && rowData.siteLatitude!=null){
+					var lonLat = "POINT(" + rowData.siteLongitude + " " + rowData.siteLatitude + ")";
+					$scope.locationSite(lonLat);
+				}
+				else{
+					$.messager.alert("警告","无法获取位置信息！");
+				}	
+			},
+			nowrap : false
+		};
+		//方向direction的格式化
+		function options_type(value, row, index) {
+			return $scope.$getCodeName(row.alarmEventType, value);			
+		}
+
+		//操作栏按钮
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a  cy-click='showInfo(" + index + ")'></a>");
+			//处理按钮
+			button1.linkbutton({
+				iconCls : "icon-handle-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").html();
+		}
+		//操作栏中的详情按钮，弹出详情框
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#historyData").datagrid("getData").rows;			
+			var currentRowData=rowDatas[index];			
+		   $scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/alarmEvent/getAlarmProcessByAlarmEventId",
+					params : {
+						"alarmEventId":currentRowData.alarmEventId,
+						"devSysNbr":currentRowData.deviceSysNbr
+					},
+					success : function(data) {
+						$scope.showWnd(currentRowData,data);
+					},
+					fail : function(errMsg) {
+						
+					}
+				});
+		};
+
+		
+		$scope.showWnd = function(rowData,processResData) {	
+			var deviceSysName=processResData.deviceName;
+			//把设备系统名称传递到子页面
+			$scope.$setParam("deviceName", deviceSysName);
+			//事件信息注入当前行数据
+			//如果处理记录不为空
+			if(processResData.tProcess)
+			{
+				rowData.eventProcessId=processResData.tProcess.eventProcessId;
+				rowData.dealMethod=processResData.tProcess.dealMethod;
+			}			
+			$scope.$setParam("newData", rowData);
+			//事件处理信息注入当前行数据
+			//$scope.$setParam("processData", processResData.tProcess);
+			//保存按钮、通过Ajax提交和后台交互
+			$scope.$setParam("saveData", function(params) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "trafficSituation/alarmEvent/update",
+					params : params,
+					success : function(data) {
+						if (data > 0) {
+							$.messager.alert("提示", "修改成功！");
+							//修改成功关闭dialog
+							$scope.$getDialog("showDialog").dialog("close");
+							$scope.$search("queryHistoryData");
+						} else {
+							$.messager.alert("提示", "修改失败！");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", errMsg);
+					}
+				});
+			});
+
+			$scope.$openDialog("showDialog", {
+				title : "事件检测",
+				height : 430,
+				width : 700,
+				href : "tpls/trafficMonitor/trafficState/alarm/event-alarm.html"
+			});
+
+		};
+		//根据条件搜索
+		$scope.searchData = function() {
+			if($scope.$("#form").form("validate")){
+        		//从form取数据
+				$scope.$updateData("queryHistoryData");
+				$scope.$search("queryHistoryData");
+			}
+		};
+	}); 
+</script>
+<style>
+	#trafficAlarmHistory .th {
+		width: 60px;
+		text-align: center;
+		height: 18px;
+		line-height: 20px;
+	}
+	#trafficAlarmHistory .td {
+		height: 18px;
+	}
+
+	#trafficAlarmHistory .datagrid-cell {
+		font-size: 11px;
+	}
+</style>

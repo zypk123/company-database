@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.SiteMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.site.Site">
+		<id column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+		<result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+		<result column="CROSS_ID" property="crossId" jdbcType="VARCHAR" />
+		<result column="ROAD_SECTION_ID" property="roadSectionId"
+			jdbcType="VARCHAR" />
+		<result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+		<result column="SITE_NAME" property="siteName" jdbcType="VARCHAR" />
+		<result column="SITE_SIMPLE_NAME" property="siteSimpleName"
+			jdbcType="VARCHAR" />
+		<result column="SITE_TYPE" property="siteType" jdbcType="CHAR" />
+		<result column="MILEAGE" property="mileage" jdbcType="VARCHAR" />
+		<result column="DISTRICT_CODE" property="districtCode"
+			jdbcType="VARCHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="SITE_LONGITUDE" property="siteLongitude"
+			jdbcType="DECIMAL" />
+		<result column="SITE_LATITUDE" property="siteLatitude"
+			jdbcType="DECIMAL" />
+		<result column="SITE_LANDSCAPE" property="siteLandscape"
+			jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+		<result column="SITE_ALIAS_NAME" property="siteAliasName" jdbcType="VARCHAR" />
+		<result column="KILOMILEAGE" property="kilomileage" jdbcType="DECIMAL" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		SITE_ID, ROAD_ID, CROSS_ID, ROAD_SECTION_ID, SITE_CODE, SITE_NAME,
+		SITE_SIMPLE_NAME,
+		SITE_TYPE, MILEAGE, DISTRICT_CODE, ORG_ID, SITE_LONGITUDE, SITE_LATITUDE,
+		SITE_LANDSCAPE,
+		REMARK,ORG_PRIVILEGE_CODE,SITE_ALIAS_NAME,KILOMILEAGE
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_SITE
+		where SITE_ID = #{siteId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_SITE
+		where SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_SYS_SITE
+		where SITE_ID = #{siteId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.site.Site">
+		insert into T_SYS_SITE (SITE_ID, ROAD_ID, CROSS_ID,
+		ROAD_SECTION_ID, SITE_CODE, SITE_NAME,
+		SITE_SIMPLE_NAME, SITE_TYPE, MILEAGE,
+		DISTRICT_CODE, ORG_ID, SITE_LONGITUDE,
+		SITE_LATITUDE, SITE_LANDSCAPE, REMARK,ORG_PRIVILEGE_CODE,SITE_ALIAS_NAME,KILOMILEAGE
+		)
+		values (#{siteId,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR},
+		#{crossId,jdbcType=VARCHAR},
+		#{roadSectionId,jdbcType=VARCHAR}, #{siteCode,jdbcType=VARCHAR}, #{siteName,jdbcType=VARCHAR},
+		#{siteSimpleName,jdbcType=VARCHAR}, #{siteType,jdbcType=CHAR},
+		#{mileage,jdbcType=DECIMAL},
+		#{districtCode,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{siteLongitude,jdbcType=DECIMAL},
+		#{siteLatitude,jdbcType=DECIMAL}, #{siteLandscape,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},#{orgPrivilegeCode,jdbcType=VARCHAR},
+		#{siteAliasName,jdbcType=VARCHAR},
+		#{kilomileage,jdbcType=DECIMAL}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.site.Site">
+		insert into T_SYS_SITE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="siteId != null">
+				SITE_ID,
+			</if>
+			<if test="roadId != null">
+				ROAD_ID,
+			</if>
+			<if test="crossId != null">
+				CROSS_ID,
+			</if>
+			<if test="roadSectionId != null">
+				ROAD_SECTION_ID,
+			</if>
+			<if test="siteCode != null">
+				SITE_CODE,
+			</if>
+			<if test="siteName != null">
+				SITE_NAME,
+			</if>
+			<if test="siteSimpleName != null">
+				SITE_SIMPLE_NAME,
+			</if>
+			<if test="siteType != null">
+				SITE_TYPE,
+			</if>
+			<if test="mileage != null">
+				MILEAGE,
+			</if>
+			<if test="districtCode != null">
+				DISTRICT_CODE,
+			</if>
+			<if test="orgId != null">
+				ORG_ID,
+			</if>
+			<if test="siteLongitude != null">
+				SITE_LONGITUDE,
+			</if>
+			<if test="siteLatitude != null">
+				SITE_LATITUDE,
+			</if>
+			<if test="siteLandscape != null">
+				SITE_LANDSCAPE,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="orgPrivilegeCode != null">
+				ORG_PRIVILEGE_CODE,
+			</if>
+			<if test="siteAliasName != null">
+				SITE_ALIAS_NAME,
+			</if>
+			<if test="kilomileage != null">
+				KILOMILEAGE
+			</if>		
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="siteId != null">
+				#{siteId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadId != null">
+				#{roadId,jdbcType=VARCHAR},
+			</if>
+			<if test="crossId != null">
+				#{crossId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadSectionId != null">
+				#{roadSectionId,jdbcType=VARCHAR},
+			</if>
+			<if test="siteCode != null">
+				#{siteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="siteName != null">
+				#{siteName,jdbcType=VARCHAR},
+			</if>
+			<if test="siteSimpleName != null">
+				#{siteSimpleName,jdbcType=VARCHAR},
+			</if>
+			<if test="siteType != null">
+				#{siteType,jdbcType=CHAR},
+			</if>
+			<if test="mileage != null">
+				#{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				#{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				#{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="siteLongitude != null">
+				#{siteLongitude,jdbcType=DECIMAL},
+			</if>
+			<if test="siteLatitude != null">
+				#{siteLatitude,jdbcType=DECIMAL},
+			</if>
+			<if test="siteLandscape != null">
+				#{siteLandscape,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="orgPrivilegeCode != null">
+				#{orgPrivilegeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="siteAliasName != null">
+				#{siteAliasName,jdbcType=VARCHAR},
+			</if>
+			<if test="kilomileage != null">
+				#{kilomileage,jdbcType=DECIMAL}
+			</if>		
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.site.Site">
+		update T_SYS_SITE
+		<set>
+			<if test="roadId != null">
+				ROAD_ID = #{roadId,jdbcType=VARCHAR},
+			</if>
+			<if test="crossId != null">
+				CROSS_ID = #{crossId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadSectionId != null">
+				ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+			</if>
+			<if test="siteCode != null">
+				SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="siteName != null">
+				SITE_NAME = #{siteName,jdbcType=VARCHAR},
+			</if>
+			<if test="siteSimpleName != null">
+				SITE_SIMPLE_NAME = #{siteSimpleName,jdbcType=VARCHAR},
+			</if>
+			<if test="siteType != null">
+				SITE_TYPE = #{siteType,jdbcType=CHAR},
+			</if>
+			<if test="mileage != null">
+				MILEAGE = #{mileage,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				ORG_ID = #{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="siteLongitude != null">
+				SITE_LONGITUDE = #{siteLongitude,jdbcType=DECIMAL},
+			</if>
+			<if test="siteLatitude != null">
+				SITE_LATITUDE = #{siteLatitude,jdbcType=DECIMAL},
+			</if>
+			<if test="siteLandscape != null">
+				SITE_LANDSCAPE = #{siteLandscape,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="orgPrivilegeCode != null">
+				ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="siteAliasName != null">
+				SITE_ALIAS_NAME = #{siteAliasName,jdbcType=VARCHAR},
+			</if>
+			<if test="kilomileage != null">
+				KILOMILEAGE = #{kilomileage,jdbcType=DECIMAL}
+			</if>
+		</set>
+		where SITE_ID = #{siteId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.site.Site">
+		update T_SYS_SITE
+		set ROAD_ID = #{roadId,jdbcType=VARCHAR},
+		CROSS_ID = #{crossId,jdbcType=VARCHAR},
+		ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR},
+		SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+		SITE_NAME = #{siteName,jdbcType=VARCHAR},
+		SITE_SIMPLE_NAME = #{siteSimpleName,jdbcType=VARCHAR},
+		SITE_TYPE = #{siteType,jdbcType=CHAR},
+		MILEAGE = #{mileage,jdbcType=DECIMAL},
+		DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+		ORG_ID = #{orgId,jdbcType=VARCHAR},
+		SITE_LONGITUDE = #{siteLongitude,jdbcType=DECIMAL},
+		SITE_LATITUDE = #{siteLatitude,jdbcType=DECIMAL},
+		SITE_LANDSCAPE = #{siteLandscape,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+		SITE_ALIAS_NAME = #{siteAliasName,jdbcType=VARCHAR},
+		KILOMILEAGE = #{kilomileage,jdbcType=DECIMAL}
+		where SITE_ID = #{siteId,jdbcType=VARCHAR}
+	</update>
+	<select id="selectSites" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		FROM T_SYS_SITE V
+		<where>
+		    <if test="siteCode != null and siteCode != ''">
+				AND SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+			</if>
+			<if test="siteName != null and siteName != ''">
+				AND (UPPER(SITE_NAME) like '%'||UPPER(#{siteName,jdbcType=VARCHAR})|| '%' OR
+				    UPPER(SITE_ALIAS_NAME) like '%'||UPPER(#{siteName,jdbcType=VARCHAR})||'%')
+			</if>
+			 <if test="roadId != null and roadId != ''">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="roadSectionId != null and roadSectionId != ''">
+				ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+			</if>
+			<if test="districtCode != null and districtCode != ''">
+				AND DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+			</if>
+
+			<if test="orgPrvCode != null and orgPrvCode != ''">
+				AND ORG_PRIVILEGE_CODE like 
+				#{orgPrvCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="orgIds != null and orgIds.size() > 0">
+				AND ORG_ID IN
+				<foreach collection="orgIds" index="index" item="orgId"
+					open="(" separator="," close=")">
+					#{orgId,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+    <select id="countSites" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_SITE
+		<where>
+			<if test="siteCode != null and siteCode != ''">
+				AND SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+			</if>
+			<if test="siteName != null and siteName != ''">
+				AND (SITE_NAME like '%'||#{siteName,jdbcType=VARCHAR}|| '%' OR
+				    SITE_ALIAS_NAME like '%'||#{siteName,jdbcType=VARCHAR}||'%')
+			</if>
+			 <if test="roadId != null and roadId != ''">
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="districtCode != null and districtCode != ''">
+				AND DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrvCode != null and orgPrvCode != ''">
+				AND ORG_PRIVILEGE_CODE like 
+				#{orgPrvCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="orgIds != null and orgIds.size() > 0">
+				AND ORG_ID IN
+				<foreach collection="orgIds" index="index" item="orgId"
+					open="(" separator="," close=")">
+					#{orgId,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</select>	
+	
+	<select id="selectPassSites" resultMap="BaseResultMap" parameterType="java.util.Map">
+	  select
+	     <include refid="Base_Column_List" />
+	    from t_sys_site
+	   where site_id in
+	         (select s.site_id
+	            from t_device_sys s
+	             <if test="directionType != null and directionType != ''">
+	              , t_sys_section sc
+	             </if>
+	           where s.device_id in
+	                 (select device_id
+	                    from T_DEVICE_TOLLGATE_SYS
+	                  union
+	                  select device_id
+	                    from T_DEVICE_VIO_DEVICE v
+	                   where v.is_tollgate_support = '1')
+	             <if test="directionType != null and directionType != ''">
+	               and s.site_id = sc.site_id
+	               and s.section_id_list like '%' || sc.section_id || '%'
+	               and sc.direction_type = #{directionType,jdbcType=VARCHAR}
+	             </if>)
+	       <if test="roadIds != null and roadIds.size() > 0">
+	       		and road_id in
+				<foreach collection="roadIds" index="index" item="item"
+	        			open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	       </if>
+	       <if test="roadType != null and roadType != ''">
+	         and road_id in (select road_id from t_sys_road r where road_type = #{roadType,jdbcType=VARCHAR})  
+	       </if>
+	       <if test="orgPrivCode != null and orgPrivCode != ''">
+	         and org_id in (select org_id from t_sys_org where org_privilege_code like #{orgPrivCode,jdbcType=VARCHAR} || '%')  
+	       </if>
+	       <if test="orgId != null and orgId != ''">
+	         and org_id = #{orgId,jdbcType=VARCHAR} 
+	       </if>
+	       <if test="districtCodes != null and districtCodes.size() > 0">
+	       	 and district_code in
+	       	 <foreach collection="districtCodes" index="index" item="item"
+	        			open="(" separator="," close=")">
+					#{item}
+			</foreach>
+	       </if>
+	       <if test="siteName != null and siteName != ''">
+				AND (UPPER(SITE_NAME) like '%'||UPPER(#{siteName,jdbcType=VARCHAR})|| '%' OR
+				    UPPER(SITE_ALIAS_NAME) like '%'||UPPER(#{siteName,jdbcType=VARCHAR})||'%')
+			</if>
+	     order by site_code asc
+	</select>
+	
+	<select id="selectVideoSites" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT
+	     <include refid="Base_Column_List" />
+         FROM T_SYS_SITE S
+        WHERE S.SITE_ID IN
+              (SELECT DISTINCT S.SITE_ID
+                 FROM T_DEVICE_SYS S, T_DEVICE_VIDEO V
+                WHERE S.DEVICE_ID = V.DEVICE_ID
+               UNION
+               SELECT S.DEVICE_ID
+                 FROM T_DEVICE_SYS S
+                WHERE S.DEVICE_ID IN
+                      (SELECT DISTINCT C.DEVICE_ID
+                         FROM T_DEVICE_SYS_COMPONENT C
+                        WHERE C.IS_VIDEO_SUPPORT = '1'))
+          <if test="roadId != null and roadId != ''">          
+              AND S.ROAD_ID = #{roadId,jdbcType=VARCHAR}
+          </if>
+		  <if test="roadType != null and roadType != ''">
+              AND S.ROAD_ID IN
+              (SELECT R.ROAD_ID FROM T_SYS_ROAD R WHERE R.ROAD_TYPE = #{roadType, jdbcType = VARCHAR})
+          </if>
+	</select>
+</mapper>

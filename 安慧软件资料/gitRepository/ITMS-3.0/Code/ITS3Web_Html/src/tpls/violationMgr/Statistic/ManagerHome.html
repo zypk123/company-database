@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>管理员首页</title>
+
+    <link rel="stylesheet" type="text/css" href="../../assets/css/demo.css">
+
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/json2.js"></script>
+    <script type="text/javascript" src="../../../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="application/javascript" src="../../assets/scripts/App.js"></script>
+    <script type="text/css">
+
+    </script>
+
+    <script type="application/javascript">
+
+        function initGridCollate(){
+            var list=[];
+
+            var let = new Array('a','b','c','d','e','f','g','h','i','g','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+
+            for(var i=0;i<5;i++){
+                var ran1 = Math.round(Math.random()*25)+0;
+                var ran2 = Math.round(Math.random()*25)+0;
+                var ran3 = Math.round(Math.random()*25)+0;
+                var ran4 = Math.round(Math.random()*25)+0;
+                var ran5 = Math.round(Math.random()*25)+0;
+                list.push(
+                        {
+                            name:let[ran1]+let[ran2]+let[ran3]+let[ran4]+let[ran5],
+                            field0:parseInt(1000 * Math.random()),
+                            field1:parseInt(1000 * Math.random())
+                        }
+                )
+            }
+            $('#grid1').datagrid(
+                    {
+                        data:list,
+                        emptyMsg: '没有查询到符合条件的记录！'
+                    }
+            );
+            $('#grid2' +
+                    '').datagrid(
+                    {
+                        data:list,
+                        emptyMsg: '没有查询到符合条件的记录！'
+                    }
+            );
+            $('#grid3' +
+                    '').datagrid(
+                    {
+                        data:list,
+                        emptyMsg: '没有查询到符合条件的记录！'
+                    }
+            );
+            $('#grid4' +
+                    '').datagrid(
+                    {
+                        data:list,
+                        emptyMsg: '没有查询到符合条件的记录！'
+                    }
+            );
+
+            var list1=[];
+            list1.push(
+                    {
+                        UploadItem:'应上传',
+                        field0:0
+                    },
+                    {
+                        UploadItem:'上传成功',
+                        field0:0
+                    },
+                    {
+                        UploadItem:'失败',
+                        field0:0
+                    },
+                    {
+                        UploadItem:'未上传',
+                        field0:0
+                    }
+            );
+            for(var i=0;i<4;++i) {
+                list1[i].field0 = parseInt(1000 * Math.random());
+            }
+            $('#grid5' +
+                    '').datagrid(
+                    {
+                        data:list1,
+                        emptyMsg: '没有查询到符合条件的记录！'
+                    }
+            );
+        }
+
+        $(document).ready(function () {
+            App.init();
+            initGridCollate();
+        });
+    </script>
+</head>
+<body>
+<!--电子监控数据录入情况-->
+<div class="easyui-tabs" style="height: auto">
+    <div title="电子监控数据录入情况" style="padding: 10px">
+        <table id="grid1" class="easyui-datagrid"
+        data-options="
+        fitColumns:true,
+        noHeader:true,
+        pagination:true,
+        showFooter:true,
+         singleSelect:true,
+         method:'get'">
+            <thead>
+            <tr>
+                <th  data-options="field:'field0',width:80,align:'right'">上一周</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月12号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月13号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月14号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月15号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月16号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月17号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月18号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">合计</th>
+            </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+
+
+<div class="easyui-tabs">
+    <div title="已分拣数据执法统计" style="padding: 10px">
+        <table id="grid2" class="easyui-datagrid"
+               data-options="
+           fitColumns:true,
+           noHeader:true,
+           rownumbers:true,
+           pagination:true,
+           showFooter:true,
+           singleSelect:true,
+           method:'get' ">
+            <thead>
+            <tr>
+                <th data-options="field:'field0',width:80,align:'right'">废弃</th>
+                <th data-options="field:'field0',width:80,align:'right'">假套牌</th>
+                <th data-options="field:'field0',width:80,align:'right'">军车</th>
+                <th data-options="field:'field0',width:80,align:'right'">警车</th>
+                <th data-options="field:'field0',width:80,align:'right'">农用车</th>
+                <th data-options="field:'field0',width:80,align:'right'">白名单</th>
+                <th data-options="field:'field0',width:80,align:'right'">正常处罚</th>
+                <th data-options="field:'field0',width:80,align:'right'">合计已分捡</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="easyui-tabs">
+    <div title="最新一周录入工作量统计" style="padding: 10px">
+        <table id="grid3" class="easyui-datagrid"
+               data-options="
+               fitColumns:true,
+               noHeader:true,
+               rownumbers:true,
+               singleSelect:true,
+               method:'get'">
+            <thead>
+            <tr>
+                <th data-options="field:'name',width:200,align:'right'" >录入人</th>
+                <th data-options="field:'field0',width:80,align:'right'" >待分捡</th>
+                <th data-options="field:'field0',width:80,align:'right'" >已分捡</th>
+                <th data-options="field:'field0',width:80,align:'right'" >废弃</th>
+                <th data-options="field:'field0',width:80,align:'right'" >假套牌</th>
+                <th data-options="field:'field0',width:80,align:'right'" >军车</th>
+                <th data-options="field:'field0',width:80,align:'right'" >警车</th>
+                <th data-options="field:'field0',width:80,align:'right'" >农用车</th>
+                <th data-options="field:'field0',width:80,align:'right'" >白名单</th>
+                <th data-options="field:'field0',width:80,align:'right'" >正常处罚</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!--审核业务概况-->
+<div class="easyui-tabs">
+    <div title="审核业务概况" style="padding: 10px">
+        <table id="grid4" class="easyui-datagrid"
+               data-options="
+               fitColumns:true,
+               noHeader:true,
+               rownumbers:true,
+               singleSelect:true,
+               method:'get' ">
+            <thead>
+            <tr>
+                <th data-options="field:''"></th>
+                <th data-options="field:'field0',align:'right'" width="100">优先处罚</th>
+                <th data-options="field:'field0',align:'right'" width="100">一般处罚</th>
+                <th data-options="field:'field0',align:'right'" width="100">军车违法</th>
+                <th data-options="field:'field0',align:'right'" width="100">警车违法</th>
+                <th data-options="field:'field0',align:'right'" width="100">农用车违法</th>
+                <th data-options="field:'field0',align:'right'" width="100">白名单违法</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!--违法上传概况-->
+<div class="easyui-tabs">
+    <div title="违法上传概况" style="padding: 10px">
+        <table id="grid5" class="easyui-datagrid"
+               data-options="
+               fitColumns:true,
+               noHeader:true,
+               rownumbers:true,
+               singleSelect:true,
+               method:'get' ">
+            <thead>
+            <tr>
+                <th data-options="field:'UploadItem'"></th>
+                <th  data-options="field:'field0',width:80,align:'right'">上一周</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月12号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月13号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月14号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月15号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月16号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月17号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">5月18号</th>
+                <th  data-options="field:'field0',width:80,align:'right'">合计</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</body>
+</html>

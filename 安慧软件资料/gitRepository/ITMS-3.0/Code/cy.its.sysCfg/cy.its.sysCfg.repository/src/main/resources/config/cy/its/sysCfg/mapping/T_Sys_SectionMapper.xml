@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_SectionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Section" >
+    <id column="SECTION_ID" property="sectionId" jdbcType="VARCHAR" />
+    <result column="LANE_NUM" property="laneNum" jdbcType="VARCHAR" />
+    <result column="HAS_EMERGENCY_LANE" property="hasEmergencyLane" jdbcType="CHAR" />
+    <result column="HAS_BICYCLE_LANE" property="hasBicycleLane" jdbcType="CHAR" />
+    <result column="HAS_PAVEMENT" property="hasPavement" jdbcType="CHAR" />
+    <result column="SECTION_MAX_FLOW" property="sectionMaxFlow" jdbcType="VARCHAR" />
+    <result column="MAX_FLOW_TIME" property="maxFlowTime" jdbcType="TIMESTAMP" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="ENTER_OR_EXIT" property="enterOrExit" jdbcType="CHAR" />
+    <result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+    <result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SECTION_ID, LANE_NUM, HAS_EMERGENCY_LANE, HAS_BICYCLE_LANE, HAS_PAVEMENT, SECTION_MAX_FLOW, 
+    MAX_FLOW_TIME, ROAD_ID, SITE_ID, DIRECTION_TYPE, ENTER_OR_EXIT, LIMIT_LARGE, LIMIT_SMALL, 
+    LIMIT_LOWER
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SECTION
+    where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SECTION
+    where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Section" >
+    insert into T_SYS_SECTION (SECTION_ID, LANE_NUM, HAS_EMERGENCY_LANE, 
+      HAS_BICYCLE_LANE, HAS_PAVEMENT, SECTION_MAX_FLOW, 
+      MAX_FLOW_TIME, ROAD_ID, SITE_ID, 
+      DIRECTION_TYPE, ENTER_OR_EXIT, LIMIT_LARGE, 
+      LIMIT_SMALL, LIMIT_LOWER)
+    values (#{sectionId,jdbcType=VARCHAR}, #{laneNum,jdbcType=VARCHAR}, #{hasEmergencyLane,jdbcType=CHAR}, 
+      #{hasBicycleLane,jdbcType=CHAR}, #{hasPavement,jdbcType=CHAR}, #{sectionMaxFlow,jdbcType=VARCHAR}, 
+      #{maxFlowTime,jdbcType=TIMESTAMP}, #{roadId,jdbcType=VARCHAR}, #{siteId,jdbcType=VARCHAR}, 
+      #{directionType,jdbcType=CHAR}, #{enterOrExit,jdbcType=CHAR}, #{limitLarge,jdbcType=DECIMAL}, 
+      #{limitSmall,jdbcType=DECIMAL}, #{limitLower,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Section" >
+    insert into T_SYS_SECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sectionId != null" >
+        SECTION_ID,
+      </if>
+      <if test="laneNum != null" >
+        LANE_NUM,
+      </if>
+      <if test="hasEmergencyLane != null" >
+        HAS_EMERGENCY_LANE,
+      </if>
+      <if test="hasBicycleLane != null" >
+        HAS_BICYCLE_LANE,
+      </if>
+      <if test="hasPavement != null" >
+        HAS_PAVEMENT,
+      </if>
+      <if test="sectionMaxFlow != null" >
+        SECTION_MAX_FLOW,
+      </if>
+      <if test="maxFlowTime != null" >
+        MAX_FLOW_TIME,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="siteId != null" >
+        SITE_ID,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="enterOrExit != null" >
+        ENTER_OR_EXIT,
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE,
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL,
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sectionId != null" >
+        #{sectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNum != null" >
+        #{laneNum,jdbcType=VARCHAR},
+      </if>
+      <if test="hasEmergencyLane != null" >
+        #{hasEmergencyLane,jdbcType=CHAR},
+      </if>
+      <if test="hasBicycleLane != null" >
+        #{hasBicycleLane,jdbcType=CHAR},
+      </if>
+      <if test="hasPavement != null" >
+        #{hasPavement,jdbcType=CHAR},
+      </if>
+      <if test="sectionMaxFlow != null" >
+        #{sectionMaxFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="maxFlowTime != null" >
+        #{maxFlowTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="enterOrExit != null" >
+        #{enterOrExit,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        #{limitLower,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Section" >
+    update T_SYS_SECTION
+    <set >
+      <if test="laneNum != null" >
+        LANE_NUM = #{laneNum,jdbcType=VARCHAR},
+      </if>
+      <if test="hasEmergencyLane != null" >
+        HAS_EMERGENCY_LANE = #{hasEmergencyLane,jdbcType=CHAR},
+      </if>
+      <if test="hasBicycleLane != null" >
+        HAS_BICYCLE_LANE = #{hasBicycleLane,jdbcType=CHAR},
+      </if>
+      <if test="hasPavement != null" >
+        HAS_PAVEMENT = #{hasPavement,jdbcType=CHAR},
+      </if>
+      <if test="sectionMaxFlow != null" >
+        SECTION_MAX_FLOW = #{sectionMaxFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="maxFlowTime != null" >
+        MAX_FLOW_TIME = #{maxFlowTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="siteId != null" >
+        SITE_ID = #{siteId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="enterOrExit != null" >
+        ENTER_OR_EXIT = #{enterOrExit,jdbcType=CHAR},
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Section" >
+    update T_SYS_SECTION
+    set LANE_NUM = #{laneNum,jdbcType=VARCHAR},
+      HAS_EMERGENCY_LANE = #{hasEmergencyLane,jdbcType=CHAR},
+      HAS_BICYCLE_LANE = #{hasBicycleLane,jdbcType=CHAR},
+      HAS_PAVEMENT = #{hasPavement,jdbcType=CHAR},
+      SECTION_MAX_FLOW = #{sectionMaxFlow,jdbcType=VARCHAR},
+      MAX_FLOW_TIME = #{maxFlowTime,jdbcType=TIMESTAMP},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      SITE_ID = #{siteId,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      ENTER_OR_EXIT = #{enterOrExit,jdbcType=CHAR},
+      LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL}
+    where SECTION_ID = #{sectionId,jdbcType=VARCHAR}
+  </update>
+</mapper>

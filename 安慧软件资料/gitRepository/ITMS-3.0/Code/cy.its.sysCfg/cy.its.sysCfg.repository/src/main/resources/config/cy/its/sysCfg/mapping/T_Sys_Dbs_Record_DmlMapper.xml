@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Dbs_Record_DmlMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Dbs_Record_Dml" >
+    <id column="OPERATE_CONTENT_ID" property="operateContentId" jdbcType="VARCHAR" />
+    <result column="OPE_LOG_ID" property="opeLogId" jdbcType="VARCHAR" />
+    <result column="TABLE_NAME" property="tableName" jdbcType="VARCHAR" />
+    <result column="DML_INDEX" property="dmlIndex" jdbcType="DECIMAL" />
+    <result column="OPERATE_TYPE" property="operateType" jdbcType="CHAR" />
+    <result column="OPERATE_DATA_CONTENT" property="operateDataContent" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OPERATE_CONTENT_ID, OPE_LOG_ID, TABLE_NAME, DML_INDEX, OPERATE_TYPE, OPERATE_DATA_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_DBS_RECORD_DML
+    where OPERATE_CONTENT_ID = #{operateContentId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_DBS_RECORD_DML
+    where OPERATE_CONTENT_ID = #{operateContentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Dbs_Record_Dml" >
+    insert into T_SYS_DBS_RECORD_DML (OPERATE_CONTENT_ID, OPE_LOG_ID, TABLE_NAME, 
+      DML_INDEX, OPERATE_TYPE, OPERATE_DATA_CONTENT
+      )
+    values (#{operateContentId,jdbcType=VARCHAR}, #{opeLogId,jdbcType=VARCHAR}, #{tableName,jdbcType=VARCHAR}, 
+      #{dmlIndex,jdbcType=DECIMAL}, #{operateType,jdbcType=CHAR}, #{operateDataContent,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Dbs_Record_Dml" >
+    insert into T_SYS_DBS_RECORD_DML
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operateContentId != null" >
+        OPERATE_CONTENT_ID,
+      </if>
+      <if test="opeLogId != null" >
+        OPE_LOG_ID,
+      </if>
+      <if test="tableName != null" >
+        TABLE_NAME,
+      </if>
+      <if test="dmlIndex != null" >
+        DML_INDEX,
+      </if>
+      <if test="operateType != null" >
+        OPERATE_TYPE,
+      </if>
+      <if test="operateDataContent != null" >
+        OPERATE_DATA_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operateContentId != null" >
+        #{operateContentId,jdbcType=VARCHAR},
+      </if>
+      <if test="opeLogId != null" >
+        #{opeLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="dmlIndex != null" >
+        #{dmlIndex,jdbcType=DECIMAL},
+      </if>
+      <if test="operateType != null" >
+        #{operateType,jdbcType=CHAR},
+      </if>
+      <if test="operateDataContent != null" >
+        #{operateDataContent,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Dbs_Record_Dml" >
+    update T_SYS_DBS_RECORD_DML
+    <set >
+      <if test="opeLogId != null" >
+        OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="tableName != null" >
+        TABLE_NAME = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="dmlIndex != null" >
+        DML_INDEX = #{dmlIndex,jdbcType=DECIMAL},
+      </if>
+      <if test="operateType != null" >
+        OPERATE_TYPE = #{operateType,jdbcType=CHAR},
+      </if>
+      <if test="operateDataContent != null" >
+        OPERATE_DATA_CONTENT = #{operateDataContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where OPERATE_CONTENT_ID = #{operateContentId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Dbs_Record_Dml" >
+    update T_SYS_DBS_RECORD_DML
+    set OPE_LOG_ID = #{opeLogId,jdbcType=VARCHAR},
+      TABLE_NAME = #{tableName,jdbcType=VARCHAR},
+      DML_INDEX = #{dmlIndex,jdbcType=DECIMAL},
+      OPERATE_TYPE = #{operateType,jdbcType=CHAR},
+      OPERATE_DATA_CONTENT = #{operateDataContent,jdbcType=VARCHAR}
+    where OPERATE_CONTENT_ID = #{operateContentId,jdbcType=VARCHAR}
+  </update>
+</mapper>

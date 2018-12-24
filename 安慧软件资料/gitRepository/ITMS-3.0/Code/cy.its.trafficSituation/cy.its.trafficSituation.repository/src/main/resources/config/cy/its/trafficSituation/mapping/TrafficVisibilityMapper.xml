@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficVisibilityMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficVisibility" >
+    <id column="VISIBILITY_DATA_ID" property="visibilityDataId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+    <result column="ONE_MINUTE_VISIBILITY" property="oneMinuteVisibility" jdbcType="DECIMAL" />
+    <result column="TEN_MINUTE_VISIBILITY" property="tenMinuteVisibility" jdbcType="DECIMAL" />
+    <result column="CLEAN_DEGRE" property="cleanDegre" jdbcType="DECIMAL" />
+    <result column="CASE_TEMPERATURE" property="caseTemperature" jdbcType="DECIMAL" />
+    <result column="POWER_VOLATAGE" property="powerVolatage" jdbcType="VARCHAR" />
+    <result column="RECORD_TIME" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VISIBILITY_DATA_ID, DEVICE_SYS_NBR, ORG_CODE, SITE_CODE, ONE_MINUTE_VISIBILITY, 
+    TEN_MINUTE_VISIBILITY, CLEAN_DEGRE, CASE_TEMPERATURE, POWER_VOLATAGE, RECORD_TIME,
+    ORG_PRIVILEGE_CODE
+  </sql>
+  
+   <select id="selectVisibilitys" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   <include refid="Base_Column_List" />    
+    from T_TRAFFIC_VISIBILITY 
+    <where> 
+			1=1
+			<if test="startTime!=null and startTime != ''" >
+				<![CDATA[AND RECORD_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime!=null and endTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>			
+	</where>
+	order by RECORD_TIME desc,site_code  
+  </select>
+  
+  <select id="select2HourVisibilitys" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   <include refid="Base_Column_List" />    
+    from T_TRAFFIC_VISIBILITY 
+    <where> 			
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>			
+	</where>
+	order by RECORD_TIME
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_VISIBILITY
+    where VISIBILITY_DATA_ID = #{visibilityDataId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_VISIBILITY
+    where VISIBILITY_DATA_ID = #{visibilityDataId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficVisibility" >
+    insert into T_TRAFFIC_VISIBILITY (VISIBILITY_DATA_ID, DEVICE_SYS_NBR, 
+      ORG_CODE, SITE_CODE, ONE_MINUTE_VISIBILITY, 
+      TEN_MINUTE_VISIBILITY, CLEAN_DEGRE, CASE_TEMPERATURE, 
+      POWER_VOLATAGE, RECORD_TIME)
+    values (#{visibilityDataId,jdbcType=VARCHAR}, #{deviceSysNbr,jdbcType=VARCHAR}, 
+      #{orgCode,jdbcType=VARCHAR}, #{siteCode,jdbcType=VARCHAR}, #{oneMinuteVisibility,jdbcType=DECIMAL}, 
+      #{tenMinuteVisibility,jdbcType=DECIMAL}, #{cleanDegre,jdbcType=DECIMAL}, #{caseTemperature,jdbcType=DECIMAL}, 
+      #{powerVolatage,jdbcType=VARCHAR}, #{recordTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficVisibility" >
+    insert into T_TRAFFIC_VISIBILITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="visibilityDataId != null" >
+        VISIBILITY_DATA_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE,
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE,
+      </if>
+      <if test="oneMinuteVisibility != null" >
+        ONE_MINUTE_VISIBILITY,
+      </if>
+      <if test="tenMinuteVisibility != null" >
+        TEN_MINUTE_VISIBILITY,
+      </if>
+      <if test="cleanDegre != null" >
+        CLEAN_DEGRE,
+      </if>
+      <if test="caseTemperature != null" >
+        CASE_TEMPERATURE,
+      </if>
+      <if test="powerVolatage != null" >
+        POWER_VOLATAGE,
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="visibilityDataId != null" >
+        #{visibilityDataId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="oneMinuteVisibility != null" >
+        #{oneMinuteVisibility,jdbcType=DECIMAL},
+      </if>
+      <if test="tenMinuteVisibility != null" >
+        #{tenMinuteVisibility,jdbcType=DECIMAL},
+      </if>
+      <if test="cleanDegre != null" >
+        #{cleanDegre,jdbcType=DECIMAL},
+      </if>
+      <if test="caseTemperature != null" >
+        #{caseTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="powerVolatage != null" >
+        #{powerVolatage,jdbcType=VARCHAR},
+      </if>
+      <if test="recordTime != null" >
+        #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficVisibility" >
+    update T_TRAFFIC_VISIBILITY
+    <set >
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="oneMinuteVisibility != null" >
+        ONE_MINUTE_VISIBILITY = #{oneMinuteVisibility,jdbcType=DECIMAL},
+      </if>
+      <if test="tenMinuteVisibility != null" >
+        TEN_MINUTE_VISIBILITY = #{tenMinuteVisibility,jdbcType=DECIMAL},
+      </if>
+      <if test="cleanDegre != null" >
+        CLEAN_DEGRE = #{cleanDegre,jdbcType=DECIMAL},
+      </if>
+      <if test="caseTemperature != null" >
+        CASE_TEMPERATURE = #{caseTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="powerVolatage != null" >
+        POWER_VOLATAGE = #{powerVolatage,jdbcType=VARCHAR},
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where VISIBILITY_DATA_ID = #{visibilityDataId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficVisibility" >
+    update T_TRAFFIC_VISIBILITY
+    set 
+      DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      ONE_MINUTE_VISIBILITY = #{oneMinuteVisibility,jdbcType=DECIMAL},
+      TEN_MINUTE_VISIBILITY = #{tenMinuteVisibility,jdbcType=DECIMAL},
+      CLEAN_DEGRE = #{cleanDegre,jdbcType=DECIMAL},
+      CASE_TEMPERATURE = #{caseTemperature,jdbcType=DECIMAL},
+      POWER_VOLATAGE = #{powerVolatage,jdbcType=VARCHAR},
+      RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP}
+    where VISIBILITY_DATA_ID = #{visibilityDataId,jdbcType=VARCHAR}
+  </update>
+</mapper>

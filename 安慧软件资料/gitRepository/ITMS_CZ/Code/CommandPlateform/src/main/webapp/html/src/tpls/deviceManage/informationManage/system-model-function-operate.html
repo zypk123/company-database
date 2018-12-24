@@ -1,0 +1,113 @@
+<div id="sysModelOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="width:135px;">型号名称：</div>
+                    <div class="td">
+                        <input id="deviceSysModelId" type="hidden" name="deviceSysModelId" />
+                        <input id="deviceSysModelName" class="easyui-textbox" name="deviceSysModelName" style="width: 220px;"/>
+                    </div>
+                </div>
+                <div class="searchPanel" style="height: 220px;overflow: auto">
+                    <div class="panel_title">功能</div>
+                    <div id="function">
+                        
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="deviceSysFunctionId" id="deviceSysFunctionId">
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">
+    	<div class="linkbutton_toolbar" style="text-align: center">
+	        <a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+	        <a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+   		</div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["deviceSysModelName","deviceSysModelId","saveData","selectedSysFunction","type"],function($scope){
+    	$scope.load = function(){
+    		//获取传递值
+        	var deviceSysModelName = $scope.deviceSysModelName;
+            var deviceSysModelId = $scope.deviceSysModelId;
+        	if(deviceSysModelName != '系统型号'){
+    			 $scope.$("#deviceSysModelName").textbox('setValue',deviceSysModelName).textbox('readonly',true);
+    		     $scope.$("#deviceSysModelId").val(deviceSysModelId);
+    		}
+    		//获取所有系统功能 
+    		var sysFunction = []; //所有功能数组
+    		$scope.$ajaxRequest({
+                   url: $scope.$restRoot+"device/sysFunctionManage/queryAllSysFunction",
+                   params: {},
+                   method: "post",
+                   success: function(data){
+                      sysFunction = data;
+                      for(var i = 0; i < sysFunction.length; i++){
+                         var deviceSysFunctionId = sysFunction[i].deviceSysFunctionId;
+                         var functionName = sysFunction[i].functionName;
+                         var span = $("<div style='width:140px;float:left'></div>");
+                         var f = "<input type='checkbox' name='function' value='"+deviceSysFunctionId+"'/>"+functionName;
+                         var s = span.append(f);
+                         $scope.$("#function").append(s).html();
+                      }
+                      checkedSysFunction();
+                   },
+                   fail: function(errMsg){
+                      $.messager.alert("提示","获取系统功能失败！");
+                   }
+                });	
+    		//编辑时选中该系统型号已选择功能
+    		function checkedSysFunction(){
+    		    var type = $scope.type;
+                if(type == "edit"){
+                   var selectedSysFunction = $scope.selectedSysFunction;//已选功能数组
+                   if(selectedSysFunction.length != 0){
+                       $scope.$("input[name='function']").each(function(){
+                           var thiz = $(this);
+                           var s = $(this).val();
+                           for(var i = 0; i < selectedSysFunction.length; i++){
+                               if(s == selectedSysFunction[i].deviceSysFunctionId){
+                                   thiz.attr("checked","checked");
+                               }
+                           }
+                       });                    
+                    }
+                }
+    		}
+    	};
+    	//保存
+    	$scope.save = function(){
+    	   //获取选中的功能ID 形成字符串
+    	   var deviceSysFunctionIdStr = "";
+    	   $scope.$("input[type='checkbox']:checked").each(function(index){
+    	       if(index > 0){
+    	           deviceSysFunctionIdStr = deviceSysFunctionIdStr + "," + $(this).val();
+    	       }else{
+    	           deviceSysFunctionIdStr = deviceSysFunctionIdStr + $(this).val();
+    	       }
+    	   });
+    	   if(deviceSysFunctionIdStr != ''){
+    	    	$scope.$("#deviceSysFunctionId").val(deviceSysFunctionIdStr);
+    	   }else{
+    	   		$.messager.alert('提示','请选择功能！');
+    	   		return false;
+    	   }
+    	   //更新获取数据
+    	   $scope.$updateData("formData");
+    	   trimObject($scope.formData);//对对象中的每个元素进行trim操作
+    	   //执行保存方法
+    	   $scope.saveData($scope.formData);
+    	};
+    });
+</script>
+<style type="text/css">
+    #sysModelOperate .th{
+         width: 120px;
+         text-align: right;
+     }
+    #sysModelOperate .searchPanel .td{
+        width: 120px;
+    }
+</style>

@@ -1,0 +1,205 @@
+<div id="trafficControlInfo" class="easyui-layout" >
+	<div data-options="region:'center',border:false">
+
+		<div class="table">
+			<div class="tr">
+				<div class="th" >
+					管制名称：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.trafficControlName" ></span>
+				</div>
+				<div class="th" >
+					管制原因：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.controlReason" cy-filter="convertSysCode1"></span>
+				</div>
+				<div class="th">
+					管制方向：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.directionType" cy-filter="convertSysCode"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					管制道路：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.roadId" cy-filter="$getRoadName"></span>
+				</div>
+
+				<div class="th">
+					开始地点：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.startSite"></span>
+				</div>
+				<div class="th">
+					结束地点：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.endSite"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					影响范围：
+				</div>
+				<div class="td" cy-name="newData.influenceRange" style="width: 383px;height: auto;" >
+
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					开始时间：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.startTime" ></span>
+
+				</div>
+				<div class="th">
+					结束时间：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.endTime" ></span>
+				</div>
+				<div class="td" style="column-span: 4|all">
+					<div id="map" style="width:240px;height: 260px;border:1px solid red">
+
+					</div>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					停用时间：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.realEndTime" ></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					管制措施：
+				</div>
+				<div class="td" cy-name="newData.controlMeasures" 
+				style="width: 383px;height: auto;"></div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					绕行路线：
+				</div>
+				<div class="td" cy-name="newData.bypassLine" style="width: 383px;height: auto;"></div>
+
+			</div>
+			<div class="tr">
+				<div class="th">
+					经度：
+				</div>
+				<div class="td" cy-name="newData.lon">
+				</div>
+				<div class="th">
+					纬度：
+				</div>
+				<div class="td" cy-name="newData.lat">
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					管制单位：
+				</div>
+				<div class="td" cy-name="newData.orgId" cy-filter="$getOrgName" style="height: auto;">
+				</div>
+				<div class="th">
+					联系电话：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.phone"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th">
+					录入人：
+				</div>
+				<div class="td" cy-name="newData.createBy">
+				</div>
+				<div class="th">
+					录入时间：
+				</div>
+				<div class="td" >
+					<span cy-name="newData.createTime"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false,height:'38px'">
+		<div class="tr" style="text-align: center; margin-right: 50px">
+			<a class="easyui-linkbutton" iconCls="icon-cancel" cy-click="$destroySelf">关闭</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["newData"], function($scope) {
+		$scope.$getDefaultCode(["515", "510"]);
+		//转换值守模式
+		$scope.convertSysCode = function(value) {
+			return $scope.$getCodeName("515", value);
+		};
+		//转换管制原因
+		$scope.convertSysCode1 = function(value) {
+			return $scope.$getCodeName("510", value);
+		};
+		var cyMap = new CYMap($scope.$("#map")[0]);
+		var centerPoint = new OpenLayers.LonLat(105.70405, 28.58103);
+		var point;
+		var wkt_c = new OpenLayers.Format.WKT();
+		$scope.load = function() {
+			init();
+			moveToMap();
+		};
+		//初始化地图
+		function init() {
+			point = new OpenLayers.Layer.Vector("point");
+			cyMap.map.addLayer(point);
+		}
+		//移动地图至执法服务站或者中心点
+		function moveToMap() {
+			if ($scope.newData) {
+				var style = {
+					graphicWidth : 18,
+					graphicHeight : 18,
+					externalGraphic : "frameworks/Openlayers/img/marker-blue.png"
+				};
+				var geometry = wkt_c.read($scope.newData.lonLat).geometry.clone();
+				geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+				point.addFeatures(feature);
+				cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+			} else {
+				centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				cyMap.map.panTo(centerPoint);
+			}
+		}
+
+	}); 
+</script>
+
+<style>
+	#trafficControlInfo .th {
+		width: 100px;
+		text-align: right;
+		
+	}
+	#trafficControlInfo .td {
+		width: 150px;
+		text-align: left;		
+		white-space: normal;
+        word-break: break-all;
+        color: #0000ff;
+        
+	}
+	#trafficControlInfo span[cy-name] {
+		color: #0000ff;
+	}
+</style>

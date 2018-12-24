@@ -1,0 +1,41 @@
+<div id="dataTransferMissingConfigTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div id="missingDataGrid" title="缺失详情列表">
+    </div>
+    <div title="缺失详情曲线图" data-options="href:'tpls/passVehicle/dataMissingManager/data-transfer-missing-graph.html'">
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(['resultData','formData'], function ($scope) {
+    	/**
+		 * 页面加载完后一些初始化处理
+		 */
+		$scope.load = function() {
+			$scope.$setParam("formData",$scope.formData);//查询条件
+			$scope.$setParam("resultData",$scope.resultData);//查询结果
+			var url = "tpls/passVehicle/dataMissingManager/data-transfer-missing-detail.html";
+			var tab = $scope.$('#dataTransferMissingConfigTabs').tabs('getTab',0);  // 获取选择的面板
+        	$scope.$('#dataTransferMissingConfigTabs').tabs('update',{
+				tab: tab,
+				options: {
+					title: '缺失详情列表',
+					href: url
+				}
+			});
+			tab.panel('refresh', url);
+			
+			$scope.$('#dataTransferMissingConfigTabs').tabs({
+				onSelect: function(title,index){
+					$scope.$setParam("formData",$scope.formData);//查询条件
+					$scope.$setParam("resultData",$scope.resultData);//查询结果
+				}
+			});
+			
+		};
+		
+		$scope.saveData = function(resultData) {
+			$scope.$setParam("resultData",resultData);//将第一次查询的返回的数据缓存起来
+		};
+    	
+    });
+</script>

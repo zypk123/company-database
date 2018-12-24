@@ -1,0 +1,186 @@
+<!--点位信息添加页面-->
+<div id="point-message-add" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<form id="form" cy-form="formData">
+			<div class="searchPanel" style="margin-bottom: 5px;">
+				<div class="panel_title">
+					点位信息
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							点位编号：
+						</div>
+						<div class="td">
+							<input type="text" name="siteCode" class="easyui-textbox" style="width: 130px;"
+								data-options="required:true"/>
+						</div>
+						<div class="th">
+							点位名称：
+						</div>
+						<div class="td">
+							<input type="text" name="siteName"  class="easyui-textbox" style="width: 130px;"
+								data-options="required:true"/>
+						</div>
+						<div class="th">
+							点位简称：
+						</div>
+						<div class="td">
+							<input type="text" name="siteSimpleName" class="easyui-textbox" style="width: 130px;"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							行政区划：
+						</div>
+						<div class="td">
+							<input name="districtCode" class="cy-district-radio" iscode="true" 
+								data-options="required:true" style="width: 130px;"/>
+						</div>
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td">
+							<input name="orgId" class="cy-org-radio" 
+								data-options="required:true" style="width: 130px;"/>
+						</div>
+						<div class="th">
+							点位类型：
+						</div>
+						<div class="td">
+							<input name="siteType" class="easyui-combobox" 
+								data-options="required:true" cy-code="150" style="width: 130px;"/>
+						</div>
+					</div>
+					<div class="tr">
+						<div id="road">
+							<div class="th">
+								所属道路：
+							</div>
+							<div class="td">
+								<input type="text" name="roadId" class="cy-road-radio" style="width: 130px;">
+								<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add',plain:true" cy-click="addroad"></a>
+							</div>
+						</div>
+						<div id="segment">
+							<div class="th">
+								所属路段：
+							</div>
+							<div class="td">
+								<select type="text" name="roadSectionId" class="easyui-combobox" style="width: 130px;"></select>
+								<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add',plain:true" cy-click="addsegment"></a>
+							</div>
+						</div>
+						<div id="crossing">
+							<div class="th">
+								所属路口：
+							</div>
+							<div class="td">
+								<select type="text" name="crossId" class="easyui-combobox" style="width: 130px;"></select>
+								<a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add',plain:true" cy-click="addcrossing"></a>
+							</div>
+						</div>
+						<div class="th">
+							位置：
+						</div>
+						<div class="td">
+							<input type="text" name="km"  class="easyui-numberbox"
+								data-options="suffix:'公里'" style="width: 57px;"/>
+							+
+							<input type="text" name="meter"  class="easyui-numberbox" 
+								data-options="suffix:'米'" style="width: 57px;"/>
+						</div>
+						<div class="th">
+							点位地形：
+						</div>
+						<div class="td">
+							<select type="text" name="siteLandscape"  class="easyui-combobox" cy-code="151" style="width: 130px;"></select>
+						</div>
+						<div class="th" style="width:67px">
+							备注：
+						</div>
+						<div class="td">
+							<textarea name="remark" rows="3" cols="21"></textarea>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							点位经度：
+						</div>
+						<div class="td">
+							<input type="text" name="siteLongitude" class="easyui-numberbox"
+							data-options="precision:6,min:-180,max:180" style="width: 130px;"/>
+						</div>
+						<div class="th">
+							点位纬度：
+						</div>
+						<div class="td">
+							<input type="text" name="siteLatitude" class="easyui-numberbox"
+							data-options="precision:6,min:-90,max:90" style="width: 130px;"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="searchPanel" style="height: 155px;">
+			<div class="panel_title">
+				点位地图
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',height:40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center">
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-save'"
+			cy-click="save">保存</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+			cy-click="$closeSelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage(["saveData","formData"], function($scope) {
+
+        $scope.addroad = function() {
+            $scope.$openDialog("roadDialog", {
+                title : "道路信息",
+                width : 800,
+                height : 600,
+                href : "tpls/sysManagement/roadNetworkMessage/road-message-add.html?type=add"
+            });
+        };
+        $scope.addsegment = function() {
+            $scope.$openDialog("Dialog", {
+                title : "路段信息",
+                width : 800,
+                height : 600,
+                href : "tpls/sysManagement/roadNetworkMessage/segment-message-add.html?type=add"
+            });
+        };
+        $scope.addcrossing = function() {
+            $scope.$openDialog("Dialog", {
+                title : "路口信息",
+                width : 750,
+                height : 500,
+                href : "tpls/sysManagement/roadNetworkMessage/crossing-message-add.html?type=add"
+            });
+        };
+
+        $scope.save = function() {
+        	if($scope.$("#form").form("validate")){
+        		//获取数据
+	            $scope.$updateData("formData");
+	            //获取执行父页面的save方法
+	            $scope.saveData($scope.formData);
+        	}
+        };
+    }); 
+</script>
+<style type="text/css">
+    #point-message-add .th {
+        text-align: right;
+        width: 90px;
+    }
+    #point-message-add .td {
+        width: 150px;
+    }
+</style>

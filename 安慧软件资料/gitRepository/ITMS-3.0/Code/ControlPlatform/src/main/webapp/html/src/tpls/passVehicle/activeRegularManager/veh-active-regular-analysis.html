@@ -1,0 +1,455 @@
+<div class="easyui-layout" id="vehActiveRegular">
+	<div data-options="region:'north',border:false,height:90" style="border-bottom:solid 1px #ddd">
+		<form cy-form="formData" id ="searchForm" >
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							号牌号码：
+						</div>
+						<div class="td">
+							<input class="cy-vehNumberbox" name="plateNbr" id = "plateNbr" data-options="required:true" style="width:120px;" />
+						</div>
+						
+						<div class="th">
+							号牌类型：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" name="plateType" id = "plateType" cy-code="002" style="width:120px;" />
+						</div>
+						
+						<div class="th">
+							<span class="red">* </span>过车时间：
+						</div>
+						<div class="td" style="width:200px;">
+							<input name="passTimeStart" id="passTimeStart" data-options="required:true,validType:['maxDate[\'passTimeEnd\']','date']"
+							class="easyui-datetimebox" style="width:150px;" />
+							至
+							<input name="passTimeEnd" id="passTimeEnd" data-options="required:true,validType:['maxDate[\'passTimeEnd\']','date']"
+							class="easyui-datetimebox" style="width:150px;" />
+						</div>
+						<!-- <div class="th" style="margin-left: 20px;">
+							时段(起)：
+						</div>
+						<div class="td" style="width:80px;">
+                          <input name="startTime" id="startTime" class="easyui-timespinner"  style="width:80px;" required="required" data-options="showSeconds:true,increment:30,highlight:1" autocomplete="on" />
+						</div>
+						<div class="th">
+							时段(止)：
+						</div>
+						<div class="td" style="width:80px;">
+                          <input name="endTime" id="endTime" class="easyui-timespinner"  style="width:80px;" required="required" data-options="showSeconds:true,increment:30,highlight:1" autocomplete="on" />
+						</div> -->
+						
+						<div class="th" style="margin-left: 150px;">
+						<a class="easyui-linkbutton" id="searchButton" cy-click="searchAnsy"
+							data-options="iconCls:'icon-search'">分析</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- <div data-options="region:'south',border:false" style="display: none">
+		<table cy-datagrid="options" cy-querydata="formData" cy-url="/vehTrack/spaceTime/getDistribution" id="datagrid"></table>
+	</div> -->
+	<div data-options="region:'center',border:false" >
+	<div id="container" style="height:600px;padding:20px,width:450px;">
+		</div>
+	</div>
+</div>
+<script>
+	InitPage(['searchData','initFlag'],function($scope){
+		$scope.$getDefaultCode(["010","011","206"]);
+		/**
+		 * 初始化加载方法
+		 */
+		$scope.load = function(){
+			 //给号牌号码增加提示
+			$scope.$("#plateNbr").textbox("textbox").attr("title", "?表示单字符, *表示多字符");
+			initData()
+			//电子地图调用
+			if($scope.initFlag){
+				$scope.formData = $scope.searchData;
+				//最近2小时
+				var searchType = $scope.searchData.searchType;
+				var date = new Date();
+				if("1" == searchType){
+					date.setHours(date.getHours()-2);
+					$scope.formData.passTimeStart = date.format("yyyy-MM-dd hh:mm:ss");
+					//$scope.formData.passTimeStart =($scope.$dateAdd("h","-2",new Date())).format("yyyy-MM-dd hh:mm:ss");
+					$scope.formData.passTimeEnd = new Date().format("yyyy-MM-dd hh:mm:ss")
+				}else if("2" == searchType){//最近一天
+					date.setHours(date.getHours()-24);
+					$scope.formData.passTimeStart = date.format("yyyy-MM-dd hh:mm:ss");
+					//$scope.formData.passTimeStart =($scope.$dateAdd("h","-24")).format("yyyy-MM-dd hh:mm:ss");
+					$scope.formData.passTimeEnd = new Date().format("yyyy-MM-dd hh:mm:ss")
+				}
+				else if("3" == searchType){//最近一周
+					//$scope.formData.passTimeStart =($scope.$dateAdd("w","-1",new Date())).format("yyyy-MM-dd hh:mm:ss");
+					date.setHours(date.getHours()-24*7);
+					$scope.formData.passTimeStart = date.format("yyyy-MM-dd hh:mm:ss");
+					$scope.formData.passTimeEnd = new Date().format("yyyy-MM-dd hh:mm:ss")
+				}
+				$scope.$updateDom("formData");
+				$scope.searchAnsy();
+			}
+		};
+		
+		$scope.formData = {
+				passTimeStart:new Date().format("yyyy-MM-dd 00:00:00"),
+				passTimeEnd:new Date().format("yyyy-MM-dd hh:mm:ss"),
+		};
+		//选择上一条
+		$scope.selectPre = function() {
+			var currentPage = $scope.$("#datagrid").datagrid(
+			"getPager").pagination("options").pageNumber;
+			if( currentPage > 1 && currentPage <= totalPageNumber){
+			 	$scope.searchProgress();
+				$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage - 1);
+			}else{
+				$.messager.alert('提示','已到第一条!',"warning");
+			}
+		};
+		//选择下一条
+		$scope.selectNext = function() {
+			var currentPage = $scope.$("#datagrid").datagrid(
+			"getPager").pagination("options").pageNumber;
+			if( currentPage < totalPageNumber){
+			 	$scope.searchProgress();
+				$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage + 1);
+			}else{
+				$.messager.alert('提示','已到最后一条!',"warning");
+			}
+		};
+
+
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param code  数据字典code
+		 * @param value 需要获取的value值
+		 * @return 对应字典项的text值
+		 */
+		var getNameFromDicts =  function(code,value){
+			if(!value){
+				return "";
+			}
+			var items= dicts[code];
+			for(var index in items){
+				var item = items[index];
+				if(item.value == value){
+					return item.text;
+				}
+			}
+		};
+		
+
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param value 机构ID
+		 * @param children 机构数对象，或children数据
+		 * @return 对应字典项的text值
+		 */
+		var getDistrictNameById = function(value,children){
+			if(!value){
+				return "";
+			}
+			for(var index=0; index<children.length; index++){
+				var item = children[index];
+				if(item.id == value){
+					return item.text;
+				}else if(item.children && item.children.length > 0){
+					return getDistrictNameById(value,item.children);//递归查找所有子节点
+				}
+			}
+		};
+		
+		/**
+		 * 将数组转换成逗号隔开字符串
+		 * Added by wangyunqi on 20160316
+		 * */
+		 function arrayToString (arrayObj) {
+			var result = "";
+			
+			if (arrayObj == null || arrayObj.length == 0) {
+				return result;
+			}
+			
+			for(var i = 0; i < arrayObj.length; i++) {
+				result += arrayObj[i] + ",";
+			}
+			return result.substring(0, result.length -1);
+			
+		};
+		
+	    /*
+	    *查询
+	    */
+	     $scope.searchAnsy = function(){
+	    	if(!$scope.$("#searchForm").form("validate")){
+					return;
+				}
+	    	var plateNbr = $scope.$("#plateNbr").val();
+			//当输入的车牌号码中不包含'*'或者'='?'且长度小于7，自动给他补足‘*’
+			if (!(plateNbr.indexOf("*") >=0 || plateNbr.indexOf("?") >= 0) && plateNbr.length<7){
+				$scope.$("#plateNbr").textbox("setValue",plateNbr+'*');
+			}
+			$scope.searchProgress();
+	    	$scope.$updateData("formData");
+	    	/* $scope.formData.passTimeStart = $scope.formData.passTimeStart +" " +$scope.formData.startTime;
+	    	$scope.formData.passTimeEnd = $scope.formData.passTimeEnd +" " +$scope.formData.endTime; */
+	    	$scope.formData.pageSize = 1000;
+	    	$scope.formData.pageNumber = 1;
+	    	$scope.formData.activeFlag = true;
+			//获取后台数据
+			$scope.$ajaxRequest({
+			url : $scope.$restRoot + "/vehTrack/pass/findPassInfo",
+			params : $scope.formData,
+			success : function(data) {
+				if (data && data.result.rows && data.result.rows.length>0){
+					var rows = data.result.rows;
+					if(data.error && data.error=='请输入准确的车牌号'){
+						$.messager.alert("提示", "分析结果太多，请输入准确的车牌号","info");	
+						//数据加载完毕，关闭进度条
+						$.messager.progress("close");
+						return ;
+					}
+					showScatterImage(rows);
+				}else{
+					var myChart = require('echarts').init($scope.$("#container").get(0));
+					var option = {};
+		        	myChart.setOption(option);
+					$.messager.alert("提示", "无分析结果","info");
+				}
+				//数据加载完毕，关闭进度条
+				$.messager.progress("close");
+			},
+			fail : function() {
+				var myChart = require('echarts').init($scope.$("#container").get(0));
+				var option = {};
+	        	myChart.setOption(option);
+				$.messager.progress("close");
+				$.messager.alert("提示", "服务器繁忙","info");
+			}
+			});
+	    	
+	    };
+		    
+		    //定义echarts入口
+	        function initData(){
+	            require.config({
+	                paths: {
+	                    echarts: 'frameworks/echarts/js'
+	                }
+	            });
+	            require(
+	                    [
+	                        'echarts',
+	                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+	                        'echarts/chart/bar',
+	                        'echarts/chart/scatter'
+	                    ]
+	            );
+	        };
+	        
+	        function showScatterImage(rows){
+	        	var myChart = require('echarts').init($scope.$("#container").get(0));
+	        	var allData= [];
+	        	var row ;
+	        	var time;
+	        	var date;
+	        	var plateNbr;
+	        	var X= [];
+	        	var Y= [];
+	        	for (var i =0;i<rows.length;i++){
+	        		var data = [];
+	        		row = rows[i];
+	        		plateNbr = row.plateNbr;
+	        		time = row.passTime.substr(11,5);
+	        		date = row.passTime.substr(2,8)
+	        		time = parseInt(time.replace(/:/gm,''));
+	        		date = parseInt(date.replace(/-/gm,''))
+	        		if ($.inArray(date, Y) ==-1){
+	        		 Y.push(date);
+		        	}
+	        		data.push(time);
+	        		data.push(date);
+	        		data.push(row.siteName);
+	        		allData.push(data);
+	        	}
+	        	var option = {
+	        		    title : {
+	        		        text: plateNbr+'车辆活动时段规律'
+	        		    },
+	        		    tooltip : {
+	        		        trigger: 'item',
+	        		        showDelay : 0,
+	        		        formatter : function (params) {
+	        		            if (params.value.length > 1) {
+	        		                return params.seriesName + ' '
+	        		                   + params.value[2] + ' <br/>'
+	        		                   + formatterStrToDate(params.value[1])+ ' '
+	        		                   + formatterStrToTime(params.value[0]);
+	        		                     
+	        		            }
+	        		            else {
+	        		                return params.seriesName + ' :<br/>'
+	        		                   + params.name + ' : '
+	        		                   + (params.value) ;
+	        		            }
+	        		        },  
+	        		        axisPointer:{
+	        		            show: false,
+	        		            type : 'cross',
+	        		            lineStyle: {
+	        		                type : 'dashed',
+	        		                width : 1
+	        		            }
+	        		        }
+	        		    },
+	        		    legend: {
+	        		        data:[plateNbr]
+	        		    },
+	        		    toolbox: {
+	        		        show : false,
+	        		        feature : {
+	        		            mark : {show: false},
+	        		            dataZoom : {show: true},
+	        		            dataView : {show: true, readOnly: false},
+	        		            restore : {show: true},
+	        		            saveAsImage : {show: true}
+	        		        }
+	        		    },
+	        		    xAxis : [
+	        		        {
+	        		            type : 'value',
+	        		            data:X,
+	        		            scale:true,
+	        		            name:'小时',
+	        		            min:0000,
+	        		            max:2400,
+	        		            splitNumber:24,
+	        		            axisLabel : {
+	        		                formatter: function(value){
+	        		                	return formatterStrToTime(value);
+	        		                }
+	        		            },
+	        		            splitLine: {
+	        		                show: true,
+	        		                lineStyle: {
+	        		                    color: '#ddd',
+	        		                    type: 'dashed'
+	        		                }
+	        		            }
+	        		        }
+	        		    ],
+	        		    yAxis : [
+	        		        {
+	        		            type : 'category',
+	        		            data:Y,
+	        		            scale:true,
+	        		            name:'年-月-日',
+	        		            /* splitNumber:10, */
+	        		            axisLabel : {
+	        		                formatter: function(value){
+	        		                	return formatterStrToDate(value);
+	        		                }
+	        		            },
+	        		            splitLine: {
+	        		                show: true,
+	        		                lineStyle: {
+	        		                    color: '#ddd',
+	        		                    type: 'dashed'
+	        		                }
+	        		            }
+	        		        }
+	        		    ],
+	        		    series : [
+	        		        {
+	        		            name:plateNbr,
+	        		            type:'scatter',
+	        		            symbolSize: 10,
+	        		            markLine : {  
+		        	                data : [  
+		        	                       [
+			        	           {name: '凌晨0点', value: 6, xAxis: 600, yAxis: -1},     // 当xAxis或yAxis为数值轴时，不管传入是什么，都被理解为数值后做空间位置换算
+			        	           {name: '早6点', xAxis: 600, yAxis:100}
+		        	           
+		        	       			], 
+	        	       			[
+			        	           {name: '早6点', value: 12, xAxis: 1200, yAxis: -1},     // 当xAxis或yAxis为数值轴时，不管传入是什么，都被理解为数值后做空间位置换算
+			        	           {name: '中午12点', xAxis: 1200, yAxis:100}
+			        	           
+			        	       		],
+        	                       [
+ 			        	           {name: '中午12点', value: 18, xAxis: 1800, yAxis: -1},     // 当xAxis或yAxis为数值轴时，不管传入是什么，都被理解为数值后做空间位置换算
+ 			        	           {name: '下午18点', xAxis: 1800, yAxis:100}
+ 			        	           
+ 			        	       		] ,
+ 			        	       	[
+			        	           {name: '下午18点', value: 24, xAxis: 2400, yAxis: -1},     // 当xAxis或yAxis为数值轴时，不管传入是什么，都被理解为数值后做空间位置换算
+			        	           {name: '凌晨0点', xAxis: 2400, yAxis:100}
+			        	           
+			        	       		] 
+		        	                      ]  
+		        	                      } , 
+	        		            /* splitNumber:24,
+	        		            symbolSize: 10, */
+	        		            data: allData
+	        		        }
+	        		    ]
+	        		};
+	        	myChart.setOption(option);
+	        		                    
+	        }
+	        /*
+	        *字符串转成yyyy-mm-dd的形式
+	        */
+	        function formatterStrToDate(str){
+	        	str = str+'';
+	        	var year = str.substr(0,2);
+	        	var month =str.substr(2,2);
+	        	var day= str.substr(4,2)
+	        	return year+"-"+month+"-"+day;
+	        }
+	        /*
+	        *字符串转成hh:mm的形式
+		    */
+			function formatterStrToTime(str){
+				str = str+'';
+				var hour = 0;
+				var min =str;
+				if(str.length==3){
+					hour = str.substr(0,1);
+		        	min =str.substr(1,2);
+				}else if(str.length>3){
+	        	 hour = str.substr(0,2);
+	        	 min =str.substr(2,2);
+				}
+	        	return hour+":"+min;
+			       }
+	        
+		    /**
+			 * 显示查询进度条
+			 */
+			$scope.searchProgress = function() {
+				$.messager.progress({
+					title : false,
+					msg : "正在查询，请稍后...",
+					interval : 1000,
+					text : "查询中..."
+				});
+			};
+		
+	});
+</script>
+<style>
+	#vehActiveRegular .th{
+		width: 80px;
+		text-align: right;
+	}
+	#vehActiveRegular .td{
+		width: 120px;
+	}
+</style>

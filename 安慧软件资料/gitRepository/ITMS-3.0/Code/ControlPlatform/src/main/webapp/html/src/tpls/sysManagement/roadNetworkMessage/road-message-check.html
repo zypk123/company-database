@@ -1,0 +1,213 @@
+<!--道路查看详情页面-->
+<div  class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="checkedData">
+            <div class="searchPanel">
+                <div class="panel_title">
+                    道路信息
+                </div>
+                <div id="checked" class="table">
+                    <div class="tr">
+                        <div class="th">
+                            道路编号：
+                        </div>
+                        <div class="td" cy-name="checkedData.roadCode"></div>
+                        <div class="th" >
+                            道路名称：
+                        </div>
+                        <div class="td"  cy-name="checkedData.roadName"></div>
+                        <div class="th" >
+                            道路别名：
+                        </div>
+                        <div class="td" cy-name="checkedData.roadAliasName"></div>
+                        <div class="th">
+                            行政等级：
+                        </div>
+                        <div class="td" cy-name="checkedData.roadAdminGrade" cy-filter="roadAdminGrade"></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            行政区划：
+                        </div>
+                        <div class="td"	cy-name="checkedData.districtCodeList" cy-filter="$getDistrictName" style="width: 440px;" ></div>
+                          <div class="th" >
+                            道路类型：
+                        </div>
+                        <div class="td" cy-name="checkedData.roadType" cy-filter="roadType" ></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            管理机构：
+                        </div>
+                        <div class="td"	cy-name="checkedData.orgId" cy-filter="$getOrgName" style="height: auto;width: 565px;white-space: normal"></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="width: 115px;">
+                            双向或单向：
+                        </div>
+                        <div class="td" cy-name="checkedData.isOneDirection" cy-filter="isOneDirection" style="width: 108px;"></div>
+                        <span id="directionTypeOneCheck" style="display: none">
+                            <div class="th">
+                                方向类型：
+                            </div> <div class="td" cy-name="checkedData.noDirectionTypeCity" cy-filter="directionTypeCity" style="width: 130px;"></div> </span>
+                        <span id="directionTypeTwoCheck" style="display: none">
+                            <div class="th" >
+                                道路走向：
+                            </div> <div class="td" cy-name="checkedData.directionTypeCity" cy-filter="directionTypeCity" style="width: 130px;"></div> </span>
+                        <div class="th" style="width: 150px">
+                            超速行为认定方式：
+                        </div>
+                        <div class="td" cy-name="checkedData.vioConfirmModel" cy-filter="vioConfirmModel" style="width: 110px"></div>
+
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="width: 103px;">
+                            起点名称：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadBeginName"  style="width: 122px;"></div>
+                        <div class="th">
+                            终点名称：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadEndName" style="width: 155px;"></div>
+                        <div class="th" style="width: 75px;">
+                            道路总长：
+                        </div>
+                        <div class="td" cy-name="checkedData.roadLength"  style="width: 50px"></div>
+                        <div class="th" style="width: 20px;">
+                            公里
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">
+                    道路结构
+                </div>
+                <div id="roadjg" class="table">
+                    <div class="tr">
+                        <div class="th">
+                            路面结构：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadStructure"  cy-filter="roadStructure" style="width: 100px;"></div>
+                        <div class="th">
+                            道路地形：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadLandscape"  cy-filter="roadLandscape" style="width: 130px;"></div>
+                        <div class="th">
+                            道路线形：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadLinear"  cy-filter="roadLinear" style="width: 100px;"></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="width: 133px;">
+                            中央隔离设施：
+                        </div>
+                        <div class="td"	cy-name="checkedData.centralIsolation" cy-filter="centralIsolation" style="width: 100px;"></div>
+                        <div class="th">
+                            道路隔离设施：
+                        </div>
+                        <div class="td"	cy-name="checkedData.roadIsolation"  cy-filter="roadIsolation" style="width: 130px;"></div>
+                        <div class="th">
+                            防护设施类型：
+                        </div>
+                        <div class="td"	cy-name="checkedData.protectFacilities" cy-filter="protectFacilities" style="width: 100px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'south'" style="height: 40px;" >
+                <div class="tr">
+                    <div class="td" style="text-align: center">
+                        <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                        cy-click="$destroySelf">关闭</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    InitPage(["checkedData"], function($scope) {
+        //初始化加载所需code
+        $scope.$getDefaultCode(['070', '072', '016', '017', '132', '133', '134', '135', '136', '137']);
+
+        /**
+         *根据道路类型code获取道路名称name
+         */
+        $scope.roadType = function(value) {
+            return $scope.$getCodeName("016", value);
+        };
+        $scope.roadAdminGrade = function(value) {
+            return $scope.$getCodeName("017", value);
+        };
+        $scope.roadStructure = function(value) {
+            return $scope.$getCodeName("132", value);
+        };
+        $scope.roadLandscape = function(value) {
+            return $scope.$getCodeName("133", value);
+        };
+        $scope.roadLinear = function(value) {
+            return $scope.$getCodeName("134", value);
+        };
+        $scope.centralIsolation = function(value) {
+            return $scope.$getCodeName("136", value);
+        };
+        $scope.roadIsolation = function(value) {
+            return $scope.$getCodeName("135", value);
+        };
+        $scope.protectFacilities = function(value) {
+            return $scope.$getCodeName("137", value);
+        };
+
+        $scope.vioConfirmModel = function(value) {
+            if (value == "1") {
+                return "高速道公路认定方式";
+            } else {
+                return "国省道认定方式";
+            }
+        };
+        $scope.isOneDirection = function(value){
+            if(value=="0"){
+                return "双向";
+            }else{
+                return "单向";
+            }
+        };
+        if ($scope.checkedData.roadType == "5" || $scope.checkedData.roadType == "6" || $scope.checkedData.roadType == "7" || $scope.checkedData.roadType == "8") {
+            $scope.directionTypeCity = function(value) {
+
+                $scope.$("#directionTypeOneCheck").hide();
+                $scope.$("#directionTypeTwoCheck").show();
+                return $scope.$getCodeName("072", value);
+            };
+        } else {
+            $scope.directionTypeCity = function(value) {
+
+                $scope.$("#directionTypeOneCheck").show();
+                $scope.$("#directionTypeTwoCheck").hide();
+                if (value == "0") {
+                    return "上行" + " " + "下行";
+                } else if (value == "1") {
+                    return "上行";
+                } else {
+                    return "下行";
+                }
+
+            };
+        }
+
+    }); 
+</script>
+<style type="text/css">
+    #checked .th {
+        text-align: right;
+        width: 100px;
+    }
+    #checked .td {
+        text-align: left;
+        width: 80px;
+    }
+    #roadjg .th {
+        text-align: right;
+        width: 110px;
+    }
+</style>

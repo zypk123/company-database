@@ -1,0 +1,53 @@
+<div id="monitorCenterOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData" id="form">
+            <div class="table" style="margin-top:50px">
+                <div class="tr">
+                    <div class="th">监控中心名称：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="surveySystemName" style="width: 170px;" data-options="validType:'length[0,25]',required:true"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">所属机构：</div>
+                    <div class="td">
+                        <input id="orgId" class="cy-org-radio" name="orgId" style="width: 170px;"  data-options="required:true"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">
+    	<div class="linkbutton_toolbar" style="text-align: center">
+    		<a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+        	<a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+    	</div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["surveySystemName","saveData","formData"],function($scope){
+    	$scope.load = function(){
+    		//获取传递值
+        	var text = $scope.surveySystemName;
+        	 if(text != "监控中心" && text != ""){
+    			$scope.$("#orgId").combotree('setValue',text).combotree('readonly',true);
+    		 } 	
+    	};
+    	//保存
+    	$scope.save = function(){
+    		if ($scope.$("#form").form("validate")) {
+	    	    //更新数据
+	    	    $scope.$updateData("formData");
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+	    	    //执行保存方法
+	    	    $scope.saveData($scope.formData);
+    		}
+    	};
+    });
+</script>
+<style type="text/css">
+    #monitorCenterOperate .th{
+        width: 120px;
+        text-align: right;
+    }
+</style>

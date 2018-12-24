@@ -1,0 +1,185 @@
+<div id="accessPlatOperate" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData" id="form">
+        	<div class="table">
+        		<div class="tr">
+                    <div class="th"  style="width:280px;">监控中心名称：</div>
+                    <div class="td">
+                        <input id="surveySystemNameCombox" name="surveySystemId" style="width: 170px;" data-options="valueField:'id',textField:'text', required:true"/>
+						<input id="surveySystemNameTextbox" class="easyui-textbox" name="surveySystemName" style="width: 170px;"/>
+						<input type="hidden" id="surveySystemId" name="surveySystemId"/>
+                    </div>
+                </div>
+                <div class="searchPanel">
+                	<div class="panel_title">接入平台信息</div>
+            		<div class="tr">
+            			<div class="th">接入平台名称：</div>
+		            	<div class="td">
+		            		<input type="hidden" id="serverPlatId" name="serverPlatId" />
+							<input type="hidden" id="serverAppIdStr" name="serverAppIdStr" />
+							<input type="hidden" id="oldServerAppIdStr" name="oldServerAppIdStr" />
+		            		<input class="easyui-textbox" id="serverPlatName" name="serverPlatName" data-options="validType:'length[0,64]',required:true"/>
+		            	</div>
+	            	</div>
+		        </div>
+        	</div>		
+        </form>
+    </div>
+    <div data-options="region:'center',border:false">
+	    <div class="searchPanel" style="height:280px;">
+			<div class="panel_title">服务器组件</div>
+            <table id="serverModule" cy-datagrid="options" cy-querydata="formData" cy-url="device/monitorServerManage/serverAppsOfSurveySystem">
+	        	
+	        </table>
+        </div>
+	</div>
+    <div data-options="region:'south',border:false">
+        <div class="linkbutton_toolbar"  style="text-align: center">
+            <a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+            <a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'"  cy-click="$destroySelf">取消</a>
+        </div>
+    </div>
+</div>  
+<script type="text/javascript">
+    InitPage(["clickName","clickId","formData","saveData","remark"],function($scope){
+    	$scope.$getDefaultCode(["436"]);
+    	//判断是查看、添加的标识
+        var remark = $scope.remark;
+        if(remark == "look"){
+            $scope.$("input[class^='easyui-']").each(function(){
+                $(this).textbox('readonly',true);
+            });
+            $scope.$("#save").hide();
+        }
+        var surveySystemName = $scope.clickName;
+        var surveySystemId = $scope.clickId;
+    	$scope.load = function(){
+	        //查询所有监控中心加载监控中心下拉列表
+			$scope.$ajaxRequest({
+		        url: $scope.$restRoot+"device/monitorServerManage/queryMonitorOnly",
+		        params: {},
+		        method: "post",
+		        success: function(data){
+		        	 $scope.$('#surveySystemNameCombox').combobox({
+		        		data : data,
+		 			    onChange:function(newValue,oldValue){
+		 			    	$scope.formData.surveySystemId = newValue;
+		 			    	if(newValue != ""){
+		 			    		$scope.$search("formData");
+		 			    	}else{
+		 			    		$scope.$('#serverModule').datagrid('loadData',[]);
+		 			    	}
+		 			    }
+		 			});
+		            if(remark == "add"){
+			        	$scope.$("#surveySystemNameCombox").combobox('setValue',surveySystemId);
+			        	$scope.$("#surveySystemNameTextbox").textbox("destroy");
+			        	$scope.$("#surveySystemId").remove();
+			        }else{
+			        	$scope.$("#surveySystemNameTextbox").textbox('setText',surveySystemName).textbox('readonly',true);
+			        	$scope.$("#surveySystemNameCombox").combobox("destroy");
+			        	$scope.$("#surveySystemId").val(surveySystemId);
+			        }
+			        if(surveySystemId != ''){
+			        	$scope.formData.surveySystemId = surveySystemId;
+		   				$scope.$search("formData");
+			        }
+		        },
+		        fail: function(){
+		            $.messager.alert("提示","查询初始化监控中心树失败！");
+		        }
+		    });
+		    //判断监控中心名称重复
+		    $scope.$("#serverPlatName").textbox("textbox").blur(function(){
+		    	var serverPlatName = $scope.$("#serverPlatName").textbox("getValue");
+		    	var serverPlatName = $scope.$("#serverPlatName").textbox("getValue");
+		    	/*if(serverPlatName != ""){
+		    		$scope.$ajaxRequest({
+				    	 url: $scope.$restRoot + "",
+				    	 params : {serverPlatName : serverPlatName},
+				    	 method : "post",
+					     success : function(data){
+					    	 if(data == 0){//存在该名称的接入平台
+					    		 $.messager.alert("提示","已存在该名称的接入平台，请重新输入！");
+					    		 $scope.$("#serverPlatName").textbox("clear");
+					    	 }
+					     }
+				    });
+		    	}*/
+			});
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        var oldServerAppIdStr = "";
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+                {align : 'center',field : 'serverAppId', checkbox : true},
+                {align : 'center',title : "组件类型",field : "appType",width : 100,formatter : getAppTypeName},
+                {align : 'center',title : "服务器IP",field : "serverIp",width : 100},
+                {align : 'center',title : "端口号",field : "serverPort",width : 100}
+            ]],
+            pagination : false,
+            onLoadSuccess : function(){
+            	var oldServerAppId = $scope.formData.serverAppIdStr.split(",");//原先的已选服务器组件数组
+            	oldServerAppIdStr = $scope.formData.serverAppIdStr;
+            	var serverAppIdSz = $scope.$("#serverModule").datagrid("getRows");//列表所有行数组
+            	for (var i = 0; i < oldServerAppId.length; i++) {
+				  for (var j = 0; j < serverAppIdSz.length; j++) {
+					if(oldServerAppId[i] == serverAppIdSz[j].serverAppId){
+						$scope.$("#serverModule").datagrid("checkRow",j);//勾选已选的服务器组件
+					}
+				  };
+				};
+            }
+            
+        };
+        function getAppTypeName(value, row, index) {
+			var appType = $scope.$getCodeName("436",value);
+            return appType;
+		};
+		
+    	$scope.save = function(){
+        	if ($scope.$("#form").form("validate")) {
+		        //更新获取form中的数据
+		        $scope.$updateData("formData");
+    			trimObject($scope.formData);//对对象中的每个元素进行trim操作
+    			//获取列表中已勾选的项
+    			var serverApp = $scope.$("#serverModule").datagrid("getChecked");
+    			//循环选中的服务器组件，将组件ID形成字符串
+    			var serverAppIdStr = "";
+    			if(serverApp.length != 0){
+    				for (var i = 0; i < serverApp.length; i++) {
+    					for (var j = i + 1; j < serverApp.length; j++) {
+						  if(serverApp[i].appType == serverApp[j].appType){
+						  	$.messager.alert("提示","不可选择同一组件类型！");
+						  	return false;
+						  }
+						};
+				  		if(i > 0){
+		                    serverAppIdStr = serverAppIdStr + "," + serverApp[i].serverAppId;
+		                }else{
+		                    serverAppIdStr = serverAppIdStr + serverApp[i].serverAppId;
+		                }
+					};
+    			}
+				$scope.formData.serverAppIdStr = serverAppIdStr;
+				$scope.formData.oldServerAppIdStr = oldServerAppIdStr;
+		        $scope.saveData($scope.formData);
+	        }
+        };
+    });
+</script>
+<style type="text/css">
+	#accessPlatOperate .th{
+        width: 120px;
+        text-align: right;
+    }
+    #accessPlatOperate .td{
+        height:auto;
+    }
+    #accessPlatOperate .td>input[class^='easyui-']{
+        width: 160px;
+    }
+</style>

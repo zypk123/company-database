@@ -1,0 +1,269 @@
+<div id="trafficFlow" class="easyui-layout" >
+
+    <div data-options="region:'center',split:true" >
+        <div id="map"style="height:100%;width:100%" >
+
+        </div>
+
+    </div>
+    <div id="prompt" style="display: none">
+        <div style='font-size:1em'>
+            <span class="dwwz"></span>
+            <span class="none"></span>
+            <span class="up"></span>
+            <span class="down"></span>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    InitPage([],function($scope) {
+        //初始化cyMap容器
+        var cyMap=new CYMap($scope.$("#map")[0]);
+        //wkt字符串转换器
+        var wkt_c = new OpenLayers.Format.WKT();
+        //平移至中心点位置
+        var centerPoint=new OpenLayers.LonLat(105.70045,28.58540);
+        centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+        cyMap.map.panTo(centerPoint);
+
+        //断面图元数组
+        var sectionFeature=[];
+        //断面图层
+        var sectionLayer;
+        //区间图元数组
+        var regionFeature=[];
+        //区间图层
+        var regionLayer;
+
+        //页面登录时调用
+        $scope.load = function(){
+            //初始化地图：样式、图层、监听事件
+            initData();
+            //读取断面数据加载到sectionLayer图层中
+            readSection();
+            //读取区间数据加载到regionLayer图层中
+            readRegion();
+        };
+        //初始化地图及相关图层和样式
+        function initData(){
+            //定义feature的监听事件over out click
+            var layerListeners= {
+                featureover: function (e) {
+                    var htmlStr=fieldInfo(e);
+                    var popup = new OpenLayers.Popup.FramedCloud("info",
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            null,htmlStr,null,null, null);//new OpenLayers.Size(160,150)
+                    popup.setBackgroundColor("ghostwhite");
+                    popup.setOpacity(5);
+                    popup.setBorder("1px solid gray");
+                    e.feature.popup = popup;
+                    cyMap.map.addPopup(popup);
+                },
+                featureout: function (e) { e.feature.popup.hide(); },
+                featureclick:function(e){
+                    e.feature.popup.hide();
+                    if(e.object.name=="section"){
+                        if(e.feature.attributes.fx){
+                            $scope.openDialog(e);
+                        }
+                    }
+                    if(e.object.name=="region"){
+                        if(e.feature.attributes.alarms){
+                            $scope.openDialog(e);
+                        }
+                    }
+
+                }
+            };
+
+            // create a styleMap for sectionLayer with a custom default symbolizer
+            var styleMap_section = new OpenLayers.StyleMap({
+                pointRadius: 10,
+                fillColor:"red"
+            });
+            // create a lookup table for sectionLayer with different symbolizers for
+            // 0-无预警, 1-流量突变预警 ，2-车速差预警，3-断流预警，4-混合预警
+            var lookup_section = {
+                0: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                1: {externalGraphic: "frameworks/Openlayers/img/marker-green.png"},
+                2: {externalGraphic: "frameworks/Openlayers/img/marker-gold.png"},
+                3: {externalGraphic: "frameworks/Openlayers/img/marker-blue.png"},
+                4: {externalGraphic: "frameworks/Openlayers/img/marker.png"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to
+            // the "type" property of the features, for the "default" intent
+            styleMap_section.addUniqueValueRules("default", "type", lookup_section);
+            //设置断面图层的option
+            sectionLayer=new OpenLayers.Layer.Vector("section",{styleMap: styleMap_section,eventListeners: layerListeners});
+
+            // create a styleMap for regionLayer with a custom default symbolizer
+            var styleMap_region = new OpenLayers.StyleMap({
+                pointRadius: 10,
+                strokeWidth:3
+            });
+            // create a lookup table for regionLayer with different symbolizers for
+            // 0-无预警, 1-区间旅行时间超长预警 ，2-区间饱和预警，3-白天大型车辆占比超标预警，4-混合预警
+            var lookup_region = {
+                0: {strokeColor:"gray"},
+                1: {strokeColor:"orange"},
+                2: {strokeColor:"pink"},
+                3: {strokeColor:"gold"},
+                4: {strokeColor:"red"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to
+            // the "type" property of the features, for the "default" intent
+            styleMap_region.addUniqueValueRules("default", "type", lookup_region);
+            //设置区间图层的option
+            regionLayer=new OpenLayers.Layer.Vector("region",{styleMap: styleMap_region,eventListeners: layerListeners});
+            //添加断面、区间图层到map容器中
+            cyMap.map.addLayers([regionLayer,sectionLayer]);
+        }
+
+        /**
+         * 读取断面预警数据，加载到地图上
+         */
+        function readSection(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficFlowAlarm/section-alarm.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        sectionLayer.addFeatures(feature);
+                        //sectionFeature.push(feature);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        /**
+         * 读取区间预警数据，加载到地图上
+         */
+        function readRegion(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficFlowAlarm/region-alarm.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        regionLayer.addFeatures(feature);
+                        //regionFeature.push(feature);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        //用于popup显示信息
+        function fieldInfo(obj){
+              //清空预警弹框
+            var prompt = $scope.$("#prompt");
+            prompt.find("span[class]").text("");
+            prompt.find(".none,.up,.down").show();
+            //断面预警
+            if(obj.object.name=="section" ){
+                prompt.find(".dwwz").html(obj.feature.attributes.dwwz);
+                //断面无预警信息
+                if(!obj.feature.attributes.fx){
+                    prompt.find(".up,.down").hide();
+                    var str="<br>无预警信息";
+                    prompt.find(".none").html(str);
+                }
+                else{
+                    prompt.find(".none,.up,.down").hide();
+                    //断面上行预警
+                    if(obj.feature.attributes.fx.up){
+                        prompt.find(".up").show();
+                        var str="<br>上行";
+                        if(obj.feature.attributes.fx.up.lltb){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.up.lltb.alarmType;
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别："+ obj.feature.attributes.fx.up.lltb.yjjb;
+                        }
+                        if(obj.feature.attributes.fx.up.dmcsc){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.up.dmcsc.alarmType;
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;"+ obj.feature.attributes.fx.up.dmcsc.yjjb;
+                        }
+                        if(obj.feature.attributes.fx.up.lmdl){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.up.lmdl.alarmType;
+                        }
+                        prompt.find(".up").html(str);
+                    }
+                    //断面下行预警
+                    if(obj.feature.attributes.fx.down){
+                        prompt.find(".down").show();
+                        var str="<br>下行";
+                        if(obj.feature.attributes.fx.down.lltb){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.down.lltb.alarmType;
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别："+ obj.feature.attributes.fx.down.lltb.yjjb;
+                        }
+                        if(obj.feature.attributes.fx.down.dmcsc){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.down.dmcsc.alarmType;
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;"+ obj.feature.attributes.fx.down.dmcsc.yjjb;
+                        }
+                        if(obj.feature.attributes.fx.down.lmdl){
+                            str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.fx.down.lmdl.alarmType;
+                        }
+                        prompt.find(".down").html(str);
+                    }
+                }
+            }
+            //区间预警
+            else if(obj.object.name=="region"){
+                prompt.find(".dwwz").html(obj.feature.attributes.qjmc+"<br>"+obj.feature.attributes.fx);
+                if(!obj.feature.attributes.alarms){
+                    prompt.find(".up,.down").hide();
+                    var str="<br>无预警信息";
+                    prompt.find(".none").html(str);
+                }else{
+                    prompt.find(".none").show();
+                    var str="";
+                    if(obj.feature.attributes.alarms.qjlxsjcc){
+                        str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.alarms.qjlxsjcc.alarmType;
+                    }
+                    if(obj.feature.attributes.alarms.qjbh){
+                        str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.alarms.qjbh.alarmType;
+                    }
+                    if(obj.feature.attributes.alarms.dczb){
+                        str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;"+ obj.feature.attributes.alarms.dczb.alarmType;
+                        str+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别："+ obj.feature.attributes.alarms.dczb.yjjb;
+                    }
+                    prompt.find(".none").html(str);
+                }
+            }
+            return prompt.html();
+        }
+
+        //打开新的openDialog
+        $scope.openDialog = function(obj) {
+            $scope.$setParam("newData",obj.feature.attributes);
+            //断面预警弹出窗
+            if(obj.object.name=="section"){
+                $scope.$openDialog("createDialog", {
+                    title: obj.feature.attributes.dwwz+"&nbsp;&nbsp;流量预警",
+                    height: 360,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficFlow/section-alarm-info.html"
+                }, true);
+            }
+            //区间预警弹出窗
+            else if(obj.object.name=="region"){
+                $scope.$openDialog("createDialog", {
+                    title: obj.feature.attributes.qjmc+"&nbsp;&nbsp;流量预警",
+                    height: 420,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficFlow/region-alarm-info.html"
+                }, true);
+            }
+
+        };
+    });
+</script>

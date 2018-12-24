@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.EnforceStationMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.traffic.EnforceStation" >
+    <id column="LAW_ENFORCE_STATION_ID" property="lawEnforceStationId" jdbcType="VARCHAR" />
+    <result column="LAW_ENFORCE_STATION_CODE" property="lawEnforceStationCode" jdbcType="VARCHAR" />
+    <result column="LAW_ENFORCE_STATION_NAME" property="lawEnforceStationName" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="DUTY_MODEL" property="dutyModel" jdbcType="CHAR" />
+    <result column="POLICE_COUNTS" property="policeCounts" jdbcType="DECIMAL" />
+    <result column="STATION_RATING" property="stationRating" jdbcType="CHAR" />
+    <result column="CONTACT_TEL" property="contactTel" jdbcType="VARCHAR" />
+    <result column="SERVICE_STATION_HEADER" property="serviceStationHeader" jdbcType="VARCHAR" />
+    <result column="HEADER_TEL" property="headerTel" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_TOLLGATE_ID" property="entranceTollgateId" jdbcType="VARCHAR" />
+    <result column="EXIT_TOLLGATE_ID" property="exitTollgateId" jdbcType="VARCHAR" />
+    <result column="LAW_ENFORCE_VIDEO_ID" property="lawEnforceVideoId" jdbcType="VARCHAR" />
+    <result column="INDOOR_VIDEO_ID" property="indoorVideoId" jdbcType="VARCHAR" />
+    <result column="STORAGE_PERIOD" property="storagePeriod" jdbcType="VARCHAR" />
+    <result column="INTERCEPTION_LED_ID" property="interceptionLedId" jdbcType="VARCHAR" />
+    <result column="IS_CONNECT_POLICE_NET" property="isConnectPoliceNet" jdbcType="CHAR" />
+    <result column="IMPORTANT_CHECKING_CASE" property="importantCheckingCase" jdbcType="VARCHAR" />
+    <result column="LON_LAT" property="lonLat" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LAW_ENFORCE_STATION_ID, LAW_ENFORCE_STATION_CODE, LAW_ENFORCE_STATION_NAME, ORG_ID, 
+    DUTY_MODEL, POLICE_COUNTS, STATION_RATING, CONTACT_TEL, SERVICE_STATION_HEADER, HEADER_TEL, 
+    ENTRANCE_TOLLGATE_ID, EXIT_TOLLGATE_ID, LAW_ENFORCE_VIDEO_ID, INDOOR_VIDEO_ID, STORAGE_PERIOD, 
+    INTERCEPTION_LED_ID, IS_CONNECT_POLICE_NET, IMPORTANT_CHECKING_CASE, LON_LAT
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from T_VEHTRACK_ENFORCE_STATION
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VEHTRACK_ENFORCE_STATION
+    where LAW_ENFORCE_STATION_ID = #{lawEnforceStationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VEHTRACK_ENFORCE_STATION
+    where LAW_ENFORCE_STATION_ID = #{lawEnforceStationId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.traffic.EnforceStation" >
+    insert into T_VEHTRACK_ENFORCE_STATION (LAW_ENFORCE_STATION_ID, LAW_ENFORCE_STATION_CODE, 
+      LAW_ENFORCE_STATION_NAME, ORG_ID, DUTY_MODEL, 
+      POLICE_COUNTS, STATION_RATING, CONTACT_TEL, 
+      SERVICE_STATION_HEADER, HEADER_TEL, ENTRANCE_TOLLGATE_ID, 
+      EXIT_TOLLGATE_ID, LAW_ENFORCE_VIDEO_ID, INDOOR_VIDEO_ID, 
+      STORAGE_PERIOD, INTERCEPTION_LED_ID, IS_CONNECT_POLICE_NET, 
+      IMPORTANT_CHECKING_CASE, LON_LAT)
+    values (#{lawEnforceStationId,jdbcType=VARCHAR}, #{lawEnforceStationCode,jdbcType=VARCHAR}, 
+      #{lawEnforceStationName,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{dutyModel,jdbcType=CHAR}, 
+      #{policeCounts,jdbcType=DECIMAL}, #{stationRating,jdbcType=CHAR}, #{contactTel,jdbcType=VARCHAR}, 
+      #{serviceStationHeader,jdbcType=VARCHAR}, #{headerTel,jdbcType=VARCHAR}, #{entranceTollgateId,jdbcType=VARCHAR}, 
+      #{exitTollgateId,jdbcType=VARCHAR}, #{lawEnforceVideoId,jdbcType=VARCHAR}, #{indoorVideoId,jdbcType=VARCHAR}, 
+      #{storagePeriod,jdbcType=VARCHAR}, #{interceptionLedId,jdbcType=VARCHAR}, #{isConnectPoliceNet,jdbcType=CHAR}, 
+      #{importantCheckingCase,jdbcType=VARCHAR}, #{lonLat,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.traffic.EnforceStation" >
+    insert into T_VEHTRACK_ENFORCE_STATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lawEnforceStationId != null" >
+        LAW_ENFORCE_STATION_ID,
+      </if>
+      <if test="lawEnforceStationCode != null" >
+        LAW_ENFORCE_STATION_CODE,
+      </if>
+      <if test="lawEnforceStationName != null" >
+        LAW_ENFORCE_STATION_NAME,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="dutyModel != null" >
+        DUTY_MODEL,
+      </if>
+      <if test="policeCounts != null" >
+        POLICE_COUNTS,
+      </if>
+      <if test="stationRating != null" >
+        STATION_RATING,
+      </if>
+      <if test="contactTel != null" >
+        CONTACT_TEL,
+      </if>
+      <if test="serviceStationHeader != null" >
+        SERVICE_STATION_HEADER,
+      </if>
+      <if test="headerTel != null" >
+        HEADER_TEL,
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID,
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID,
+      </if>
+      <if test="lawEnforceVideoId != null" >
+        LAW_ENFORCE_VIDEO_ID,
+      </if>
+      <if test="indoorVideoId != null" >
+        INDOOR_VIDEO_ID,
+      </if>
+      <if test="storagePeriod != null" >
+        STORAGE_PERIOD,
+      </if>
+      <if test="interceptionLedId != null" >
+        INTERCEPTION_LED_ID,
+      </if>
+      <if test="isConnectPoliceNet != null" >
+        IS_CONNECT_POLICE_NET,
+      </if>
+      <if test="importantCheckingCase != null" >
+        IMPORTANT_CHECKING_CASE,
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lawEnforceStationId != null" >
+        #{lawEnforceStationId,jdbcType=VARCHAR},
+      </if>
+      <if test="lawEnforceStationCode != null" >
+        #{lawEnforceStationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lawEnforceStationName != null" >
+        #{lawEnforceStationName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyModel != null" >
+        #{dutyModel,jdbcType=CHAR},
+      </if>
+      <if test="policeCounts != null" >
+        #{policeCounts,jdbcType=DECIMAL},
+      </if>
+      <if test="stationRating != null" >
+        #{stationRating,jdbcType=CHAR},
+      </if>
+      <if test="contactTel != null" >
+        #{contactTel,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceStationHeader != null" >
+        #{serviceStationHeader,jdbcType=VARCHAR},
+      </if>
+      <if test="headerTel != null" >
+        #{headerTel,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="lawEnforceVideoId != null" >
+        #{lawEnforceVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="indoorVideoId != null" >
+        #{indoorVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="storagePeriod != null" >
+        #{storagePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="interceptionLedId != null" >
+        #{interceptionLedId,jdbcType=VARCHAR},
+      </if>
+      <if test="isConnectPoliceNet != null" >
+        #{isConnectPoliceNet,jdbcType=CHAR},
+      </if>
+      <if test="importantCheckingCase != null" >
+        #{importantCheckingCase,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        #{lonLat,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.traffic.EnforceStation" >
+    update T_VEHTRACK_ENFORCE_STATION
+    <set >
+      <if test="lawEnforceStationCode != null" >
+        LAW_ENFORCE_STATION_CODE = #{lawEnforceStationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lawEnforceStationName != null" >
+        LAW_ENFORCE_STATION_NAME = #{lawEnforceStationName,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyModel != null" >
+        DUTY_MODEL = #{dutyModel,jdbcType=CHAR},
+      </if>
+      <if test="policeCounts != null" >
+        POLICE_COUNTS = #{policeCounts,jdbcType=DECIMAL},
+      </if>
+      <if test="stationRating != null" >
+        STATION_RATING = #{stationRating,jdbcType=CHAR},
+      </if>
+      <if test="contactTel != null" >
+        CONTACT_TEL = #{contactTel,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceStationHeader != null" >
+        SERVICE_STATION_HEADER = #{serviceStationHeader,jdbcType=VARCHAR},
+      </if>
+      <if test="headerTel != null" >
+        HEADER_TEL = #{headerTel,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="lawEnforceVideoId != null" >
+        LAW_ENFORCE_VIDEO_ID = #{lawEnforceVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="indoorVideoId != null" >
+        INDOOR_VIDEO_ID = #{indoorVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="storagePeriod != null" >
+        STORAGE_PERIOD = #{storagePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="interceptionLedId != null" >
+        INTERCEPTION_LED_ID = #{interceptionLedId,jdbcType=VARCHAR},
+      </if>
+      <if test="isConnectPoliceNet != null" >
+        IS_CONNECT_POLICE_NET = #{isConnectPoliceNet,jdbcType=CHAR},
+      </if>
+      <if test="importantCheckingCase != null" >
+        IMPORTANT_CHECKING_CASE = #{importantCheckingCase,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LAW_ENFORCE_STATION_ID = #{lawEnforceStationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.traffic.EnforceStation" >
+    update T_VEHTRACK_ENFORCE_STATION
+    set LAW_ENFORCE_STATION_CODE = #{lawEnforceStationCode,jdbcType=VARCHAR},
+      LAW_ENFORCE_STATION_NAME = #{lawEnforceStationName,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      DUTY_MODEL = #{dutyModel,jdbcType=CHAR},
+      POLICE_COUNTS = #{policeCounts,jdbcType=DECIMAL},
+      STATION_RATING = #{stationRating,jdbcType=CHAR},
+      CONTACT_TEL = #{contactTel,jdbcType=VARCHAR},
+      SERVICE_STATION_HEADER = #{serviceStationHeader,jdbcType=VARCHAR},
+      HEADER_TEL = #{headerTel,jdbcType=VARCHAR},
+      ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      LAW_ENFORCE_VIDEO_ID = #{lawEnforceVideoId,jdbcType=VARCHAR},
+      INDOOR_VIDEO_ID = #{indoorVideoId,jdbcType=VARCHAR},
+      STORAGE_PERIOD = #{storagePeriod,jdbcType=VARCHAR},
+      INTERCEPTION_LED_ID = #{interceptionLedId,jdbcType=VARCHAR},
+      IS_CONNECT_POLICE_NET = #{isConnectPoliceNet,jdbcType=CHAR},
+      IMPORTANT_CHECKING_CASE = #{importantCheckingCase,jdbcType=VARCHAR},
+      LON_LAT = #{lonLat,jdbcType=VARCHAR}
+    where LAW_ENFORCE_STATION_ID = #{lawEnforceStationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,395 @@
+<!--流量监控段主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="deptQueryRegional">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table" id="regionalCondition">
+					<div class="tr">
+						<div class="th">
+							路段编号：
+						</div>
+						<div class="td">
+							<input  name="regionalCode" class="easyui-textbox" style="width:150px;"/>
+						</div>
+						<div class="th">
+							路段名称：
+						</div>
+						<div class="td">
+							<input  name="regionalName" class="easyui-textbox" style="width: 150px;"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input  name="roadId" class="cy-road-radio" style="width: 120px;"/>
+						</div>
+						<div class="th" >
+							行政区划：
+						</div>
+						<div class="td">
+							<input id="districts" name="districtCode" class="cy-district-radio"/>
+						</div>
+						<div class="td" style="margin-left:15px;width: 70px;text-align: right">
+							<a class="easyui-linkbutton" data-options="iconCls:'icon-search'"
+							cy-click="searchData" >查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'"
+			cy-click="addRegional">添加</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-remove'"
+			cy-click="removeRegional">删除</a>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="regional" cy-datagrid="optionsReglionl" cy-querydata="deptQueryRegional"
+		cy-url="road/RegionalAction/findRegional"></table>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		//初始化加载
+		$scope.load = function() {
+			$scope.deptQueryRegional.orderName = "regionalCode";
+			$scope.deptQueryRegional.orderType = "asc";
+			$scope.$updateData("deptQueryRegional");
+			$scope.$search("deptQueryRegional");
+		};
+		//查询
+		$scope.searchData = function() {
+			$scope.$updateData("deptQueryRegional");
+			//获得当前第几页数
+			var count = $scope.$("#regional").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转第一页
+				$scope.$("#regional").datagrid("getPager").pagination("select", 1);
+			} else {
+				$scope.$search("deptQueryRegional");
+			}
+		}, $scope.optionsReglionl = {
+			sortName : "regionalCode",
+    		sortOrder : "asc",
+			columns : [[{
+				field : 'regionalId',
+				checkbox : true,
+				align : 'center'
+			}, {
+				field : 'regionalCode',
+				title : '路段编号',
+				align : 'center',
+				width : 20,
+				sortable : true
+			}, {
+				field : 'regionalName',
+				title : '路段名称',
+				align : 'center',
+				formatter : optionsRegionalName,
+				width : 20
+			}, {
+				field : 'orgId',
+				title : '所属机构',
+				align : 'center',
+				formatter : optionsOrgName,
+				width : 20
+			}, {
+				field : 'districtCode',
+				title : '行政区划',
+				align : 'center',
+				formatter : optionsDistrictName,
+				width : 15
+			}, {
+				field : 'roadId',
+				title : '道路名称',
+				align : 'center',
+				formatter : optionsRoadName,
+				width : 15
+			}, {
+				field : 'entrySiteName',
+				title : '起点位置',
+				align : 'center',
+				formatter : optionsEntrySiteName,
+				width : 20
+			}, {
+				field : 'exitSiteName',
+				title : '终点位置',
+				align : 'center',
+				formatter : optionsExitSiteName,
+				width : 20
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionCz,
+				width : 15
+			}]],
+			pagination : true,
+			nowrap : false,
+			/**
+			 *查看详情页面
+			 */
+			onDblClickRow : function(rowIndex, rowData) {
+				$scope.$setParam("checkRegionalData", rowData);
+				$scope.$openDialog("checked", {
+					title : "流量监控段信息详情",
+					width : 850,
+					height : 320,
+					href : "tpls/sysManagement/roadNetworkMessage/region-message-check.html"
+				});
+			}
+		};
+		//显示隐藏机构名称
+		function optionsOrgName(value, row, index) {
+			var orgName = $scope.$getOrgName(value);
+			if (orgName == null) {
+				return "<span/>";
+			}
+			/* var orgNameStr = "";
+			if (orgName && orgName.length > 10) {
+				orgNameStr = '' + orgName.substring(0, 10) + '...';
+			} else {
+				orgNameStr = '' + orgName + '';
+			} */
+			return "<span title='" + orgName + "'>" + orgName + "</span>";
+		};
+		//显示隐藏行政区划名称
+		function optionsDistrictName(value, row, index) {
+			var districtName = $scope.$getDistrictName(value);
+			if (districtName == null) {
+				return "<span/>";
+			}
+			var districtNameStr = "";
+			if (districtName && districtName.length > 10) {
+				districtNameStr = '' + districtName.substring(0, 10) + '...';
+			} else {
+				districtNameStr = '' + districtName + '';
+			}
+			return "<span title='" + districtName + "'>" + districtNameStr + "</span>";
+		};
+		//显示隐藏道路名称
+		function optionsRoadName(value, row, index) {
+			var roadName = $scope.$getRoadName(value);
+			if (roadName == null) {
+				return "<span/>";
+			}
+			var roadNameStr = "";
+			if (roadName && roadName.lenght > 10) {
+				roadNameStr = '' + roadName.substring(0, 10) + '...';
+			} else {
+				roadNameStr = '' + roadName + '';
+			}
+			return "<span title='" + roadName + "'>" + roadNameStr + "</span>";
+		};
+		//显示隐藏区间名称
+		function optionsRegionalName(value, row, index) {
+			if (value == null) {
+				return "<span/>";
+			}
+/* 			var regionalNameStr = "";
+			if (value && value.length > 13) {
+				regionalNameStr = '' + value.substring(0, 13) + '...';
+			} else {
+				regionalNameStr = '' + value + '';
+			} */
+			return "<span title='" + value + "'>" + value + "</span>";
+		};
+		//显示隐藏起点位名称
+		function optionsEntrySiteName(value, row, index) {
+			if (value == null) {
+				return "<span> </span>";
+			}
+/* 			var entrySiteNameStr = "";
+
+			if (value.length > 13) {
+				entrySiteNameStr = '' + value.substring(0, 13) + '...';
+			} else {
+				entrySiteNameStr = '' + value + '';
+			} */
+
+			return "<span title='" + value + "'>" + value + "</span>";
+		}
+
+		//显示隐藏终点位名称
+		function optionsExitSiteName(value, row, index) {
+			if (value == null) {
+				return "<span></span>";
+			}
+/* 			var exitSiteNameStr = "";
+
+			if (value.length > 12) {
+				exitSiteNameStr = '' + value.substring(0, 12) + '...';
+			} else {
+				exitSiteNameStr = '' + value + '';
+			} */
+
+			return "<span title='" + value + "'>" + value + "</span>";
+		}
+
+		function optionCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='editRegional(" + index + ")'></a>");
+			//编辑按钮
+			var button2 = $("<a class='button-remove' cy-click='deleteRegional(" + index + ")'></a>");
+			//删除按钮
+
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).html();
+		};
+		$scope.addRegional = function() {
+			$scope.$setParam("saveRegional", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/RegionalAction/createRegional",
+					method : "post",
+					params : data,
+					success : function(data) {
+						$.messager.alert("提示", "添加成功！");
+						$scope.$getDialog("addDialog").dialog("close");
+						//获得当前第几页数
+						var curr = $scope.$("#regional").datagrid("getPager").pagination("options").pageNumber;
+						if (curr > 1) {
+							//刷新,跳转第一页
+							$scope.$("#regional").datagrid("getPager").pagination("select", 1);
+						} else {
+							$scope.$search("deptQueryRegional");
+						}
+					},
+					fail : function(message) {
+						$.messager.alert("提示", message);
+					}
+				});
+
+			});
+			$scope.$openDialog("addDialog", {
+				title : "新增流量监控段信息",
+				width : 1050,
+				height : 560,
+				href : "tpls/sysManagement/roadNetworkMessage/region-message-input.html?type=add"
+			});
+		};
+		//编辑区间信息
+		$scope.editRegional = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#regional").datagrid("getData").rows[index];
+			$scope.$setParam("regionalData", rowDatas);
+			$scope.$setParam("editRegional", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "road/RegionalAction/updateRegional",
+					params : data,
+					success : function(data) {
+						$.messager.alert("提示", "修改成功！");
+						//关闭编辑窗口
+						$scope.$getDialog("editDialog").dialog("close");
+						//刷新列表
+						$scope.$search("deptQueryRegional");
+					},
+					fail : function(message) {
+						$.messager.alert("提示", message);
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改流量监控段信息",
+				width : 1050,
+				height : 560,
+				href : "tpls/sysManagement/roadNetworkMessage/region-message-input.html?type=edit"
+			}, true);
+		};
+		//批量删除
+		$scope.removeRegional = function() {
+			//获得所有的行数
+			var rows = $scope.$("#regional").datagrid("getChecked");
+			var statusFlags;
+
+			//var dataNum = $scope.$("#regional").datagrid("getRows").length;
+
+			//var options = $scope.$("#reglionlData").datagrid("getPager").data("pagination").options;
+			//var pageNumber = options.pageNumber;
+			if (rows.length == 0) {
+				$.messager.alert("提示", "至少选中一条信息！");
+				return false;
+			} else {
+				var regionalIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					//判断区间状态
+					if (rows[i].enableFlag == "1") {
+						statusFlags = "1";
+					}
+
+					if (i > 0) {
+						regionalIdStr = regionalIdStr + "," + rows[i].regionalId;
+
+					} else {
+						regionalIdStr = regionalIdStr + rows[i].regionalId;
+					}
+				}
+				if ("1" == statusFlags) {
+					$.messager.alert("提示", "有路段为启用状态，请先关闭启用！");
+				} else {
+					$.messager.confirm("提示", "你是否删除信息？", function(flag) {
+						if (flag) {
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + "road/RegionalAction/removeRegional",
+								params : {
+									regionalIdStr : regionalIdStr
+								},
+								memoth : "post",
+								success : function(data) {
+									$scope.$search("deptQueryRegional");
+								},
+								fail : function(errMsg) {
+									$.messager.alert("提示", "删除失败！");
+								}
+							});
+						}
+					});
+				}
+			}
+		};
+		//删除当前行信息
+		$scope.deleteRegional = function(index) {
+			//获得当前行的信息
+			var rowDatas = $scope.$("#regional").datagrid("getData").rows[index];
+			//获得当前行的Id
+			var regionalId = rowDatas.regionalId;
+			if (rowDatas.enableFlag == "1") {
+				$.messager.alert("提示", "此路段为启用状态，请先关闭启用！");
+			} else {
+				$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+					if (r) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "road/RegionalAction/deleteRegional",
+							params : {
+								regionalId : regionalId
+							},
+							success : function(data) {
+								$.messager.alert("提示", "删除成功！");
+								$scope.$search("deptQueryRegional");
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+			}
+		};
+
+	}); 
+</script>
+<style type="text/css">
+	#regionalCondition .th {
+		text-align: right;
+		width: 80px;
+	}
+</style>

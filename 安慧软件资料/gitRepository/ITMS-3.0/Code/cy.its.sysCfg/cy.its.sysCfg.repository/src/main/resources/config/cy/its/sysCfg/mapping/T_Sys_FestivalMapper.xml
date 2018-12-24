@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_FestivalMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Festival" >
+    <id column="FESTIVAL_ID" property="festivalId" jdbcType="VARCHAR" />
+    <result column="FESTIVAL_TYPE" property="festivalType" jdbcType="VARCHAR" />
+    <result column="START_DATE" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="YEAR" property="year" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FESTIVAL_ID, FESTIVAL_TYPE, START_DATE, END_DATE, YEAR, REMARK
+  </sql>
+   <select id="selectAllFestivals" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_FESTIVAL t
+    		<where>
+			<if test="year != null and year != ''">
+				<![CDATA[AND to_char(t.year,'yyyy') = #{year,jdbcType=VARCHAR}]]>
+			</if>
+			<if test="festivalType != null and festivalType != ''">
+				AND t.festival_Type = #{festivalType,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order　by t.START_DATE DESC
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_FESTIVAL
+    where FESTIVAL_ID = #{festivalId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_FESTIVAL
+    where FESTIVAL_ID = #{festivalId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Festival" >
+    insert into T_SYS_FESTIVAL (FESTIVAL_ID, FESTIVAL_TYPE, START_DATE, 
+      END_DATE, YEAR, REMARK
+      )
+    values (#{festivalId,jdbcType=VARCHAR}, #{festivalType,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, 
+      #{endDate,jdbcType=TIMESTAMP}, #{year,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Festival" >
+    insert into T_SYS_FESTIVAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="festivalId != null" >
+        FESTIVAL_ID,
+      </if>
+      <if test="festivalType != null" >
+        FESTIVAL_TYPE,
+      </if>
+      <if test="startDate != null" >
+        START_DATE,
+      </if>
+      <if test="endDate != null" >
+        END_DATE,
+      </if>
+      <if test="year != null" >
+        YEAR,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="festivalId != null" >
+        #{festivalId,jdbcType=VARCHAR},
+      </if>
+      <if test="festivalType != null" >
+        #{festivalType,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Festival" >
+    update T_SYS_FESTIVAL
+    <set >
+      <if test="festivalType != null" >
+        FESTIVAL_TYPE = #{festivalType,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        START_DATE = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        END_DATE = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="year != null" >
+        YEAR = #{year,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where FESTIVAL_ID = #{festivalId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Festival" >
+    update T_SYS_FESTIVAL
+    set FESTIVAL_TYPE = #{festivalType,jdbcType=VARCHAR},
+      START_DATE = #{startDate,jdbcType=TIMESTAMP},
+      END_DATE = #{endDate,jdbcType=TIMESTAMP},
+      YEAR = #{year,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where FESTIVAL_ID = #{festivalId,jdbcType=VARCHAR}
+  </update>
+</mapper>

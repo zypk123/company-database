@@ -1,0 +1,19 @@
+before_script:
+  - cd Code
+  - mvn clean
+  - cd Report/report
+  - find . -name '*.rptdesign' | xargs sed -i 's/src\/main\/webapp\///g'
+  - cd ../../
+
+staging:
+  script:
+  - mvn -U package deploy
+  - ~/syncftp.sh
+  only:
+  - master
+
+production:
+  script:
+  - mvn -U package deploy
+  only:
+  - tags

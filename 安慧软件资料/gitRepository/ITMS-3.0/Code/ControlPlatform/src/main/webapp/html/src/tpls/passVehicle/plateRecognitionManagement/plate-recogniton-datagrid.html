@@ -1,0 +1,181 @@
+<div class="easyui-layout">
+	<form cy-form="formData">
+		<div data-options="region:'north'" style="height: 0px;">
+		</div>
+		<div data-options="region:'center'"  id="centerDiv" style="display: block">
+			<table id="datagrid" cy-datagrid="optionsPlateRecog" cy-querydata="formData"
+			cy-url="vehTrack/plateRecog/findPlateRecognitionRate"></table>
+		</div>
+	</form>
+</div>
+
+
+<script>
+InitPage(['data'], function($scope) {
+	$scope.$getDefaultCode(['421']);
+		$scope.load = function(){
+			$.extend($scope.formData, $scope.data);
+			$scope.formData.orderTypeName ='recogRate';
+			$scope.formData.totalCount =0;
+			$scope.formData.searchToken="";
+			$scope.$search("formData",null,function(data){
+				if(data && data != null && data.rows.length > 0){
+					$scope.formData.searchToken =data.searchToken;
+					$scope.formData.totalCount =data.total;
+				}
+			});
+		};
+		
+		$scope.optionsPlateRecog = {
+				columns : [[{
+					field : "deviceNbr",
+					title : "卡口/相机编号",
+					width : 80,
+					align : "center"
+				},
+				{
+					field : "deviceName",
+					title : "卡口/相机名称",
+					width : 60,
+					align : "center"
+				},
+				{
+					field : "siteName",
+					title : "安装点位",
+					width : 80,
+					align : "center"
+				},
+				{
+					field : "tollgateType",
+					title : "卡口类型",
+					width : 40,
+					align : "center",
+					formatter:function(value){
+						return $scope.tollgateTypeFormmater(value);
+					}
+				},
+				{
+					field : "orgName",
+					title : "管理单位",
+					width : 80,
+					align : "center"
+				},
+				{
+					field : "totalCount",
+					title : "期间上传数据",
+					width : 40,
+					align : "center"
+				}, {
+					field : "invalidCount",
+					title : "期间未识别数据",
+					width : 30,
+					align : "center"
+				}, {
+					field : "recogRate",
+					title : "总识别率",
+					width : 30,
+					align : "center",
+					formatter : function(value, rowData, rowIndex) {
+						return (value * 100).toFixed(2) + '%';
+					}
+				},
+				{
+					field : "dayRecogRate",
+					title : "白天识别率",
+					width : 30,
+					align : "center",
+					styler:function(value, rowData, rowIndex){
+						if((value * 100).toFixed(2)<90){
+							return 'color:red;';
+						}
+					},
+					formatter : function(value, rowData, rowIndex) {
+						return (value * 100).toFixed(2) + '%';
+					}
+				},
+				{
+					field : "nightRecogRate",
+					title : "夜晚识别率",
+					width : 30,
+					align : "center",
+					styler:function(value, rowData, rowIndex){
+						if((value * 100).toFixed(2)<80){
+						return 'color:red;';
+						}
+					},
+					formatter : function(value, rowData, rowIndex) {
+						return (value * 100).toFixed(2) + '%';
+					}
+				},
+				{field : 'fxyy',title : '疑似故障原因',align : 'center',formatter :function(value,rowData,rowIndex){
+					if((rowData.nightRecogRate * 100).toFixed(2)<80 && (rowData.dayRecogRate * 100).toFixed(2)>90){
+						return '<div style="color:red;">闪光灯故障</div>';
+					}
+					else if((rowData.nightRecogRate * 100).toFixed(2)<80 && (rowData.dayRecogRate * 100).toFixed(2)<90){
+						return '<div style="color:red;">相机设备故障</div>';
+					}else if((rowData.dayRecogRate * 100).toFixed(2)<90){
+						return "白天相机设备故障";
+					}else{
+						return "正常";
+					}
+					}
+				},
+				
+				{field : 'cz',title : '操作',align : 'center',formatter :function(value,rowData,rowIndex) {
+              	  if (value == undefined) {
+            		  return $scope.operateUserCz(value,rowData,rowIndex);
+            	  }
+            	  
+			},width : 30
+		}
+				]]
+			};
+		
+		$scope.tollgateTypeFormmater = function(value){
+			if(!value){
+				return ;
+			}
+			return $scope.$getCodeName("421",value);
+		};
+		
+			//用户操作栏
+		  $scope.operateUserCz = function(value, row, index) {
+		  	//车辆轨迹
+			var button1 = $('<a  title="时段分析" style="color:blue;font-size=14px;" cy-click="hourAnalysis(\'' + row.deviceNbr + '\',\'' + row.deviceName + '\',\'' + index + '\')">时段分析</a>');
+				//图片列表
+			button1.linkbutton({
+				//iconCls : "icon-edit-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).html();
+		};
+		
+		$scope.hourAnalysis = function(deviceNbr,deviceName,index){
+			var rowData = $scope.$("#datagrid").datagrid("getRows")[index];
+			var reason ;
+			if((rowData.nightRecogRate * 100).toFixed(2)<80 && (rowData.dayRecogRate * 100).toFixed(2)>90){
+				reason= "闪光灯故障";
+			}
+			else if((rowData.nightRecogRate * 100).toFixed(2)<80 && (rowData.dayRecogRate * 100).toFixed(2)<90){
+				reason= "相机设备故障";
+			}
+			else if((rowData.dayRecogRate * 100).toFixed(2)<90){
+				return "白天相机设备故障";
+			}
+			var hourdSearchData = {};
+			$.extend(hourdSearchData, $scope.data);
+			hourdSearchData.statBy = "hourd";
+			hourdSearchData.deviceNbr = deviceNbr;
+			$scope.$setParam("data", hourdSearchData);
+			$scope.$setParam("selectedStatType","hourd");
+			$scope.$openDialog("plateRecognition", {
+                title: deviceName+"设备时段分析图,疑似故障原因:"+reason,
+                width: 1000,
+               	height: 600,
+                href: "tpls/passVehicle/plateRecognitionManagement/plate-recogniton-graph.html"
+            }, true);
+			
+		};
+		
+})
+</script>

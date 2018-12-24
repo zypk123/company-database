@@ -1,0 +1,458 @@
+<div id="deviceAll" class="easyui-layout" style="width: 100%;height: 100%">
+
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false" style="width: 100%">
+		<form method="post" cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="td">
+							机构：
+						</div>
+						<div class="td">
+							<input class="easyui-combotree" id="org" name="orgId"
+							/>
+						</div>
+						<div class="td">
+							道路：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="road" name="roadId" style="width:120px"
+							data-options="valueField:'roadId',textField:'roadName'"/>
+						</div>
+						<div class="td">
+							点位：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="site" name="siteId"
+							data-options="valueField:'siteId',textField:'siteName'"/>
+						</div>
+						<div class="td">
+							使用状态：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:70px"
+							data-options="valueField:'code',textField:'name'"/>
+						</div>
+						<div class="td">
+							厂家：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="contractor" name="contractor" style="width:120px"
+							data-options="valueField:'id',textField:'name'"/>
+						</div>
+						<div class="td">
+							<a class="easyui-linkbutton button-search" cy-click="searchData"
+							data-options="iconCls:'icon-search',plain:true">查询</a>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="td">
+							<input type="radio" name="showType" value="1" style="width: 10px" checked="true" cy-click="showTypeChange"/>
+							图形展示
+							<input type="radio" name="showType" value="2" style="width: 10px" cy-click="showTypeChange"/>
+							列表展示
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false" style="width: 100%">
+		<form method="post" cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="td">
+							机构：
+						</div>
+						<div class="td">
+							<input class="easyui-combotree" id="org" name="orgId"
+							/>
+						</div>
+						<div class="td">
+							道路：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="road" name="roadId" style="width:120px"
+							data-options="valueField:'roadId',textField:'roadName'"/>
+						</div>
+						<div class="td">
+							点位：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="site" name="siteId"
+							data-options="valueField:'siteId',textField:'siteName'"/>
+						</div>
+						<div class="td">
+							使用状态：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:70px"
+							data-options="valueField:'code',textField:'name'"/>
+						</div>
+						<div class="td">
+							厂家：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="contractor" name="contractor" style="width:120px"
+							data-options="valueField:'id',textField:'name'"/>
+						</div>
+						<div class="td">
+							<a class="easyui-linkbutton button-search" cy-click="searchData"
+							data-options="iconCls:'icon-search'">查询</a>
+						</div>
+					</div>
+					<div class="tr">
+						<div class="td">
+							<input type="radio" name="showType" value="1" style="width: 10px" checked="true" cy-click="showTypeChange"/>
+							图形展示
+							<input type="radio" name="showType" value="2" style="width: 10px" cy-click="showTypeChange"/>
+							列表展示
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<!--数据展示区 -->
+	<div data-options="region:'center',border:true">
+		<div id="graphDiv" style="width: 100%;height: 100%;">
+			<div id="deviceTotall" style="width: 50%;height: 600px;float: left"></div>
+			<div id="devicePie" style="width: 50%;height: 400px;float: left;"></div>
+		</div>
+		<table id="tollgateGrd" cy-datagrid="options" cy-querydata="formData" cy-url="data/deviceManage/deviceConfig/qryTollgateRecords.json">
+
+		</table>
+	</div>
+
+</div>
+<script src="frameworks/echarts/js/echarts.js"></script>
+<script>
+    InitPage([], function($scope) {
+        $scope.load = function() {
+            $scope.initPage();
+            var myChart;
+            require.config({
+                paths : {
+                    echarts : 'frameworks/echarts/js'
+                }
+            });
+            require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+            'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+                myChart = ec.init($scope.$('#deviceTotall')[0], 'macarons');
+                var option = {
+                    tooltip : {
+                        show : true
+                    },
+                    legend : {
+                        data : ["卡口", "固定点", "视频", "事件检测", "诱导屏", "气象仪"]
+                    },
+                    xAxis : [{
+                        type : 'category',
+                        data : ["昆明支队", "大理支队", "玉溪支队", "楚雄支队", "红河支队", "丽江支队"]
+                    }, {
+                        type : 'category',
+                        axisLine : {
+                            show : false
+                        },
+                        axisTick : {
+                            show : false
+                        },
+                        axisLabel : {
+                            show : false
+                        },
+                        splitArea : {
+                            show : false
+                        },
+                        splitLine : {
+                            show : false
+                        },
+                        data : ['昆明支队', '大理支队', '玉溪支队', '楚雄支队', '红河支队', '丽江支队']
+                    }],
+                    yAxis : [{
+                        type : 'value'
+                    }],
+                    series : [{
+                        "name" : "卡口",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [5, 20, 40, 10, 10, 20]
+                    }, {
+                        "name" : "固定点",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [25, 20, 10, 20, 30, 20]
+                    }, {
+                        "name" : "视频",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [35, 20, 20, 10, 20, 20]
+                    }, {
+                        "name" : "事件检测",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [15, 20, 40, 10, 10, 20]
+                    }, {
+                        "name" : "诱导屏",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [45, 20, 10, 10, 10, 20]
+                    }, {
+                        "name" : "气象仪",
+                        "type" : "bar",
+                        stack : '设备类型',
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    position : 'inside'
+                                }
+                            }
+                        },
+                        "data" : [10, 20, 20, 10, 10, 20]
+                    }]
+                };
+                myChart.setOption(option);
+            });
+
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.CLICK, eConsole);
+        };
+        function showPie() {
+            require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+            'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+                var myChartPie = ec.init($scope.$('#devicePie')[0], 'macarons');
+                var optionPie = {
+                    tooltip : {
+                        show : true
+                    },
+                    legend : {
+                        data : ["未启用", "启用", "停用", "报废"]
+                    },
+                    series : [{
+                        name : '使用状态',
+                        type : 'pie',
+                        radius : ['50%', '70%'],
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true
+                                },
+                                labelLine : {
+                                    show : true
+                                }
+                            },
+                            emphasis : {
+                                label : {
+                                    show : true,
+                                    position : 'center',
+                                    textStyle : {
+                                        fontSize : '30',
+                                        fontWeight : 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        data : [{
+                            value : 335,
+                            name : '未启用'
+                        }, {
+                            value : 310,
+                            name : '启用'
+                        }, {
+                            value : 234,
+                            name : '停用'
+                        }, {
+                            value : 135,
+                            name : '报废'
+                        }]
+                    }]
+                };
+                myChartPie.setOption(optionPie);
+            });
+        }
+
+        function eConsole(param) {
+            /*
+             debugger;
+             */
+            var mes = '【' + param.type + '】';
+            if ( typeof param.seriesIndex != 'undefined') {
+                mes += '  seriesIndex : ' + param.seriesIndex;
+                mes += '  dataIndex : ' + param.dataIndex;
+            }
+            showPie();
+        }
+
+
+        $.extend($scope, {
+            initPage : function() {
+
+                //请求页面的数据字典等初始化信息
+                $scope.$ajaxRequest({
+                    url : "data/deviceManage/deviceConfig/deviceConfigMgr.json",
+                    params : {
+                        OrgCode : $scope.UserInfo.OrgCode
+                    },
+                    success : function(retData) {
+                        if (retData.Error != "") {
+                            alert("初始化页面报错,详细：" + retData.Error);
+                        } else {
+                            $scope.initCombobox(retData.Result);
+                        }
+                    },
+                    fail : function(errTxt) {
+                        alert(errTxt);
+                    }
+                });
+            },
+            /**
+             * 将初始化信息绑定到页面控件上
+             * @param retData
+             */
+            initCombobox : function(retData) {
+                $scope.$("#org").combotree("loadData", retData.orgTree);
+                $scope.$('#road').combobox("loadData", retData.road);
+                $scope.$('#site').combobox('loadData', retData.site);
+                $scope.$('#deviceUseStatus').combobox('loadData', retData.dicts["405"]);
+                $scope.$('#contractor').combobox('loadData', retData.contractor);
+            },
+            formData : {
+
+            },
+            /**
+             * 查询卡口数据
+             */
+            searchData : function() {
+                $scope.$search("formData", {
+
+                }, function(data) {
+
+                });
+            },
+            options : {
+                columns : [[{
+                    halign : 'center',
+                    field : "DEVICE_ID",
+                    checkbox : true
+                }, {
+                    halign : 'center',
+                    title : "设备编号",
+                    field : "DEVICE_NBR",
+                    width : 100
+                }, {
+                    halign : 'center',
+                    title : "设备名称",
+                    field : "DEVICE_NAME",
+                    width : 250
+                }, {
+                    halign : 'center',
+                    title : "管辖机构",
+                    field : "ORG_NAME",
+                    width : 150
+                }, {
+                    halign : 'center',
+                    title : "所属道路",
+                    field : "ROAD_NAME",
+                    width : 100
+                }, {
+                    halign : 'center',
+                    title : "所在点位",
+                    field : "SITE_NAME",
+                    width : 200
+                }, {
+                    halign : 'center',
+                    title : "厂家",
+                    field : "CONTRACTOR",
+                    width : 100
+                }, {
+                    halign : 'center',
+                    title : "设备型号",
+                    field : "DEVICE_MODEL",
+                    width : 100
+                }, {
+                    halign : 'center',
+                    title : "安装时间",
+                    field : "INSTALL_DATE",
+                    width : 100
+                }, {
+                    halign : 'center',
+                    title : "使用状态",
+                    field : "USE_STATUS",
+                    width : 80
+                }]]
+            },
+
+            showTypeChange : function(event) {
+                var typeValue = $scope.$(event.currentTarget).val();
+                if (typeValue == "1") {
+                    $scope.$("#graphDiv").show();
+                    $scope.$("#tollgateGrd").hide();
+                } else if (typeValue == "2") {
+                    $scope.$("#graphDiv").hide();
+                    $scope.$("#tollgateGrd").show();
+                }
+            }
+        });
+
+    });
+
+</script>
+<style>
+    #deviceAll .td > input[class^='easyui-'] {
+        width: 170px;
+    }
+    #deviceAll .td:nth-child(odd) {
+        margin-left: 15px;
+    }
+</style>

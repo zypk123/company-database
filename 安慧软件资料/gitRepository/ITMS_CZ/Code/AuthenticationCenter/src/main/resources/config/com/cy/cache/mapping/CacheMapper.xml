@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cy.cache.dao.CacheMapper" >
+  <resultMap id="BaseResultMap" type="com.cy.cache.domain.CacheDao" >
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="parentCode" property="parentCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="getServicesByRoleCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select  b.job_code	code,c.service_code name 
+        from  t_job_service  a 
+		inner  join  t_job  b  on a.job_id = b.job_id 
+		inner  join  t_service  c  on  a.service_id = c.service_id 
+		order by  b.job_code 
+  </select>
+  
+  <select id="getServicesBykey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+       select service_key code,service_code name from  t_service 
+       where  trim(service_key) =  #{keyValue,jdbcType=CHAR}   
+       order by  service_key  
+  </select>
+</mapper>

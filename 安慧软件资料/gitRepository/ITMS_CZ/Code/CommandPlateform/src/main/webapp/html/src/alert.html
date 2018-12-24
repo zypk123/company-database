@@ -1,0 +1,196 @@
+<div class="easyui-panel" id="alert" data-options="fit:true,border:false">
+	<div class="alert-panel table" id="basePanel" style="display: none;">
+		<div class="tr">
+			<div class="td deviceName" style="width:62%;color:#2e91c3;">
+				
+			</div>
+			<div class="td alarmType" style="width:20%;color:#0081c2;">
+				
+			</div>
+			<div class="td" style="width:18%;">
+				<a class="easyui-linkbutton button-main signButton" data-options="iconCls:'icon-edit'">签收</a>
+			</div>
+		</div>
+		<div class="tr">
+			<div class="td time" style="width:20%;color: red;">
+				
+			</div>
+			<div class="td disc" style="width:62%;color:#777;">
+				
+			</div>
+			<div class="td" style="width:18%;">
+				<a class="easyui-linkbutton handleButton" data-options="iconCls:'icon-handle'">处理</a>
+			</div>
+		</div>
+	</div>
+</div> 
+<script>
+	InitPage([],function($scope){
+		//页面加载完毕，注册各个订阅信息
+		$scope.load = function(){
+			//注册设备类报警
+			$scope.$bindAlarmEvent(SubsribeType.deviceFault,handleDeviceFault);
+			//注册服务器状态报警
+			$scope.$bindAlarmEvent(SubsribeType.serverAbnormalState,handleServerAbnormalState);
+			//注册断流预警
+			$scope.$bindAlarmEvent(SubsribeType.sectionAlarm,handleSectionAlarm);
+			//注册交通事件预警
+			$scope.$bindAlarmEvent(SubsribeType.trafficEvent,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.trafficEvent,"trafficEventAlarm");
+			});
+			//注册路面积水预警
+			$scope.$bindAlarmEvent(SubsribeType.waterThicknessAlarm,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.waterThicknessAlarm,"waterAlarm");
+			});
+			//注册路面状况预警
+			$scope.$bindAlarmEvent(SubsribeType.roadCondtionAlarm,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.roadCondtionAlarm,"roadCondtionAlarm");
+			});
+			//注册高温预警
+			$scope.$bindAlarmEvent(SubsribeType.temperatureAlarm,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.temperatureAlarm,"highTempAlarm");
+			});
+			//注册大风预警
+			$scope.$bindAlarmEvent(SubsribeType.windAlarm,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.windAlarm,"windAlarm");
+			});
+			//注册能见度预警
+			$scope.$bindAlarmEvent(SubsribeType.visibilityAlarm,function(alarmInfo){
+				handleTrafficEvent(alarmInfo,SubsribeType.visibilityAlarm,"visibilityAlarm");
+			});
+		};
+		
+		
+		//处理断流预警
+		function handleSectionAlarm(alarmInfo){
+			console.log(alarmInfo);
+		}
+		
+		//处理设备故障报警
+		function handleDeviceFault(alarmInfo){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/deviceConfig/queryDeviceById",
+				params : {
+					deviceId : alarmInfo.alarmDeviceId
+				},
+				success : function(deviceData){
+					//创建dom
+					var codes = alarmInfo.alarmDisc.split(";");
+					var disc = "";
+					for(var index in codes){
+						disc += $scope.$getCodeName("478",codes[index]) + ",";
+					}
+					disc = disc.substring(0,disc.length - 1);
+					var showDisc = disc;
+					if(showDisc.length > 18){
+						showDisc = showDisc.substring(0,18) + "…";
+					}
+					var div = $scope.$(".alert-panel#basePanel").clone();
+					div.attr("id",alarmInfo.alarmId);
+					var deviceName = deviceData.deviceName;
+					if(deviceName.length > 19){
+						deviceName = deviceName.substring(0,19) + "…";
+					}
+					div.find(".deviceName").text(deviceName);
+					div.find(".deviceName").attr("title",deviceData.deviceName);
+					div.find(".alarmType").text(SubsribeType.deviceFault.name);
+					div.find(".time").text(new Date(alarmInfo.startTime).format("HH:mm:ss"));
+					div.find(".disc").text(showDisc).attr("title",disc);
+					div.css({
+						background: "url(themes/default/images/alarmIcon/deviceAlarm.png) 10px center no-repeat"
+					});
+					div.find(".handleButton").hide();
+					inserInfoPanel(div);
+				}
+			});
+		}
+		
+		//处理服务器状态异常报警
+		function handleServerAbnormalState(alarmInfo){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/monitorServerManage/queryServerById",
+				params : {
+					serverId : alarmInfo.alarmDeviceId
+				},
+				success : function(serverData){
+					var disc =  alarmInfo.alarmDisc;
+					if(disc.length > 18){
+						disc = disc.substring(0,18) + "…";
+					}
+					var serverIp = serverData.serverIp + "服务器";
+					var div = $scope.$(".alert-panel#basePanel").clone();
+					div.attr("id",alarmInfo.alarmId);
+					div.find(".deviceName").text(serverIp);
+					div.find(".deviceName").attr("title",serverIp);
+					div.find(".alarmType").text(SubsribeType.serverAbnormalState.name);
+					div.find(".time").text(new Date(alarmInfo.startTime).format("HH:mm:ss"));
+					div.find(".disc").text(disc).attr("title",alarmInfo.alarmDisc);
+					div.css({
+						background: "url(themes/default/images/alarmIcon/serverStatusAlarm.png) 10px center no-repeat"
+					});
+					div.find(".handleButton").hide();
+					inserInfoPanel(div);
+				}
+			});
+		}
+		
+		function handleTrafficEvent(alarmInfo,type,image){
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/site/findSiteByCode",
+				params : {
+					siteCode : alarmInfo.siteCode
+				},
+				success : function(siteData){
+					var disc =  alarmInfo.alarmDesc;
+					if(disc.length > 18){
+						disc = disc.substring(0,18) + "…";
+					}
+					var div = $scope.$(".alert-panel#basePanel").clone();
+					div.attr("id",alarmInfo.alarmEventId);
+					var deviceName = siteData.siteName;
+					if(deviceName.length > 19){
+						deviceName = deviceName.substring(0,19) + "…";
+					}
+					div.find(".deviceName").text(deviceName);
+					div.find(".deviceName").attr("title",siteData.siteName);
+					div.find(".alarmType").text(type.name);
+					div.find(".time").text(new Date(alarmInfo.startAlarmTime).format("HH:mm:ss"));
+					div.find(".disc").text(disc).attr("title",alarmInfo.alarmDesc);
+					div.css({
+						background: "url(themes/default/images/alarmIcon/"+image+".png) 10px center no-repeat"
+					});
+					div.find(".handleButton").hide();
+					inserInfoPanel(div);
+				}
+			});
+		}
+		
+		/**
+		 * 添加元素到列表中，并判断列表最大长度 
+		 */
+		function inserInfoPanel(div){
+			$scope.$("#alert").prepend(div.show());
+			if($scope.$("#alert").find(".alert-panel").not("#basePanel").length > 50){
+				$scope.$("#alert").find(".alert-panel").not("#basePanel").last().remove();
+			}
+			$scope.$eventProxy();
+		}
+		
+	});
+</script>
+<style>
+	#alert .alert-panel{
+		width:87%;
+		height: 60px;
+		margin-left: 1%;
+		margin-top: 5px;
+		border: solid #ddd 1px;
+		border-radius: 5px;
+		padding-left: 10%;
+	}
+	#alert .td{
+		height : 25px;
+		line-height: 25px;
+		padding:2px 0;
+	}
+</style>

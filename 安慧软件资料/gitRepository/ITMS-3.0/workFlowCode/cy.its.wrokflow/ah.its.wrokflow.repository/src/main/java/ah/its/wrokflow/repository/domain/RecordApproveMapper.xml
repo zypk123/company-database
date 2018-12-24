@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.RecordApproveMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.RecordApprove" >
+    <id column="RECORD_APPROVE_ID" property="recordApproveId" jdbcType="VARCHAR" />
+    <result column="DEVICE_APPROVE_ID" property="deviceApproveId" jdbcType="VARCHAR" />
+    <result column="PROCESS_ID" property="processId" jdbcType="VARCHAR" />
+    <result column="MONITOR_IMG" property="monitorImg" jdbcType="VARCHAR" />
+    <result column="LIMIT_IMG" property="limitImg" jdbcType="VARCHAR" />
+    <result column="WARN_IMG" property="warnImg" jdbcType="VARCHAR" />
+    <result column="ACCEPTANCE_IMG" property="acceptanceImg" jdbcType="VARCHAR" />
+    <result column="APPRAISAL_IMG" property="appraisalImg" jdbcType="VARCHAR" />
+    <result column="CERTIFICATE_IMG" property="certificateImg" jdbcType="VARCHAR" />
+    <result column="DISABLED" property="disabled" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RECORD_APPROVE_ID, DEVICE_APPROVE_ID, PROCESS_ID, MONITOR_IMG, LIMIT_IMG, WARN_IMG, 
+    ACCEPTANCE_IMG, APPRAISAL_IMG, CERTIFICATE_IMG, DISABLED
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_RECORD_APPROVE
+    where RECORD_APPROVE_ID = #{recordApproveId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_RECORD_APPROVE
+    where RECORD_APPROVE_ID = #{recordApproveId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.RecordApprove" >
+    insert into T_WF_RECORD_APPROVE (RECORD_APPROVE_ID, DEVICE_APPROVE_ID, 
+      PROCESS_ID, MONITOR_IMG, LIMIT_IMG, 
+      WARN_IMG, ACCEPTANCE_IMG, APPRAISAL_IMG, 
+      CERTIFICATE_IMG, DISABLED)
+    values (#{recordApproveId,jdbcType=VARCHAR}, #{deviceApproveId,jdbcType=VARCHAR}, 
+      #{processId,jdbcType=VARCHAR}, #{monitorImg,jdbcType=VARCHAR}, #{limitImg,jdbcType=VARCHAR}, 
+      #{warnImg,jdbcType=VARCHAR}, #{acceptanceImg,jdbcType=VARCHAR}, #{appraisalImg,jdbcType=VARCHAR}, 
+      #{certificateImg,jdbcType=VARCHAR}, #{disabled,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.RecordApprove" >
+    insert into T_WF_RECORD_APPROVE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recordApproveId != null" >
+        RECORD_APPROVE_ID,
+      </if>
+      <if test="deviceApproveId != null" >
+        DEVICE_APPROVE_ID,
+      </if>
+      <if test="processId != null" >
+        PROCESS_ID,
+      </if>
+      <if test="monitorImg != null" >
+        MONITOR_IMG,
+      </if>
+      <if test="limitImg != null" >
+        LIMIT_IMG,
+      </if>
+      <if test="warnImg != null" >
+        WARN_IMG,
+      </if>
+      <if test="acceptanceImg != null" >
+        ACCEPTANCE_IMG,
+      </if>
+      <if test="appraisalImg != null" >
+        APPRAISAL_IMG,
+      </if>
+      <if test="certificateImg != null" >
+        CERTIFICATE_IMG,
+      </if>
+      <if test="disabled != null" >
+        DISABLED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recordApproveId != null" >
+        #{recordApproveId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceApproveId != null" >
+        #{deviceApproveId,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null" >
+        #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="monitorImg != null" >
+        #{monitorImg,jdbcType=VARCHAR},
+      </if>
+      <if test="limitImg != null" >
+        #{limitImg,jdbcType=VARCHAR},
+      </if>
+      <if test="warnImg != null" >
+        #{warnImg,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptanceImg != null" >
+        #{acceptanceImg,jdbcType=VARCHAR},
+      </if>
+      <if test="appraisalImg != null" >
+        #{appraisalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateImg != null" >
+        #{certificateImg,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        #{disabled,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.RecordApprove" >
+    update T_WF_RECORD_APPROVE
+    <set >
+      <if test="deviceApproveId != null" >
+        DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null" >
+        PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="monitorImg != null" >
+        MONITOR_IMG = #{monitorImg,jdbcType=VARCHAR},
+      </if>
+      <if test="limitImg != null" >
+        LIMIT_IMG = #{limitImg,jdbcType=VARCHAR},
+      </if>
+      <if test="warnImg != null" >
+        WARN_IMG = #{warnImg,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptanceImg != null" >
+        ACCEPTANCE_IMG = #{acceptanceImg,jdbcType=VARCHAR},
+      </if>
+      <if test="appraisalImg != null" >
+        APPRAISAL_IMG = #{appraisalImg,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateImg != null" >
+        CERTIFICATE_IMG = #{certificateImg,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        DISABLED = #{disabled,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RECORD_APPROVE_ID = #{recordApproveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.RecordApprove" >
+    update T_WF_RECORD_APPROVE
+    set DEVICE_APPROVE_ID = #{deviceApproveId,jdbcType=VARCHAR},
+      PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      MONITOR_IMG = #{monitorImg,jdbcType=VARCHAR},
+      LIMIT_IMG = #{limitImg,jdbcType=VARCHAR},
+      WARN_IMG = #{warnImg,jdbcType=VARCHAR},
+      ACCEPTANCE_IMG = #{acceptanceImg,jdbcType=VARCHAR},
+      APPRAISAL_IMG = #{appraisalImg,jdbcType=VARCHAR},
+      CERTIFICATE_IMG = #{certificateImg,jdbcType=VARCHAR},
+      DISABLED = #{disabled,jdbcType=VARCHAR}
+    where RECORD_APPROVE_ID = #{recordApproveId,jdbcType=VARCHAR}
+  </update>
+</mapper>

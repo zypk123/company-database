@@ -1,0 +1,247 @@
+<div class="easyui-layout" id="control-manager-input">
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout">
+			<div data-options="region:'north',height:332,border:false" style="border-bottom:solid 1px #ddd">
+				<form cy-form="formData">
+					<div class="searchPanel">
+						<div class="panel_title">布控人信息</div>
+						<div class="table">
+							<div class="tr">
+								<div class="th">
+									申请人单位：
+								</div>
+								<div class="td">
+									<input class="easyui-textbox" name="unit" style="width:130px;">
+								</div>
+								<div class="th">
+									联系人：
+								</div>
+								<div class="td">
+									<input class="easyui-textbox" name="proposer" style="width:130px;">
+								</div>
+								<div class="th">
+									联系电话：
+								</div>
+								<div class="td">
+									<input class="easyui-numberbox" name="phoneNumber" style="width:130px;">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="searchPanel" id="controlInfo" style="height:205px;width:55%;float:left">
+						<div class="panel_title">布控信息</div>
+						<div class="table">
+							<div class="tr">
+								<div class="th">布控性质：</div>
+								<div class="td">
+									<input type="text" class="easyui-combobox" name="controlAttr" id="controlAttr" style="width:110px">
+								</div>
+								<div class="th" style="width:75px;">布控等级：</div>
+								<div class="td">
+									<input type="text" class="easyui-combobox" id="controlLevel" name="controlLevel" style="width:110px">
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th">布控原因： </div>
+								<div class="td">
+									<input type="text" class="easyui-combobox" name="controlReason" id="controlReason" style="width:148px">
+									
+									<input type="text" class="easyui-combobox" name="controlReasonDetail" id="controlReasonDetail" style="width:149px">
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th">布控范围：</div>
+								<div class="td">
+									<input class="cy-chooseLocation" name="controlArea" style="width:211px;">
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th">布控时限：</div>
+								<div class="td">
+									自
+									<input type="text" class="easyui-datebox" name="controlBegin">
+									之日起
+									<select type="text" class="easyui-combobox" name="controlDuration" style="width:107px">
+										<option value="1">1天</option>
+										<option value="2">2天</option>
+										<option value="3">3天</option>
+										<option value="5">5天</option>
+										<option value="7">一周</option>
+										<option value="14">两周</option>
+										<option value="21">三周</option>
+										<option value="30">一个月(30天)</option>
+										<option value="60">两个月(60天)</option>
+										<option value="90">一个季度(90天)</option>
+										<option value="180">半年(180天)</option>
+									</select>
+								</div>
+							</div>
+							<div class="tr">
+								<div class="th">案情说明：</div>
+								<div class="td">
+									<textarea style="width:297px;height:40px"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="searchPanel" style="height:205px;width:40%;float:left">
+						<div class="panel_title">附件信息</div>
+						<div class="easyui-panel" data-options="border:false" style="width:100%;height:100%">
+							<div class="imageTable">
+								<span class="imageCell">
+									<img src="themes/default/images/upload.png">
+								</span>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div data-options="region:'center',border:false">
+				<table id="datagrid" cy-datagrid="options"></table>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false,height:40">
+		<div class="linkbutton_toolbar" style="text-align:center">
+			<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'">确认布控</a>
+			<a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+</div>
+<script>
+	/**
+	 * dicts 数据字典列表
+	 * formatters  格式化方法集
+	 */
+	InitPage(["dicts","formatters"],function($scope){
+		
+		//记录当前操作的列
+		var currentIndex;
+		/**
+		 * 初始化执行动作
+		 */
+		$scope.load = function(){
+			//初始化添加车辆按钮
+			initAddVehButton();
+			//初始化选项
+			initCombobox();
+		}
+		/**
+		 * 初始化选项
+		 */
+		var initCombobox = function(){
+			$scope.$("#controlAttr").combobox("loadData",$scope.dicts["011"]);
+			$scope.$("#controlLevel").combobox("loadData",$scope.dicts["010"]);
+			$scope.$("#controlReason").combobox("loadData",$scope.dicts["008"]);
+			$scope.$("#controlReasonDetail").combobox("loadData",$scope.dicts["009"]);
+		};
+		/**
+		 * 给datagrid最后一列的标题添加一个按钮
+		 */
+		var initAddVehButton = function(){
+			var button = $("<a class='button-add'>添加车辆</a>");
+			button.linkbutton({
+				iconCls: "icon-add"
+			}).css({
+				"margin-left":20
+			});
+			//定义点击事件，打开添加车辆窗口
+			button.click(openVehAddDialog);
+			$scope.$(".datagrid-header-row [field=operater] .datagrid-cell").append(button)
+		};
+
+		/**
+		 * 打开添加车辆窗口
+		 */
+		var openVehAddDialog = function(){
+			//传递数据字典项
+			$scope.$setParam("dicts",$scope.dicts);
+			//传递添加车辆方法
+			$scope.$setParam("addVehicle",addVehicle)
+			//打开手工布控窗口
+			$scope.$openDialog("addVehicle",{
+				title: "添加车辆",
+				width: 300,
+				height: 300,
+				href: "tpls/passVehicle/controlManager/control-manager-add-vehicle.html"
+			});
+		};
+
+		/**
+		 * 添加布控车辆
+		 * @param {[type]} vehData 车辆数据
+		 */
+		var addVehicle = function(vehData){
+			$scope.$("#datagrid").datagrid("appendRow",vehData);
+			$scope.$eventProxy();
+		};
+
+		/**
+		 * 车辆列表操作栏格式化
+		 * @return {[type]} [description]
+		 */
+		var operater = function(value,row,index){
+			var removeButton = $('<a class="button-remove" title="删除车辆" cy-click="removeVehicle"></a>');
+			removeButton.linkbutton({
+				iconCls : "icon-remove"
+			});
+			return $("<span></span>").append(removeButton).html();
+		};
+		/**
+		 * datagrid配置参数
+		 * @type {Object}
+		 */
+		$scope.options = {
+			columns : [[
+				{title:"号牌号码",field:"plateNumber",width:100},
+				{title:"号牌种类",field:"plateType",width:100,formatter:$scope.formatters.plateType},
+				{title:"车辆品牌",field:"vehBrand",width:100,formatter:$scope.$getBrandNameByCode},
+				{title:"车身颜色",field:"vehColor",width:100,formatter:$scope.formatters.vehColor},
+				{title:"操作",field:"operater",width:100,formatter:operater}
+			]],
+			pagination: false,
+			onClickRow: function(index,data){
+				currentIndex = index;
+			}
+		};
+
+		/**
+		 * 删除车辆
+		 * @param  {[type]} index 删除行下标
+		 */
+		$scope.removeVehicle = function(index){
+			setTimeout(function(){
+				$scope.$("#datagrid").datagrid("deleteRow",currentIndex);
+			},100);
+		};
+		/**
+		 * 数据初始化
+		 * @type {Object}
+		 */
+		$scope.formData = {
+			controlDuration : ""
+		}
+	});
+</script>
+<style>
+	#control-manager-input .th{
+		width: 90px;
+		text-align: right;
+	}
+	#control-manager-input .td{
+		width: 115px;
+	}
+	#control-manager-input .imageTable{
+		display:table;
+		height:100%;
+		width:100%;
+	}
+	#control-manager-input .imageCell{
+		display:table-cell;
+		text-align:center;
+		vertical-align: middle;
+		height:100%;
+		width:100%;
+		cursor: pointer;
+	}
+</style>

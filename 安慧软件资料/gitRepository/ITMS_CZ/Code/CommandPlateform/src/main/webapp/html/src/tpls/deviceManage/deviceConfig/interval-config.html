@@ -1,0 +1,30 @@
+<div id="intervalTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+	<div title="区间信息" data-options="href:'tpls/deviceManage/deviceConfig/interval-system-device-base-info.html'">
+
+    </div>
+    
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-certification.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+	InitPage(['saveRegional','remark','closeSelf',"regionalData","equipmentNbr"],function($scope){
+		$scope.$setParam("saveRegional",$scope.saveRegional);
+		$scope.$setParam("remark",$scope.remark);
+		$scope.$setParam("regionalData", $scope.regionalData);
+		//传递关闭弹出框的方法
+        $scope.$setParam("destroyTab1",$scope.closeSelf);
+        $scope.$setParam("destroyTab3",$scope.closeSelf);
+        //设置访问tab页
+        if($scope.remark == "add"){
+            var intervalTabs = $scope.$("#intervalTabs");
+            $scope.$setParam("intervalTabs",intervalTabs);
+            $scope.$("#intervalTabs").tabs('disableTab', 1);
+            if($scope.equipmentNbr){
+		    	$scope.$setParam("equipmentNbr", $scope.equipmentNbr);
+		    }
+        }else if($scope.remark == "edit"){
+        	 $scope.$setParam("deviceSysNbr",$scope.regionalData.regionalCode);
+        }
+	});
+</script>

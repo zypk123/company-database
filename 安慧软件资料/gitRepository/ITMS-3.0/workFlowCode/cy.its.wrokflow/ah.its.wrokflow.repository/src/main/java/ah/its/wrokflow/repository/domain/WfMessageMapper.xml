@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.WfMessageMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.WfMessage" >
+    <id column="MESSAGE_ID" property="messageId" jdbcType="VARCHAR" />
+    <result column="MESSAGE_TITLE" property="messageTitle" jdbcType="VARCHAR" />
+    <result column="MESSAGE_CONTENT" property="messageContent" jdbcType="VARCHAR" />
+    <result column="MESSAGE_USER" property="messageUser" jdbcType="VARCHAR" />
+    <result column="MESSAGE_RECIVER" property="messageReciver" jdbcType="VARCHAR" />
+    <result column="MESSAGE_TIME" property="messageTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MESSAGE_ID, MESSAGE_TITLE, MESSAGE_CONTENT, MESSAGE_USER, MESSAGE_RECIVER, MESSAGE_TIME, 
+    REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_MESSAGE
+    where MESSAGE_ID = #{messageId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_MESSAGE
+    where MESSAGE_ID = #{messageId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.WfMessage" >
+    insert into T_WF_MESSAGE (MESSAGE_ID, MESSAGE_TITLE, MESSAGE_CONTENT, 
+      MESSAGE_USER, MESSAGE_RECIVER, MESSAGE_TIME, 
+      REMARK)
+    values (#{messageId,jdbcType=VARCHAR}, #{messageTitle,jdbcType=VARCHAR}, #{messageContent,jdbcType=VARCHAR}, 
+      #{messageUser,jdbcType=VARCHAR}, #{messageReciver,jdbcType=VARCHAR}, #{messageTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.WfMessage" >
+    insert into T_WF_MESSAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="messageId != null" >
+        MESSAGE_ID,
+      </if>
+      <if test="messageTitle != null" >
+        MESSAGE_TITLE,
+      </if>
+      <if test="messageContent != null" >
+        MESSAGE_CONTENT,
+      </if>
+      <if test="messageUser != null" >
+        MESSAGE_USER,
+      </if>
+      <if test="messageReciver != null" >
+        MESSAGE_RECIVER,
+      </if>
+      <if test="messageTime != null" >
+        MESSAGE_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="messageId != null" >
+        #{messageId,jdbcType=VARCHAR},
+      </if>
+      <if test="messageTitle != null" >
+        #{messageTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="messageContent != null" >
+        #{messageContent,jdbcType=VARCHAR},
+      </if>
+      <if test="messageUser != null" >
+        #{messageUser,jdbcType=VARCHAR},
+      </if>
+      <if test="messageReciver != null" >
+        #{messageReciver,jdbcType=VARCHAR},
+      </if>
+      <if test="messageTime != null" >
+        #{messageTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.WfMessage" >
+    update T_WF_MESSAGE
+    <set >
+      <if test="messageTitle != null" >
+        MESSAGE_TITLE = #{messageTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="messageContent != null" >
+        MESSAGE_CONTENT = #{messageContent,jdbcType=VARCHAR},
+      </if>
+      <if test="messageUser != null" >
+        MESSAGE_USER = #{messageUser,jdbcType=VARCHAR},
+      </if>
+      <if test="messageReciver != null" >
+        MESSAGE_RECIVER = #{messageReciver,jdbcType=VARCHAR},
+      </if>
+      <if test="messageTime != null" >
+        MESSAGE_TIME = #{messageTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MESSAGE_ID = #{messageId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.WfMessage" >
+    update T_WF_MESSAGE
+    set MESSAGE_TITLE = #{messageTitle,jdbcType=VARCHAR},
+      MESSAGE_CONTENT = #{messageContent,jdbcType=VARCHAR},
+      MESSAGE_USER = #{messageUser,jdbcType=VARCHAR},
+      MESSAGE_RECIVER = #{messageReciver,jdbcType=VARCHAR},
+      MESSAGE_TIME = #{messageTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where MESSAGE_ID = #{messageId,jdbcType=VARCHAR}
+  </update>
+  <select id="queryMessagesByRecord" resultMap="BaseResultMap" parameterType="ah.its.wrokflow.repository.dao.WfMessage" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_MESSAGE
+    where 1 = 1
+    <if test="messageId != null and messageId !=''" >
+    	 and MESSAGE_ID LIKE CONCAT(CONCAT('%', #{messageId,jdbcType=VARCHAR}),'%') 
+     </if>
+     <if test="messageTitle != null and messageTitle !=''" >
+     	and MESSAGE_TITLE LIKE CONCAT(CONCAT('%', #{messageTitle,jdbcType=VARCHAR}),'%') 
+     </if>
+     <if test="messageContent != null and messageContent !=''" >
+     	and MESSAGE_CONTENT LIKE CONCAT(CONCAT('%', #{messageContent,jdbcType=VARCHAR}),'%') 
+     </if>
+     <if test="messageUser != null and messageUser !=''" >
+     	and MESSAGE_USER LIKE CONCAT(CONCAT('%', #{messageUser,jdbcType=VARCHAR}),'%') 
+     </if>
+     <if test="messageReciver != null and messageReciver !=''" >
+     	and MESSAGE_RECIVER LIKE CONCAT(CONCAT('%', #{messageReciver,jdbcType=VARCHAR}),'%') 
+     </if>
+    <!--  <if test="messageTime != null and messageTime !=''" >
+     	and MESSAGE_TIME LIKE CONCAT(CONCAT('%', #{messageTime,jdbcType=VARCHAR}),'%') 
+     </if> -->
+     <if test="startTime!=null and startTime != ''" >
+			   <![CDATA[AND MESSAGE_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+	</if>
+	<if test="endTime!=null and endTime != ''" >
+		<![CDATA[AND MESSAGE_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+	</if>
+     <if test="remark != null and remark !=''" >
+     	and REMARK LIKE CONCAT(CONCAT('%', #{remark,jdbcType=VARCHAR}),'%') 
+     </if>
+     order  by MESSAGE_TIME desc 
+  </select>
+</mapper>

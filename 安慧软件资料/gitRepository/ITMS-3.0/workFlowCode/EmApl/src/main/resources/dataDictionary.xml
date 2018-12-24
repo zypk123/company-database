@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataDictionarys>
+		<!-- 机构-->
+		<DataDictionary id="orgGrid" name="机构" 
+			sql="select a.id_ value,a.name_ name,b.group_parent_id parentCode from  act_id_group   a  inner     join  t_wf_group  b  on a.id_ = b.group_id  order by a.id_ ">
+		</DataDictionary>
+		<!-- 道路-->
+		<DataDictionary id="road" name="道路" 
+			sql="select t.road_id value,t.road_name name,t.org_privilege_code as parentCode from t_sys_road t">
+		</DataDictionary>
+		<!-- 路段 -->
+		<DataDictionary id="roadSection" name="路段" 
+			sql="select t.road_section_id value,t.road_section_name name,t.road_id as parentCode from t_sys_road_section t">
+		</DataDictionary>
+		<!-- 道路类型-->
+		<DataDictionary id="roadType" name="道路类型" 
+			sql="select  code_id value,code_name name  from  t_sys_code  where   code_type  = '016'">
+		</DataDictionary>
+		<!-- 道路行政等级-->
+		<DataDictionary id="roadLevel" name="道路行政等级" 
+			sql="select  code_id value,code_name name from  t_sys_code  where   code_type  = '017'">
+		</DataDictionary>
+		<!-- 线形或地形-->
+		<DataDictionary id="terrain" name="线形或地形" 
+			sql="select  code_id value,code_name name  from  t_sys_code  where   code_type  = '134'">
+		</DataDictionary>
+		<!-- 线形或地形-->
+		<DataDictionary id="pavementLevel" name="路面等级" 
+			sql="select  code_id value,code_name name  from  t_sys_code  where   code_type  = '132'">
+		</DataDictionary>
+		<!-- 申请类型-->
+		<DataDictionary id="approveType" name="申请类型" 
+			sql="select t.code_id value,t.code_name name from t_wf_sys_code t where t.code_type = '001'">
+		</DataDictionary>	
+		<!-- 申请内容-->
+		<DataDictionary id="content" name="申请内容" 
+			sql="select t.code_id value,t.code_name from t_wf_sys_code t where t.code_type = '002'">
+		</DataDictionary>
+		<!-- 设置位置满足条件-->
+		<DataDictionary id="devicePosition" name="设置位置满足条件" 
+			sql="select t.code_id value,t.code_name name,t.parent_code parentCode from t_wf_sys_code t where t.code_type = '003'">
+		</DataDictionary>
+		<DataDictionary id="groups" name="部门" 
+			sql="select  id_ value,t.name_ name from act_id_group t order by  id_ ">
+		</DataDictionary>
+		<DataDictionary id="menuIds" name="菜单" 
+			sql=" select  t.menu_id value,t.menu_name name,t.menu_parent_id parentCode ,t.menu_url spare from   t_wf_menu  t   order  by  t.menu_id ">
+		</DataDictionary>
+</DataDictionarys>

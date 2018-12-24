@@ -1,0 +1,113 @@
+
+<div id="container" class="easyui-panel" data-options="fit:true">   
+</div>
+
+
+<script>
+InitPage(['formData','saveData','resultData'], function($scope) {
+	
+		$scope.load = function(){
+			initData();
+			if($scope.resultData && $scope.resultData!=null){
+				showAllChart($scope.resultData.result.rows);
+				return ;
+			}
+			
+		};
+
+		 //定义echarts入口
+       function initData(){
+           require.config({
+               paths: {
+                   echarts: 'frameworks/echarts/js'
+               }
+           });
+           require(
+                   [
+                       'echarts',
+                       'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                       'echarts/chart/bar',
+                       'echarts/chart/pie'
+                   ]
+           );
+       } 
+       
+       /*
+		*数字转成100.00%
+		*/
+		function numberFormat(value){
+			return (value * 100).toFixed(2);
+		};
+       
+      /**
+	    *显示所有道路的柱状图
+	    */
+	    function showAllChart(data) {
+	        var myChart = require('echarts').init($scope.$("#container").get(0));
+	        var xAxisData=[];
+	        var rows = data;
+	        var row;
+	        var yAxisData=[];
+	        var yAxisMissData=[];
+	        for(var i=0;i<rows.length;i++){
+	        	row = rows[i];
+	        	xAxisData.push(row.data_day);
+	        	yAxisMissData.push(numberFormat(row.lostRate));
+	        	yAxisData.push(numberFormat(row.accessRate));
+	        }
+
+	        var option = {
+	        	    title : {
+	        	        text: $scope.formData.deviceSysNbr+'缺失率和接入率',
+	        	    },
+	        	    tooltip : {
+	        	        trigger: 'axis'
+	        	    },
+	        	    legend: {
+	        	        data:['缺失率','接入率']
+	        	    },
+	        	    toolbox: {
+	        	        show : true,
+	        	        feature : {
+	        	            mark : {show: false},
+	        	            dataView : {show: false, readOnly: false},
+	        	            magicType : {show: false, type: ['line', 'bar']},
+	        	            restore : {show: false},
+	        	            saveAsImage : {show: true}
+	        	        }
+	        	    },
+	        	    calculable : true,
+	        	    xAxis : [
+	        	        {
+	        	            type : 'category',
+	        	            name:'日期',
+	        	            data : xAxisData
+	        	        }
+	        	    ],
+	        	    yAxis : [
+	        	        {
+	        	            type : 'value',
+	        	            name:'%'
+	        	        }
+	        	    ],
+	        	    series : [
+	        	        {
+	        	            name:'缺失率',
+	        	            type:'line',
+	        	            data:yAxisMissData
+	        	        },
+	        	        {
+	        	            name:'接入率',
+	        	            type:'line',
+	        	            data:yAxisData
+	        	        }
+	        	    ]
+	        	};
+	        	   
+			
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+	        
+      }
+		})
+</script>

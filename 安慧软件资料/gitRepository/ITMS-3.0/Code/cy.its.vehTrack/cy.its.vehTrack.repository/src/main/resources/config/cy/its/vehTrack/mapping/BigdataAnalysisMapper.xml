@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.vehTrack.mybatis.client.BigdataAnalysisMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.vehTrack.mybatis.model.BigdataAnalysis" >
+    <id column="VIO_ANALYSIS_ID" property="VIO_ANALYSIS_ID" jdbcType="DECIMAL" />
+    <result column="ANALYSIS_APPNAME" property="ANALYSIS_APPNAME" jdbcType="VARCHAR" />
+    <result column="ANALYSIS_ALAIS" property="ANALYSIS_ALAIS" jdbcType="VARCHAR" />
+    <result column="ANALYSIS_FLAG" property="ANALYSIS_FLAG" jdbcType="DECIMAL" />
+    <result column="CREATOR_ID" property="CREATOR_ID" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="CREATE_TIME" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="UPDATE_TIME" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="END_TIME" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="cy.its.vehTrack.mybatis.model.BigdataAnalysisWithBLOBs" extends="BaseResultMap" >
+    <result column="VIO_ANA_PARAMS" property="VIO_ANA_PARAMS" jdbcType="CLOB" />
+    <result column="ANALYSIS_RESULT" property="ANALYSIS_RESULT" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIO_ANALYSIS_ID, ANALYSIS_APPNAME, ANALYSIS_ALAIS, ANALYSIS_FLAG, CREATOR_ID, CREATE_TIME, 
+    UPDATE_TIME, END_TIME
+  </sql>
+  <sql id="Blob_Column_List" >
+    VIO_ANA_PARAMS, ANALYSIS_RESULT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from T_ANALYSIS
+    where VIO_ANALYSIS_ID = #{VIO_ANALYSIS_ID,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from T_ANALYSIS
+    where VIO_ANALYSIS_ID = #{VIO_ANALYSIS_ID,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cy.its.vehTrack.mybatis.model.BigdataAnalysisWithBLOBs" >
+    insert into T_ANALYSIS (VIO_ANALYSIS_ID, ANALYSIS_APPNAME, 
+      ANALYSIS_ALAIS, ANALYSIS_FLAG, CREATOR_ID, 
+      CREATE_TIME, UPDATE_TIME, END_TIME, 
+      VIO_ANA_PARAMS, ANALYSIS_RESULT)
+    values (#{VIO_ANALYSIS_ID,jdbcType=DECIMAL}, #{ANALYSIS_APPNAME,jdbcType=VARCHAR}, 
+      #{ANALYSIS_ALAIS,jdbcType=VARCHAR}, #{ANALYSIS_FLAG,jdbcType=DECIMAL}, #{CREATOR_ID,jdbcType=VARCHAR}, 
+      #{CREATE_TIME,jdbcType=TIMESTAMP}, #{UPDATE_TIME,jdbcType=TIMESTAMP}, #{END_TIME,jdbcType=TIMESTAMP}, 
+      #{VIO_ANA_PARAMS,jdbcType=CLOB}, #{ANALYSIS_RESULT,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.vehTrack.mybatis.model.BigdataAnalysisWithBLOBs" >
+    insert into T_ANALYSIS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="VIO_ANALYSIS_ID != null" >
+        VIO_ANALYSIS_ID,
+      </if>
+      <if test="ANALYSIS_APPNAME != null" >
+        ANALYSIS_APPNAME,
+      </if>
+      <if test="ANALYSIS_ALAIS != null" >
+        ANALYSIS_ALAIS,
+      </if>
+      <if test="ANALYSIS_FLAG != null" >
+        ANALYSIS_FLAG,
+      </if>
+      <if test="CREATOR_ID != null" >
+        CREATOR_ID,
+      </if>
+      <if test="CREATE_TIME != null" >
+        CREATE_TIME,
+      </if>
+      <if test="UPDATE_TIME != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME,
+      </if>
+      <if test="VIO_ANA_PARAMS != null" >
+        VIO_ANA_PARAMS,
+      </if>
+      <if test="ANALYSIS_RESULT != null" >
+        ANALYSIS_RESULT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="VIO_ANALYSIS_ID != null" >
+        #{VIO_ANALYSIS_ID,jdbcType=DECIMAL},
+      </if>
+      <if test="ANALYSIS_APPNAME != null" >
+        #{ANALYSIS_APPNAME,jdbcType=VARCHAR},
+      </if>
+      <if test="ANALYSIS_ALAIS != null" >
+        #{ANALYSIS_ALAIS,jdbcType=VARCHAR},
+      </if>
+      <if test="ANALYSIS_FLAG != null" >
+        #{ANALYSIS_FLAG,jdbcType=DECIMAL},
+      </if>
+      <if test="CREATOR_ID != null" >
+        #{CREATOR_ID,jdbcType=VARCHAR},
+      </if>
+      <if test="CREATE_TIME != null" >
+        #{CREATE_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="UPDATE_TIME != null" >
+        #{UPDATE_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="END_TIME != null" >
+        #{END_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="VIO_ANA_PARAMS != null" >
+        #{VIO_ANA_PARAMS,jdbcType=CLOB},
+      </if>
+      <if test="ANALYSIS_RESULT != null" >
+        #{ANALYSIS_RESULT,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.vehTrack.mybatis.model.BigdataAnalysisWithBLOBs" >
+    update T_ANALYSIS
+    <set >
+      <if test="ANALYSIS_APPNAME != null" >
+        ANALYSIS_APPNAME = #{ANALYSIS_APPNAME,jdbcType=VARCHAR},
+      </if>
+      <if test="ANALYSIS_ALAIS != null" >
+        ANALYSIS_ALAIS = #{ANALYSIS_ALAIS,jdbcType=VARCHAR},
+      </if>
+      <if test="ANALYSIS_FLAG != null" >
+        ANALYSIS_FLAG = #{ANALYSIS_FLAG,jdbcType=DECIMAL},
+      </if>
+      <if test="CREATOR_ID != null" >
+        CREATOR_ID = #{CREATOR_ID,jdbcType=VARCHAR},
+      </if>
+      <if test="CREATE_TIME != null" >
+        CREATE_TIME = #{CREATE_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="UPDATE_TIME != null" >
+        UPDATE_TIME = #{UPDATE_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="END_TIME != null" >
+        END_TIME = #{END_TIME,jdbcType=TIMESTAMP},
+      </if>
+      <if test="VIO_ANA_PARAMS != null" >
+        VIO_ANA_PARAMS = #{VIO_ANA_PARAMS,jdbcType=CLOB},
+      </if>
+      <if test="ANALYSIS_RESULT != null" >
+        ANALYSIS_RESULT = #{ANALYSIS_RESULT,jdbcType=CLOB},
+      </if>
+    </set>
+    where VIO_ANALYSIS_ID = #{VIO_ANALYSIS_ID,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="cy.its.vehTrack.mybatis.model.BigdataAnalysisWithBLOBs" >
+    update T_ANALYSIS
+    set ANALYSIS_APPNAME = #{ANALYSIS_APPNAME,jdbcType=VARCHAR},
+      ANALYSIS_ALAIS = #{ANALYSIS_ALAIS,jdbcType=VARCHAR},
+      ANALYSIS_FLAG = #{ANALYSIS_FLAG,jdbcType=DECIMAL},
+      CREATOR_ID = #{CREATOR_ID,jdbcType=VARCHAR},
+      CREATE_TIME = #{CREATE_TIME,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{UPDATE_TIME,jdbcType=TIMESTAMP},
+      END_TIME = #{END_TIME,jdbcType=TIMESTAMP},
+      VIO_ANA_PARAMS = #{VIO_ANA_PARAMS,jdbcType=CLOB},
+      ANALYSIS_RESULT = #{ANALYSIS_RESULT,jdbcType=CLOB}
+    where VIO_ANALYSIS_ID = #{VIO_ANALYSIS_ID,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.vehTrack.mybatis.model.BigdataAnalysis" >
+    update T_ANALYSIS
+    set ANALYSIS_APPNAME = #{ANALYSIS_APPNAME,jdbcType=VARCHAR},
+      ANALYSIS_ALAIS = #{ANALYSIS_ALAIS,jdbcType=VARCHAR},
+      ANALYSIS_FLAG = #{ANALYSIS_FLAG,jdbcType=DECIMAL},
+      CREATOR_ID = #{CREATOR_ID,jdbcType=VARCHAR},
+      CREATE_TIME = #{CREATE_TIME,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{UPDATE_TIME,jdbcType=TIMESTAMP},
+      END_TIME = #{END_TIME,jdbcType=TIMESTAMP}
+    where VIO_ANALYSIS_ID = #{VIO_ANALYSIS_ID,jdbcType=DECIMAL}
+  </update>
+</mapper>

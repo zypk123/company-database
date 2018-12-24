@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficControlMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficControl" >
+    <id column="TRAFFIC_CONTROL_ID" property="trafficControlId" jdbcType="VARCHAR" />
+    <result column="TRAFFIC_CONTROL_NAME" property="trafficControlName" jdbcType="VARCHAR" />
+    <result column="START_SITE" property="startSite" jdbcType="VARCHAR" />
+    <result column="END_SITE" property="endSite" jdbcType="VARCHAR" />
+    <result column="CONTROL_REASON" property="controlReason" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="CONTROL_MEASURES" property="controlMeasures" jdbcType="VARCHAR" />
+    <result column="INFLUENCE_RANGE" property="influenceRange" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+    <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="CHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="CONTROL_LANE" property="controlLane" jdbcType="VARCHAR" />
+    <result column="LON_LAT" property="lonLat" jdbcType="VARCHAR" />
+    <result column="BYPASS_LINE" property="bypassLine" jdbcType="VARCHAR" />
+    <result column="SITE_IDS" property="siteIds" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="REAL_END_TIME" property="realEndTime" jdbcType="TIMESTAMP"/>
+    	
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TRAFFIC_CONTROL_ID, TRAFFIC_CONTROL_NAME, START_SITE, END_SITE, CONTROL_REASON, START_TIME, 
+    END_TIME, CONTROL_MEASURES, INFLUENCE_RANGE, ORG_ID, PHONE, CREATE_BY, CREATE_TIME, 
+    ROAD_ID, DIRECTION_TYPE, DIRECTION_NAME, CONTROL_LANE, LON_LAT, BYPASS_LINE, SITE_IDS,
+    ORG_PRIVILEGE_CODE,REAL_END_TIME
+  </sql>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_CONTROL
+    <where> 1=1 
+    <if test="startTime!=null and startTime != ''" >
+    	<![CDATA[AND START_TIME >= #{startTime,jdbcType=TIMESTAMP}]]> 
+    </if>
+    <if test="endTime!=null and endTime != ''" >
+    	 <![CDATA[AND START_TIME <= #{endTime,jdbcType=TIMESTAMP}]]> 
+    </if>
+    <if test="roadId!=null and roadId != ''" >
+    	AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+    </if>
+    <if test="validTime!=null and validTime != ''" >
+    	<![CDATA[AND START_TIME <= #{validTime,jdbcType=TIMESTAMP}]]>
+		<![CDATA[AND END_TIME >= #{validTime,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+    </where>
+    ORDER BY START_TIME DESC
+  </select>
+  <select id="selectCount" resultType="Long" parameterType="java.util.HashMap" >
+    select count(*)
+    from T_TRAFFIC_CONTROL
+    <where> 1=1 
+    <if test="validTime!=null and validTime != ''" >
+    	<![CDATA[AND START_TIME <= #{validTime,jdbcType=TIMESTAMP}]]>
+		<![CDATA[AND END_TIME >= #{validTime,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+		AND REAL_END_TIME IS NULL
+  </where>
+    
+  </select>
+   <select id="selectValid" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_CONTROL
+    <where> 1=1 
+    <if test="validTime!=null and validTime != ''" >
+    	<![CDATA[AND START_TIME <= #{validTime,jdbcType=TIMESTAMP}]]>
+		<![CDATA[AND END_TIME >= #{validTime,jdbcType=TIMESTAMP}]]>
+    </if>
+    <if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+		AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+	</if>
+		AND REAL_END_TIME IS NULL
+    </where>
+    ORDER BY START_TIME DESC
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_CONTROL
+    where TRAFFIC_CONTROL_ID = #{trafficControlId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_CONTROL
+    where TRAFFIC_CONTROL_ID = #{trafficControlId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficControl" >
+    insert into T_TRAFFIC_CONTROL (TRAFFIC_CONTROL_ID, TRAFFIC_CONTROL_NAME, 
+      START_SITE, END_SITE, CONTROL_REASON, 
+      START_TIME, END_TIME, CONTROL_MEASURES, 
+      INFLUENCE_RANGE, ORG_ID, PHONE, 
+      CREATE_BY, CREATE_TIME, ROAD_ID, 
+      DIRECTION_TYPE, DIRECTION_NAME, CONTROL_LANE, 
+      LON_LAT, BYPASS_LINE, SITE_IDS,ORG_PRIVILEGE_CODE,
+      REAL_END_TIME
+      )
+    values (#{trafficControlId,jdbcType=VARCHAR}, #{trafficControlName,jdbcType=VARCHAR}, 
+      #{startSite,jdbcType=VARCHAR}, #{endSite,jdbcType=VARCHAR}, #{controlReason,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{controlMeasures,jdbcType=VARCHAR}, 
+      #{influenceRange,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{roadId,jdbcType=VARCHAR}, 
+      #{directionType,jdbcType=CHAR}, #{directionName,jdbcType=VARCHAR}, #{controlLane,jdbcType=VARCHAR}, 
+      #{lonLat,jdbcType=VARCHAR}, #{bypassLine,jdbcType=VARCHAR}, #{siteIds,jdbcType=VARCHAR},
+      #{orgPrivilegeCode,jdbcType=VARCHAR},#{realEndTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficControl" >
+    insert into T_TRAFFIC_CONTROL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="trafficControlId != null" >
+        TRAFFIC_CONTROL_ID,
+      </if>
+      <if test="trafficControlName != null" >
+        TRAFFIC_CONTROL_NAME,
+      </if>
+      <if test="startSite != null" >
+        START_SITE,
+      </if>
+      <if test="endSite != null" >
+        END_SITE,
+      </if>
+      <if test="controlReason != null" >
+        CONTROL_REASON,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="controlMeasures != null" >
+        CONTROL_MEASURES,
+      </if>
+      <if test="influenceRange != null" >
+        INFLUENCE_RANGE,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="phone != null" >
+        PHONE,
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+      <if test="controlLane != null" >
+        CONTROL_LANE,
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT,
+      </if>
+      <if test="bypassLine != null" >
+        BYPASS_LINE,
+      </if>
+      <if test="siteIds != null" >
+        SITE_IDS,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+       <if test="realEndTime != null" >
+        REAL_END_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="trafficControlId != null" >
+        #{trafficControlId,jdbcType=VARCHAR},
+      </if>
+      <if test="trafficControlName != null" >
+        #{trafficControlName,jdbcType=VARCHAR},
+      </if>
+      <if test="startSite != null" >
+        #{startSite,jdbcType=VARCHAR},
+      </if>
+      <if test="endSite != null" >
+        #{endSite,jdbcType=VARCHAR},
+      </if>
+      <if test="controlReason != null" >
+        #{controlReason,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="controlMeasures != null" >
+        #{controlMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="influenceRange != null" >
+        #{influenceRange,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="controlLane != null" >
+        #{controlLane,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="bypassLine != null" >
+        #{bypassLine,jdbcType=VARCHAR},
+      </if>
+      <if test="siteIds != null" >
+        #{siteIds,jdbcType=VARCHAR},
+      </if>
+       <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="realEndTime != null" >
+        #{realEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficControl" >
+    update T_TRAFFIC_CONTROL
+    <set >
+      <if test="trafficControlName != null" >
+        TRAFFIC_CONTROL_NAME = #{trafficControlName,jdbcType=VARCHAR},
+      </if>
+      <if test="startSite != null" >
+        START_SITE = #{startSite,jdbcType=VARCHAR},
+      </if>
+      <if test="endSite != null" >
+        END_SITE = #{endSite,jdbcType=VARCHAR},
+      </if>
+      <if test="controlReason != null" >
+        CONTROL_REASON = #{controlReason,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="controlMeasures != null" >
+        CONTROL_MEASURES = #{controlMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="influenceRange != null" >
+        INFLUENCE_RANGE = #{influenceRange,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        PHONE = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="controlLane != null" >
+        CONTROL_LANE = #{controlLane,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      </if>
+      <if test="bypassLine != null" >
+        BYPASS_LINE = #{bypassLine,jdbcType=VARCHAR},
+      </if>
+      <if test="siteIds != null" >
+        SITE_IDS = #{siteIds,jdbcType=VARCHAR},
+      </if>
+       <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="realEndTime != null" >
+        REAL_END_TIME = #{realEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where TRAFFIC_CONTROL_ID = #{trafficControlId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficControl" >
+    update T_TRAFFIC_CONTROL
+    set TRAFFIC_CONTROL_NAME = #{trafficControlName,jdbcType=VARCHAR},
+      START_SITE = #{startSite,jdbcType=VARCHAR},
+      END_SITE = #{endSite,jdbcType=VARCHAR},
+      CONTROL_REASON = #{controlReason,jdbcType=VARCHAR},
+      START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      CONTROL_MEASURES = #{controlMeasures,jdbcType=VARCHAR},
+      INFLUENCE_RANGE = #{influenceRange,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      PHONE = #{phone,jdbcType=VARCHAR},
+      CREATE_BY = #{createBy,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=CHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      CONTROL_LANE = #{controlLane,jdbcType=VARCHAR},
+      LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      BYPASS_LINE = #{bypassLine,jdbcType=VARCHAR},
+      SITE_IDS = #{siteIds,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      REAL_END_TIME = #{realEndTime,jdbcType=TIMESTAMP}
+    where TRAFFIC_CONTROL_ID = #{trafficControlId,jdbcType=VARCHAR}
+  </update>
+</mapper>

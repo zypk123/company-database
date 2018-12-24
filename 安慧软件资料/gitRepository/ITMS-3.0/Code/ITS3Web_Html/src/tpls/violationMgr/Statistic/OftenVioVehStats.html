@@ -1,0 +1,239 @@
+﻿<div id="vioOftenDiv" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style=" height: 150px">
+        <div class="toolbar" style="float:left;width:100%">
+            <form class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">
+                                行政区划：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="districtCode" name="DistrictCode" data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                道路名称：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="roadCode" name="RoadCode" data-options="valueField:'ID',textField:'NAME',multiple:true,panelHeight:'auto'" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                采集点位：
+                            </div>
+                            <div class="td" style="padding-left:5px">
+                                <input class="easyui-combobox" id="siteCode" name="SiteCode" data-options="valueField:'ID',textField:'NAME',multiple:true,panelHeight:'auto'" style="width:150px" />
+                            </div>
+                            <div class="th" style="padding-left:5px">
+                                违法类型：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="violationType" name="ViolationType" style="width:150px"
+                                       data-options="valueField:'ID',textField:'NAME',multiple:true,panelHeight:'auto'">
+                            </div>
+                        </div>
+                        <div class="tr">
+                            <div class="th" style="padding-left:5px">
+                                违法时间：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datebox" style="width:150px">
+                            </div>
+                            <div class="th" style="padding-left:5px"></div>
+                            <div class="th" style="width: 60px">
+                                至：
+                            </div>
+                            <div class="td">
+                                <input class="easyui-datebox" style="width:150px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="linkbutton_toolbar">
+                    <a href="#" class="easyui-linkbutton  button-search" data-options="iconCls:'icon-search'" onclick="VioOftenMgr.StatsVioDetailInfos();">统计</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table id="dgv" class="easyui-datagrid"
+               data-options="
+               fit:true,
+               fitColumns:true,
+               striped:true,
+               noHeader:true,
+               rownumbers:true,
+               pagination:true,
+               showfooter:true,
+               singleSelect:true,
+               scrollbarSize:0
+               ">
+            <thead>
+                <tr>
+                    <th data-options="field:'PLATE_NBR',width:10">
+                        号牌号码
+                    </th>
+                    <th data-options="field:'VEHICLE_TYPE',width:10">
+                        车辆类型
+                    </th>
+                    <th data-options="field:'VEHICLE_CHARCTER',width:10">
+                        车辆类型
+                    </th>
+                    <th data-options="field:'VEHICLE_OWNER_NAME',width:10">
+                        车主
+                    </th>
+                    <th data-options="field:'VIO_NUM',width:10">
+                        违章次数
+                    </th>
+                    <th data-options="field:'MAIN_VIO',width:10">
+                        主要违法行为
+                    </th>
+                    <th data-options="field:'DETAIL',width:30">
+                        违法详细
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div data-options="region:'south'" style=" height: 400px">
+        <div id="container" title="">
+        </div>
+    </div>
+</div>
+<script>
+    $.parser.onComplete = function () {
+        $.ajax({
+            url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+            type: "POST",
+            data: {},
+            beforeSend: function (request) {
+                request.setRequestHeader("ContextID", ContextId);
+            },
+            contentType: 'application/json',
+            success: function (retData) {
+                VioOftenMgr.sysCodeDic = retData;
+                VioOftenMgr.initCombobox(retData);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+        //重置加载器完成事件，防止在查询时多次运行
+        $.parser.onComplete = function () { };
+    };
+    var VioOftenMgr = {
+        defaultParams: {},
+        sysCodeDic: null,
+        search: function () {
+            $.ajax({
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/InitPageSysCode",
+                type: "POST",
+                data: {},
+                beforeSend: function (request) {
+                    request.setRequestHeader("ContextID", ContextId);
+                },
+                contentType: 'application/json',
+                success: function (retData) {
+                    VioOftenMgr.sysCodeDic = retData;
+                    VioOftenMgr.initCombobox(retData);
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        },
+        frmSubmit: function (param) {
+            param.ContextId = ContextId;
+            return true;
+        },
+        initCombobox: function (initData) {
+            $('#vioOftenDiv #violationType').combobox('loadData', initData["T_DIC_VIOTYPE"]);
+            $('#vioOftenDiv #districtCode').combobox('loadData', initData["T_DIC_DISTRIC"]);
+            $('#vioOftenDiv #roadCode').combobox('loadData', initData["T_DIC_ROAD_INFO"]);
+            $('#vioOftenDiv #siteCode').combobox('loadData', initData["T_DIC_ROAD_SITE"]);
+        },
+        StatsVioDetailInfos: function () {
+            $('#vioOftenDiv .searchForm').form('submit', {
+                url: "/ITS3Web.Service.Violation.ViolationAnalysisService/StatsVioDetailInfos",
+                onSubmit: function (param) {
+                    param.ContextId = parent.ContextId;
+                    param.StatMode = '1';
+                    return true;
+                },
+                success: function (data) {
+                    var data = eval('(' + data + ')');
+                    if (data.Error != '') {
+                        alert(data.Error);
+                    }
+                    else {
+                        if (data.Result.length == 0) {
+                            alert("没有查询出符合条件的违法采集记录！");
+                        }
+                        var gridData = {};
+                        gridData.total = data.Result.length;
+                        gridData.rows = data.Result;
+                        $('#vioOftenDiv #dgv').datagrid('loadData', data.Result);
+                        VioOftenMgr.plotBarChart(data.Result);
+                    }
+                    $.messager.progress('close');
+                }
+            });
+        },
+        plotBarChart: function (data) {
+            var _categories = new Array();
+            var values = new Array();
+
+            for (var i = 0; i < data.length; i++) {
+                _categories.push(data[i].PLATE_NBR);//添加X轴分类
+                values.push(data[i].VIO_NUM);
+            }
+            $('#vioOftenDiv #container').highcharts({                   //图表展示容器，与div的id保持一致
+                chart: {
+                    type: 'bar'                         //指定图表的类型，默认是折线图（line）
+                },
+                title: {
+                    text: '惯常车辆违法排名前10位'      //指定图表标题
+                },
+                xAxis: {
+                    categories: _categories   //指定x轴分组
+                    , labels: {
+                        rotation: -45,
+                        align: 'right',
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                },
+                credits: {
+                    enabled: false,                    // 默认值，如果想去掉版权信息，设置为false即可
+                    text: '安徽超远信息技术有限公司',               // 显示的文字
+                    href: 'http://www.cychina.cn/',   // 链接地址
+                    position: {                          // 位置设置
+                        align: 'left',
+                        x: 400,
+                        verticalAlign: 'bottom',
+                        y: -10
+                    },
+                    style: {                            // 样式设置
+                        cursor: 'pointer',
+                        color: 'silver',
+                        fontSize: '5px'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '（单位：次）'                  //指定y轴的标题
+                    }
+                },
+                series: [
+                    {                                 //指定数据列
+                        name: '违章次数',                          //数据列名
+                        data: eval(values)                     //数据
+                    }
+                ]
+            })
+        }
+    }
+
+</script>

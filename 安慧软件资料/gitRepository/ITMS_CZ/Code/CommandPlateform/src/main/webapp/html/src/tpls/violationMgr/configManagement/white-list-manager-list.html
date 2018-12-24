@@ -1,0 +1,286 @@
+<!--白名单信息主页面 -->
+<div class="easyui-layout">
+    <div data-options="region:'north'" style="height: 113px;">
+        <form cy-form="whiteLstForm">
+            <div class="searchPanel">
+                <div class="panel_title">
+                    查询条件：
+                </div>
+                <div class="table">
+                    <div class="tr ">
+                        <div class="th">
+                            号牌号码：
+                        </div>
+                        <div class="td">
+                            <input name="plateNbr" class="cy-vehNumberbox"/>
+                        </div>
+                        <div class="th">
+                            号牌类型：
+                        </div>
+                        <div class="td">
+                            <input name="plateType" cy-code="002" class="easyui-combobox"/>
+                        </div>
+                        <div class="td" >
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'"
+            cy-click="addWhiteList">添加</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'"
+            cy-click="deleteWhiteList">删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+
+        <table id="whiteLstData" cy-datagrid="optionswhiteList" cy-querydata="whiteLstForm"
+        cy-url="violaton/whiteListAction/searchWhiteList"></table>
+    </div>
+
+</div>
+<script>
+    InitPage(["whiteLstForm"], function($scope) {
+        $scope.$getDefaultCode(['002']);
+        //初始化加载
+        $scope.load = function() {
+            //$scope.$updateData("whiteLstForm");
+            //$scope.$search("whiteLstForm");
+        };
+        $scope.searchData = function() {
+            $scope.$updateData("whiteLstForm");
+            $scope.$search("whiteLstForm");
+        },
+        //列表头部信息
+        $scope.optionswhiteList = {
+            columns : [[{
+                field : 'roadId',
+                checkbox : true,
+                align : 'center'
+            }, {
+                field : 'plateNbr',
+                title : '号牌号码',
+                align : 'center',
+                width : 25
+            }, {
+                field : 'plateType',
+                title : '号牌类型',
+                formatter:plateType,
+                align : 'center',
+                width : 40
+            }, {
+                field : 'vehicleModel',
+                title : '车辆型号',
+                align : 'center',
+                width : 30
+            }, {
+                field : 'orgId',
+                title : '管理部门',
+                align : 'center',
+                width : 30
+            }, {
+                field : 'vehicleContactor',
+                title : '车主联系人',
+                align : 'center',
+                width : 30
+            }, {
+                field : 'vehicleContactorTel',
+                title : '车主联系人手机',
+                align : 'center',
+                width : 30
+            }, {
+                field : 'validEndDate',
+                title : '有效期至',
+                align : 'center',
+                width : 30
+            }, {
+                field : 'cz',
+                title : '操作',
+                align : 'center',
+                formatter : optionCz,
+                width : 30
+            }]],
+            pagination:false,
+            /**
+             *查看详情页面 
+             */
+            onDblClickRow : function(rowIndex, rowData) {
+                $scope.$setParam("checkedData", rowData);
+                $scope.$openDialog("checked", {
+                    title : "白名单信息详情",
+                    width : 780,
+                    height : 300,
+                    href : "tpls/violationMgr/configManagement/white-list-manager-veiw.html"
+                });
+            }
+        };
+        //操作栏按钮
+        function optionCz(value, row, index) {
+            var button1 = $("<a class='button-edit' cy-click='editWhiteLst(" + index + ")'></a>");
+            //编辑按钮
+            var button2 = $("<a class='button-remove' cy-click='removeWhiteLst(" + index + ")'></a>");
+            //删除按钮
+            button1.linkbutton({
+                iconCls : "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls : "icon-remove"
+            });
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        };
+
+        /**
+         *根据号码类型code获取道路名称name
+         */
+        function plateType(value, row, index) {
+            var plateType = $scope.$getCodeName("002", value);
+            return plateType;
+        }
+
+        //添加白名单信息窗口
+        $scope.addWhiteList = function() {
+            $scope.$setParam("saveWhiteLst", function(data) {
+                
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "violaton/whiteListAction/saveWhiteLst",
+                    method : "post",
+                    params : data,
+                    success : function(data) {
+                        $scope.$updateData("whiteLstForm");
+                        $scope.$search("whiteLstForm");
+                        $scope.$getDialog("addDialog").dialog("close");
+
+                        $("#whiteLstData").datagrid("getPager").pagination("select", 1);
+                        $.messager.alert("提示", "保存成功！");
+
+                    },
+                    fail : function(errMsg) {
+                        $.messager.alert("提示", "保存失败！");
+                    }
+                });
+
+            });
+
+            $scope.$openDialog("addDialog", {
+                title : "添加白名单信息",
+                width : 780,
+                height : 300,
+                href : "tpls/violationMgr/configManagement/white-list-manager-add.html?type=add"
+            }, true);
+        };
+        //编辑白名单信息
+        $scope.editWhiteLst = function(index) {
+            //获得当前行的信息
+            var rowDatas = $scope.$("#whiteLstData").datagrid("getData").rows[index];
+            
+            $scope.$setParam("whiteData",rowDatas);
+            $scope.$setParam("editWhiteLst", function(data) {
+                
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "violaton/whiteListAction/updateWhiteLst",
+                    params : data,
+                    success : function(data) {
+                        //关闭编辑窗口
+                        $scope.$getDialog("editDialog").dialog("close");
+                        //刷新列表
+                        $scope.$search("whiteLstForm");
+                        $.messager.alert("提示", "保存成功！");
+                    },
+                    fail : function() {
+                        $.messager.alert("提示", "保存失败！");
+                    }
+                });
+            });
+            $scope.$openDialog("editDialog", {
+                title : "编辑白名单信息",
+                width : 780,
+                height : 300,
+                href : "tpls/violationMgr/configManagement/white-list-manager-add.html?type=edit"
+            }, true);
+        };
+        $scope.deleteWhiteList = function() {
+            //获得所有的行数
+            var rows = $scope.$("#whiteLstData").datagrid("getChecked");
+           
+
+            var dataNum = $scope.$("#whiteLstData").datagrid("getRows").length;
+            
+            //var options = $scope.$("#roadData").datagrid("getPager").data("pagination").options;
+            //var pageNumber = options.pageNumber;
+            if (rows.length == 0) {
+                $.messager.alert("提示", "至少选中一条信息！");
+                return false;
+            } else {
+                var vehicleIdStr = "";
+                for (var i = 0; i < rows.length; i++) {
+                    if (i > 0) {
+                        vehicleIdStr = vehicleIdStr + "," + rows[i].vehicleId;
+
+                    } else {
+                        vehicleIdStr = vehicleIdStr + rows[i].vehicleId;
+                    }
+                }
+                $.messager.confirm("提示", "你是否删除信息？", function(flag) {
+                    if (flag) {
+                        $scope.$ajaxRequest({
+                            url : $scope.$restRoot + "violaton/whiteListAction/deleteWhiteLst",
+                            params : {
+                                vehicleIdStr : vehicleIdStr
+                            },
+                            memoth : "post",
+                            success : function(data) {
+                                if(data=='success')
+                                {
+                                    
+                                $scope.$search("whiteLstForm");
+                                $.messager.alert("提示", "删除成功！");
+                                }
+                                else{
+                                    $.messager.alert("提示", "删除失败！");
+                                }
+                            },
+                            fail : function(errMsg) {
+                                $.messager.alert("提示", "删除失败！"+errMsg);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        //删除当前行信息
+        $scope.removeWhiteLst = function(index) {
+            //获得当前行的信息
+            var rowDatas = $scope.$("#whiteLstData").datagrid("getData").rows[index];
+           
+            //获得当前行的Id
+            var vehicleId = rowDatas.vehicleId;
+            $.messager.confirm("提示", "你确定要删除吗?", function(r) {
+                if (r) {
+                    $scope.$ajaxRequest({
+                        url : $scope.$restRoot + "violaton/whiteListAction/removeWhiteLst",
+                        params : {
+                            vehicleId : vehicleId
+                        },
+                        memoth : "post",
+                        success : function(data) {
+                            $scope.$search("whiteLstForm");
+                            $.messager.alert("提示", "删除成功！");
+                        },
+                        fail : function(errMsg) {
+                            $.messager.alert("提示", "删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+
+    }); 
+</script>
+<style type="text/css">
+    #roadMessage .th {
+        text-align: right;
+        width: 100px;
+    }
+</style>

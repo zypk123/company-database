@@ -1,0 +1,96 @@
+<div id="illegalData" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <div class="searchPanel">
+            <div class="panel_title">查询条件</div>
+            <form cy-form="formData">
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">时间：</div>
+                        <div class="td">
+                            <input id="startTime" class="easyui-datetimebox" name="startTime" style="width: 156px;"/>
+                                                                        至
+                            <input id="endTime" class="easyui-datetimebox" name="endTime" style="width: 156px;"/>     
+                        </div>
+                        <div class="td" style="margin-left: 15px;">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="illegalGrid" cy-datagrid="options" cy-querydata="formData" cy-url="data/deviceManage/deviceConfig/illegalData.json">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["illegalLook"],function($scope){
+        $scope.load = function(){
+            $scope.$search("formData");
+            //获取当前时间
+            var nowTime = new Date();
+            var year = nowTime.getFullYear();//当前年
+            var month = nowTime.getMonth;//当前月
+            if(month < 10){
+                month = "0"+month;
+            }
+            var date = nowTime.getDate();//当前日
+            if(date < 10){
+                date = "0"+date;
+            }
+            var startTime = "";
+            var data = $scope.illegalLook;//获取标识判断值
+            if(data == "look"){
+                //设置运行查看默认开始时间
+                var oldTime = new Date().getTime()-2*60*60*1000;  //得到当前日期时间两小时前的日期时间毫秒数 
+                var newTime = new Date(oldTime);
+                //startTime = newTime.toLocaleString(); 
+                var year = newTime.getFullYear();//当前年
+                var month = newTime.getMonth();//当前月
+                if(month > 10){
+                    month = month + 1;
+                }else{
+                    month = "0" + (month + 1);
+                }
+                var date = newTime.getDate();//当前日
+                if(date < 10){
+                    date = "0" + date;
+                }
+                var hour = newTime.getHours();       //获取小时
+                var minute = newTime.getMinutes();   //获取分钟
+                var second = newTime.getSeconds();   //获取秒钟
+                startTime = year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
+            }else{
+                //设置抓拍数默认开始时间
+                startTime = year+"-"+month+"-"+date;
+            }
+            var endTime = nowTime.toLocaleTimeString();
+            //设置开始时间为当前日期的0点
+            $scope.$("#startTime").datetimebox("setValue",startTime);
+            //设置结束时间为当前的时间日期
+            $scope.$("#endTime").datetimebox("setValue",endTime);
+        };
+        $scope.options = {
+            columns:[[
+               // {align:'center',field:"DEVICE_ID",checkbox:true},
+                {align:'center',title:"抓拍地点",field:"VIO_SITE_CODE",width:100},
+                {align:'center',title:"违法时间",field:"VIOLATION_TIME",width:150},
+                {align:'center',title:"号牌号码",field:"PLATE_NBR",width:100},
+                {align:'center',title:"违法类型",field:"VIOLATION_TYPE",width:100},
+                {align:'center',title:"违法行为",field:"VIOLATION_CODE",width:100},
+                {align:'center',title:"行驶速度",field:"SPEED",width:100}
+            ]]
+        };
+        $scope.search = function(){
+            alert("查询成功！");
+        };
+    });
+</script>
+<style type="text/css">
+    #illegalData .searchPanel .th{
+        width: 70px;
+        text-align: right;
+    }
+</style>

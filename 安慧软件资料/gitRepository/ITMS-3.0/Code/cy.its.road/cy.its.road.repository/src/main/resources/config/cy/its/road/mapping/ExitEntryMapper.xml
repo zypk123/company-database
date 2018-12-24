@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.ExitEntryMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.interflow.ExitEntry" >
+    <id column="GATEWAY_ID" property="gatewayId" jdbcType="VARCHAR" />
+    <result column="INTERFLOW_ID" property="interflowId" jdbcType="VARCHAR" />
+    <result column="RAMP_ID" property="rampId" jdbcType="VARCHAR" />
+    <result column="GATEWAY_CODE" property="gatewayCode" jdbcType="VARCHAR" />
+    <result column="GATEWAY_NAME" property="gatewayName" jdbcType="VARCHAR" />
+    <result column="INTERSECTION_ROAD_ID" property="intersectionRoadId" jdbcType="VARCHAR" />
+    <result column="MILEAGE" property="mileage" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_OR_EXIT" property="entranceOrExit" jdbcType="CHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+    <result column="DESTINATION" property="destination" jdbcType="VARCHAR" />
+    <result column="TOLLGATE_VIDEO_CODE" property="tollgateVideoCode" jdbcType="VARCHAR" />
+    <result column="EXIT_TOLLGATE_ID" property="exitTollgateId" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_TOLLGATE_ID" property="entranceTollgateId" jdbcType="VARCHAR" />
+    <result column="HAS_LAW_SERVICE_STATION" property="hasLawServiceStation" jdbcType="CHAR" />
+    <result column="LAW_SER_STAT_VIDEO_ID" property="lawSerStatVideoId" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_ROAD_ID" property="entranceRoadId" jdbcType="VARCHAR" />
+    <result column="EXIT_ROAD_ID" property="exitRoadId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GATEWAY_ID, INTERFLOW_ID, RAMP_ID, GATEWAY_CODE, GATEWAY_NAME, INTERSECTION_ROAD_ID, 
+    MILEAGE, ENTRANCE_OR_EXIT, DIRECTION_TYPE, DESTINATION, TOLLGATE_VIDEO_CODE, EXIT_TOLLGATE_ID, 
+    ENTRANCE_TOLLGATE_ID, HAS_LAW_SERVICE_STATION, LAW_SER_STAT_VIDEO_ID, ENTRANCE_ROAD_ID, 
+    EXIT_ROAD_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_EXIT_ENTRY
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_EXIT_ENTRY
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.interflow.ExitEntry" >
+    insert into T_SYS_EXIT_ENTRY (GATEWAY_ID, INTERFLOW_ID, RAMP_ID, 
+      GATEWAY_CODE, GATEWAY_NAME, INTERSECTION_ROAD_ID, 
+      MILEAGE, ENTRANCE_OR_EXIT, DIRECTION_TYPE, 
+      DESTINATION, TOLLGATE_VIDEO_CODE, EXIT_TOLLGATE_ID, 
+      ENTRANCE_TOLLGATE_ID, HAS_LAW_SERVICE_STATION, 
+      LAW_SER_STAT_VIDEO_ID, ENTRANCE_ROAD_ID, EXIT_ROAD_ID
+      )
+    values (#{gatewayId,jdbcType=VARCHAR}, #{interflowId,jdbcType=VARCHAR}, #{rampId,jdbcType=VARCHAR}, 
+      #{gatewayCode,jdbcType=VARCHAR}, #{gatewayName,jdbcType=VARCHAR}, #{intersectionRoadId,jdbcType=VARCHAR}, 
+      #{mileage,jdbcType=VARCHAR}, #{entranceOrExit,jdbcType=CHAR}, #{directionType,jdbcType=VARCHAR}, 
+      #{destination,jdbcType=VARCHAR}, #{tollgateVideoCode,jdbcType=VARCHAR}, #{exitTollgateId,jdbcType=VARCHAR}, 
+      #{entranceTollgateId,jdbcType=VARCHAR}, #{hasLawServiceStation,jdbcType=CHAR}, 
+      #{lawSerStatVideoId,jdbcType=VARCHAR}, #{entranceRoadId,jdbcType=VARCHAR}, #{exitRoadId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.interflow.ExitEntry" >
+    insert into T_SYS_EXIT_ENTRY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="gatewayId != null" >
+        GATEWAY_ID,
+      </if>
+      <if test="interflowId != null" >
+        INTERFLOW_ID,
+      </if>
+      <if test="rampId != null" >
+        RAMP_ID,
+      </if>
+      <if test="gatewayCode != null" >
+        GATEWAY_CODE,
+      </if>
+      <if test="gatewayName != null" >
+        GATEWAY_NAME,
+      </if>
+      <if test="intersectionRoadId != null" >
+        INTERSECTION_ROAD_ID,
+      </if>
+      <if test="mileage != null" >
+        MILEAGE,
+      </if>
+      <if test="entranceOrExit != null" >
+        ENTRANCE_OR_EXIT,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="destination != null" >
+        DESTINATION,
+      </if>
+      <if test="tollgateVideoCode != null" >
+        TOLLGATE_VIDEO_CODE,
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID,
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID,
+      </if>
+      <if test="hasLawServiceStation != null" >
+        HAS_LAW_SERVICE_STATION,
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        LAW_SER_STAT_VIDEO_ID,
+      </if>
+      <if test="entranceRoadId != null" >
+        ENTRANCE_ROAD_ID,
+      </if>
+      <if test="exitRoadId != null" >
+        EXIT_ROAD_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="gatewayId != null" >
+        #{gatewayId,jdbcType=VARCHAR},
+      </if>
+      <if test="interflowId != null" >
+        #{interflowId,jdbcType=VARCHAR},
+      </if>
+      <if test="rampId != null" >
+        #{rampId,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayCode != null" >
+        #{gatewayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayName != null" >
+        #{gatewayName,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadId != null" >
+        #{intersectionRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        #{mileage,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceOrExit != null" >
+        #{entranceOrExit,jdbcType=CHAR},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=VARCHAR},
+      </if>
+      <if test="destination != null" >
+        #{destination,jdbcType=VARCHAR},
+      </if>
+      <if test="tollgateVideoCode != null" >
+        #{tollgateVideoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="hasLawServiceStation != null" >
+        #{hasLawServiceStation,jdbcType=CHAR},
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        #{lawSerStatVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRoadId != null" >
+        #{entranceRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitRoadId != null" >
+        #{exitRoadId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.interflow.ExitEntry" >
+    update T_SYS_EXIT_ENTRY
+    <set >
+      <if test="interflowId != null" >
+        INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR},
+      </if>
+      <if test="rampId != null" >
+        RAMP_ID = #{rampId,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayCode != null" >
+        GATEWAY_CODE = #{gatewayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayName != null" >
+        GATEWAY_NAME = #{gatewayName,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadId != null" >
+        INTERSECTION_ROAD_ID = #{intersectionRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        MILEAGE = #{mileage,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceOrExit != null" >
+        ENTRANCE_OR_EXIT = #{entranceOrExit,jdbcType=CHAR},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+      </if>
+      <if test="destination != null" >
+        DESTINATION = #{destination,jdbcType=VARCHAR},
+      </if>
+      <if test="tollgateVideoCode != null" >
+        TOLLGATE_VIDEO_CODE = #{tollgateVideoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="hasLawServiceStation != null" >
+        HAS_LAW_SERVICE_STATION = #{hasLawServiceStation,jdbcType=CHAR},
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        LAW_SER_STAT_VIDEO_ID = #{lawSerStatVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRoadId != null" >
+        ENTRANCE_ROAD_ID = #{entranceRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitRoadId != null" >
+        EXIT_ROAD_ID = #{exitRoadId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.interflow.ExitEntry" >
+    update T_SYS_EXIT_ENTRY
+    set INTERFLOW_ID = #{interflowId,jdbcType=VARCHAR},
+      RAMP_ID = #{rampId,jdbcType=VARCHAR},
+      GATEWAY_CODE = #{gatewayCode,jdbcType=VARCHAR},
+      GATEWAY_NAME = #{gatewayName,jdbcType=VARCHAR},
+      INTERSECTION_ROAD_ID = #{intersectionRoadId,jdbcType=VARCHAR},
+      MILEAGE = #{mileage,jdbcType=VARCHAR},
+      ENTRANCE_OR_EXIT = #{entranceOrExit,jdbcType=CHAR},
+      DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+      DESTINATION = #{destination,jdbcType=VARCHAR},
+      TOLLGATE_VIDEO_CODE = #{tollgateVideoCode,jdbcType=VARCHAR},
+      EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      HAS_LAW_SERVICE_STATION = #{hasLawServiceStation,jdbcType=CHAR},
+      LAW_SER_STAT_VIDEO_ID = #{lawSerStatVideoId,jdbcType=VARCHAR},
+      ENTRANCE_ROAD_ID = #{entranceRoadId,jdbcType=VARCHAR},
+      EXIT_ROAD_ID = #{exitRoadId,jdbcType=VARCHAR}
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </update>
+</mapper>

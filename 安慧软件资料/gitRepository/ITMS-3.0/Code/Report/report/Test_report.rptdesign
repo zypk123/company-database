@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.5.0.v201506092134 Build &lt;@BUILD@></property>
+    <list-property name="propertyBindings">
+        <structure>
+            <property name="name">queryText</property>
+            <property name="id">6</property>
+        </structure>
+        <structure>
+            <property name="name">queryTimeOut</property>
+            <property name="id">6</property>
+        </structure>
+        <structure>
+            <property name="name">rowFetchSize</property>
+            <property name="id">6</property>
+        </structure>
+        <structure>
+            <property name="name">queryText</property>
+            <property name="id">144</property>
+        </structure>
+        <structure>
+            <property name="name">queryTimeOut</property>
+            <property name="id">144</property>
+        </structure>
+        <structure>
+            <property name="name">rowFetchSize</property>
+            <property name="id">144</property>
+        </structure>
+    </list-property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">fixed layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">statistics-libs.rptlibrary</property>
+            <property name="namespace">statistics-libs</property>
+        </structure>
+    </list-property>
+    <parameters>
+        <scalar-parameter name="beginDate" id="7">
+            <text-property name="promptText">beginDate</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="concealValue">false</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="endDate" id="8">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="birtds" id="827"
+ extends="statistics-libs.birtds"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.SPSelectDataSet" name="Data Set1" id="6">
+            <property name="nullsOrdering">nulls lowest</property>
+            <list-property name="columnHints"/>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">myCursor</property>
+                    <property name="nativeName">MYCURSOR</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">-10</property>
+                    <property name="position">1</property>
+                    <property name="allowNull">true</property>
+                    <property name="isOutput">true</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">ORG_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <method name="beforeOpen"><![CDATA[importPackage( Packages.java.io );   
+out = new PrintWriter( new FileWriter("c:/debuginfo.txt", true ) );   
+out.println("queryText：-->"+ this.queryText);   
+out.close();]]></method>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">ORG_CODE</property>
+                    <property name="nativeName">ORG_CODE</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[{call ITMS2.ITMS2_Report_Vio_Synthesize.VioTestSt(?)}]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="Data Set2" id="144">
+            <property name="nullsOrdering">nulls lowest</property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">ORG_CODE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">ORG_CODE</text-property>
+                    <text-property name="heading">ORG_CODE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">BIG_TYPE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">BIG_TYPE</text-property>
+                    <text-property name="heading">BIG_TYPE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">SUB_TYPE</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">SUB_TYPE</text-property>
+                    <text-property name="heading">SUB_TYPE</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">COUNT</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">COUNT</text-property>
+                    <text-property name="heading">COUNT</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">ORG_CODE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">BIG_TYPE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">SUB_TYPE</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">COUNT</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">birtds</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">ORG_CODE</property>
+                    <property name="nativeName">ORG_CODE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">BIG_TYPE</property>
+                    <property name="nativeName">BIG_TYPE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">SUB_TYPE</property>
+                    <property name="nativeName">SUB_TYPE</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">COUNT</property>
+                    <property name="nativeName">COUNT</property>
+                    <property name="dataType">decimal</property>
+                    <property name="nativeDataType">2</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select '合肥市交警支队' as org_code,'设备在线率' as big_type,null as sub_type,12 as count from dual union
+select '合肥市交警支队' as org_code,'设备故障' as big_type,'补光不足' as sub_type,62 as count from dual union
+select '合肥市交警支队' as org_code,'设备故障' as big_type,'无过车图片' as sub_type,14 as count from dual]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <cubes>
+        <tabular-cube name="Data Cube" id="793">
+            <property name="dimensions">
+                <tabular-dimension name="Group" id="794">
+                    <property name="defaultHierarchy">NewTabularHierarchy</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy" id="795">
+                            <property name="levels">
+                                <tabular-level name="BIG_TYPE" id="796">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">BIG_TYPE</property>
+                                </tabular-level>
+                                <tabular-level name="SUB_TYPE" id="799">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">SUB_TYPE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+                <tabular-dimension name="Group1" id="801">
+                    <property name="defaultHierarchy">NewTabularHierarchy1</property>
+                    <property name="hierarchies">
+                        <tabular-hierarchy name="NewTabularHierarchy1" id="802">
+                            <property name="levels">
+                                <tabular-level name="ORG_CODE" id="803">
+                                    <property name="dataType">string</property>
+                                    <property name="columnName">ORG_CODE</property>
+                                </tabular-level>
+                            </property>
+                        </tabular-hierarchy>
+                    </property>
+                </tabular-dimension>
+            </property>
+            <property name="measureGroups">
+                <tabular-measure-group name="Summary Field" id="797">
+                    <property name="measures">
+                        <tabular-measure name="COUNT" id="800">
+                            <expression name="measureExpression" type="javascript">dataSetRow["COUNT"]</expression>
+                            <property name="dataType">decimal</property>
+                        </tabular-measure>
+                    </property>
+                </tabular-measure-group>
+            </property>
+            <property name="dataSet">Data Set2</property>
+        </tabular-cube>
+    </cubes>
+    <styles>
+        <style name="CELL_BASE" id="243">
+            <property name="fontFamily">"@微软雅黑"</property>
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#C0C0C0</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#C0C0C0</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <structure name="numberFormat">
+                <property name="category">Unformatted</property>
+            </structure>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="canShrink">true</property>
+            <property name="bidiTextDirection">ltr</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+            <property name="height">8.5in</property>
+            <property name="width">11in</property>
+            <property name="showHeaderOnFirst">false</property>
+            <property name="showFooterOnLast">false</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <extended-item extensionName="Crosstab" extensionVersion="3.7.0" id="791">
+            <property name="cube">Data Cube</property>
+            <property name="measures">
+                <extended-item extensionName="MeasureView" id="815">
+                    <property name="measure">COUNT</property>
+                    <property name="detail">
+                        <extended-item extensionName="AggregationCell" id="816">
+                            <property name="aggregationOnRow">Group1/ORG_CODE</property>
+                            <property name="aggregationOnColumn">Group/SUB_TYPE</property>
+                            <property name="content">
+                                <data id="817">
+                                    <property name="resultSetColumn">COUNT_Group1/ORG_CODE_Group/SUB_TYPE</property>
+                                </data>
+                            </property>
+                        </extended-item>
+                    </property>
+                    <property name="header">
+                        <extended-item extensionName="CrosstabCell" id="818">
+                            <property name="content">
+                                <label id="819">
+                                    <text-property name="text">COUNT</text-property>
+                                </label>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="rows">
+                <extended-item extensionName="CrosstabView" id="810">
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="811">
+                            <property name="dimension">Group1</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View1" id="812">
+                                    <property name="level">Group1/ORG_CODE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="813">
+                                            <property name="content">
+                                                <data name="ORG_CODE" id="814">
+                                                    <property name="resultSetColumn">ORG_CODE</property>
+                                                </data>
+                                            </property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="columns">
+                <extended-item extensionName="CrosstabView" id="804">
+                    <property name="views">
+                        <extended-item extensionName="DimensionView" id="805">
+                            <property name="dimension">Group</property>
+                            <property name="levels">
+                                <extended-item extensionName="LevelView" name="NewLevel View" id="806">
+                                    <property name="level">Group/BIG_TYPE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="807">
+                                            <property name="content">
+                                                <data name="BIG_TYPE" id="808">
+                                                    <property name="resultSetColumn">BIG_TYPE</property>
+                                                </data>
+                                            </property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                                <extended-item extensionName="LevelView" name="NewLevel View2" id="822">
+                                    <property name="level">Group/SUB_TYPE</property>
+                                    <property name="member">
+                                        <extended-item extensionName="CrosstabCell" id="823">
+                                            <property name="content">
+                                                <data name="SUB_TYPE" id="825">
+                                                    <property name="resultSetColumn">SUB_TYPE</property>
+                                                </data>
+                                            </property>
+                                        </extended-item>
+                                    </property>
+                                </extended-item>
+                            </property>
+                        </extended-item>
+                    </property>
+                </extended-item>
+            </property>
+            <property name="header">
+                <extended-item extensionName="CrosstabCell" id="820">
+                    <property name="content">
+                        <label id="821">
+                            <text-property name="text">BIG_TYPE</text-property>
+                        </label>
+                    </property>
+                </extended-item>
+                <extended-item extensionName="CrosstabCell" id="824">
+                    <property name="content">
+                        <label id="826">
+                            <text-property name="text">SUB_TYPE</text-property>
+                        </label>
+                    </property>
+                </extended-item>
+                <extended-item extensionName="CrosstabCell" id="792"/>
+            </property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">BIG_TYPE</property>
+                    <expression name="expression">dimension["Group"]["BIG_TYPE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">ORG_CODE</property>
+                    <expression name="expression">dimension["Group1"]["ORG_CODE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">COUNT_Group1/ORG_CODE_Group/BIG_TYPE</property>
+                    <expression name="expression">measure["COUNT"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/ORG_CODE</value>
+                        <value>Group/BIG_TYPE</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+                <structure>
+                    <property name="name">SUB_TYPE</property>
+                    <expression name="expression">dimension["Group"]["SUB_TYPE"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">COUNT_Group1/ORG_CODE_Group/SUB_TYPE</property>
+                    <expression name="expression">measure["COUNT"]</expression>
+                    <property name="dataType">decimal</property>
+                    <simple-property-list name="aggregateOn">
+                        <value>Group1/ORG_CODE</value>
+                        <value>Group/SUB_TYPE</value>
+                    </simple-property-list>
+                    <property name="aggregateFunction">SUM</property>
+                </structure>
+            </list-property>
+        </extended-item>
+    </body>
+</report>

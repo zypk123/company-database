@@ -1,0 +1,806 @@
+<div id="bayonetList" class="easyui-layout" style="overflow: auto;">
+	<!--左边列表区 -->
+	<div data-options="region:'west',border:false, title:'导航区域'"
+		style="width: 200px">
+		<div class="easyui-layout">
+			<div data-options="region:'center',border:false">
+				<div id="tollgateTabs" class="easyui-tabs"
+					data-options="fit:true,border:true,plain:true">
+					<div title="按机构">
+						<ul id="orgTree"></ul>
+					</div>
+					<div title="按道路">
+						<ul id="roadTree"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',border:true">
+		<div class="easyui-layout">
+			<!--查询条件区 -->
+			<div data-options="region:'north',border:false" style="width: 100%">
+				<form method="post" cy-form="formData">
+					<div class="searchPanel">
+						<div class="panel_title">查询条件</div>
+						<div class="table">
+							<div class="tr">
+								<div class="td">卡口类型：</div>
+								<div class="td">
+									 <input class="easyui-combobox" id="tollgateType" cy-code="421" name="tollgateType" style="width:120px" data-options="valueField:'value',textField:'text',multiple:true"/>
+								</div>
+								<div class="td">设备名称：</div>
+								<div class="td">
+									<input class="easyui-textbox" id="deviceSysName"
+										name="deviceName" />
+								</div>
+							<!--<div class="td">设备厂家：</div>
+								<div class="td">
+									<input id="contractorId" class="easyui-combobox"
+										name="contractorId"
+										data-options="valueField:'contractorId',textField:'contractorName'"
+										style="width: 120px" />
+								</div>-->
+								<div class="td">使用状态：</div>
+								<div class="td">
+									<input type="checkbox" name="checkAll" value="" cy-click="checkAll">全选
+									<input type="checkbox" name="useStatus" value="0" style="margin-left: 5px">备案 
+									<input type="checkbox" name="useStatus" value="1" style="margin-left: 5px">启用
+									<input type="checkbox" name="useStatus" value="2" style="margin-left: 5px">停用 
+									<input type="checkbox" name="useStatus" value="3" style="margin-left: 5px">报废
+								</div>
+								<div class="td">
+									<a class="easyui-linkbutton" cy-click="searchData"
+										data-options="iconCls:'icon-search'">查询</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+
+				<!--一行按钮区域-->
+				<div class="linkbutton_toolbar">
+					<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addData">新增</a> 
+					<auth resourceCode="06020201">
+						<a class="easyui-linkbutton" data-options="iconCls:'icon-enable'" cy-click="startUse">启用</a> 
+					</auth>
+					<auth resourceCode="06020203">
+						<a class="easyui-linkbutton" data-options="iconCls:'icon-disable'" cy-click="stopUse">停用</a> 
+					</auth>
+					<!--<a class="easyui-linkbutton" data-options="iconCls:'icon-drop'" cy-click="destroyUse">报废</a>-->
+				</div>
+			</div>
+
+			<!--数据展示区 -->
+			<div id="data-view-area" data-options="region:'center',border:true">
+				<table id="tollgateGrd" cy-datagrid="options"
+					cy-querydata="formData"
+					cy-url="device/bayonetManage/queryBayonetDeviceLst">
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["deviceSysConfigTabs"],function($scope) {
+				$scope.$getDefaultCode([ "421", "404", "405", "419" ]);
+				//加载机构树菜单
+				function loadOrgTree() {
+					//加载机构树
+					$scope.$("#orgTree").tree({
+						data : $scope.$org,
+						onClick : $scope.orgTreeNodeClick,
+						onContextMenu : $scope.showTreeContextMenu,
+						onLoadSuccess : function() {
+							var root = $(this).tree("getRoots")[0];
+							//收起全部节点
+							$(this).tree("collapseAll");
+							//展开根节点
+							$(this).tree("expand", root.target);
+							//默认选中根节点
+							$(this).tree("select", root.target);
+							$scope.formData.userOrgId = root.id;
+						}
+					});
+				}
+
+				//加载道路树点位
+				function loadRoadTree() {
+					var queryParams = {
+						id : "", //默认根节点为空，表示查询基础数据
+						type : "0",//默认类型为0
+						currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode//当前用户所在机构
+					};
+					$scope.$("#roadTree").tree({
+						url : $scope.$restRoot+ "/device/site/getSiteTreeByRootId",
+						queryParams : queryParams,
+						onClick : $scope.roadTreeNodeClick,
+						onContextMenu : $scope.showTreeContextMenu,
+						onLoadSuccess : function() {
+							var root = $(this).tree("getRoots")[0];
+							//展开根节点
+							$(this).tree("expand", root.target);
+							//默认选中根节点
+							$(this).tree("select", root.target);
+							if (queryParams.type == 0) {
+								//树类型为按道路展示时，删除第二级节点中的空节点
+								for (var index = 0; index < root.children.length; index++) {
+									var item = root.children[index];
+									if (!item.children
+											|| item.children.length == 0) {
+										//删除空节点
+										$(this).tree("pop",document.getElementById(item.domId));
+										index--;
+									}
+								}
+							}
+						}
+					});
+				}
+
+				/* 初始化加载 */
+				$scope.load = function() {
+					$scope.$topLayout.layout("collapse", "west");
+					loadOrgTree();
+					loadRoadTree();
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot+ "device/companyManage/queryCompany",
+						params : {},
+						method : "post",
+						success : function(data) {
+							$scope.$("#contractorId").combobox("loadData", data);
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "设备厂家加载失败！");
+						}
+					});
+					$scope.formData.orderName = "deviceSysNbr";
+					$scope.formData.orderType = "asc";
+					$scope.$updateData("formData");
+					$scope.$search("formData");
+					
+					//切换tab页时查询
+					$scope.$('#tollgateTabs').tabs({
+						onSelect: function(title,index){
+							if(title == '按机构'){
+								//默认选中根节点
+								var root = $scope.$("#orgTree").tree("getRoots")[0];
+								$scope.$("#orgTree").tree("select", root.target);
+								var id = root.id;
+								text = root.text;
+								$scope.formData.userOrgId = id;
+								$scope.formData.roadId = null;
+								$scope.formData.roadType = null;
+								$scope.formData.siteId = null;
+								$scope.formData.pageNumber = 1;
+								$scope.$updateData("formData");
+								if($scope.$("#tollgateType").combobox("getValues") != ""){
+									$scope.formData.tollgateType = $scope.$("#tollgateType").combobox("getValues").join(",");
+								}
+								if($scope.$("input[name='useStatus']:checked").length != 0){
+									$scope.formData.useStatusFlagArray = $scope.$("input[name='useStatus']:checked").map(function() {
+										return $(this).val();
+									}).get().join(',');
+								}
+								$scope.$search("formData");
+							}else if(title == '按道路'){
+								//默认选中根节点
+								var root = $scope.$("#roadTree").tree("getRoots")[0];
+								$scope.$("#roadTree").tree("select", root.target);
+								var id = root.id;
+								text = root.text;
+								var nodeType = root.attribute.nodeType;
+								$scope.formData.pageNumber = 1;
+								if (nodeType == "road") {
+									$scope.formData.roadId = id;
+									$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+									$scope.formData.roadType = null;
+									$scope.formData.siteId = null;
+								} else if (nodeType == "site") {
+									$scope.formData.siteId = id;
+									$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+									$scope.formData.roadType = null;
+									$scope.formData.roadId = null;
+								} else if (nodeType == "roadType") {
+									$scope.formData.roadType = id;
+									$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+									$scope.formData.roadId = null;
+									$scope.formData.siteId = null;
+								} else {
+									$scope.formData.roadType = null;
+									$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+									$scope.formData.roadId = null;
+									$scope.formData.siteId = null;
+								}
+								$scope.$updateData("formData");
+								if($scope.$("#tollgateType").combobox("getValues") != ""){
+									$scope.formData.tollgateType = $scope.$("#tollgateType").combobox("getValues").join(",");
+								}
+								if($scope.$("input[name='useStatus']:checked").length != 0){
+									$scope.formData.useStatusFlagArray = $scope.$("input[name='useStatus']:checked").map(function() {
+										return $(this).val();
+									}).get().join(',');
+								}
+								$scope.$search("formData");
+							}
+						}
+					});
+				};
+                /* 全选,选中后再次点击为全不选  */
+	
+	            $scope.checkAll = function() {
+					var ck = $scope.$("input[name='useStatus']");
+					var currSelect = $scope.$("input[name=checkAll]").is(':checked');
+					$.each(ck, function(i) {
+							ck[i].checked = currSelect;
+					});
+				};
+
+				/* 查询  */
+				$scope.searchData = function() {
+					$scope.$updateData("formData");
+					$scope.formData.tollgateType = $scope.$("#tollgateType").combobox("getValues").join(",");
+					$scope.formData.useStatusFlagArray = $scope.$("input[name='useStatus']:checked").map(function() {
+						return $(this).val();
+					}).get().join(',');
+					$scope.$search("formData");
+				};
+
+				/* 启用  */
+				$scope.startUse = function(event) {
+					var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+					//勾选选中的行数组
+					if (rows.length == 0) {
+						$.messager.alert("提示", "请选择需要启用的设备！");
+						return false;
+					} else {
+						var deviceIdStr = "";//设备Id字符串
+						var recordTypeStr = "";//记录类型字符串，1表示电子监控设备
+						for (var i = 0; i < rows.length; i++) {
+							if(rows[i].useStatusFlag == 3){
+								$.messager.alert("提示","设备已报废不能启用！");
+								return false;
+							}else if(rows[i].useStatusFlag == 1){
+								$.messager.alert("提示","设备已是启用状态！");
+								return false;
+							}
+							if (i > 0) {
+								deviceIdStr = deviceIdStr + ","
+										+ rows[i].deviceId;
+								recordTypeStr = recordTypeStr + "," + "1";
+							} else {
+								deviceIdStr = deviceIdStr + rows[i].deviceId;
+								recordTypeStr = recordTypeStr + "1";
+							}
+						}
+						$scope.$openDialog("useStatusDialog",{
+							title : "更改状态",
+							width : 400,
+							height : 250,
+							href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+						}, true);
+						//保存
+						$scope.$setParam("saveData", function(data) {
+							var reason = data;
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/bayonetManage/enableDevice',
+								params : {
+									reason : reason,
+									deviceIdStr : deviceIdStr,
+									recordTypeStr : recordTypeStr
+								},
+								method : 'post',
+								success : function(data) {
+									$.messager.alert("提示", "设备启用成功！");
+									//关闭窗体
+									$scope.$getDialog("useStatusDialog")
+											.dialog("close");
+									$scope.$search("formData");
+								},
+								fail : function(errMsg) {
+									$.messager.alert("提示", "设备启用失败！");
+								}
+							});
+						});
+					}
+
+				};
+				/**
+				 * 停用
+				 * @param event
+				 */
+				$scope.stopUse = function(event) {
+					//设置选择的这些行的使用状态为启用todo
+					var rows = $scope.$('#tollgateGrd').datagrid('getChecked');
+					//勾选选中的行数组
+					if (rows.length == 0) {
+						$.messager.alert("提示", "请选择需要停用的设备！");
+						return false;
+					}else{
+						var deviceIdStr = "";//设备Id字符串
+						var recordTypeStr = "";//记录类型字符串，1表示电子监控设备
+						for (var i = 0; i < rows.length; i++) {
+							if(rows[i].useStatusFlag != 1){
+								$.messager.alert("提示","设备不是启用状态不能停用！");
+								return false;
+							}
+							if (i > 0) {
+								deviceIdStr = deviceIdStr + "," + rows[i].deviceId;
+								recordTypeStr = recordTypeStr + "," + "1";
+							} else {
+								deviceIdStr = deviceIdStr + rows[i].deviceId;
+								recordTypeStr = recordTypeStr + "1";
+							}
+						}
+						$scope.$openDialog("stopStatusDialog", {
+							title : "更改状态",
+							width : 400,
+							height : 250,
+							href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+						}, true);
+						//保存
+						$scope.$setParam("saveData", function(data) {
+							var reason = data;
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/bayonetManage/stopDevice',
+								params : {
+									reason : reason,
+									deviceIdStr : deviceIdStr,
+									recordTypeStr : recordTypeStr
+								},
+								method : 'post',
+								success : function(data) {
+									$.messager.alert("提示", "设备停用成功！");
+									//关闭窗体
+									$scope.$getDialog("stopStatusDialog")
+											.dialog("close");
+									$scope.$search("formData");
+								},
+								fail : function(errMsg) {
+									$.messager.alert("提示", "设备停用失败！");
+								}
+							});
+						});
+					}
+				};
+
+				/**
+				 * 删除备案记录
+				 * @param deviceId
+				 */
+				$scope.deleteDevice = function(index) {
+					var rowData = $scope.$("#tollgateGrd").datagrid("getData").rows[index];
+					var deviceId = rowData.deviceId;
+					var dataNum = $scope.$("#tollgateGrd").datagrid("getRows").length;
+					//当前页行数
+					var options = $scope.$("#tollgateGrd").datagrid("getPager").data("pagination").options;
+					var pageNumber = options.pageNumber;//获取当前页var 
+					$.messager.confirm("提示", "是否确认删除信息？", function(flag) {
+						if (flag) {
+							$scope.$ajaxRequest({
+								url : $scope.$restRoot + 'device/bayonetManage/deleteBayonet',
+								params : {deviceId : deviceId},
+								method : "post",
+								success : function(data) {
+									if (dataNum == 1) {
+										$scope.$("#tollgateGrd").datagrid("getPager").pagination("select", pageNumber - 1);
+										//跳转大当前页的前一页
+									} else {
+										$scope.$search("formData");
+									}
+									$.messager.alert("提示", "删除成功！");
+								},
+								fail : function(errMsg) {
+									$.messager.alert("提示", "删除失败！");
+								}
+							});
+						}
+					});
+				};
+				/**
+				 *单个报废卡口 
+				 */
+				$scope.breakDevice = function(index){
+					var rowData = $scope.$("#tollgateGrd").datagrid("getData").rows[index];
+					if(rowData.useStatusFlag != 2){
+						$.messager.alert("提示","设备不是停用状态不能报废！");
+						return false;
+					}
+					$.messager.confirm("提示", "是否确认报废设备？", function(flag) {
+						if (flag) {
+							var deviceIdStr = rowData.deviceId;//设备Id字符串
+							var recordTypeStr = "1";//记录类型字符串，1表示电子监控设备
+							$scope.$openDialog("breakStatusDialog",{
+								title : "更改状态",
+								width : 400,
+								height : 250,
+								href : "tpls/deviceManage/deviceConfig/device-sys-use-status.html"
+							}, true);
+							//保存
+							$scope.$setParam("saveData", function(data) {
+								var reason = data;
+								$scope.$ajaxRequest({
+									url : $scope.$restRoot + 'device/bayonetManage/breakDevice',
+									params : {
+										reason : reason,
+										deviceIdStr : deviceIdStr,
+										recordTypeStr : recordTypeStr
+									},
+									method : 'post',
+									success : function(data) {
+										$.messager.alert("提示", "设备报废成功！");
+										//关闭窗体
+										$scope.$getDialog("breakStatusDialog").dialog("close");
+										$scope.$search("formData");
+									},
+									fail : function(errMsg) {
+										$.messager.alert("提示", "设备报废失败！");
+									}
+								});
+							});
+						}
+					});
+				};
+				$.extend($scope, {
+					/**
+					 *显示树节点相应的上下文菜单
+					 */
+					showTreeContextMenu : function(e, node) {
+						e.preventDefault();
+						text = node.text;
+						$scope.currentTreeNodeId = node.id;
+					},
+					//左击机构树点击事件
+					orgTreeNodeClick : function(node) {
+						var id = node.id;
+						text = node.text;
+						$scope.formData.userOrgId = id;
+						$scope.formData.roadId = null;
+						$scope.formData.roadType = null;
+						$scope.formData.siteId = null;
+						$scope.formData.pageNumber = 1;
+						$scope.$updateData("formData");
+						if($scope.$("#tollgateType").combobox("getValues") != ""){
+							$scope.formData.tollgateType = $scope.$("#tollgateType").combobox("getValues").join(",");
+						}
+						if($scope.$("input[name='useStatus']:checked").length != 0){
+							$scope.formData.useStatusFlagArray = $scope.$("input[name='useStatus']:checked").map(function() {
+								return $(this).val();
+							}).get().join(',');
+						}
+						$scope.$search("formData");
+					},
+					//左击道路点位树点击事件
+					roadTreeNodeClick : function(node) {
+						var id = node.id;
+						text = node.text;
+						var nodeType = node.attribute.nodeType;
+						$scope.formData.pageNumber = 1;
+						if (nodeType == "road") {
+							$scope.formData.roadId = id;
+							$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+							$scope.formData.roadType = null;
+							$scope.formData.siteId = null;
+						} else if (nodeType == "site") {
+							$scope.formData.siteId = id;
+							$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+							$scope.formData.roadType = null;
+							$scope.formData.roadId = null;
+						} else if (nodeType == "roadType") {
+							$scope.formData.roadType = id;
+							$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+							$scope.formData.roadId = null;
+							$scope.formData.siteId = null;
+						} else {
+							$scope.formData.roadType = null;
+							$scope.formData.userOrgId = $scope.UserInfo.orgId;//当前用户所在机构ID
+							$scope.formData.roadId = null;
+							$scope.formData.siteId = null;
+						}
+						$scope.$updateData("formData");
+						if($scope.$("#tollgateType").combobox("getValues") != ""){
+							$scope.formData.tollgateType = $scope.$("#tollgateType").combobox("getValues").join(",");
+						}
+						if($scope.$("input[name='useStatus']:checked").length != 0){
+							$scope.formData.useStatusFlagArray = $scope.$("input[name='useStatus']:checked").map(function() {
+								return $(this).val();
+							}).get().join(',');
+						}
+						$scope.$search("formData");
+					}
+				});
+
+				$scope.options = {
+					sortName : "deviceSysNbr",
+					sortOrder : "asc",
+					columns : [ [ {
+						field : "deviceId",
+						checkbox : true
+					}, {
+						align : "center",
+						title : "使用状态",
+						field : "useStatusFlag",
+						width : 60,
+						formatter : useStautsFormat
+					}, {
+						align : "center",
+						title : "设备编号",
+						field : "deviceSysNbr",
+						width : 150,
+						sortable : true,
+						formatter : deviceSysNbrChange
+					}, {
+						align : "center",
+						title : "卡口类型",
+						field : "tollgateType",
+						width : 80,
+						formatter : tollgateType
+					}, {
+						align : "center",
+						title : "管理单位",
+						field : "orgId",
+						width : 100
+					}, {
+						align : "center",
+						title : "归属",
+						field : "ownership",
+						width : 80,
+						formatter : ownership
+					}, {
+						align : "center",
+						title : "道路",
+						field : "roadId",
+						width : 80
+					}, {
+						align : "center",
+						title : "点位",
+						field : "siteName",
+						width : 120
+					}, {
+						align : "center",
+						title : "安装方式",
+						field : "mountingFacilityType",
+						width : 80,
+						formatter : mountingFacilityType
+					}, {
+						align : "center",
+						title : "方向",
+						field : "sectionIdList",
+						width : 80
+					}, {
+						align : "center",
+						title : "接入稽查<br />布控系统",
+						field : "isConnectTrackSys",
+						width : 60,
+						formatter : isConnectTrackSys
+					}, {
+						align : "center",
+						title : "具有违法<br />抓拍功能",
+						field : "isVioSupport",
+						width : 60,
+						formatter : isCollectVio
+					}, {
+						align : "center",
+						title : "使用状态更新",
+						field : "statusUpdateTime",
+						width : 120,
+						formatter : deviceUseStatusFormat
+					}, {
+						align : "center",
+						title : "操作",
+						field : "operater",
+						width : 100,
+						formatter : operate
+					} ] ],
+					onSortColumn : function(sortName,sortType){
+						$scope.formData.orderName = sortName;
+						$scope.formData.orderType = sortType;
+						$(this).datagrid("getPager").pagination("select",1);
+					},
+					nowrap : false
+				};
+
+				function tollgateType(value, rowData, rowIndex) {
+					var tollgateType = $scope.$getCodeName("421",
+							rowData.tollgateType);
+					if (value == null) {
+						tollgateType = '--';
+					}
+					return tollgateType;
+				}
+				function ownership(value, rowData, rowIndex) {
+					var ownership = $scope.$getCodeName("419",
+							rowData.ownership);
+					if (value == null) {
+						ownership = '--';
+					}
+					return ownership;
+				}
+
+				function useStautsFormat(value, rowData, rowIndex) {
+					var useStatus = $scope.$getCodeName("405",
+							rowData.useStatusFlag);
+					if (value == null) {
+						useStatus = '--';
+					}
+					return useStatus;
+				}
+				
+				//编号加title
+				function deviceSysNbrChange(value, row, index){
+					if (value == null) {
+						return "<span> </span>";
+					}
+					return "<span title='" + value + "'>" + value + "</span>";
+				}
+
+				function isConnectTrackSys(value, rowData, rowIndex) {
+					var isConnectTrackSys;
+					if (value == "1") {
+						isConnectTrackSys = '<div title="稽查布控系统编号：'+rowData.trackSysTollgateNbr+'" style="color:blue;">是</div>';//'是'
+					} else {
+						isConnectTrackSys = '<div>否</div>';
+					}
+					return $("<span/>").append(isConnectTrackSys).html();
+				}
+
+				function isCollectVio(value, rowData, rowIndex) {
+					var isCollectVio;
+					if (value == "1") {
+						isCollectVio = '<div title="综合平台编号：'+rowData.integratePlatformNbr+'" style="color:blue;">是</div>';//'是'
+					} else {
+						isCollectVio = '<div>否</div>';
+					}
+					return isCollectVio;
+				}
+				function roadFormat(value, rowData, rowIndex) {
+
+				}
+
+				function mountingFacilityType(value, rowData, rowIndex) {
+					var installationWay = $scope.$getCodeName("404",rowData.mountingFacilityType);
+					if (value == null) {
+						installationWay = '--';
+					}
+					return installationWay;
+				}
+
+				function deviceUseStatusFormat(value, rowData, rowIndex) {
+					var statusUpdateTime = rowData.statusUpdateTime;
+					if (statusUpdateTime == null || statusUpdateTime == '') {
+						statusUpdateTime = new Date().format("yyyy-MM-dd");
+					}
+					var statusUpdateDate = $("<a>" + statusUpdateTime + "</a>");
+					var showLogBtn = $("<a  title='状态更新日志' class='easyui-linkbutton'></a>");
+					showLogBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-detail"
+					});
+					showLogBtn.attr('cy-click', "viewStatusChange('"
+							+ rowData.deviceId + "')");
+					return $("<span/>").append(statusUpdateDate).append("  ")
+							.append(showLogBtn).html();
+				}
+
+				$scope.viewStatusChange = function(devId) {
+					$scope.$setParam("deivceId", devId);
+					$scope
+							.$openDialog(
+									"deviceStatusChange",
+									{
+										title : "设备使用状态变更记录",
+										width : 700,
+										height : 400,
+										href : "tpls/deviceManage/deviceRecord/bayonet-use-status-detail.html"
+									});
+				};
+
+				function operate(value, rowData, index) {
+					var returnHtml = $("<span/>");
+					var editBtn = $("<a  title='编辑' class='button-edit'></a>");
+					editBtn.linkbutton({
+						plain : true,
+						iconCls : "icon-edit-solid"
+					}).attr('cy-click', "editDevice('" + index + "')");
+					returnHtml.append(editBtn).append("  ");
+					if($scope.$hasAuth("06020202")){
+						var deleteBtn = $("<a  title='删除' class='button-remove'></a>");
+						deleteBtn.linkbutton({
+							plain : true,
+							iconCls : "icon-remove-solid"
+						}).attr('cy-click', "deleteDevice('" + index + "')");
+						returnHtml.append(deleteBtn).append("  ");
+					}
+					if($scope.$hasAuth("06020204")){
+						var breakBtn = $("<a  title='报废' class='button-drop'></a>");
+						breakBtn.linkbutton({
+							plain : true,
+							iconCls : "icon-drop-solid"
+						}).attr('cy-click', "breakDevice('" + index + "')");
+						returnHtml.append(breakBtn);
+					}
+					return returnHtml.html();
+				}
+
+				/**
+				 *添加卡口设备 
+				 */
+				$scope.addData = function() {
+					$scope.$openDialog("addBayonetDialog",{
+						title : "卡口备案",
+						width : 900,
+						height : 600,
+						href : "tpls/deviceManage/deviceRecord/bayonet-manage-config.html"
+					}, true);
+					$scope.$setParam("mode", "ADD");
+					$scope.$setParam("closeSelf", function() {
+						$scope.$getDialog("addBayonetDialog").dialog("close");
+						$scope.$search("formData");
+					});
+				};
+
+				/**
+				 *编辑卡口信息 及参数信息
+				 */
+				$scope.editDevice = function(index) {
+					var rowDatas = $scope.$("#tollgateGrd").datagrid("getData").rows[index];
+					var oldDeviceSysNbr = rowDatas.deviceSysNbr;//编辑时原先的卡口设备编号
+					var deviceId = rowDatas.deviceId;
+					//根据deviceId查询相关的卡口信息
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/bayonetManage/queryBayonetByDeviceId",
+						params : {deviceId:deviceId},
+						method : 'post',
+						success : function(data) {
+							$scope.$setParam("deviceInfoDto", data);
+							$scope.$setParam("deviceId", deviceId);
+							$scope.$setParam("mode", "update");
+							$scope.$openDialog("editDialog",{
+								title : "编辑卡口信息",
+								width : 900,
+								height : 550,
+								href : 'tpls/deviceManage/deviceRecord/bayonet-manage-config.html'
+							}, true);
+							$scope.$setParam("saveData", function(data) {
+								data.oldDeviceSysNbr = oldDeviceSysNbr;
+								$scope.$ajaxRequest({
+									url : $scope.$restRoot + "device/bayonetManage/updateBayonet",
+									params : data,
+									method : 'post',
+									success : function(data) {
+										if (data == 1) {
+											$.messager.alert("提示", "修改成功!");
+											$scope.$getDialog("editDialog").dialog("close");
+											$scope.$search("formData");
+										} else if (data == 0) {
+											$.messager.alert("提示", "设备编号已存在，请重新输入！");
+											return false;
+										}
+									},
+									fail : function(errMsg) {
+										$.messager.alert("提示", "修改失败!");
+									}
+								});
+							});
+							//关闭窗口
+							$scope.$setParam("closeSelf", function() {
+								$scope.$getDialog("editDialog").dialog("close");
+								$scope.$search("formData");
+							});
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "查询卡口相关信息失败!");
+						}
+					});
+				};
+	});
+</script>
+<style>
+#bayonetList .td>input[class^='easyui-'] {
+	width: 150px;
+}
+
+#bayonetList .searchPanel .td:nth-child(odd) {
+	margin-left: 15px;
+}
+</style>

@@ -1,0 +1,135 @@
+<!--点位信息添加页面-->
+<div id="point-message-view" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+			<div class="searchPanel" style="margin-bottom: 5px;">
+				<div class="panel_title">
+					点位信息
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							点位编号：
+						</div>
+						<div class="td" cy-name="siteData.siteCode">
+						</div>
+						<div class="th">
+							点位名称：
+						</div>
+						<div class="td" cy-name="siteData.siteName">
+						</div>
+						<div class="th">
+							点位简称：
+						</div>
+						<div class="td" cy-name="siteData.siteSimpleName">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							行政区划：
+						</div>
+						<div class="td" cy-name="siteData.districtCode" cy-filter="$getDistrictName">
+						</div>
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td" cy-name="siteData.orgId" cy-filter="$getOrgName">
+						</div>
+						<div class="th">
+							点位类型：
+						</div>
+						<div class="td" cy-name="siteData.siteType" cy-filter="getCodeName('150')">
+						</div>
+					</div>
+					<div class="tr">
+						<div id="road">
+							<div class="th">
+								所属道路：
+							</div>
+							<div class="td" cy-name="siteData.roadId" cy-filter="$getRoadName">
+							</div>
+						</div>
+						<div id="segment">
+							<div class="th">
+								所属路段：
+							</div>
+							<div class="td" cy-name="siteData.roadSectionId">
+							</div>
+						</div>
+						<div id="crossing">
+							<div class="th">
+								所属路口：
+							</div>
+							<div class="td" cy-name="siteData.crossId">
+							</div>
+						</div>
+						<div class="th">
+							位置：
+						</div>
+						<div class="td">
+							<span  cy-name="siteData.km" cy-filter="addSuffix('公里')"></span>
+							+
+							<span  cy-name="siteData.meter" cy-filter="addSuffix('米')"></span>
+						</div>
+						<div class="th">
+							点位地形：
+						</div>
+						<div class="td" cy-name="siteData.siteLandscape" cy-filter="getCodeName('151')">
+						</div>
+						<div class="th" style="width:67px">
+							备注：
+						</div>
+						<div class="td" cy-name="siteData.remark">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							点位经度：
+						</div>
+						<div class="td" cy-name="siteData.siteLongitude">
+						</div>
+						<div class="th">
+							点位纬度：
+						</div>
+						<div class="td" cy-name="siteData.siteLatitude">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="searchPanel" style="height: 155px;">
+			<div class="panel_title">
+				点位地图
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',height:40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center">
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+			cy-click="$closeSelf">关闭</a>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage(["siteData"], function($scope) {
+		$scope.getCodeName = function(type){
+			return function(value){
+				return $scope.$getCodeName(type,value);
+			};
+		};
+		
+		$scope.addSuffix = function(suffix){
+			return function(value){
+				return value+suffix;
+			};
+		};
+    }); 
+</script>
+<style type="text/css">
+    #point-message-view .th {
+        text-align: right;
+        width: 90px;
+    }
+    #point-message-view .td {
+        width: 150px;
+    }
+</style>

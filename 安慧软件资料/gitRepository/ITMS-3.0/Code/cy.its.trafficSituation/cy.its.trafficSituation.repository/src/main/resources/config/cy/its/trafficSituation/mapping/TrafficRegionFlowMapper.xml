@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficRegionFlowMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficRegionFlow" >
+    <id column="REGION_STATE_ID" property="regionStateId" jdbcType="VARCHAR" />
+    <result column="REGIONAL_ID" property="regionalId" jdbcType="VARCHAR" />
+    <result column="TOTAL_NUM" property="totalNum" jdbcType="DECIMAL" />
+    <result column="LARGE_NUM" property="largeNum" jdbcType="DECIMAL" />
+    <result column="SMALL_NUM" property="smallNum" jdbcType="DECIMAL" />
+    <result column="OTHER_NUM" property="otherNum" jdbcType="DECIMAL" />
+    <result column="IMPORTANT_NUM" property="importantNum" jdbcType="DECIMAL" />
+    <result column="AVG_SPEED" property="avgSpeed" jdbcType="DECIMAL" />
+    <result column="AVG_TRAVEL_TIME" property="avgTravelTime" jdbcType="DECIMAL" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="TRAFFIC_STATE" property="trafficState" jdbcType="VARCHAR" />
+    
+    <result column="REGIONAL_NAME" property="regionalName" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+    <result column="ENTRY_SITE_ID" property="entrySiteId" jdbcType="VARCHAR" />
+    <result column="EXIT_SITE_ID" property="exitSiteId" jdbcType="VARCHAR" />
+    <result column="REGIONAL_DESIGN_CAPACITY" property="regionalDesignCapacity" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+   <select id="selectAllRegionFlow" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   	REGION_STATE_ID, t1.REGIONAL_ID, TOTAL_NUM, LARGE_NUM, SMALL_NUM, OTHER_NUM, IMPORTANT_NUM, 
+    AVG_SPEED, AVG_TRAVEL_TIME, UPDATE_TIME,TRAFFIC_STATE,t1.ORG_PRIVILEGE_CODE,
+    REGIONAL_NAME, ROAD_ID, DIRECTION_TYPE, ENTRY_SITE_ID, EXIT_SITE_ID,ORG_ID,
+    REGIONAL_DESIGN_CAPACITY,DIRECTION_NAME
+    
+    from T_TRAFFIC_REGION_FLOW t1
+    left join T_SYS_REGION t2 on t1.REGIONAL_ID=t2.REGIONAL_ID
+    <where> 
+			1=1
+			<if test="startTime!=null and startTime != ''" >
+				<![CDATA[AND UPDATE_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime!=null and endTime != ''" >
+				<![CDATA[AND UPDATE_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="roadId!=null and roadId != ''" >
+				AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="trafficState!=null and trafficState != ''" >
+				AND TRAFFIC_STATE = #{trafficState,jdbcType=VARCHAR}
+			</if>
+			<if test="regionalId!=null and regionalId != ''" >
+				AND t1.REGIONAL_ID = #{regionalId,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND t1.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="updateTime!=null and updateTime != ''" >
+				<![CDATA[AND t1.UPDATE_TIME <= #{updateTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND t1.UPDATE_TIME >= #{updateTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>
+		</where>
+		order by UPDATE_TIME desc
+    
+  </select>
+  
+  <select id="select2HourRegionFlow" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   	REGION_STATE_ID, t1.REGIONAL_ID, TOTAL_NUM, LARGE_NUM, SMALL_NUM, OTHER_NUM, IMPORTANT_NUM, 
+    AVG_SPEED, AVG_TRAVEL_TIME, UPDATE_TIME,TRAFFIC_STATE,t1.ORG_PRIVILEGE_CODE   
+    from T_TRAFFIC_REGION_FLOW t1   
+    <where> 			
+			<if test="regionalId!=null and regionalId != ''" >
+				AND t1.REGIONAL_ID = #{regionalId,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND t1.ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="updateTime!=null and updateTime != ''" >
+				<![CDATA[AND t1.UPDATE_TIME <= #{updateTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND t1.UPDATE_TIME >= #{updateTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>
+		</where>
+		order by UPDATE_TIME     
+  </select>
+  
+  
+  
+  <sql id="Base_Column_List" >
+    REGION_STATE_ID, REGIONAL_ID, TOTAL_NUM, LARGE_NUM, SMALL_NUM, OTHER_NUM, IMPORTANT_NUM, 
+    AVG_SPEED, AVG_TRAVEL_TIME,TRAFFIC_STATE, UPDATE_TIME,ORG_PRIVILEGE_CODE
+  </sql>
+  
+  <select id="selectByRegionId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_REGION_FLOW
+    where  1=1
+    <if test="regionalId!=null and regionalId != ''" >
+		and	REGIONAL_ID = #{regionalId,jdbcType=VARCHAR}
+	</if>    
+    order by UPDATE_TIME desc
+    
+  </select>
+  
+   <select id="selectLastFlowByRegionId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+     from(
+	    select 
+	    REGION_STATE_ID, REGIONAL_ID, TOTAL_NUM, LARGE_NUM, SMALL_NUM, OTHER_NUM, IMPORTANT_NUM, 
+    	AVG_SPEED, AVG_TRAVEL_TIME,TRAFFIC_STATE, UPDATE_TIME,rownum 
+	    from T_TRAFFIC_REGION_FLOW
+	    where REGIONAL_ID = #{regionalId,jdbcType=VARCHAR}
+	    order by UPDATE_TIME desc
+	    )
+	 where rownum=1
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_REGION_FLOW
+    where REGION_STATE_ID = #{regionStateId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_REGION_FLOW
+    where REGION_STATE_ID = #{regionStateId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficRegionFlow" >
+    insert into T_TRAFFIC_REGION_FLOW (REGION_STATE_ID, REGIONAL_ID, TOTAL_NUM, 
+      LARGE_NUM, SMALL_NUM, OTHER_NUM, 
+      IMPORTANT_NUM, AVG_SPEED, AVG_TRAVEL_TIME, TRAFFIC_STATE,
+      UPDATE_TIME)
+    values (#{regionStateId,jdbcType=VARCHAR}, #{regionalId,jdbcType=VARCHAR}, #{totalNum,jdbcType=DECIMAL}, 
+      #{largeNum,jdbcType=DECIMAL}, #{smallNum,jdbcType=DECIMAL}, #{otherNum,jdbcType=DECIMAL}, 
+      #{importantNum,jdbcType=DECIMAL}, #{avgSpeed,jdbcType=DECIMAL}, #{avgTravelTime,jdbcType=DECIMAL}, 
+      #{trafficState,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficRegionFlow" >
+    insert into T_TRAFFIC_REGION_FLOW
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="regionStateId != null" >
+        REGION_STATE_ID,
+      </if>
+      <if test="regionalId != null" >
+        REGIONAL_ID,
+      </if>
+      <if test="totalNum != null" >
+        TOTAL_NUM,
+      </if>
+      <if test="largeNum != null" >
+        LARGE_NUM,
+      </if>
+      <if test="smallNum != null" >
+        SMALL_NUM,
+      </if>
+      <if test="otherNum != null" >
+        OTHER_NUM,
+      </if>
+      <if test="importantNum != null" >
+        IMPORTANT_NUM,
+      </if>
+      <if test="avgSpeed != null" >
+        AVG_SPEED,
+      </if>
+      <if test="avgTravelTime != null" >
+        AVG_TRAVEL_TIME,
+      </if>
+       <if test="trafficState != null" >
+        TRAFFIC_STATE,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="regionStateId != null" >
+        #{regionStateId,jdbcType=VARCHAR},
+      </if>
+      <if test="regionalId != null" >
+        #{regionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalNum != null" >
+        #{totalNum,jdbcType=DECIMAL},
+      </if>
+      <if test="largeNum != null" >
+        #{largeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="smallNum != null" >
+        #{smallNum,jdbcType=DECIMAL},
+      </if>
+      <if test="otherNum != null" >
+        #{otherNum,jdbcType=DECIMAL},
+      </if>
+      <if test="importantNum != null" >
+        #{importantNum,jdbcType=DECIMAL},
+      </if>
+      <if test="avgSpeed != null" >
+        #{avgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="avgTravelTime != null" >
+        #{avgTravelTime,jdbcType=DECIMAL},
+      </if>
+       <if test="trafficState != null" >
+         #{trafficState,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficRegionFlow" >
+    update T_TRAFFIC_REGION_FLOW
+    <set >
+      <if test="regionalId != null" >
+        REGIONAL_ID = #{regionalId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalNum != null" >
+        TOTAL_NUM = #{totalNum,jdbcType=DECIMAL},
+      </if>
+      <if test="largeNum != null" >
+        LARGE_NUM = #{largeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="smallNum != null" >
+        SMALL_NUM = #{smallNum,jdbcType=DECIMAL},
+      </if>
+      <if test="otherNum != null" >
+        OTHER_NUM = #{otherNum,jdbcType=DECIMAL},
+      </if>
+      <if test="importantNum != null" >
+        IMPORTANT_NUM = #{importantNum,jdbcType=DECIMAL},
+      </if>
+      <if test="avgSpeed != null" >
+        AVG_SPEED = #{avgSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="avgTravelTime != null" >
+        AVG_TRAVEL_TIME = #{avgTravelTime,jdbcType=DECIMAL},
+      </if>
+       <if test="trafficState != null" >
+        TRAFFIC_STATE= #{trafficState,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where REGION_STATE_ID = #{regionStateId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficRegionFlow" >
+    update T_TRAFFIC_REGION_FLOW
+    set REGIONAL_ID = #{regionalId,jdbcType=VARCHAR},
+      TOTAL_NUM = #{totalNum,jdbcType=DECIMAL},
+      LARGE_NUM = #{largeNum,jdbcType=DECIMAL},
+      SMALL_NUM = #{smallNum,jdbcType=DECIMAL},
+      OTHER_NUM = #{otherNum,jdbcType=DECIMAL},
+      IMPORTANT_NUM = #{importantNum,jdbcType=DECIMAL},
+      AVG_SPEED = #{avgSpeed,jdbcType=DECIMAL},
+      AVG_TRAVEL_TIME = #{avgTravelTime,jdbcType=DECIMAL},
+      TRAFFIC_STATE = #{trafficState,jdbcType=VARCHAR},
+      UPDATE_TIME = #{trafficState,jdbcType=TIMESTAMP}
+    where REGION_STATE_ID = #{regionStateId,jdbcType=VARCHAR}
+  </update>
+</mapper>

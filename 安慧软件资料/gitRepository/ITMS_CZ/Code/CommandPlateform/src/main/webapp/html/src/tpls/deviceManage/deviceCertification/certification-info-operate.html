@@ -1,0 +1,405 @@
+<div id="certificationDiv" style="width: 100%;">
+<div id="container" style="position:absolute;overflow-y:auto;height:510px;width: 884px">
+
+</div>
+</div>
+<script type="text/javascript">
+    InitPage(["equipmentNbr","mode","refresh"],function($scope) {
+    	var equipmentNbr = $scope.equipmentNbr;
+    	$scope.load = function(){
+	    		queryAllCertification(equipmentNbr);
+    	};
+    	
+    	//根据设备编号查询所有检定证书
+    	function queryAllCertification(equipmentNbr){
+    		$scope.$ajaxRequest({
+    			url: $scope.$restRoot+'device/certificationManage/queryAllCertification',
+    			params: {equipmentNbr:equipmentNbr},
+    			method: 'post',
+    			success: function(data){
+    				for(var i = 0; i < data.length; i++){
+    					createNewRecord(data[i]);
+    				}
+    			},
+    			fail: function(errMsg){
+    				$.messager.alert("提示","查询设备证书失败！");
+    			}
+    		});
+    	}
+        /**
+         * 创建一条证书记录显示列表
+         * @param certificationDetailInfo
+         */
+      	function createNewRecord(certificationDetailInfo){
+      		var fileUrl = "";
+      		var fileArray = {};
+	      	if(certificationDetailInfo.certificatePhoto != null){
+	      		fileUrl = "http://"+certificationDetailInfo.certificatePhoto.split(",")[0];//获取该检定证书的一张图片
+	      		fileArray = certificationDetailInfo.certificatePhoto.split(",");
+	      	}else{
+	      		fileUrl = "themes/default/images/noPic.jpg";
+	      	}
+	      	var $recordDiv = $('<div class="recordDiv"></div>');
+			    //存放图片的div
+			var $imgDiv=$('<div id="ps_container" class="ps_container">'+
+					'<div class="ps_image_wrapper">'+
+						'<img src="'+fileUrl+'" alt="" /></div>'+
+					'<div class="ps_next"></div>'+
+					'<div class="ps_prev"></div>'+
+					'<ul class="ps_nav">'+
+						'<li class="selected"><a href="'+fileUrl+'" rel="images/1.jpg">Image 1</a></li>'+
+						'<li class="ps_preview">'+
+							'<span></span>'+
+						'</li>'+
+					'</ul>'+
+				'</div>');
+
+	 		    if(fileArray.length>0){
+	 		    	for(i=fileArray.length-1;i>0;i--){
+	 		    		var filePath = "http://"+ fileArray[i];
+	 		    		var img = $('<li><a href="'+filePath+'" rel="'+(i+1)+'">Image '+(i+1)+'</a></li>');
+	 		    		  img.insertAfter($imgDiv.find('.ps_nav .selected'));
+	 		    		}
+	 		    	}
+		    //存放信息的div
+		    var $infoDiv=$('<div class="infoDiv">' +
+		                 '<div><span>检定时间：</span><span style="color: #0000ff;">'+certificationDetailInfo.certificatedDate+'</span>' +
+		                      '<span style="margin-left: 20px;">有效期至：</span><span style="color: red;">'+certificationDetailInfo.expireDate+'</span>' +
+		                 '</div>' +
+		                 '<div><span>证书编号：'+certificationDetailInfo.certificationNbr+'</span></div>' +
+		                 '<div><span>检定人员：'+certificationDetailInfo.certificatedPerson+'</span><span style="margin-left: 20px;">检定机构：'+certificationDetailInfo.certificatedOrg+'</span>' +
+		                 '</div>' +
+		            '</div>');
+		    
+		     var $bigPic=$('<div class="layBox">'+
+		                   '<div class="showBig"></div>'+
+		                   '<img class="closeBig" src="themes/default/images/close.png" width="27" height="27" />'+
+		                   '</div>');
+		    //存放按钮的div
+		    var $btnDiv=$('<div class="btnDiv"></div>');
+		    var $editBtn=$('<a class="button-edit" >修改</a>');
+		    $editBtn.linkbutton({
+		        iconCls:"icon-edit"
+		    });
+		    //编辑检定证书信息
+		    $editBtn.click(function(event){
+		    if ($(this).linkbutton('options').disabled == false) {
+		    	$scope.$setParam("certificationDetail",certificationDetailInfo);
+		    	$scope.$openDialog("certificationDetailDailog",{
+	                title : "编辑检定证书",
+	                width : 900,
+	                height : 550,
+	                href : "tpls/deviceManage/deviceConfig/certification-baseinfo.html"
+	            },true);
+	            //保存编辑检定证书信息
+	            $scope.$setParam("saveData",function(data){
+                	$scope.$ajaxRequest({
+                		url: $scope.$restRoot+'device/certificationManage/editCertification',
+                		params: data,
+                		method: 'post',
+                		success: function(data){
+                			if(data != 2){
+                			$scope.$getDialog("certificationDetailDailog").dialog("close");
+                			$scope.$("#container").children().remove();
+                			queryAllCertification(equipmentNbr);
+                			$.messager.alert("提示","编辑年检信息成功！","info",function () {
+        		            	$.messager.progress("close");
+        		            });
+                			$scope.refresh();
+                			}else{
+                				$.messager.alert("提示","证书编号已存在，请重新输入！","info",function () {
+            		            	$.messager.progress("close");
+            		            });
+                			}
+                		},
+                		fail: function(errMsg){
+                			$.messager.alert("提示","编辑年检信息失败！","info",function () {
+        		            	$.messager.progress("close");
+        		            });
+                		}
+                	});
+                });
+		      }
+		    });
+		    if(new Date(certificationDetailInfo.expireDate)<new Date()){
+		    	$editBtn.linkbutton('disable').removeAttr('click'); 
+		    }
+		    var $deleteBtn=$('<a style="margin-left: 8px" class="button-remove" >删除</a>');
+		    $deleteBtn.linkbutton({
+		        iconCls:"icon-remove"
+		    });
+		    //删除检定证书信息
+		    $deleteBtn.click(function(event){
+		    	//把这个div删除
+		        var temobj=$(this).parent().parent();
+		        //删除这条记录todo
+		        var certificationId = certificationDetailInfo.certificationId;
+		    	$.messager.confirm("提示","确认删除？",function(flag){
+		    		if(flag){
+				        $scope.$ajaxRequest({
+		            		url: $scope.$restRoot+'device/certificationManage/removeCertification',
+		            		params: {certificationId:certificationId},
+		            		method: 'post',
+		            		success: function(data){
+		            			//把这个div删除
+		            			$.messager.alert("提示","删除年检信息成功！");
+		            			temobj.remove();
+		            			$scope.refresh();
+		            		},
+		            		fail: function(errMsg){
+		            			$.messager.alert("提示","删除年检信息失败！");
+		            		}
+		            	});
+		    		}
+		    	});
+		    });
+		    $btnDiv.append($editBtn);
+		    $btnDiv.append($deleteBtn);
+		    $recordDiv.append($imgDiv);
+		    $recordDiv.append($infoDiv);
+		    $recordDiv.append($btnDiv);
+		    $recordDiv.append($bigPic);
+		    $scope.$("#container").append($recordDiv);
+		    
+		  //图片变量
+			$scope.$ps_prev	= $imgDiv.find('.ps_prev'),
+			$scope.$ps_next	= $imgDiv.find('.ps_next'),
+			$scope.$ps_nav	= $imgDiv.find('.ps_nav');
+			$scope.$tooltip	= $imgDiv.find('.ps_preview'),
+			$scope.$links	= $scope.$ps_nav.children('li').not($scope.$tooltip),
+			$scope.total_images	= $scope.$links.length,
+			$scope.currentHovered = -1,
+			$scope.current	= 0;
+	   		var width = 18 * $scope.$links.length + 6;
+	   		$scope.$ps_nav.css({ width: width});
+	   		$imgDiv.show();
+	   		$scope.$tooltip.css({ opacity	: 0}).show();
+	   		$scope.$links.bind('mouseenter',showTooltip).bind('mouseleave',hideTooltip).bind('click',showImage);
+	   		$scope.$ps_next.bind('click',nextImage);
+	   		$scope.$ps_prev.bind('click',prevImage);
+	   		
+	    	$scope.$(".closeBig").bind('click',closeDiv);
+	    	$scope.$(".ps_image_wrapper").bind('click',showBigPic);
+	    	
+	    	//关闭div
+	    	function closeDiv(){
+	    		$scope.$(".layBox").hide();
+	    		$scope.$(".layBox").fadeOut("slow");
+	    	}
+	    	//显示大图 
+	    	function showBigPic(){
+	    		$scope.$(".showBig").html($(this).html());
+	    		$scope.$(".showBig").children().css({ width:"730", height:"480" });
+	    		$scope.$(".layBox").fadeIn(300);
+	    		};
+	    		
+		    function showTooltip(){
+	      		var $link			= $(this),
+	      			idx				= $link.index(),
+	      			linkOuterWidth	= $link.outerWidth(),
+	      			left			= parseFloat(idx * linkOuterWidth) - $imgDiv.find('.ps_preview').width()/2 + linkOuterWidth/2,
+	      			imageLeft;
+	      		//if we are not hovering the current one
+	      		if($scope.currentHovered != idx){
+	      			//check if we will animate left->right or right->left
+	      			if($scope.currentHovered != -1){
+	      				if($scope.currentHovered < idx){
+	      					imageLeft	= 75;
+	      				}
+	      				else{
+	      					imageLeft	= -75;
+	      				}
+	      			}
+	      			$scope.currentHovered = idx;
+	      		}
+	      		//if we are not using a "browser", we just show the tooltip,otherwise we fade it
+ 	      		$imgDiv.find('.ps_preview').stop()
+	      				.animate({
+	      					left		: left + 'px',
+	      					opacity		: 1
+	      				},150); 
+	      	}
+
+		    function hideTooltip(){
+	      		//hide , fade out the tooltip
+ 	      		$imgDiv.find('.ps_preview').stop()
+	      			    .animate({
+	      					opacity		: 0
+	      				},150); 
+	      	}
+
+		    function showImage(e){      		
+	      		var $link				= $(this),
+	      			idx					= $link.index(),
+	      			$image				= $link.find('a').attr('href'),
+	      			$currentImage 		= $imgDiv.find('img'),
+	      			currentImageWidth	= $currentImage.width();
+	      		//if we click the current one return
+	      		$scope.current	= $imgDiv.find('.ps_nav .selected').index();
+	      		if($scope.current == idx) return false;
+	      		//add class selected to the current page / dot
+	      		$scope.$links = $imgDiv.find('.ps_nav').children('li').not($scope.$tooltip);
+	      		$scope.$links.eq($scope.current).removeClass('selected');
+	      		$link.addClass('selected');
+	      		
+	      		//the new image element
+	      		var $newImage = $('<img/>').css('left',currentImageWidth + 'px').attr('src',$image);
+	      		var $ps_image_wrapper 	= $imgDiv.find('.ps_image_wrapper');
+	      		//if the wrapper has more than one image, remove oldest
+	      		if($ps_image_wrapper.children().length > 0){
+	      			$ps_image_wrapper.children().remove();
+	      		}
+	      		//prepend the new image
+	      		$ps_image_wrapper.prepend($newImage);
+	      		//the new image width. 
+	      		//This will be the new width of the ps_image_wrapper
+	      		var newImageWidth	= $newImage.width();
+
+	      		//check animation direction
+	      		if($scope.current > idx){
+	      			$newImage.css('left',-newImageWidth + 'px');
+	      			currentImageWidth = -newImageWidth;
+	      		}	
+	      		$scope.current = idx;
+	      		//animate the new width of the ps_image_wrapper 
+	      		//(same like new image width)
+	      		$ps_image_wrapper.stop().animate({
+	      		    width	: newImageWidth + 'px'
+	      		},350);
+	      		//animate the new image in
+	      		$newImage.stop().animate({
+	      		    left	: '0px'
+	      		},350);
+	      		//animate the old image out
+	      		$currentImage.stop().animate({
+	      		    left	: -currentImageWidth + 'px'
+	      		},350);
+
+	      		e.preventDefault();
+	      	}
+      	
+		function nextImage(){
+			$scope.$links  = $imgDiv.find('.ps_nav').children('li').not($scope.$tooltip);
+			$scope.current	= $imgDiv.find('.ps_nav .selected').index();
+			if($scope.current < $scope.$links.length){
+				$scope.$links.eq($scope.current+1).trigger('click');
+			}
+		}
+		
+		function prevImage(){
+			$scope.$links = $imgDiv.find('.ps_nav').children('li').not($scope.$tooltip);
+			$scope.current	= $imgDiv.find('.ps_nav .selected').index();
+			if($scope.current > 0){
+				$scope.$links.eq($scope.current-1).trigger('click');
+			}
+		}
+     }
+  });
+</script>
+<style>
+#certificationDiv .recordDiv{
+    width: 97%;
+    margin-left:8px;
+    margin-top: 5px;
+    border: solid 1px silver;
+    height: 154px
+}
+#certificationDiv .infoDiv{
+    float: left;margin-left: 15px;margin-top:10px;
+}
+#certificationDiv .infoDiv div{
+    height: 30px
+}
+#certificationDiv .infoDiv span{
+    font-size: 14px
+}
+#certificationDiv .btnDiv {
+    float: left;
+    margin-top: 118px
+}
+/* 图片显示 */
+#certificationDiv .ps_container{
+	display:none;
+	margin:0px auto 0px auto;
+    float:left;
+    position:relative;
+}
+#certificationDiv .ps_image_wrapper{
+	width:270px;
+	height:134px;
+	overflow:hidden;
+	position:relative;
+	margin:0 auto;
+	align:center;
+}
+#certificationDiv .ps_image_wrapper img{
+	position:absolute;
+	width:270px;
+	height:134px;
+	left:0px;
+	top:0px;
+}
+#certificationDiv .ps_prev{
+	width:24px;
+	height:56px;
+	position:absolute;
+	top:50%;
+	margin-top:-40px;
+	cursor:pointer;
+	opacity:0.5;
+}
+#certificationDiv .ps_next{
+	width:24px;
+	height:56px;
+	position:absolute;
+	top:50%;
+	margin-top:-40px;
+	margin-left:245px;
+	cursor:pointer;
+	opacity:0.5;
+}
+#certificationDiv .ps_prev{
+	background:transparent url('themes/default/images/02.png') no-repeat top center;
+}
+#certificationDiv .ps_next{
+	background:transparent url('themes/default/images/01.png') no-repeat top center;
+}
+#certificationDiv .ps_prev:hover,
+#certificationDiv .ps_next:hover{
+	opacity:0.9;
+}
+#certificationDiv ul.ps_nav{
+	list-style:none;
+	padding:0;
+	width:100px;
+	margin:5px auto;
+	position:relative;
+}
+#certificationDiv ul.ps_nav li{
+	float:left;
+}
+#certificationDiv ul.ps_nav li a{
+	display:block;
+	text-indent:-9000px;
+	width:11px;
+	height:11px;
+	outline:none;
+	padding:0px 3px;
+	background:transparent url('themes/default/images/dot.png') no-repeat top center;
+}
+#certificationDiv ul.ps_nav li a:hover,
+#certificationDiv ul.ps_nav li.selected a{
+	background-position:50% -11px;
+}
+#certificationDiv ul.ps_nav li.ps_preview span{
+	background:transparent url('themes/default/images/triangle.png') no-repeat top center;
+	width:15px;
+	height:6px;
+	position:relative;
+	top:85px;
+	left:35px;
+}
+#certificationDiv .layBig { background: #000; width: 100%; position: absolute; left: 0px; top: 0px; z-index: 10; opacity: 0.7; filter: alpha(opacity=70); display: none; _display:none!important }
+#certificationDiv .layBox { height: 480px; width: 730px; margin-top: -251px; margin-left: -442px; position: fixed; left: 50%; top: 50%; border: 7px solid #FFF; z-index: 20; background: #FFF; display: none; _display:none!important }
+#certificationDiv .closeBig { position: absolute; top: -17px; right: -17px; cursor: pointer; }
+</style>

@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceDataPathMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.DeviceDataPath" >
+    <id column="DATA_PATH_ID" property="dataPathId" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR" property="snapNbr" jdbcType="VARCHAR" />
+    <result column="PASS_TIME" property="passTime" jdbcType="TIMESTAMP" />
+    <result column="SERVER_RECEIVING_TIME" property="serverReceivingTime" jdbcType="TIMESTAMP" />
+    <result column="ICE2MQ_TIME" property="ice2mqTime" jdbcType="TIMESTAMP" />
+    <result column="PRE_TIME" property="preTime" jdbcType="TIMESTAMP" />
+    <result column="AFTER_TIME" property="afterTime" jdbcType="TIMESTAMP" />
+    <result column="UPLOAD_TIME" property="uploadTime" jdbcType="TIMESTAMP" />
+    <result column="UPLOAD_END_TIME" property="uploadEndTime" jdbcType="TIMESTAMP" />
+    <result column="TOTAL_TIME" property="totalTime" jdbcType="DECIMAL" />
+    <result column="DEVICE_KEY" property="deviceKey" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DATA_PATH_ID, SNAP_NBR, PASS_TIME, SERVER_RECEIVING_TIME, ICE2MQ_TIME, 
+    PRE_TIME, AFTER_TIME, UPLOAD_TIME, UPLOAD_END_TIME, TOTAL_TIME, DEVICE_KEY,DEVICE_ID,SYS_COMPONENT_ID,ORG_PRIVILEGE_CODE
+  </sql>
+  <select id="findDeviceDataPath" resultMap="BaseResultMap" parameterType="java.util.Map">
+  		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_device_data_path U
+		<where>
+			<if test="deviceId != null and deviceId != '' ">
+				AND DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="sysComponentId != null and sysComponentId != '' ">
+				AND SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+			</if>
+			<if test="totalTimeFrom != null and totalTimeFrom != '' ">
+				 <![CDATA[ AND U.TOTAL_TIME >= #{totalTimeFrom,jdbcType=DECIMAL} ]]>
+			</if>
+			<if test="totalTimeTo != null and totalTimeTo != '' ">
+				 <![CDATA[ AND U.TOTAL_TIME <= #{totalTimeTo,jdbcType=DECIMAL} ]]>
+			</if>
+			<if test="passTimeFrom != null and passTimeFrom != '' ">
+				 <![CDATA[ AND U.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="passTimeTo != null and passTimeTo != '' ">
+				 <![CDATA[ AND U.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+		order by U.PASS_TIME desc
+  </select>
+  <select id="countDataPath" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM t_device_data_path
+		<where>
+			<if test="deviceId != null and deviceId != '' ">
+				AND DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="sysComponentId != null and sysComponentId != '' ">
+				AND SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR}
+			</if>
+			<if test="totalTime != null and totalTime != '' ">
+				AND TOTAL_TIME = #{totalTime,jdbcType=DECIMAL}
+			</if>
+			<if test="passTime != null and passTime != '' ">
+				AND PASS_TIME = #{passTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+	</select>
+
+  <resultMap id="DataPathBasicResultMap" type="cy.its.device.domain.model.DataPathBasic" >
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="ConnectTrackSys" property="isConnectTrackSys" jdbcType="VARCHAR" />
+    <result column="ROAD_NAME" property="roadName" jdbcType="VARCHAR" />
+    <result column="SITE_NAME" property="siteName" jdbcType="VARCHAR" />
+    <result column="DIRECTION" property="direction" jdbcType="VARCHAR" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="UPLOAD_TOTAL" property="uploadTotal" jdbcType="DECIMAL" />
+    <result column="AVG_DELAY" property="avgDelay" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <select id="selectDataPathBasics" resultMap="DataPathBasicResultMap" parameterType="java.util.Map" >
+    SELECT A.DEVICE_SYS_NBR, B.ROAD_NAME, B.SITE_NAME, B.DIRECTION, B.ORG_NAME, A.UPLOAD_TOTAL, A.AVG_DELAY
+	  FROM (SELECT P.DEVICE_SYS_NBR, COUNT(1) UPLOAD_TOTAL, AVG(P.TOTAL_TIME) AVG_DELAY
+	          FROM T_DEVICE_DATA_PATH P	          
+	          <where>
+		          <if test="passTimeFrom != null and passTimeFrom != '' ">
+					 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="passTimeTo != null and passTimeTo != '' ">
+					 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="roadCode != null and roadCode != '' ">
+					AND P.ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+				  </if>
+				  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+					AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+				  </if>
+				  <if test="siteCode != null and siteCode != '' ">
+					AND P.SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+				  </if>
+				  <if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+					AND P.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+				  </if>
+			  </where>	          
+	          GROUP BY P.DEVICE_SYS_NBR
+	          <if test="minDelay != null and maxDelay != null ">
+	                 <![CDATA[ HAVING AVG(P.TOTAL_TIME) BETWEEN #{minDelay,jdbcType=DECIMAL} AND #{maxDelay,jdbcType=DECIMAL} ]]>
+			  </if>
+			  <if test="minDelay != null and maxDelay == null ">
+					 <![CDATA[ HAVING AVG(P.TOTAL_TIME) >= #{minDelay,jdbcType=DECIMAL} ]]>
+			  </if>
+			  <if test="minDelay == null and maxDelay != null ">
+					 <![CDATA[ HAVING AVG(P.TOTAL_TIME) <= #{maxDelay,jdbcType=DECIMAL} ]]>
+			  </if>				  
+	          ) A
+	  LEFT JOIN (SELECT S.DEVICE_SYS_NBR,
+	                    R.ROAD_NAME,
+	                    ST.SITE_NAME,
+	                    DR.DIRECTION,
+	                    S.DEVICE_TYPE,
+	                    O.ORG_NAME
+	               FROM T_DEVICE_SYS S
+	               LEFT JOIN T_SYS_SITE ST
+	                 ON S.SITE_ID = ST.SITE_ID
+	               LEFT JOIN T_SYS_ROAD R
+	                 ON ST.ROAD_ID = R.ROAD_ID
+	               LEFT JOIN T_SYS_ORG O
+	                 ON S.ORG_ID = O.ORG_ID
+	               LEFT JOIN (SELECT S.DEVICE_ID,
+	                                listagg(SC.DIRECTION_NAME, ',') within group(order by sc.direction_name) direction
+	                           FROM T_DEVICE_SYS S, T_SYS_SECTION SC
+	                          WHERE S.SITE_ID = SC.SITE_ID
+	                            AND S.SECTION_ID_LIST LIKE
+	                                '%' || SC.SECTION_ID || '%'
+	                          GROUP BY S.DEVICE_ID) DR
+	                 ON S.DEVICE_ID = DR.DEVICE_ID) B
+	    ON A.DEVICE_SYS_NBR = B.DEVICE_SYS_NBR
+  </select>
+  
+  <resultMap id="DataPathDetailResultMap" type="cy.its.device.domain.model.DataPathDetail" >
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="DEV2SVR_DELAY" property="dev2svrDelay" jdbcType="DECIMAL" />
+    <result column="SVR2AFSVR_DELAY" property="svr2afsvrDelay" jdbcType="DECIMAL" />
+    <result column="AFSVR2IM_DELAY" property="afsvr2imDelay" jdbcType="DECIMAL" />
+    <result column="IM2PRE_DELAY" property="im2preDelay" jdbcType="DECIMAL" />
+    <result column="PRE2AF_DELAY" property="pre2afDelay" jdbcType="DECIMAL" />
+    <result column="AF2UPD_DELAY" property="af2updDelay" jdbcType="DECIMAL" />
+    <result column="UPD2UPD0_DELAY" property="upd2upd0Delay" jdbcType="DECIMAL" />
+    <result column="AVG_DELAY" property="avgDelay" jdbcType="DECIMAL" />
+    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="dataPathDetailOfDevice" resultMap="DataPathDetailResultMap" parameterType="java.util.Map" >
+    SELECT T.*, S.DEVICE_NAME
+    FROM (SELECT P.DEVICE_SYS_NBR,
+                 24 * 60 * 60 * AVG(P.SERVER_RECEIVING_TIME - P.PASS_TIME) DEV2SVR_DELAY,
+                  24 * 60 * 60 * AVG(P.AFTER_SERVER_RECEIVING_TIME - P.SERVER_RECEIVING_TIME) SVR2AFSVR_DELAY,
+                 24 * 60 * 60 * AVG(p.ice2mq_time - P.AFTER_SERVER_RECEIVING_TIME) AFSVR2IM_DELAY,
+                 24 * 60 * 60 * AVG(p.pre_time - p.ice2mq_time) IM2PRE_DELAY,
+                 24 * 60 * 60 * AVG(p.after_time - p.pre_time) PRE2AF_DELAY,
+                 24 * 60 * 60 * AVG(p.upload_time - p.after_time) AF2UPD_DELAY,
+                 24 * 60 * 60 * AVG(p.upload_end_time - p.upload_time) UPD2UPD0_DELAY,
+                 AVG(p.total_time) AVG_DELAY
+            FROM T_DEVICE_DATA_PATH P
+             <where>
+				  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+					AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+				  </if>	
+		          <if test="passTimeFrom != null and passTimeFrom != '' ">
+					 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="passTimeTo != null and passTimeTo != '' ">
+					 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+				  </if>
+			  </where>
+           GROUP BY P.DEVICE_SYS_NBR) T
+    LEFT JOIN T_DEVICE_SYS S
+      ON T.DEVICE_SYS_NBR = S.DEVICE_SYS_NBR
+  </select>
+  
+  <resultMap id="DynamicPathResultMap" type="cy.its.device.mybatis.model.DynamicDataPathDetail" >
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="SVR_DELAY" property="svrDelay" jdbcType="DECIMAL" />
+    <result column="AFSVR_DELAY" property="afsvrDelay" jdbcType="DECIMAL" />
+    <result column="IM_DELAY" property="imDelay" jdbcType="DECIMAL" />
+    <result column="PRE_DELAY" property="preDelay" jdbcType="DECIMAL" />
+    <result column="AF_DELAY" property="afDelay" jdbcType="DECIMAL" />
+    <result column="UPD0_DELAY" property="upd0Delay" jdbcType="DECIMAL" />
+    <result column="AVG_DELAY" property="avgDelay" jdbcType="DECIMAL" />
+    <result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" />
+  </resultMap>
+                 
+  <select id="selectDynamicDataPath" resultMap="DynamicPathResultMap" parameterType="java.util.Map" >
+    SELECT DEVICE_SYS_NBR, SVR_DELAY, AFSVR_DELAY,IM_DELAY,PRE_DELAY,AF_DELAY,UPD0_DELAY,AVG_DELAY,DEVICE_NAME   FROM
+     (SELECT T.*,  S.DEVICE_NAME
+    FROM (SELECT P.DEVICE_SYS_NBR,                 
+                 round(86400 * AVG(P.SERVER_RECEIVING_TIME - P.PASS_TIME),0) SVR_DELAY,
+                 round(86400 * AVG(P.After_Server_Receiving_Time - P.PASS_TIME),0) AFSVR_DELAY,
+                 round(86400 * AVG(p.ice2mq_time - P.PASS_TIME),0) IM_DELAY,
+                 round(86400 * AVG(p.pre_time - p.PASS_TIME),0) PRE_DELAY,
+                 round(86400 * AVG(p.after_time - p.PASS_TIME),0) AF_DELAY,
+                 round(86400 * AVG(p.upload_time - p.PASS_TIME),0) UPD0_DELAY,
+                 AVG(p.total_time) AVG_DELAY
+            FROM T_DEVICE_DATA_PATH P
+             <where>
+				  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+					AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+				  </if>	
+		          <if test="passTimeFrom != null and passTimeFrom != '' ">
+					 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="passTimeTo != null and passTimeTo != '' ">
+					 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+				  </if>
+			  </where>
+           GROUP BY P.DEVICE_SYS_NBR) T
+    LEFT JOIN T_DEVICE_SYS S
+      ON T.DEVICE_SYS_NBR = S.DEVICE_SYS_NBR)
+  </select>
+  
+  <select id="selectDataPathToItmsBasics" resultMap="DataPathBasicResultMap" parameterType="java.util.Map" >
+    SELECT A.DEVICE_SYS_NBR, B.ROAD_NAME, B.SITE_NAME, B.DIRECTION, B.ORG_NAME, A.UPLOAD_TOTAL, A.AVG_DELAY
+	  FROM (SELECT P.DEVICE_SYS_NBR, COUNT(1) UPLOAD_TOTAL, AVG(P.TOTAL_TIME) AVG_DELAY
+	          FROM T_DEVICE_DATA_PATH_ITMS P	          
+	          <where>
+		          <if test="passTimeFrom != null and passTimeFrom != '' ">
+					 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="passTimeTo != null and passTimeTo != '' ">
+					 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="roadCode != null and roadCode != '' ">
+					AND P.ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+				  </if>
+				  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+					AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+				  </if>
+				  <if test="siteCode != null and siteCode != '' ">
+					AND P.SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+				  </if>
+				  <if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+					AND P.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+				  </if>
+			  </where>	          
+	          GROUP BY P.DEVICE_SYS_NBR
+	          <if test="minDelay != null and maxDelay != null ">
+	                 <![CDATA[ HAVING AVG(P.TOTAL_TIME) BETWEEN #{minDelay,jdbcType=DECIMAL} AND #{maxDelay,jdbcType=DECIMAL} ]]>
+			  </if>
+			  <if test="minDelay != null and maxDelay == null ">
+					 <![CDATA[ HAVING AVG(P.TOTAL_TIME) >= #{minDelay,jdbcType=DECIMAL} ]]>
+			  </if>
+			  <if test="minDelay == null and maxDelay != null ">
+					 <![CDATA[ HAVING AVG(P.TOTAL_TIME) <= #{maxDelay,jdbcType=DECIMAL} ]]>
+			  </if>				  
+	          ) A
+	  LEFT JOIN (SELECT S.DEVICE_SYS_NBR,
+	                    R.ROAD_NAME,
+	                    ST.SITE_NAME,
+	                    DR.DIRECTION,
+	                    S.DEVICE_TYPE,
+	                    O.ORG_NAME
+	               FROM T_DEVICE_SYS S
+	               LEFT JOIN T_SYS_SITE ST
+	                 ON S.SITE_ID = ST.SITE_ID
+	               LEFT JOIN T_SYS_ROAD R
+	                 ON ST.ROAD_ID = R.ROAD_ID
+	               LEFT JOIN T_SYS_ORG O
+	                 ON S.ORG_ID = O.ORG_ID
+	               LEFT JOIN (SELECT S.DEVICE_ID,
+	                                listagg(SC.DIRECTION_NAME, ',') within group(order by sc.direction_name) direction
+	                           FROM T_DEVICE_SYS S, T_SYS_SECTION SC
+	                          WHERE S.SITE_ID = SC.SITE_ID
+	                            AND S.SECTION_ID_LIST LIKE
+	                                '%' || SC.SECTION_ID || '%'
+	                          GROUP BY S.DEVICE_ID) DR
+	                 ON S.DEVICE_ID = DR.DEVICE_ID) B
+	    ON A.DEVICE_SYS_NBR = B.DEVICE_SYS_NBR
+  </select>
+
+   <select id="selectDynamicDataPathToItms" resultMap="DynamicPathResultMap" parameterType="java.util.Map" >
+    SELECT DEVICE_SYS_NBR, SVR_DELAY, AFSVR_DELAY,IM_DELAY,PRE_DELAY,AF_DELAY,AVG_DELAY,DEVICE_NAME   FROM
+     (SELECT T.*,  S.DEVICE_NAME
+    FROM (SELECT P.DEVICE_SYS_NBR,                 
+                 round(86400 * AVG(P.SERVER_RECEIVING_TIME - P.PASS_TIME),0) SVR_DELAY,
+                 round(86400 * AVG(P.After_Server_Receiving_Time - P.PASS_TIME),0) AFSVR_DELAY,
+                 round(86400 * AVG(p.ice2mq_time - P.PASS_TIME),0) IM_DELAY,
+                 round(86400 * AVG(p.pre_time - p.PASS_TIME),0) PRE_DELAY,
+                 round(86400 * AVG(p.after_time - p.PASS_TIME),0) AF_DELAY,
+                 round(AVG(p.total_time),0) AVG_DELAY
+            FROM T_DEVICE_DATA_PATH_ITMS P
+             <where>
+				  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+					AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+				  </if>	
+		          <if test="passTimeFrom != null and passTimeFrom != '' ">
+					 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+				  </if>
+				  <if test="passTimeTo != null and passTimeTo != '' ">
+					 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+				  </if>
+			  </where>
+           GROUP BY P.DEVICE_SYS_NBR) T
+    LEFT JOIN T_DEVICE_SYS S
+      ON T.DEVICE_SYS_NBR = S.DEVICE_SYS_NBR)
+    WHERE ROWNUM = 1
+  </select>
+
+  <select id="selectAllDataPathBasics" resultMap="DataPathBasicResultMap" parameterType="java.util.Map" >
+    SELECT A.DEVICE_SYS_NBR,
+       A.ConnectTrackSys,
+       B.ROAD_NAME,
+       B.SITE_NAME,
+       B.DIRECTION,
+       B.ORG_NAME,
+       A.UPLOAD_TOTAL,
+       A.AVG_DELAY
+  FROM (  
+      <if test="isConnectTrackSys == 1 or isConnectTrackSys == 2">
+        SELECT A.DEVICE_SYS_NBR,
+               '是' ConnectTrackSys,
+               B.UPLOAD_TOTAL,
+               ROUND(B.AVG_DELAY) AVG_DELAY
+          FROM (SELECT S.DEVICE_SYS_NBR
+                  FROM T_DEVICE_SYS S
+                 WHERE S.DEVICE_ID IN
+                       (SELECT V.DEVICE_ID
+                          FROM T_DEVICE_VIO_DEVICE V
+                         WHERE V.IS_TOLLGATE_SUPPORT = '1'
+                           AND V.IS_CONNECT_TRACK_SYS = '1'
+                        UNION ALL
+                        SELECT V.DEVICE_ID
+                          FROM T_DEVICE_TOLLGATE_SYS V
+                         WHERE V.IS_CONNECT_TRACK_SYS = '1')
+                        AND S.USE_STATUS_FLAG = '1') A
+          LEFT JOIN (SELECT P.DEVICE_SYS_NBR,
+                           COUNT(1) UPLOAD_TOTAL,
+                           AVG(P.TOTAL_TIME) AVG_DELAY
+                      FROM T_DEVICE_DATA_PATH P
+                      <where>
+				          <if test="passTimeFrom != null and passTimeFrom != '' ">
+							 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+						  </if>
+						  <if test="passTimeTo != null and passTimeTo != '' ">
+							 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+						  </if>
+						  <if test="roadCode != null and roadCode != '' ">
+							AND P.ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+						  </if>
+						  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+							AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+						  </if>
+						  <if test="siteCode != null and siteCode != '' ">
+							AND P.SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+						  </if>
+						  <if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+							AND P.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+						  </if>
+				      </where>			  
+                     GROUP BY P.DEVICE_SYS_NBR
+                      <if test="minDelay != null and maxDelay != null ">
+	                     <![CDATA[ HAVING AVG(P.TOTAL_TIME) BETWEEN #{minDelay,jdbcType=DECIMAL} AND #{maxDelay,jdbcType=DECIMAL} ]]>
+					  </if>
+					  <if test="minDelay != null and maxDelay == null ">
+						 <![CDATA[ HAVING AVG(P.TOTAL_TIME) >= #{minDelay,jdbcType=DECIMAL} ]]>
+					  </if>
+					  <if test="minDelay == null and maxDelay != null ">
+					     <![CDATA[ HAVING AVG(P.TOTAL_TIME) <= #{maxDelay,jdbcType=DECIMAL} ]]>
+					  </if>		
+			  ) B
+            ON A.DEVICE_SYS_NBR = B.DEVICE_SYS_NBR
+	 </if>
+     <if test="isConnectTrackSys == 2">
+        UNION ALL
+     </if>
+     <if test="isConnectTrackSys == 0 or isConnectTrackSys == 2">
+        SELECT A.DEVICE_SYS_NBR,
+               '否' ConnectTrackSys,
+               B.UPLOAD_TOTAL,
+               ROUND(B.AVG_DELAY) AVG_DELAY
+          FROM (SELECT S.DEVICE_SYS_NBR
+                  FROM T_DEVICE_SYS S
+                 WHERE S.DEVICE_ID IN
+                       (SELECT V.DEVICE_ID
+                          FROM T_DEVICE_VIO_DEVICE V
+                         WHERE V.IS_TOLLGATE_SUPPORT = '1'
+                           <![CDATA[ AND V.IS_CONNECT_TRACK_SYS <> '1']]>
+                        UNION ALL
+                        SELECT V.DEVICE_ID
+                          FROM T_DEVICE_TOLLGATE_SYS V
+                         WHERE <![CDATA[ V.IS_CONNECT_TRACK_SYS <> '1' ]]>)
+                        AND S.USE_STATUS_FLAG = '1') A
+          LEFT JOIN (SELECT P.DEVICE_SYS_NBR,
+                           COUNT(1) UPLOAD_TOTAL,
+                           AVG(P.TOTAL_TIME) AVG_DELAY
+                      FROM T_DEVICE_DATA_PATH_ITMS P
+                      <where>
+				          <if test="passTimeFrom != null and passTimeFrom != '' ">
+							 <![CDATA[ AND P.PASS_TIME >= #{passTimeFrom,jdbcType=TIMESTAMP} ]]>
+						  </if>
+						  <if test="passTimeTo != null and passTimeTo != '' ">
+							 <![CDATA[ AND P.PASS_TIME <= #{passTimeTo,jdbcType=TIMESTAMP} ]]>
+						  </if>
+						  <if test="roadCode != null and roadCode != '' ">
+							AND P.ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+						  </if>
+						  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+							AND P.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+						  </if>
+						  <if test="siteCode != null and siteCode != '' ">
+							AND P.SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+						  </if>
+						  <if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+							AND P.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+						  </if>
+				      </where>			  
+                     GROUP BY P.DEVICE_SYS_NBR
+                      <if test="minDelay != null and maxDelay != null ">
+	                     <![CDATA[ HAVING AVG(P.TOTAL_TIME) BETWEEN #{minDelay,jdbcType=DECIMAL} AND #{maxDelay,jdbcType=DECIMAL} ]]>
+					  </if>
+					  <if test="minDelay != null and maxDelay == null ">
+						 <![CDATA[ HAVING AVG(P.TOTAL_TIME) >= #{minDelay,jdbcType=DECIMAL} ]]>
+					  </if>
+					  <if test="minDelay == null and maxDelay != null ">
+					     <![CDATA[ HAVING AVG(P.TOTAL_TIME) <= #{maxDelay,jdbcType=DECIMAL} ]]>
+					  </if>                     
+                     ) B
+            ON A.DEVICE_SYS_NBR = B.DEVICE_SYS_NBR
+            </if>
+            ) A
+  LEFT JOIN (SELECT S.DEVICE_SYS_NBR,
+                    R.ROAD_CODE,
+                    R.ROAD_NAME,
+                    ST.SITE_CODE,
+                    ST.SITE_NAME,
+                    DR.DIRECTION,
+                    S.DEVICE_TYPE,
+                    O.ORG_PRIVILEGE_CODE,
+                    O.ORG_NAME
+               FROM T_DEVICE_SYS S
+               LEFT JOIN T_SYS_SITE ST
+                 ON S.SITE_ID = ST.SITE_ID
+               LEFT JOIN T_SYS_ROAD R
+                 ON ST.ROAD_ID = R.ROAD_ID
+               LEFT JOIN T_SYS_ORG O
+                 ON S.ORG_ID = O.ORG_ID
+               LEFT JOIN (SELECT S.DEVICE_ID,
+                                listagg(SC.DIRECTION_NAME, ',') within group(order by sc.direction_name) direction
+                           FROM T_DEVICE_SYS S, T_SYS_SECTION SC
+                          WHERE S.SITE_ID = SC.SITE_ID
+                            AND S.SECTION_ID_LIST LIKE
+                                '%' || SC.SECTION_ID || '%'
+                          GROUP BY S.DEVICE_ID) DR
+                 ON S.DEVICE_ID = DR.DEVICE_ID) B
+    ON A.DEVICE_SYS_NBR = B.DEVICE_SYS_NBR
+    <where>
+       <if test="siteName != null and siteName != ''">
+          B.SITE_NAME LIKE '%'|| #{siteName,jdbcType=VARCHAR}  || '%'
+       </if>
+       <if test="roadCode != null and roadCode != '' ">
+		  AND B.ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+	  </if>
+	  <if test="deviceSysNbr != null and deviceSysNbr != '' ">
+		  AND A.DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+	  </if>
+	  <if test="siteCode != null and siteCode != '' ">
+		  AND B.SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+	  </if>
+	  <if test="orgPrivilegeCode != null and orgPrivilegeCode != '' ">
+		  AND B.ORG_PRIVILEGE_CODE LIKE #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+	  </if>
+	  <if test="minDelay != null and maxDelay != null ">
+          AND A.AVG_DELAY BETWEEN #{minDelay,jdbcType=DECIMAL} AND #{maxDelay,jdbcType=DECIMAL}
+	  </if>
+	  <if test="minDelay != null and maxDelay == null ">
+		 <![CDATA[  AND A.AVG_DELAY >= #{minDelay,jdbcType=DECIMAL} ]]>
+	  </if>
+	   <if test="minDelay == null and maxDelay != null ">
+		   <![CDATA[  AND A.AVG_DELAY <= #{maxDelay,jdbcType=DECIMAL} ]]>
+	   </if>	  
+    </where>
+  </select>
+
+</mapper>

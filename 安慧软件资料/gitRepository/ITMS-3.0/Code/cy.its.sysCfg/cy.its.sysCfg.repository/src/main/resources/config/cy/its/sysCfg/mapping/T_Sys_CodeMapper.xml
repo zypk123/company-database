@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_CodeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Code" >
+    <id column="CODE_ID" property="codeId" jdbcType="VARCHAR" />
+    <result column="CODE_TYPE" property="codeType" jdbcType="VARCHAR" />
+    <result column="CODE_NO" property="codeNo" jdbcType="VARCHAR" />
+    <result column="CODE_NAME" property="codeName" jdbcType="VARCHAR" />
+    <result column="EDITABLE" property="editable" jdbcType="CHAR" />
+    <result column="SORT_INDEX" property="sortIndex" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="ENABLE_FLAG" property="enableFlag" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CODE_ID, CODE_TYPE, CODE_NO, CODE_NAME, EDITABLE, SORT_INDEX, REMARK, ENABLE_FLAG
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_CODE
+    where CODE_ID = #{codeId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_CODE
+    where CODE_ID = #{codeId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="removeByPrimaryKey" parameterType="java.util.Map">
+
+    	delete from T_SYS_CODE where CODE_ID in 
+
+    	<foreach item="id" collection="idList" open="(" separator="," close=")">
+              #{id}
+        </foreach>
+    </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code" >
+    insert into T_SYS_CODE ( CODE_TYPE, CODE_NO, 
+      CODE_NAME, EDITABLE, SORT_INDEX, 
+      REMARK, ENABLE_FLAG)
+    values ( #{codeType,jdbcType=VARCHAR}, #{codeNo,jdbcType=VARCHAR}, 
+      #{codeName,jdbcType=VARCHAR}, #{editable,jdbcType=CHAR}, #{sortIndex,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{enableFlag,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code" >
+    insert into T_SYS_CODE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="codeId  !=null">
+        CODE_ID,
+      </if>
+      <if test="codeType != null" >
+        CODE_TYPE,
+      </if>
+      <if test="codeNo != null" >
+        CODE_NO,
+      </if>
+      <if test="codeName != null" >
+        CODE_NAME,
+      </if>
+      <if test="editable != null" >
+        EDITABLE,
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       <if test="codeId != null" >
+        #{codeId,jdbcType=VARCHAR},
+       </if>
+      <if test="codeType != null" >
+        #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNo != null" >
+        #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null" >
+        #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="editable != null" >
+        #{editable,jdbcType=CHAR},
+      </if>
+      <if test="sortIndex != null" >
+        #{sortIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        #{enableFlag,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code" >
+    update T_SYS_CODE
+    <set >
+      <if test="codeType != null" >
+        CODE_TYPE = #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNo != null" >
+        CODE_NO = #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null" >
+        CODE_NAME = #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="editable != null" >
+        EDITABLE = #{editable,jdbcType=CHAR},
+      </if>
+      <if test="sortIndex != null" >
+        SORT_INDEX = #{sortIndex,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="enableFlag != null" >
+        ENABLE_FLAG = #{enableFlag,jdbcType=CHAR},
+      </if>
+    </set>
+    where CODE_ID = #{codeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Code" >
+    update T_SYS_CODE
+    set CODE_TYPE = #{codeType,jdbcType=VARCHAR},
+      CODE_NO = #{codeNo,jdbcType=VARCHAR},
+      CODE_NAME = #{codeName,jdbcType=VARCHAR},
+      EDITABLE = #{editable,jdbcType=CHAR},
+      SORT_INDEX = #{sortIndex,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      ENABLE_FLAG = #{enableFlag,jdbcType=CHAR}
+    where CODE_ID = #{codeId,jdbcType=VARCHAR}
+  </update>
+</mapper>

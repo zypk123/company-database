@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.WhiteVehicleMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_White_Vehicle" >
+    <id column="VEHICLE_ID" property="vehicleId" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_BRAND" property="vehicleBrand" jdbcType="VARCHAR" />
+    <result column="VEHICLE_MODEL" property="vehicleModel" jdbcType="VARCHAR" />
+    <result column="VEHICLE_COLOR" property="vehicleColor" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="VEHICLE_OWNER" property="vehicleOwner" jdbcType="VARCHAR" />
+    <result column="VEHICLE_CONTACTOR" property="vehicleContactor" jdbcType="VARCHAR" />
+    <result column="VEHICLE_CONTACTOR_TEL" property="vehicleContactorTel" jdbcType="VARCHAR" />
+    <result column="DATA_SOURCE" property="dataSource" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_FLAG" property="noPunishFlag" jdbcType="CHAR" />
+    <result column="NO_PUNISH_COUNTS" property="noPunishCounts" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_SCORE" property="noPunishScore" jdbcType="VARCHAR" />
+    <result column="NO_PUNISH_MONEY" property="noPunishMoney" jdbcType="VARCHAR" />
+    <result column="QUERY_PROTECT_FLAG" property="queryProtectFlag" jdbcType="CHAR" />
+    <result column="REG_PERSON" property="regPerson" jdbcType="VARCHAR" />
+    <result column="REG_DATE" property="regDate" jdbcType="TIMESTAMP" />
+    <result column="AUDIT_BY" property="auditBy" jdbcType="VARCHAR" />
+    <result column="VALID_END_DATE" property="validEndDate" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap> 
+  
+	<select id="selectPageWhiteVehicles" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+			VEHICLE_ID, PLATE_NBR, PLATE_TYPE, PLATE_COLOR, VEHICLE_BRAND, VEHICLE_MODEL, VEHICLE_COLOR, 
+		    ORG_ID, VEHICLE_OWNER, VEHICLE_CONTACTOR, VEHICLE_CONTACTOR_TEL, DATA_SOURCE, NO_PUNISH_FLAG, 
+		    NO_PUNISH_COUNTS, NO_PUNISH_SCORE, NO_PUNISH_MONEY, QUERY_PROTECT_FLAG, REG_PERSON, 
+		    REG_DATE, AUDIT_BY, VALID_END_DATE, REMARK
+		FROM
+		(SELECT
+		V.*, ROWNUM RN
+		FROM
+		T_VIO_WHITE_VEHICLE V
+		<where>
+			<if test="to != null and to != '' ">
+			   <![CDATA[    ROWNUM <= #{to,jdbcType=INTEGER} ]]>
+			</if>
+
+			<if test="plateNbr != null and plateNbr !='' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if> 
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if>       
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[    RN >=  #{from,jdbcType=INTEGER}  ]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="countWhiteVehicles" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_VIO_WHITE_VEHICLE
+		<where>
+			
+			<if test="plateNbr != null and plateNbr != '' ">
+				AND PLATE_NBR = #{plateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="fuzzyPlateNbr != null and fuzzyPlateNbr != '' ">
+				AND PLATE_NBR like #{fuzzyPlateNbr,jdbcType=VARCHAR}
+			</if>
+
+			<if test="plateType != null and plateType != '' ">
+				AND PLATE_TYPE = #{plateType,jdbcType=VARCHAR}
+			</if> 
+		</where>
+	</select> 	
+  
+</mapper>

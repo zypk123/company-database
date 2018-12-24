@@ -1,0 +1,208 @@
+<div id="deviceHomePage3" class="easyui-layout">
+
+	<div data-options="region:'center',border:false">
+		<div class="easyui-panel" style="width:100%;height:49%;padding:10px;" title="在线情况" data-options="iconCls:'icon-save',collapsible:true">
+			<div id="deviceStatusTitle" style="width: 100%;height:10%;">
+				ddd
+			</div>
+			<div id="deviceStatusPie" class="pie"></div>
+		</div>
+		<div style="height: 10px"></div>
+		<div class="easyui-panel" style="width:100%;height:49%;padding:10px;" title="故障情况" data-options="iconCls:'icon-save',collapsible:true">
+			<div id="deviceBugTitle" style="width: 100%;height:10%;">
+				fff
+			</div>
+			<div id="deviceBugPie" class="pie"></div>
+		</div>
+
+	</div>
+	<div data-options="region:'east',border:false" style="width:45%;margin-left: 10px">
+		<div id="rightPanel" class="easyui-panel" style="width:97%;height:100%;padding:10px;" title="设备事件" data-options="iconCls:'icon-save',collapsible:true">
+			
+				<div class="rightRow">
+					<div class="icon-location preIcon"></div>
+					<div style="float: left;">
+						<span>沪昆高速K100+50M卡口</span><span style="color: red">[偷盗报警]</span>
+					</div>
+				</div>
+				
+				<div class="rightRow">
+					<div class="icon-location preIcon"></div>
+					<div style="float: left">
+						<span>沪昆高速K100+50M卡口</span><span style="color: red">[连续1小时无过车]</span>
+					</div>
+				</div>
+			
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+
+        $scope.load = function() {
+            deviceLoad();
+        };
+
+        /**
+         *总队、支队用户进入，显示机构设备总体情况
+         */
+        function deviceLoad() {
+            //设置echarts路径
+            require.config({
+                paths : {
+                    echarts : 'frameworks/echarts/js'
+                }
+            });
+
+            //首次显示总队四项指标详细情况
+            $scope.zongduiStatusData = [
+            {
+                value : 20,
+                name : '在线'
+            },
+            {
+                value : 1,
+                name : '设备问题离线'
+            }, {
+                value : 2,
+                name : '光钎问题离线'
+            }, {
+                value : 2,
+                name : '电源问题离线'
+            }];
+            $scope.zongduiBugData = [{
+                value : 2,
+                name : '相机故障'
+            }, {
+                value : 1,
+                name : '雷达故障'
+            }, {
+                value : 3,
+                name : '电源故障'
+            }, {
+                value : 2,
+                name : '线圈故障'
+            }, {
+                value : 10,
+                name : '网络故障'
+            }, {
+                value : 5,
+                name : 'GPS故障'
+            },  {
+                value : 2,
+                name : '其它'
+            }];
+            showPie([$scope.zongduiStatusData, $scope.zongduiBugData]);
+        }
+
+        /**
+         *点击设备情况任意一个 机构bar,显示该机构设备四项指标具体详细情况
+         */
+        function deviceStatusChartClick(param) {
+            //debugger;
+            var series = arguments[1]._chartList[0].series;
+            var statusPercent = series[0].data[param.dataIndex];
+            var bugPercent = series[2].data[param.dataIndex];
+            var checkTimePercent = series[4].data[param.dataIndex];
+            var usePercent = series[6].data[param.dataIndex];
+            $scope.$("#orgTitle").html(param.name.replace("\n", ""));
+
+            showPie([$scope.zongduiStatusData, $scope.zongduiBugData, $scope.zongduiCheckTimeData, $scope.zongduiUseData]);
+        }
+
+        function showPie(data) {
+            createPie($scope.$('#deviceStatusPie')[0], "设备在线情况", data[0]);
+            createPie($scope.$('#deviceBugPie')[0], "设备故障情况", data[1]);
+        }
+
+        /**
+         *创建pie
+         */
+        function createPie(dom, name, data) {
+
+            require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+            'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+                var pieObj = ec.init(dom, 'macarons');
+
+                var optionPie = {
+                    tooltip : {
+                        show : true
+                    },
+                    series : [{
+                        name : name,
+                        type : 'pie',
+                        radius : ['50%', '70%'],
+                        itemStyle : {
+                            normal : {
+                                label : {
+                                    show : true,
+                                    formatter : '{b}：\n{c}个'
+                                },
+                                labelLine : {
+                                    show : true,
+                                    length : 5
+                                }
+                            },
+                            emphasis : {
+                                label : {
+                                    show : true,
+                                    position : 'center',
+                                    textStyle : {
+                                        fontSize : '20',
+                                        fontWeight : 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        data : data
+                    }]
+                };
+                pieObj.setOption(optionPie);
+            });
+        }
+
+
+        $.extend($scope, {
+            searchDeviceStatusData : function() {
+                $scope.$ajaxRequest({
+                    url : 'data/deviceManage/deviceHomePage/deviceStatus.json',
+                    // params : {},
+                    // contextId : "",
+                    success : function(result) {
+                        //查询成功 加载数据
+                        $scope.$('#deviceStatusGrd').datagrid("loadData", result);
+                    },
+                    fail : function(errMsg) {
+                        alert(errMsg);
+                    }
+                });
+            }
+        });
+
+    });
+
+</script>
+<style>
+    #deviceHomePage3 {
+        height: 100%;
+        width: 100%
+    }
+ 
+    #deviceHomePage3 .pie{
+        width: 100%;
+        height:90%
+    }
+    #deviceHomePage3 #rightPanel span
+    {
+    	font-size: 15px;
+    }
+    #deviceHomePage3 .preIcon
+    {
+    	float: left;width: 16px;height: 16px;
+    }
+    #deviceHomePage3 .rightRow
+    {
+    	width:100%;float: left;height: 35px;
+    }
+</style>

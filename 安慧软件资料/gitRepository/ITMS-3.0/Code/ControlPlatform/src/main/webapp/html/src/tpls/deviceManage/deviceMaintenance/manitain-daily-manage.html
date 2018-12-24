@@ -1,0 +1,228 @@
+<div class="easyui-layout" id="dailyInfo">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData" data-options="border: false">
+        	<div class="searchPanel">
+	            <div class="panel_title">查询条件</div>
+	            <div class="table">
+	                <div class="tr">
+	                    <div class="th">所属机构：</div>
+	                    <div class="td">
+	                        <input id="orgId" class="cy-org-radio" name="orgId" style="width: 150px;"/>
+	                    </div>
+	                    <div class="th">设备类型：</div>
+	                    <div class="td">
+	                        <input class="easyui-combobox" cy-code="400" id="deviceType" name="deviceType"/>
+	                    </div>
+	                    <div class="th">所属道路：</div>
+	                    <div class="td">
+	                        <input class="cy-road-radio" name="roadId" style="width: 150px;">
+	                    </div>
+	                </div>
+	                <div class="tr">
+	                    <div class="th">安装点位：</div>
+	                    <div class="td">
+	                        <input id="siteId" class="cy-site-radio" name="siteId" style="width:150px"/>
+	                    </div>
+	                    <div class="th">设备厂商：</div>
+	                    <div class="td">
+	                        <input id="contractorId" class="easyui-combobox" name="contractorId" data-options="valueField:'contractorId',textField:'contractorName'" style="width:150px"/>
+	                    </div>
+	                    <div class="th">维护时间：</div>
+	                    <div class="td">
+	                        <input class="easyui-datebox" name="maintenanceDateFrom" id="start" data-options="validType:['maxDate[\'end\']','date']"/>
+	                       	 至
+	                        <input class="easyui-datebox" name="maintenanceDateTo" id="end" data-options="validType:['minDate[\'start\']','date']"/>
+	                    </div>
+	                    <div class="td">
+	                        <a class="easyui-linkbutton button-search" style="width:60px;margin-left:15px;" iconCls="icon-search" cy-click="searchData">查询</a>
+	                    </div>
+	                </div>
+	           </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+	    	<a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+	      <!--  <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="deleteSome">批量删除</a> -->
+	    </div>
+    </div>  
+    <div data-options="region:'center',border:true">
+        <table id="manitainDaliy" cy-datagrid="options" cy-querydata="formData" cy-url="device/maintainDaily/queryMaintainDailyList">
+        </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+    	$scope.$getDefaultCode(["483"]);
+    	$scope.load = function(){
+    		$scope.formData.orderName = "maintenanceDate";
+        	$scope.formData.orderType = "asc";
+    		$scope.$ajaxRequest({
+                url:$scope.$restRoot+"device/companyManage/queryCompany",
+                params:{},
+                method:"post",
+                success:function(data){
+                    $scope.$("#contractorId").combobox("loadData",data);
+                },
+                fail:function(errMsg){
+                    $.messager.alert("提示","初始化承建商失败！");
+                }
+            });
+    		$scope.$updateData("formData");
+    		$scope.$search("formData");
+    	};
+        $scope.options = {
+        	sortName : "maintenanceDate",
+        	sortOrder : "asc",
+            columns: [
+                [//注意，此处是二维数组
+                    {align:'center',field: 'dailyMaintenanceId', checkbox: true},
+                    {align:'center',title: "设备编号", field: "deviceSysNbr", sortable : true,width: 15},
+                    {align:'center',title: "设备名称", field: "deviceName", width: 12},
+                    {align:'center',title: "安装点位", field: "siteName", width: 12},
+                    {align:'center',title: "所属道路", field: "roadName", width: 12},
+                    {align:'center',title: "所属机构", field: "orgId", width: 12,formatter : $scope.$getOrgName},
+                    {align:'center',title: "维护人", field: "maintainPerson", width: 10},
+                    {align:'center',title: "维护周期", field: "maintenanceCycle", width: 10,formatter : getMaintenanceCycleName},
+                    {align:'center',title: "最近维护时间", field: "maintenanceDate", sortable : true,width: 10},
+                    {align:'center',title: "下次维护时间", field: "nextMaintenanceDate", sortable : true,width: 10},
+                    {align:'center',title: "操作", field: "operate", width: 10,formatter: operate}
+                ]
+            ],
+            onSortColumn : function(sortName,sortType){
+            	$scope.formData.orderName = sortName;
+           		$scope.formData.orderType = sortType;
+           		$(this).datagrid("getPager").pagination("select",1);
+            },
+            nowrap : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain:true,
+                iconCls:"icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain:true,
+                iconCls:"icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        //获取字典维护周期值
+        function getMaintenanceCycleName(value,row,index){
+        	var maintenanceCycle = $scope.$getCodeName('483',value);
+        	return maintenanceCycle;
+        }
+        /**
+         *编辑日常维护信息 
+         */
+        $scope.editData = function(index){
+        	var rowData = $scope.$("#manitainDaliy").datagrid("getData").rows[index];
+        	//根据日常维护信息ID查询维护信息
+        	$scope.$ajaxRequest({
+    			url : $scope.$restRoot + 'device/maintainDaily/lookMaintainDaily',
+    			params : {dailyMaintenanceId : rowData.dailyMaintenanceId},
+    			success : function(data){
+    				$scope.$setParam("formData",data);
+    				$scope.$setParam("remark","edit");
+    				//创建编辑弹出框
+		            $scope.$openDialog("editDialog",{
+		                title : "编辑日常维护信息",
+		                width : '820',
+		        		height : '500',
+		        		href : 'tpls/deviceManage/deviceMaintenance/maintain-daily-operate.html'
+		            },true);
+		            $scope.$setParam("saveData",function(maintainData){
+		        		$scope.$ajaxRequest({
+		        			url : $scope.$restRoot + 'device/maintainDaily/editMaintainDaily',
+		        			params : maintainData,
+		        			success : function(datas){
+		        				$.messager.alert("提示","修改成功！");
+		        				$scope.$getDialog("editDialog").dialog("close");
+		        				$scope.$updateData("formData");
+		    					$scope.$search("formData");
+		        			},
+		        			fail : function(errMsg){
+		        				$.messager.alert("提示","修改失败！");
+		        			}
+		        		});
+		    		});
+    			},
+    			fail : function(errMsg){
+    				$.messager.alert("提示","获取维护信息失败！");
+    			}
+    		});
+        };
+        /**
+         *删除某条日常维护信息 
+         */
+        $scope.removeData = function(index){
+        	$.messager.confirm("提示", "是否确认删除信息？", function(flag) {
+				if (flag) {
+					var rowData = $scope.$("#manitainDaliy").datagrid("getData").rows[index];
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + 'device/maintainDaily/deleteMaintainDaily',
+						params : {dailyMaintenanceId : rowData.dailyMaintenanceId},
+						success : function(data){
+							$.messager.alert("提示","删除成功！");
+							$scope.$updateData("formData");
+							$scope.$search("formData");
+						},
+						fail : function(errMsg){
+							$.messager.alert("提示","删除失败！");
+						}
+					});
+        		}
+        	});
+        };
+        
+        //条件查询
+        $scope.searchData = function(){
+    		$scope.$updateData("formData");
+    		$scope.$search("formData");
+        };
+        //添加日常
+        $scope.addData = function(){
+        	$scope.$setParam("remark","add");//判断是添加的标识
+        	$scope.$openDialog('addMaintainDaily',{
+        		title : '日常维护信息',
+        		width : '820',
+        		height : '500',
+        		href : 'tpls/deviceManage/deviceMaintenance/maintain-daily-operate.html'
+        	});
+        	$scope.$setParam("saveData",function(data){
+        		$scope.$ajaxRequest({
+        			url : $scope.$restRoot + 'device/maintainDaily/addMaintainDaily',
+        			params : data,
+        			success : function(data){
+        				$scope.$getDialog("addMaintainDaily").dialog("close");
+        				$scope.$updateData("formData");
+    					$scope.$search("formData");
+        			},
+        			fail : function(errMsg){
+        				$.messager.alert("提示","添加失败！");
+        			}
+        		});
+        	});
+        };
+    });
+</script>
+<style type="text/css">
+	#dailyInfo .th{
+		width: 80px;
+		text-align: right;
+	}
+	#dailyInfo .td{
+		height:auto;
+	}
+	#dailyInfo .td>input[class^='easyui-']{
+        width: 144px;
+    }
+</style>

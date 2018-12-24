@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.video.mybatis.client.TrafficVideoLogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.video.domain.model.TrafficVideoLog" >
+    <id column="VIDEO_LOG_ID" property="videoLogId" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_LOG_ID" property="videoPlanLogId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="QUESTION_FIND" property="questionFind" jdbcType="VARCHAR" />
+    <result column="RESULT_DESC" property="resultDesc" jdbcType="VARCHAR" />
+    <result column="VIDEO_PLAN_START_TIME" property="videoPlanStartTime" jdbcType="TIMESTAMP" />
+    <result column="VIDEO_PLAN_END_TIME" property="videoPlanEndTime" jdbcType="TIMESTAMP" />
+    <result column="PLACE" property="place" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIDEO_LOG_ID, VIDEO_PLAN_LOG_ID, DEVICE_ID, QUESTION_FIND, RESULT_DESC, VIDEO_PLAN_START_TIME, 
+    VIDEO_PLAN_END_TIME,PLACE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_VIDEO_LOG
+    where VIDEO_LOG_ID = #{videoLogId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPlanLogID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_VIDEO_LOG
+    where VIDEO_PLAN_LOG_ID = #{planLogId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_VIDEO_LOG
+    where VIDEO_LOG_ID = #{videoLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.video.domain.model.TrafficVideoLog" >
+    insert into T_TRAFFIC_VIDEO_LOG (VIDEO_LOG_ID, VIDEO_PLAN_LOG_ID, DEVICE_ID, 
+      QUESTION_FIND, RESULT_DESC, VIDEO_PLAN_START_TIME, 
+      VIDEO_PLAN_END_TIME,PLACE)
+    values (#{videoLogId,jdbcType=VARCHAR}, #{videoPlanLogId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, 
+      #{questionFind,jdbcType=VARCHAR}, #{resultDesc,jdbcType=VARCHAR}, #{videoPlanStartTime,jdbcType=TIMESTAMP}, 
+      #{videoPlanEndTime,jdbcType=TIMESTAMP},#{place,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.video.domain.model.TrafficVideoLog" >
+    insert into T_TRAFFIC_VIDEO_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="videoLogId != null" >
+        VIDEO_LOG_ID,
+      </if>
+      <if test="videoPlanLogId != null" >
+        VIDEO_PLAN_LOG_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="questionFind != null" >
+        QUESTION_FIND,
+      </if>
+      <if test="resultDesc != null" >
+        RESULT_DESC,
+      </if>
+      <if test="videoPlanStartTime != null" >
+        VIDEO_PLAN_START_TIME,
+      </if>
+      <if test="videoPlanEndTime != null" >
+        VIDEO_PLAN_END_TIME,
+      </if>
+      <if test="place != null" >
+        PLACE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="videoLogId != null" >
+        #{videoLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanLogId != null" >
+        #{videoPlanLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="questionFind != null" >
+        #{questionFind,jdbcType=VARCHAR},
+      </if>
+      <if test="resultDesc != null" >
+        #{resultDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanStartTime != null" >
+        #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanEndTime != null" >
+        #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="place != null" >
+        #{place,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.video.domain.model.TrafficVideoLog" >
+    update T_TRAFFIC_VIDEO_LOG
+    <set >
+      <if test="videoPlanLogId != null" >
+        VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="questionFind != null" >
+        QUESTION_FIND = #{questionFind,jdbcType=VARCHAR},
+      </if>
+      <if test="resultDesc != null" >
+        RESULT_DESC = #{resultDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPlanStartTime != null" >
+        VIDEO_PLAN_START_TIME = #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoPlanEndTime != null" >
+        VIDEO_PLAN_END_TIME = #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="place != null" >
+        PALCE = #{place,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where VIDEO_LOG_ID = #{videoLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.video.domain.model.TrafficVideoLog" >
+    update T_TRAFFIC_VIDEO_LOG
+    set VIDEO_PLAN_LOG_ID = #{videoPlanLogId,jdbcType=VARCHAR},
+      DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      QUESTION_FIND = #{questionFind,jdbcType=VARCHAR},
+      RESULT_DESC = #{resultDesc,jdbcType=VARCHAR},
+      VIDEO_PLAN_START_TIME = #{videoPlanStartTime,jdbcType=TIMESTAMP},
+      VIDEO_PLAN_END_TIME = #{videoPlanEndTime,jdbcType=TIMESTAMP},
+      PLACE = #{place,jdbcType=TIMESTAMP}
+    where VIDEO_LOG_ID = #{videoLogId,jdbcType=VARCHAR}
+  </update>
+</mapper>

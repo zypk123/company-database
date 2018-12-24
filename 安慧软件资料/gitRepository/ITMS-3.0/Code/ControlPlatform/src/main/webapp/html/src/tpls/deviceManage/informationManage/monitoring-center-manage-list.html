@@ -1,0 +1,740 @@
+<div id="monitorCenterList" class="easyui-layout">
+    <div data-options="region:'west',title:'导航区域',split : true," style="width:210px;">
+    	<div class="easyui-layout">
+    		<div data-options="region:'center',border:false">
+    			<div id="cy-tree">
+					
+        		</div>
+    		</div>
+    		<div data-options="region:'south',border:false">
+    			<div style="color: red">
+                   1、【左键单击】树任意父节点，右侧显示该节点监控中心下的服务器列表。
+               </div>
+               <div style="color: red">
+                   2、【右键单击】树任意节点，显示相应的上下文菜单。
+               </div>
+    		</div>
+    	</div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <div id="sysModelRight" class="easyui-layout">
+            <div data-options="region:'north',border:false">
+                <div class="linkbutton_toolbar">
+    				<a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addMoniter">新增监控中心</a>
+                	<a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addServerData">新增服务器</a>
+                    <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeAll">删除服务器</a>
+                </div>
+            </div>
+            <div data-options="region:'center',border:true,split: true">
+            	<table id="dataGrid" cy-datagrid="serverOptions" cy-querydata="formData" cy-url="device/monitorServerManage/queryServer">
+		                
+		        </table>
+            </div>
+            <div data-options="region:'south',border:true,split: true" style="height:300px;">
+            	<table id="datagridService" cy-datagrid="serviceOptions" cy-querydata="formDataService">
+		                
+		        </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mmF" style="width:120px;">
+    <div id="mmf-treeadd" data-options="iconCls:'icon-add-solid'" cy-click="addServer">新增服务器</div>
+    <div id="mmf-treeclose" data-options="iconCls:'icon-remove-solid'" cy-click="removeMoniter">删除监控中心</div>
+    <div id="mmf-treeedit" data-options="iconCls:'icon-edit-solid'" cy-click="editMoniter">编辑监控中心</div>
+</div>
+<div id="mmC" style="width:120px;">
+	<div id="mmc-treeadd" data-options="iconCls:'icon-add-solid'" cy-click="addServer">新增服务器</div>
+    <div id="mmc-treeclose" data-options="iconCls:'icon-remove-solid'" cy-click="removeData">删除服务器</div>
+    <div id="mmc-treeedit" data-options="iconCls:'icon-edit-solid'" cy-click="editServer">编辑服务器</div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.$getDefaultCode(["487","486"]);
+        //菜单初始化变量
+        $scope.fTreeMenu = null;
+        $scope.cTreeMenu = null;
+		var serStatusSubObj = null;//设备状态订阅对象
+        var monitorTree = [];//监控中心树数组
+        //var children = [];//查询的监控中心ID与监控中心名称数组
+        //查询监控中心与服务器形成树
+        function loadTree(datas){
+            //查询监控中心数据
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot+"device/monitorServerManage/queryMonitor",
+                params: {},
+                method: "post",
+                success: function(data){
+                    monitorTree = data;
+                    //加载树操作
+                    $scope.$('#cy-tree').tree({
+                        lines : true,
+                        animate : true,
+                        data : monitorTree,
+                        onContextMenu : $scope.showTreeMenu,
+                        onSelect : $scope.clickTreeMenu,
+                        onLoadSuccess : function(){
+                        	if(datas != undefined){
+                        		var root = $(this).tree("getRoots")[0];
+								//收起全部节点
+								$(this).tree("collapseAll");
+                        		var node = $(this).tree("getChildren")[datas];
+                           		$(this).tree("select",node.target);
+                        	}
+                        }
+                    });
+                },
+                fail: function(){
+                    $.messager.alert("提示","查询初始化监控中心树失败！");
+                }
+            });
+        }
+        $scope.load = function() {
+        	//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+            loadTree(0);
+            initMenu();
+        };
+        function initMenu(){
+            //初始化父节点右键菜单
+            $scope.fTreeMenu = $scope.$('#mmF').menu().menu("hide");
+            //初始化子节点右键菜单
+            $scope.cTreeMenu = $scope.$('#mmC').menu().menu("hide");
+        }
+        //右击选中的树的监控中心名称变量
+        var rightClickNameF = "";
+        //右击选中的树的监控中心ID变量
+        var rightClickIdF = "";
+        //右击选中的树的服务器名称变量
+        var rightClickNameC = "";
+        //右击选中的树的服务器ID变量
+        var rightClickIdC = "";
+        //右击选中的树的服务器其他变量
+        var rightClickAttribute = {};
+        //显示树右键菜单
+        $scope.showTreeMenu = function(e,node){
+            //禁用系统默认右键菜单
+            e.preventDefault();
+            if(!$scope.$('#cy-tree').tree('isLeaf',node.target)){//判断是否是叶子节点（不是子节点）
+	            //父节点变量赋值
+	        	rightClickNameF = node.text;
+	            rightClickIdF = node.id;
+                // 显示父节点快捷菜单
+                $scope.fTreeMenu.menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            }else{
+            	var nodes = $(this).tree("getParent",node.target);//获取子节点的父节点
+	            //子节点变量赋值
+	            //点击子节点获取其父节点对象信息
+	        	rightClickNameF = nodes.text;
+	            rightClickIdF = nodes.id;
+	            //子节点对象赋值
+	            rightClickNameC = node.text;
+	            rightClickIdC = node.id;
+	            //子节点的Attribute属性值对象
+	            rightClickAttribute = node.attribute;
+                // 显示子节点快捷菜单
+                $scope.cTreeMenu.menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            }
+        };
+        //左击选中的树的监控中心名称变量
+        var leftClickName = "";
+        //左击选中的树的监控中心ID变量
+        var leftClickId = "";
+        //左击选中查询该监控中心并刷新列表
+        $scope.clickTreeMenu = function(node){
+            leftClickName = node.text;
+        	leftClickId = node.id;
+            if(!$scope.$('#cy-tree').tree('isLeaf',node.target)){
+            	$scope.$updateData("formData");
+            	$scope.formData.surveySystemId = leftClickId;
+                $scope.$search("formData");
+            }
+        };
+        $scope.serverOptions = {
+            columns:[[
+                {field : "serverId",checkbox : true},
+                {field : "surveySystemId",title : "监控中心名称",align: "center",width : 100,formatter: findSurveySystemNameById},
+                {field : "serverIp",title : "服务器IP",align: "center",width : 120},
+                {field : "connUserName",title : "用户名",align: "center",width : 100},
+                {field : "otalDiskResource",title : "磁盘大小/T",align: "center",width : 80},
+                {field : "timeResult",title : "校时结果",align: "center",width : 70,formatter: findNameByCode},
+                {field : "hostStartTime",title : "服务器启动时间",align: "center",width : 150},
+                {field : "hostCurrTime",title : "服务器当前时间",align: "center",width : 150},
+                {field : "networkUsage",title : "网络利用率/%",align: "center",width : 100},
+                {field : "cpuUsage",title : "CPU利用率/%",align: "center",width : 100},
+                {field : "memoryTotal",title : "总内存/kb",align: "center",width : 80},
+                {field : "memoryUsage",title : "已用内存/%",align: "center",width : 100},
+                {field : "serverStatus",title : "服务器状态",align: "center",width : 90,formatter: serverStatusCheck},
+                {field : "operate",title : "操作",align: "center",width : 80,formatter : operate}
+            ]],
+            pagination : false,
+            onLoadSuccess : function(){
+            	$scope.$('#dataGrid').datagrid("selectRow",0);//默认选中服务器列表第一行
+            	successCallBack();
+            },
+        	//选中一行时加载该服务器的服务监控
+            onSelect : function(index, row){
+            	if(row != undefined){
+            		if(row.lstServiceStatus != null){
+                		$scope.$('#datagridService').datagrid('loadData', row.lstServiceStatus);
+                	}else{
+                		$scope.$('#datagridService').datagrid('loadData',[]);
+                	}
+            	}else{
+            		$scope.$('#datagridService').datagrid('loadData',[]);
+            	}
+            }
+        };
+        $scope.serviceOptions = {
+            columns:[[
+                {align: "center",title : "服务名称",field : "processName",width:130},
+                {align: "center",title : "服务描述",field : "processDesc",width:120},
+                {align: "center",title : "服务启动时间",field : "processStartTime",width:160,formatter : formatDateTimeStamp},
+                {align: "center",title : "上报周期(秒)",field : "reportCycle",width:90},
+                {align: "center",title : "服务状态",field : "processStatus",width:80,formatter : queryNameByCode},
+                {align: "center",title : "状态产生时间",field : "statusGenTime",width:160,formatter : formatDateTimeStamp},
+                {align: "center",title : "占用内存K",field : "processMemory",width:80},
+                {align: "center",title : "占用CPU%",field : "processCpu",width:90},
+                {align: "center",title : "占用句柄数",field : "handleNum",width:80},
+                {align: "center",title : "处理总数",field : "doRecordNum",width:80}
+            ]],
+            pagination : false,
+            nowrap:false
+        };
+        /**
+         *把时间戳转化为yyyy-MM-dd HH:mm:ss格式
+         */
+        function formatDateTimeStamp(value, rowData, rowIndex) {
+            if (value == undefined) {
+                return "--";
+                return false;
+            }
+            var newDate = new Date();
+            newDate.setTime(value);
+            return newDate.format('yyyy-MM-dd HH:mm:ss');
+        }
+        function queryNameByCode(value,row,rowIndex){
+			var processStatus = $scope.$getCodeName("487",value);
+			if(value == 0){//正常
+				return "<span>"+ processStatus +"</span>";
+			}else if(value == 1){//离线
+				return "<span style='color:orange'>"+ processStatus +"</span>";
+			}else if(value == 2){//异常
+				return "<span style='color:red'>"+ processStatus +"</span>";
+			}
+		}
+        //根据返回值判断服务器状态
+        function serverStatusCheck(value,row,rowIndex){
+        	if (value == undefined) {
+                return "<span>未收到</span>";
+            }else{
+            	if(value == 0){
+            		return "<span>正常</span>";
+            	}else if(value == 1){
+            		return "<span style='color:red'>异常</span>";
+            	}else if(value == 2){
+            		return "<span>未收到</span>";
+            	}
+            }
+        }
+        $scope.close = function() {
+			if (serStatusSubObj != null) {
+				serStatusSubObj.remove();
+			}
+		};
+		$scope.leave = function() {
+			if (serStatusSubObj != null) {
+				serStatusSubObj.remove();
+			}
+		};
+		$scope.enter = function() {
+			subscribeSerStatus();
+		};
+        function successCallBack(data) {
+			if (serStatusSubObj == null){//如果为空，则是第一次订阅设备状态
+				subscribeSerStatus();
+			}else{//否则，则是再次点击查询按钮，查询出设备列表，需要更改要订阅的设备列表
+				changeSerForStatusSubscribe();
+			}
+		}
+		function subscribeSerStatus() {
+			var serverLst = getAllServerLst();
+			if (serverLst == null || serverLst.length == 0) {
+				return;
+			}
+			//订阅设备状态
+			serStatusSubObj = new Subsribe({
+				type : SubsribeType.serverMgrMonitor,
+				onMessage : onReceiveServerStatus,
+				param : {serverIds : serverLst}
+			});
+		}
+        function changeSerForStatusSubscribe() {
+			var serverLst = getAllServerLst();
+			serStatusSubObj.addParam({
+				serverIds : serverLst
+			});
+		}
+		function getAllServerLst() {
+			var serverLst = $scope.$("#dataGrid").datagrid("getRows");
+			var serverArry = [];
+			if (serverLst != null || serverLst.length > 0) {
+				for (var i = 0; i < serverLst.length; i++) {
+					serverArry.push(serverLst[i].serverId);
+				}
+			}
+			return serverArry;
+		}
+		function onReceiveServerStatus(datas){//接收到状态消息
+			var data = $.parseJSON(datas);
+			var serverId = data.serverId;
+			var serverRows = $scope.$("#dataGrid").datagrid("getRows");
+			var currentRow = null;
+			for (var i = 0; i < serverRows.length; i++) {
+				if (serverRows[i].serverId == serverId) {
+					currentRow = serverRows[i];
+					break;
+				}
+			}
+			if(currentRow == null){
+			    return;
+			}			
+			var rowIndex = $scope.$("#dataGrid").datagrid("getRowIndex",currentRow);
+			if(data.status != 2){
+				currentRow.timeResult = data.timeResult;//校时结
+				currentRow.hostStartTime = formatDateTimeStamp(data.hostStartTime);//服务器启动时间
+				currentRow.hostCurrTime = formatDateTimeStamp(data.hostCurrTime);//服务器当前时间
+				currentRow.networkUsage = data.networkUsage;//网络利用率,%
+				currentRow.cpuUsage = data.cpuUsage;//cpu利用率,% 
+				currentRow.memoryTotal = data.memoryTotal;//总内存,kb 
+				currentRow.memoryUsage = data.memoryUsage;//已用内存,%
+				currentRow.serverStatus =  data.status;//服务器状态
+				currentRow.serverStatusDeacription = data.statusDeacription;//服务器状态描述
+				currentRow.lstServiceStatus = data.lstServiceStatus;//服务的监控数据
+			}
+			var d = $scope.$("#dataGrid").datagrid("getSelected");//获取选中的行
+			if(d.updateTime != null){
+				if(d.lstServiceStatus != null){
+					$scope.$('#datagridService').datagrid('loadData', d.lstServiceStatus);
+				}else{
+            		$scope.$('#datagridService').datagrid('loadData',[]);
+            	}
+			}
+			$scope.$("#dataGrid").datagrid("updateRow",{
+			    index: rowIndex,
+                row: currentRow
+			});
+			$scope.$eventProxy();//重新做事件代理
+		}
+		/**
+         *把时间戳转化为yyyy-MM-dd HH:mm:ss格式
+         */
+        function formatDateTimeStamp(dateTimeStamp) {
+            if (dateTimeStamp == undefined) {
+                return "";
+            }
+            var newDate = new Date();
+            newDate.setTime(dateTimeStamp);
+            return newDate.format('yyyy-MM-dd HH:mm:ss');
+        }
+		
+		function findNameByCode(value,row,index){
+			var timeResult = $scope.$getCodeName("486",value);
+            return timeResult;
+		}
+		
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain:true,
+                iconCls:"icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain:true,
+                iconCls:"icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         *根据监控中心ID查监控中心Name 
+         */
+        function findSurveySystemNameById(value,row,index){
+            for(var i = 0; i < monitorTree.length; i++){
+                if(value == monitorTree[i].id){
+                    return surveySystemId = monitorTree[i].text;
+                }
+            } 
+        }
+        
+        /**
+         * 按钮新增监控中心信息
+         */
+        $scope.addMoniter = function(){
+            $scope.$openDialog("addCenterDialog",{
+                title : "新增监控中心信息",
+                width : 400,
+                height : 280,
+                href : "tpls/deviceManage/informationManage/monitoring-center-manage-operate.html"
+            },true);
+            $scope.$setParam("saveData",function(data){
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"device/monitorServerManage/addMonitor",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                    	if(data == 1){
+	                        $scope.$getDialog("addCenterDialog").dialog("close");
+	                        loadTree();
+                    	}else{
+                    		$.messager.alert("提示","监控中心名称已存在，请重新输入！");
+                    	}
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","添加失败！");
+                    }
+                });
+            });
+        };
+        /**
+         * 删除树菜单监控中心
+         */
+        $scope.removeMoniter = function(){
+            $.messager.confirm("提示","确认删除"+rightClickNameF+"？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/monitorServerManage/removeMonitor",
+                        params: {surveySystemId : rightClickIdF},
+                        method: "post",
+                        success: function(data){
+                    		$.messager.alert("提示","删除成功！");
+                            loadTree();
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示",errMsg);
+                        }
+                    });
+                }
+            });
+        };
+        /**
+         * 编辑树菜单监控中心
+         */
+        $scope.editMoniter = function(){
+        	//查询该监控中心的信息
+        	$scope.$ajaxRequest({
+        		url: $scope.$restRoot+'device/monitorServerManage/queryMonitorInfo',
+        		params: {surveySystemId: rightClickIdF},
+        		method: 'post',
+        		success: function(data){
+        			$scope.$setParam("formData",data);
+        			var surveySystemName = data.surveySystemName;
+        			$scope.$openDialog("editMonitor",{
+        				title : "编辑监控中心",
+		                width : 400,
+		                height : 280,
+		                href : "tpls/deviceManage/informationManage/monitoring-center-manage-operate.html"
+        			},true);
+        			$scope.$setParam("saveData",function(data){
+        				data.oldSurveySystemName = surveySystemName;
+        				$scope.$ajaxRequest({
+			        		url: $scope.$restRoot+'device/monitorServerManage/editMonitor',
+			        		params: data,
+			        		method: 'post',
+			        		success: function(data){
+			        			if(data == 1){
+			        				$.messager.alert("提示","修改监控中心成功！");
+				        			$scope.$getDialog("editMonitor").dialog("close");
+				        			loadTree();
+			        			}else if(data == 0){
+			        				$.messager.alert("提示","监控中心名称已存在，请重新输入！");
+			        			}
+			        		},
+			        		fail: function(errMsg){
+			        			$.messager.alert("提示","修改监控中心失败！");
+			        		}
+			        	});
+        			});
+        		},
+        		fail: function(errMsg){
+        			$.messager.alert("提示","查询监控中心信息失败！");
+        		}
+        	});
+        };
+        
+        /**
+         * 按钮新增监控中心服务器信息
+         */
+        $scope.addServerData = function(){
+        	var node = $scope.$('#cy-tree').tree('getSelected');//获取当前选中的节点
+        	if($scope.$('#cy-tree').tree('isLeaf',node.target)){//判断选择的是子节点
+        		var nodes = $scope.$('#cy-tree').tree("getParent",node.target);//获取子节点的父节点
+        		//传递树父节点名称
+	            $scope.$setParam("clickName",nodes.text);
+	            $scope.$setParam("clickId",nodes.id);
+        	}else{
+        		//传递树节点名称
+	            $scope.$setParam("clickName",leftClickName);
+	            $scope.$setParam("clickId",leftClickId);
+        	}
+        	$scope.$setParam("remark","add");
+            $scope.$openDialog("addServerDialog",{
+                title:"新增监控中心服务器信息",
+                width:640,
+                height:560,
+                href:"tpls/deviceManage/informationManage/monitoring-center-server-manage-operate.html"
+            },true);	
+        	saveServer();
+        };
+        /**
+         *树监控中心下新增服务器信息 
+         */
+        $scope.addServer = function(){
+    		//传递树节点名称
+            $scope.$setParam("clickName",rightClickNameF);
+            $scope.$setParam("clickId",rightClickIdF);
+            $scope.$setParam("remark","add");
+            $scope.$openDialog("addServerDialog",{
+                title:"新增监控中心服务器信息",
+                width:640,
+                height:560,
+                href:"tpls/deviceManage/informationManage/monitoring-center-server-manage-operate.html"
+            },true);	
+        	saveServer();
+        };
+        /**
+         * 新增服务器保存数据
+         */
+        function saveServer(){
+        	$scope.$setParam("saveData",function(data){
+	    	   $scope.$ajaxRequest({
+	    	       url: $scope.$restRoot+"device/monitorServerManage/addServer",
+	    	       params: data,
+	    	       method: "post",
+	    	       success: function(data){
+	    	       	   if(data == 1){
+	        	           $scope.$getDialog("addServerDialog").dialog("close");
+	        	           $scope.$updateData("formData");
+	        	           $scope.$search("formData");
+	        	           loadTree();
+	    	       	   }else if(data == 0){
+	    	       	   	   $.messager.alert("提示","服务器IP已存在，请重新输入！");
+	    	       	   	   return false;
+	    	       	   }
+	    	       },
+	    	       fail: function(errMsg){
+	    	           $.messager.alert("提示","添加失败！");
+	    	       }
+	    	   });
+	    	});
+        }
+        /**
+         * 按钮编辑列表某个监控中心服务器信息
+         */
+        $scope.editData = function(index){
+            //获取行数据
+            var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];
+            var oldServerIp = rowDatas.serverIp;
+            //传递行数据
+            for(i=0; i<monitorTree.length; i++){
+                if(rowDatas.surveySystemId == monitorTree[i].id){
+                    var surveySystemName = monitorTree[i].text;
+                    var surveySystemId = monitorTree[i].id;
+                    $scope.$setParam("clickName",surveySystemName);
+                    rowDatas.surveySystemName = surveySystemName;
+                    $scope.$setParam("clickId",surveySystemId);
+                }
+            } 
+            $scope.$setParam("formData",rowDatas);
+            $scope.$setParam("remark","buttonEdit");
+            //创建弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑监控中心信息",
+                width:640,
+                height:560,
+                href : "tpls/deviceManage/informationManage/monitoring-center-server-manage-operate.html"
+            },true);
+            saveEditData(oldServerIp);
+        };
+        /**
+         * 树编辑某个监控中心服务器信息
+         */
+        $scope.editServer = function(){
+            rightClickAttribute.serverId = rightClickIdC;
+            //根据服务器ID查询
+            var oldServerIp = rightClickAttribute.serverIp;
+            $scope.$setParam("clickName",rightClickNameF);
+            $scope.$setParam("clickId",rightClickIdF);
+            $scope.$setParam("formData",rightClickAttribute);
+            $scope.$setParam("remark","edit");
+            //创建弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑监控中心信息",
+                width:640,
+                height:560,
+                href : "tpls/deviceManage/informationManage/monitoring-center-server-manage-operate.html"
+            },true);
+            saveEditData(oldServerIp);
+        };
+        /**
+         *编辑服务器保存数据 
+         */
+        function saveEditData(oldServerIp){
+        	$scope.$setParam("saveData",function(datas){
+                delete datas.lstServiceStatus;
+                datas.oldServerIp = oldServerIp;
+           		$scope.$ajaxRequest({
+                   url: $scope.$restRoot+"device/monitorServerManage/editServer",
+                   params: datas,
+                   method: "post",
+                   success: function(data){
+                   	   if(data == 1){
+                   	   	   $.messager.alert("提示","修改成功！");
+	                       $scope.$getDialog("editDialog").dialog("close");
+	                       $scope.$updateData("formData");
+	                       $scope.$search("formData");
+	                       loadTree();
+	                       
+                   	   }else if(data == 0){
+        	       	   	   $.messager.alert("提示","服务器IP已存在，请重新输入！");
+        	       	   	   return false;
+        	       	   }
+                       
+                   },
+                   fail: function(errMsg){
+                       $.messager.alert("提示","修改失败！");
+                   }
+               });	
+            });		
+        };
+        /**
+         * 删除列表某个监控中心服务器信息
+         */
+        $scope.removeData = function(index){
+            var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];//选中的数据
+            if(rowDatas != undefined){
+            	var serverId = rowDatas.serverId;
+            }else{
+            	var serverId = rightClickIdC;
+            }
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/monitorServerManage/removeServer",
+                        params: {serverId: serverId},
+                        method: "post",
+                        success: function(data){
+                        	if(data == 1){
+                        		$scope.$updateData("formData");
+                                $scope.$search("formData");
+                                $.messager.alert("提示","删除成功！");
+                                loadTree();
+                        	}else if(data == 0){
+                        		$.messager.alert("提示","该服务器下存在服务器组件禁止删除！");
+                        	}
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+        /**
+         * 批量删除列表监控中心服务器信息
+         */
+        $scope.removeAll = function(){
+            var rows = $scope.$('#dataGrid').datagrid('getChecked');//勾选选中的行数组
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                var serverIdStr = "";
+                for(var i = 0; i < rows.length; i++){
+                    if(i > 0){
+                        serverIdStr = serverIdStr + "," + rows[i].serverId;
+                    }else{
+                        serverIdStr = serverIdStr + rows[i].serverId;
+                    }
+                }
+                $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                    if(flag){
+                    	//判定服务器下是否存在服务器组件
+                    	$scope.$ajaxRequest({
+                            url: $scope.$restRoot+"device/monitorServerManage/queryApplicationByServerId",
+                            params: {serverIdStr: serverIdStr},
+                            method: "post",
+                            success: function(data){
+                            	if(data == ""){//不存在
+                            		//删除服务器
+                            		$scope.$ajaxRequest({
+                                        url: $scope.$restRoot+"device/monitorServerManage/removeSomeServer",
+                                        params: {serverIdStr: serverIdStr},
+                                        method: "post",
+                                        success: function(data){
+                                           	$scope.$updateData("formData");
+                                            $scope.$search("formData");
+                                            $.messager.alert("提示","删除成功！");
+                                            loadTree();
+                                        },
+                                        fail: function(errMsg){
+                                            $.messager.alert("提示","删除失败！");
+                                        }
+                                    });
+                            	}else if(data != ""){//存在
+                            		var serverIp = "";
+            						for (var j = 0; j < rows.length; j++) {
+        								if(rows[j].serverId == data){
+        									serverIp = rows[j].serverIp;
+                                    		$.messager.alert("提示","IP为" + serverIp + "的服务器下存在服务器组件禁止删除！");
+        									return false;
+        								}
+        							}
+                            	}
+                            },
+                            fail: function(errMsg){
+                                $.messager.alert("提示","删除失败！");
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        /**
+         *查看监控中心服务器信息
+         
+        $('#dataGrid').datagrid({
+            onDblClickCell: function(index,field,value){
+                var rowDatas = $scope.$("#dataGrid").datagrid("getData").rows[index];
+                for(i=0; i<monitorTree.length; i++){
+                    if(rowDatas.surveySystemId == monitorTree[i].id){
+                        var surveySystemName = monitorTree[i].text;
+                        var surveySystemId = monitorTree[i].id;
+                        $scope.$setParam("clickName",surveySystemName);
+                        $scope.$setParam("clickId",surveySystemId);
+                    }
+                } 
+                $scope.$setParam("formData",rowDatas);
+                $scope.$setParam("remark","look");
+                $scope.$openDialog("lookDialog",{
+                    title : "查看监控中心信息",
+                    width:640,
+                    height:560,
+                    href : "tpls/deviceManage/informationManage/monitoring-center-server-manage-operate.html"
+                },true);
+            }
+        });*/
+    });
+</script>

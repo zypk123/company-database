@@ -1,0 +1,598 @@
+<div class="easyui-layout" id="passMonitor">
+	<div data-options="region:'west',width:280,border:false" style="border-right:solid 1px #ddd">
+		<div class="easyui-layout">
+			<div data-options="region:'north',border:false,height:60">
+				<div class="table" id="deviceSearch">
+					<div class="tr">
+						<div class="td">
+							<input id="searchParam" class="easyui-textbox"
+							style="width:200px;height:26px;line-height:26px;" data-options="prompt:'输入点位关键字'">
+							<a id="searchButton" class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+							cy-click="searchDeviceInTree">查找</a>
+						</div>
+					</div>
+					<div class="tr">
+						<input type="radio" name="treeType" value="1" checked cy-change="changeType"/>
+						按机构
+						<input type="radio" name="treeType" value="0"  cy-change="changeType"/>
+						按道路
+					</div>
+				</div>
+			</div>
+			<div id="treeContent" data-options="region:'center',border:false">
+				<div id="tree" style="margin:10px 5px;"></div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'east',width:350,border:false,title:'过车信息'" style="border-left:solid 1px #ddd">
+		<table id="passList" cy-datagrid="options">
+
+		</table>
+	</div>
+	<div data-options="region:'center',border:false" style="overflow:hidden;">
+		<div id="monitor" class="easyui-panel" data-options="border:false,cls:'monitorLable',fit:true" style="background-color:#666">
+
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+
+		$scope.subsribeParam = {};
+
+		//获得默认的数据字典
+		$scope.$getDefaultCode(["004"]);
+
+		$scope.load = function() {
+			//初始化树信息
+			initTree();
+			//初始化监听信息
+			$scope.subsribe = new Subsribe({
+				type : SubsribeType.vehicleMonitor,
+				onMessage : handleMessage
+			});
+		};
+
+		$scope.close = function() {
+			//删除订阅
+			$scope.subsribe.remove();
+		};
+		$scope.leave = function() {
+			//删除订阅
+			$scope.subsribe.remove();
+		};
+		$scope.enter = function() {
+			//重新初始化订阅
+			$scope.subsribe = new Subsribe({
+				type : SubsribeType.vehicleMonitor,
+				onMessage : handleMessage,
+				param : $scope.subsribeParam
+			});
+		};
+
+		/**
+		 * 根据点位code查找点位名称
+		 */
+		function findSiteNameBySiteCode(code) {
+			var data = $scope.$("#tree").tree("getRoots")[0];
+			return findSiteName(data, code);
+		}
+
+		/**
+		 * 递归查找
+		 */
+		function findSiteName(root, code) {
+			if (root.attribute && root.attribute.code && root.attribute.code == code) {
+				return root.text;
+			}
+			if (root.children && root.children.length > 0) {
+				for (var index in root.children) {
+					var item = root.children[index];
+					var name = findSiteName(item, code);
+					if (name) {
+						return name;
+					}
+				}
+			}
+		}
+
+		/**
+		 * 订阅消息处理
+		 */
+		function handleMessage(data) {
+			//格式化时间
+			data.passTime = formatDate(data.passTime);
+			//获取点位名称
+			data.siteName = findSiteNameBySiteCode(data.siteCode);
+			//列表中添加数据
+			$scope.$("#passList").datagrid("insertRow", {
+				row : data,
+				index : 0
+			});
+			//判断列表中数据是否超出最大范围（默认200）
+			if ($scope.$("#passList").datagrid("getRows").length > 200) {
+				//删除最后一行
+				$scope.$("#passList").datagrid("deleteRow", 200);
+			}
+			//更换图片
+			if(data.imageUrlPath && data.imageUrlPath.indexOf("http")>=0){
+				monitor.updateImage(data.siteCode + "," + data.directionType, data.imageUrlPath);
+			}else{
+				monitor.updateImage(data.siteCode + "," + data.directionType, $scope.$servletRoot + "/PassImage?imageUrl=" + data.imageUrlPath);
+			}
+		}
+
+		//收缩最外层菜单面板,头部面板
+		$scope.$topLayout.layout("collapse", "west");
+		//初始化监视器对象
+		var monitor;
+		if (!window.Monitor) {
+			//加载监视器控件
+			$.get("js/monitor.js", function() {
+				initMonitor();
+			});
+		} else {
+			initMonitor();
+		}
+		function initMonitor() {
+			monitor = new Monitor({
+				target : $scope.$("#monitor"),
+				onClose : closeMonitor,
+				onStart : startListener,
+				onStop : stopListener,
+				onShowVideo : showVideo
+			});
+			$scope.$("#monitor").panel({
+				onResize : function() {
+					monitor.fitMonitor();
+				},
+			});
+		};
+	
+		/**
+		 * 展示视频 
+		 */
+		function showVideo(id){
+			var codeAndDirection = id.split(",");
+			var siteCode = codeAndDirection[0];
+			var directionType = codeAndDirection[1];
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/bayonetManage/queryBayonetBySiteCode",
+				params : {
+					siteCode : siteCode,
+					directionType : directionType	
+				},
+				success : function(data){
+					if(directionType == 1){
+						if(data && data.length > 0 && data[0].upRelatedVideoList){
+							var devIds = data[0].upRelatedVideoList.split(",");
+							$scope.$setParam("deviceIds",devIds);
+				          	$scope.$openDialog("videoDialog", {
+				                title : "查看视频",
+				                height : 600,
+				                width : 600,
+				                href : "tpls/video/popPreView.html",
+				                modal : false
+				            },true);	
+						}else{
+							$.messager.alert("提示","上行方向没有配置视频");
+						}
+					}else{
+						if(data && data.length > 0 && data[0].downRelatedVideoList){
+							var devIds = data[0].downRelatedVideoList.split(",");
+							$scope.$setParam("deviceIds",devIds);
+				          	$scope.$openDialog("videoDialog", {
+				                title : "查看视频",
+				                height : 600,
+				                width : 600,
+				                href : "tpls/video/popPreView.html",
+				                modal : false
+				            },true);	
+						}else{
+							$.messager.alert("提示","下行方向没有配置视频");
+						}
+					}
+				}
+			});
+		}
+
+		/**
+		 * 树默认查询参数
+		 */
+		var queryParams = {
+			isSection : true, //是否查询断面
+			checked : false, //是否选中
+			currentOrgPrivilegeCode : $scope.UserInfo.orgPrivCode,
+			id : "", //默认根节点为空，表示查询基础数据
+			type : "1",//默认类型为0
+			isBayonet : true
+		};
+
+		//当前查找结果
+		var currentSearchResult;
+		//已选点位方向
+		var operateQueue = [];
+		/**
+		 * 查找点位信息
+		 */
+		$scope.searchDeviceInTree = function() {
+			if($scope.$("#searchParam").textbox("getValue").trim() == ""){
+				//条件为空不检索
+				return;
+			}
+			var searchParam = {
+				searchText : $scope.$("#searchParam").textbox("getValue"),
+				searchType : queryParams.type
+			};
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/device/site/searchSiteTree",
+				params : searchParam,
+				success : function(data) {
+					currentSearchResult = data;
+					showSearchResult();
+				}
+			});
+		};
+
+		/**
+		 * 在已加载内容中查找节点
+		 */
+		var showSearchResult = function() {
+			if (!currentSearchResult) {
+				return;
+			}
+			var node = $scope.$("#tree").tree("find", currentSearchResult.id);
+			if (node) {
+				//找到了节点,选中
+				$scope.$("#tree").tree("select", node.target);
+				//展开至该节点
+				$scope.$("#tree").tree("expandTo", node.target);
+				//滚动到该节点
+				scrollToSelectedNode();
+				//继续寻找下级节点
+				if (currentSearchResult.children && currentSearchResult.children.length > 0) {
+					//展开节点
+					$scope.$("#tree").tree("expand", node.target);
+					//删除已经查找到的层级
+					currentSearchResult = currentSearchResult.children[0];
+					showSearchResult();
+				} else {
+					currentSearchResult = null;
+				}
+			}
+		};
+
+		/**
+		 * 树滚动到已选节点
+		 */
+		var scrollToSelectedNode = function() {
+			var selectNodeTop = $($scope.$("#tree").tree("getSelected").target).offset().top;
+			var rootTop = $($scope.$("#tree").tree("getRoots")[0].target).offset().top;
+			$scope.$("#treeContent").scrollTop(selectNodeTop - rootTop);
+		};
+
+		/**
+		 * 切换树的展示模式
+		 */
+		$scope.changeType = function() {
+			var type = $scope.$("[name=treeType]:checked").val();
+			queryParams.type = type;
+			queryParams.id = "";
+			initTree();
+		};
+
+		var initTree = function() {
+			$scope.$("#tree").tree({
+				url : $scope.$restRoot + "/device/site/getSiteTreeByRootId",
+				queryParams : queryParams,
+				checkbox : true,
+				onLoadSuccess : function(node, data) {
+					var root = $(this).tree("getRoots")[0];
+					if (queryParams.type == 0) {
+						//树类型为按道路展示时，删除第二级节点中的空节点
+						for (var index = 0; index < root.children.length; index++) {
+							var item = root.children[index];
+							if (!item.children || item.children.length == 0) {
+								//删除空节点
+								$(this).tree("pop", $scope.$("#" + item.domId));
+								index--;
+							}
+						}
+					} else {
+						if (queryParams.id == "") {
+							//按机构显示是，如果id为空，则显示根节点并打开
+							queryParams.id = $scope.$org[0].id;
+							$(this).tree("loadData", [{
+								id : $scope.$org[0].id,
+								text : $scope.$org[0].text,
+								attribute : $scope.$org[0].attribute,
+								state : "closed"
+							}]);
+						}
+					}
+					//开打根节点
+					if ($(this).tree("getRoots")[0].state == 'closed') {
+						$(this).tree("expand", $(this).tree("getRoots")[0].target);
+					}
+					//隐藏根节点的checkbox
+					if($(this).tree("getRoots")[0].id == "53000000" || $(this).tree("getRoots")[0].id == "0"){
+						var checkbox = $($(this).tree("getRoots")[0].target).find(".tree-checkbox");
+						if (checkbox.is(":visible")) {
+							checkbox.hide();
+						}
+					}
+					//如果当前有查找结果，则继续完成查找过程
+					showSearchResult();
+				},
+				onBeforeExpand : function(node) {
+					queryParams.checked = node.checked;
+				},
+				onExpand : function(node) {
+					if (node._checked && node.children && node.children.length > 0) {
+						//下属结点全部选中
+						for (var index in node.children) {
+							$scope.$("#tree").tree("check", $scope.$("#" + node.children[index].domId));
+						}
+					}
+				},
+				onCheck : function(node, checked) {
+					if (checked) {
+						//当前结点已经选中,展开结点
+						$scope.$("#tree").tree("expand", node.target);
+						//下属结点全部选中
+						if (node.children && node.children.length > 0) {
+							for (var index in node.children) {
+								$scope.$("#tree").tree("check", $scope.$("#" + node.children[index].domId));
+							}
+						} else {
+							if (node.attribute && node.attribute.nodeType == "section") {
+								var parentNode = $scope.$("#tree").tree("getParent", node.target);
+								var flag = monitor.addMonitor(node.id, parentNode.text + " " + node.text);
+								if(flag){
+									var siteId = node.id.split(",")[0];
+									var direction = node.id.split(",")[1];
+									var param = {};
+									param[siteId] = [direction];
+									$scope.subsribe.addParam(param);
+									updateParam(param, "add");
+								}else{
+									//添加监控失败，取消选择状态
+									$scope.$("#tree").tree("uncheck",node.target);
+								}
+								
+							}
+						}
+					} else {
+						//下属节点全部反选
+						if (node.children && node.children.length > 0) {
+							for (var index in node.children) {
+								$scope.$("#tree").tree("uncheck", $scope.$("#" + node.children[index].domId));
+							}
+						} else {
+							if (node.attribute && node.attribute.nodeType == "section") {
+								var flag = monitor.removeMonitor(node.id);
+								if(flag){
+									var siteId = node.id.split(",")[0];
+									var direction = node.id.split(",")[1];
+									var param = {};
+									param[siteId] = [direction];
+									$scope.subsribe.deleteParam(param);
+									updateParam(param, "remove");
+								}
+							}
+						}
+					}
+				}
+			});
+		};
+
+		/**
+		 * 更新当前订阅参数
+		 */
+		function updateParam(param, operate) {
+			if (operate == "add") {
+				//增加参数
+				for (var index in param) {
+					var item = param[index];
+					if ($scope.subsribeParam[index]) {
+						$scope.subsribeParam[index] = $scope.subsribeParam[index].concat(item);
+					} else {
+						$scope.subsribeParam[index] = item;
+					}
+				}
+			} else if (operate == "remove") {
+				for (var index in param) {
+					var item = param[index];
+					if ($scope.subsribeParam[index]) {
+						for (var i in item) {
+							$scope.subsribeParam[index].splice($.inArray(item[i], $scope.subsribeParam[index]), 1);
+						}
+						if ($scope.subsribeParam[index].length == 0) {
+							delete $scope.subsribeParam[index];
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * 获得系统代码名称
+		 */
+		function getCodeName(type) {
+			return function(value) {
+				return $scope.$getCodeName(type, value);
+			};
+		}
+
+		/**
+		 * 格式化日期
+		 */
+		function formatDate(time) {
+			var date = new Date(time);
+			return date.format("yyyy-MM-dd hh:mm:ss");
+		}
+
+		/**
+		 * 好牌颜色
+		 */
+		function formatColor(value, data) {
+			var span = $("<span></span>").text(value);
+			var colorCode = data.plateColor;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			}
+			span.css("padding", "2px 5px");
+			return span.addClass(className).get(0).outerHTML;
+		}
+
+		//初始化数据，事件等
+		$scope.options = {
+			columns : [[{
+				field : "vehicleShape",
+				title : "车辆形状",
+				width : 100,
+				formatter : getCodeName("004")
+			}, {
+				field : "plateNbr",
+				title : "号牌号码",
+				width : 100,
+				formatter : formatColor
+			}, {
+				field : "passTime",
+				title : "时间",
+				width : 150
+			}]],
+			pagination : false,
+			scrollbarSize : 0,
+			onDblClickRow : showPassDetail
+		};
+
+		var checkList = {};
+		var isInit = false;
+		/**
+		 * 关闭监视器的回调方法
+		 * @return {[type]} [description]
+		 */
+		function closeMonitor(id) {
+			var node = $scope.$("#tree").tree("find", id);
+			if(node){
+				$scope.$("#tree").tree("uncheck", node.target);
+			}else{
+				//取消订阅
+				monitor.removeMonitor(id);
+				var siteId = id.split(",")[0];
+				var direction = id.split(",")[1];
+				var param = {};
+				param[siteId] = [direction];
+				$scope.subsribe.deleteParam(param);
+				updateParam(param, "remove");
+			}
+		}
+
+		/**
+		 * 停止监听方法
+		 * @return {[type]} [description]
+		 */
+		function stopListener(id) {
+			var siteId = id.split(",")[0];
+			var direction = id.split(",")[1];
+			var param = {};
+			param[siteId] = [direction];
+			$scope.subsribe.deleteParam(param);
+			updateParam(param, "remove");
+		}
+
+		/**
+		 * 开始监听方法
+		 * @param  {[type]} id [description]
+		 * @return {[type]}    [description]
+		 */
+		function startListener(id) {
+			var siteId = id.split(",")[0];
+			var direction = id.split(",")[1];
+			var param = {};
+			param[siteId] = [direction];
+			$scope.subsribe.addParam(param);
+			updateParam(param, "add");
+		}
+
+		/**
+		 * 显示过车详情
+		 */
+		function showPassDetail(index, data) {
+			//"currentData", "index", "searchData", "oncheck"四个参数
+			//当前数据
+			$scope.$setParam("currentData", {
+				result : {
+					rows : $scope.$("#passList").datagrid("getRows")
+				}
+			});
+			//当前下标
+			$scope.$setParam("index", index);
+			//当前下标
+			$scope.$setParam("htmlId", "passVehicleMonitor");
+			//查询方法
+			$scope.$setParam("searchData", function(operate, callback) {
+				$.messager.alert("提示", "没有更多数据!");
+				$scope.$excute(callback, null);
+			});
+			//选择后执行方法
+			$scope.$setParam("oncheck", function() {
+
+			});
+			//打开详情窗口
+			$scope.$openDialog("vehDetail", {
+				width : 1100,
+				height : 610,
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html",
+				title : "过车详情",
+				onClose : function() {
+					//停止自动播放
+					$scope.$getDialog("vehDetail").data("winScope").stop();
+				}
+			});
+		};
+	}); 
+</script>
+<style>
+	#passMonitor .plate-blue {
+		border-radius: 5px;
+		background-color: blue;
+		color: #FFF;
+	}
+	#passMonitor .plate-yellow {
+		border-radius: 5px;
+		background-color: yellow;
+		color: #000;
+	}
+	#passMonitor .plate-black {
+		border-radius: 5px;
+		background-color: black;
+		color: #FFF;
+	}
+	#passMonitor .plate-white {
+		border-radius: 5px;
+		background-color: white;
+		color: red;
+	}
+	#passMonitor .plate-other {
+		border-radius: 5px;
+		background-color: #888888;
+		color: #FFF;
+	}
+</style>

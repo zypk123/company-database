@@ -1,0 +1,79 @@
+<form class="sectionForm" cy-form="sectionData">
+	<div class="searchPanel">
+		<div class="table">
+			<div class="tr">
+		        <div class="th">方向类型：</div>
+		        <div class="td high_speed">
+		            <input class="easyui-combobox" name="directionType" cy-code="070" data-options="required:true"/>
+		        </div>
+		        <div class="td city">
+		            <input class="easyui-combobox" name="directionType" cy-code="071" data-options="required:true"/>
+		        </div>
+		        <div class="th">方向名称：</div>
+		        <div class="td">
+		            <input class="easyui-textbox" name="directionName" data-options="required:true"/>
+		        </div>
+		        <div class="th">车道数：</div>
+		        <div class="td">
+		            <input class="easyui-textbox" name="laneNum" style="width:120px;" id="laneNum"/>
+		            <a title="添加车道信息" class="easyui-linkbutton button-add" data-options="iconCls:'icon-add-solid',plain:true,selected:true" cy-click="addLane"></a>
+		        </div>
+		    </div>
+		    <div class="tr">
+		        <div class="th">应急车道：</div>
+		        <div class="td" style="width:156px;">
+		            <input type="radio" name="hasEmergencyLane" value="1" checked="checked"/>有&nbsp;&nbsp;&nbsp;&nbsp;
+		            <input type="radio" name="hasEmergencyLane" value="0"/>无
+		        </div>
+		        <div class="th">非机动车道：</div>
+		        <div class="td" style="width:156px;">
+		            <input type="radio" name="hasBicycleLane" value="1" checked="checked"/>有&nbsp;&nbsp;&nbsp;&nbsp;
+		            <input type="radio" name="hasBicycleLane" value="0"/>无
+		        </div>
+		        <div class="th">人行道：</div>
+		        <div class="td" style="width:156px;">
+		            <input type="radio" name="hasPavement" value="1" checked="checked"/>有&nbsp;&nbsp;&nbsp;&nbsp;
+		            <input type="radio" name="hasPavement" value="0"/>无
+		        </div>
+		    </div>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	InitPage([], function($scope){
+		for(var index=0; index < 20; index++){
+			$scope.siteType = $scope.$getParam("siteType" + index);
+			$scope.sectionData = $scope.$getParam("sectionData" + index);
+			if($scope.siteType && $scope.sectionData){
+				if($scope.siteType == "road" || $scope.siteType == "segment"){
+					$scope.$(".city").remove();
+				}else if($scope.siteType == "cross"){
+					$scope.$(".high_speed").remove();
+				}
+				break;
+			}
+		}
+		//添加车道信息
+		$scope.addLane = function(){
+			if($scope.sectionData != undefined){
+				$scope.$setParam("lanes",$scope.sectionData.lanes);
+			}
+			$scope.$openDialog("addLaneDialog",{
+				title: '车道信息',
+				width: '700',
+				height: '550',
+				href: 'tpls/sysManagement/roadNetworkMessage/lane-message-add.html',
+			},false);
+			$scope.$setParam("getLanes",function(data){
+				$scope.sectionData.lanes = data;//data--子页面返回的该断面车道信息数组
+				//根据添加的车道数联动断面界面的车道数字段
+				if(data.length > 0){
+					$scope.$("#laneNum").textbox("setValue",data.length);
+				}else{
+					$scope.$("#laneNum").textbox("setValue","");
+				}
+			});
+		};
+		$scope.sectionData.$scope = $scope;
+	});
+</script>

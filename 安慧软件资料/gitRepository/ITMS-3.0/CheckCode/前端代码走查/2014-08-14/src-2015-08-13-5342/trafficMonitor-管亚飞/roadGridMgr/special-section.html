@@ -1,0 +1,487 @@
+<div id="spacialSection" class="easyui-layout" style="width:600px;height:400px;">
+
+    <div data-options="region:'west',    title:'图层列表',    split:true,    border:true    " style="width:200px;">
+
+        <br>
+        <label ><input name="layer1" type="checkbox" value="" cy-change="selectAll" />全选</label>
+        <br><br>
+        <label ><input name="layer" type="checkbox" value="21"cy-change="addLayer" />桥梁</label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+        <label><input name="layer" type="checkbox" value="22" cy-change="addLayer"/>隧道</label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+        <label><input name="layer" type="checkbox" value="23"cy-change="addLayer" />事故多发段 </label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+        <label><input name="layer" type="checkbox" value="24"cy-change="addLayer" />危险路段 </label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+        <label><input name="layer" type="checkbox" value="25"cy-change="addLayer" />弯道 </label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+        <label><input name="layer" type="checkbox" value="26" cy-change="addLayer"/>坡道 </label>
+        <img align="bottom" src="frameworks/easyui/themes/icons/man1.png">
+        <br><br>
+    </div>
+
+    <div data-options="region:'center'" >
+        <div class="table" style="width:780px;height:35px;position:absolute;right:10px;top:0px;z-index: 100000;background: #0052A3">
+            <div class="tr">
+                <div class="th" style="color:white;">
+                    目标图层：
+                </div>
+                <div class="td" style="width:210px;">
+                    <select class="easyui-combobox" id="tagLayer" data-options="valueField: 'value',textField: 'label'"
+                            name="TagLayer" style="width: 200px;">
+                    </select>
+                </div>
+                <div class="td">
+                    <a href="#" class="easyui-linkbutton button-add" iconCls="icon-add"
+                       plain="true"  group="toolbar" cy-click="addFeature">添加</a>
+                </div>
+                <div class="td">
+                    <a href="#" class="easyui-linkbutton button-edit" iconCls="icon-edit"
+                       plain="true"group="toolbar"cy-click="modifyFeature" >修改</a>
+                </div>
+                <div class="td">
+                    <a href="#" class="easyui-linkbutton button-remove" iconCls="icon-remove"
+                       plain="true"group="toolbar" cy-click="deleteFeature">删除</a>
+                </div>
+                <div class="td">
+                    <input class="easyui-textbox" id="txtRoleName" style="width:180px;" data-options="prompt:'请输入查询内容'" />
+                    <a href="#" class="easyui-linkbutton button-search" iconCls="icon-search"plain="true" cy-click="searchFeature">查找</a>
+                </div>
+            </div>
+        </div>
+        <div style="width:100%;height: 100%;" id="map">
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    InitPage([],function($scope) {
+        var cyMap=new CYMap($scope.$("#map")[0]);
+        var qiaoliangLayer,suidaoLayer,shiguLayer,weixianLayer,wandaoLayer,podaoLayer;
+        var vectors;
+        var wkt_c = new OpenLayers.Format.WKT();
+        var shpType;
+        var layerData;
+        var ispopup=true;
+
+        //初始化地图与图层数据
+        $scope.load = function(){
+            $scope.initData();
+            layerData = {
+                "21" : {
+                    label : "桥梁",
+                    layer : qiaoliangLayer,
+                    shpType:"polyline",
+                    value:"21",
+                    url:"data/trafficMonitor/spacialSectionMgr/qiaoliang.json",
+                    height: 230,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/qiaoliang.html"
+                },
+                "22":{
+                    label:"隧道",
+                    layer:suidaoLayer,
+                    shpType:"polyline",
+                    value:"22",
+                    url:"data/trafficMonitor/spacialSectionMgr/suidao.json",
+                    height: 270,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/suidao.html"
+                },
+                "23":{
+                    label:"事故多发段",
+                    layer:shiguLayer,
+                    shpType:"polyline",
+                    value:"23",
+                    url:"data/trafficMonitor/spacialSectionMgr/shigu.json",
+                    height: 300,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/shigu.html"
+                },
+                "24":{
+                    label:"危险路段",
+                    layer:weixianLayer,
+                    shpType:"polyline",
+                    value:"24",
+                    url:"data/trafficMonitor/spacialSectionMgr/weixian.json",
+                    height: 230,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/weixian.html"
+                },
+                "25":{
+                    label:"弯道",
+                    layer:wandaoLayer,
+                    shpType:"polyline",
+                    value:"25",
+                    url:"data/trafficMonitor/spacialSectionMgr/wandao.json",
+                    height: 200,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/wandao.html"
+                },
+                "26":{
+                    label:"坡道",
+                    layer:podaoLayer,
+                    shpType:"polyline",
+                    value:"26",
+                    url:"data/trafficMonitor/spacialSectionMgr/podao.json",
+                    height: 200,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/spatialSection/podao.html"
+                }
+            }
+        }
+        //根据多选框设置目标图层
+        $scope.$("#tagLayer").combobox({
+            onChange: function (value) {
+                if(value){
+                    cyMap.activeLayer=layerData[value].layer;
+                    shpType=layerData[value].shpType;
+                }
+                else{
+                    cyMap.activeLayer=null;
+                    shpType=null;
+                }
+            }
+        });
+        //查询框添加删除按钮
+        $('#txtRoleName').textbox({
+            icons: [{
+                iconCls:'icon-man',
+                handler: function(e){
+                    $(e.data.target).textbox('clear');
+                    vectors.removeAllFeatures();
+                }
+            }]
+        })
+        //初始化地图中的相关图层及样式和事件
+        $scope.initData=function(){
+                vectors=new OpenLayers.Layer.Vector("vectors");
+                var layerListeners= {
+                    featureover: function (e) {
+                        var popup = new OpenLayers.Popup.FramedCloud("info",
+                                e.feature.geometry.getBounds().getCenterLonLat(), null,$scope.fieldInfo(e), null, null, null);
+                        e.feature.popup = popup;
+                        if(ispopup){
+                            cyMap.map.addPopup(popup);
+                        }
+                    },
+                    featureout: function (e) { e.feature.popup.hide(); }
+                };
+                var style_qiaoliang = new OpenLayers.StyleMap(
+                     new OpenLayers.Style({
+                         fillColor: "red",
+                         fillOpacity: "0.8",
+                         strokeColor: "green",
+                         strokeOpacity: "1",
+                         strokeWidth: "3",
+                         strokeDashstyle: 'solid',
+                         pointRadius: "5"
+                    })
+                );
+
+                qiaoliangLayer=new OpenLayers.Layer.Vector("qiaoliang",{styleMap:style_qiaoliang,eventListeners: layerListeners});
+                var style_suidao = new OpenLayers.StyleMap(
+                        new OpenLayers.Style({
+                            fillColor: "red",
+                            fillOpacity: "0.8",
+                            strokeColor: "red",
+                            strokeOpacity: "1",
+                            strokeWidth: "3",
+                            strokeDashstyle: 'solid',
+                            pointRadius: "5"
+                        })
+                );
+                suidaoLayer=new OpenLayers.Layer.Vector("suidao",{styleMap:style_suidao,eventListeners: layerListeners});
+                shiguLayer=new OpenLayers.Layer.Vector("shigu",{eventListeners: layerListeners});
+                var style_weixian = new OpenLayers.StyleMap(
+                        new OpenLayers.Style({
+                            fillColor: "blue",
+                            fillOpacity: "0.8",
+                            strokeColor: "blue",
+                            strokeOpacity: "1",
+                            strokeWidth: "3",
+                            strokeDashstyle: 'solid',
+                            pointRadius: "5"
+                        })
+                );
+                weixianLayer=new OpenLayers.Layer.Vector("weixian",{styleMap:style_weixian,eventListeners: layerListeners});
+                var style_wandao = new OpenLayers.StyleMap(
+                        new OpenLayers.Style({
+                            fillColor: "blue",
+                            fillOpacity: "0.8",
+                            strokeColor: "pink",
+                            strokeOpacity: "1",
+                            strokeWidth: "3",
+                            strokeDashstyle: 'solid',
+                            pointRadius: "5"
+                        })
+                );
+                wandaoLayer=new OpenLayers.Layer.Vector("wandao",{styleMap:style_wandao,eventListeners: layerListeners});
+                var style_podao = new OpenLayers.StyleMap(
+                        new OpenLayers.Style({
+                            fillColor: "blue",
+                            fillOpacity: "0.8",
+                            strokeColor: "black",
+                            strokeOpacity: "0.4",
+                            strokeWidth: "3",
+                            strokeDashstyle: 'solid',
+                            pointRadius: "5"
+                        })
+                );
+                podaoLayer=new OpenLayers.Layer.Vector("podao",{styleMap:style_podao,eventListeners: layerListeners});
+                var style_vector = new OpenLayers.StyleMap(
+                        new OpenLayers.Style({
+                            fillColor: "blue",
+                            fillOpacity: "0.8",
+                            strokeColor: "#00ffff",
+                            strokeOpacity: "1",
+                            strokeWidth: "4",
+                            strokeDashstyle: 'solid',
+                            pointRadius: "5"
+                        })
+                );
+                vectors=new OpenLayers.Layer.Vector("vectors",{styleMap:style_vector,eventListeners: layerListeners});
+                cyMap.map.addLayers([qiaoliangLayer,suidaoLayer,shiguLayer,weixianLayer,wandaoLayer,podaoLayer,vectors]);
+            }
+        //清空popup
+        $scope.popupClear=function() {
+            //alert('number of popups '+map.popups.length);
+            while( cyMap.map.popups.length ) {
+                cyMap.map.removePopup(cyMap.map.popups[0]);
+            }
+        }
+        //增加图元
+        $scope.addFeature=function(){
+            addCyFeature(shpType,cyMap, $scope.onFeature);
+        }
+        //修改图元
+        $scope.modifyFeature=function(){
+            ispopup=modifyCyFeature(cyMap,$scope.onModify);
+        }
+        //删除图元
+        $scope.deleteFeature=function(){
+            ispopup=deleteCyFeature(cyMap,$scope.onSelect);
+        }
+        //增加图元的回调函数
+        $scope.onFeature=function(feature){
+            cyMap.activeControl.deactivate();
+            //通过绘制拾取线的wkt
+          /*  var geo=feature.geometry.clone();
+            geo.transform(cyMap.map.getProjectionObject(),cyMap.map.displayProjection);
+
+            var fea= new OpenLayers.Feature.Vector(geo);
+            var ss=wkt_c.write(fea);
+            console.log(ss);*/
+            $scope.openDialog(null);
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+        }
+        //修改图元的回调函数
+        $scope.onModify=function(feature){
+            $scope.openDialog(feature.attributes);
+            cyMap.activeControl.deactivate();
+            cyMap.map.removeControl(cyMap.activeControl);
+            cyMap.activeControl=null;
+            ispopup=true;
+        }
+        //删除图元的回调函数
+        $scope.onSelect=function(feature){
+            $.messager.confirm('确认','您确认想要删除记录吗？',function(r){
+                if (r){
+                    cyMap.activeLayer.removeFeatures(feature);
+                    cyMap.activeControl.deactivate();
+                    cyMap.map.removeControl(cyMap.activeControl);
+                    cyMap.activeControl=null;
+                }
+            });
+            ispopup=true;
+        }
+        //查找图元，把查找获得的图元添加到vectors图层中
+        $scope.searchFeature=function(){
+            vectors.removeAllFeatures();
+            var textValue=$scope.$("#txtRoleName").textbox("getText").trim();
+            if(textValue){
+                if(comboboxData){
+                    for(var index in comboboxData){
+                        var features= layerData[comboboxData[index].value].layer.features;
+                        if(features.length>0){
+                            for(var fid in features){
+                                var str=features[fid].attributes.name;
+                                if(str){
+                                    if(str.indexOf(textValue)>=0){
+                                        var fea= new OpenLayers.Feature.Vector(features[fid].geometry.clone(),features[fid].attributes);
+                                        vectors.addFeatures(fea);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+                    alert("请选择目标图层!");
+                }
+                if(vectors.features.length>0){
+                    //console.log(vectors.features);
+                }else{
+                    alert("查询结果为空!");
+                }
+            }
+            else{
+                alert("请输入查询内容!");
+            }
+        }
+        //popup中所显示的信息HTML
+        $scope.fieldInfo=function(obj){
+            var name=obj.object.name;
+            switch (name){
+                case "qiaoliang":
+                    return "<div style='font-size:1em'> "
+                            +"桥梁名称："+ obj.feature.attributes['name']
+                            +"<br>桥梁类型："+ obj.feature.attributes['qllx']
+                            +"<br>起点公里米数："+ obj.feature.attributes['qdglms']
+                            +"<br>终点公里米数："+ obj.feature.attributes['zdglms']
+                            +"<br>设计容量："+ obj.feature.attributes['sjrl']
+                            +"<br>桥梁长度："+ obj.feature.attributes['qlcd'];
+                    break;
+                case "zadao":
+                    return "<div style='font-size:1em'> "
+                            +"匝道名称："+ obj.feature.attributes['name']
+                            +"<br>匝道类型："+ obj.feature.attributes['zdlx'];
+                    break;
+                case "churukou":
+                    return "<div style='font-size:1em'> "
+                            +"出入口名称："+ obj.feature.attributes['name']
+                            +"<br>出入口目的地："+ obj.feature.attributes['mdd'];
+                    break;
+                default : return "<div style='font-size:1em'> "
+                        +"名称："+ obj.feature.attributes['name'];
+            }
+        }
+        //目标图层数组
+        var comboboxData = [];
+        //向目标图层数组中添加数据
+        $scope.pushcomboboxData=function(labelData,valueData){
+            var obj={label :labelData , value : valueData};
+            if(comboboxData.length>0){
+                var isNothave=true;
+                for(var index in comboboxData){
+                    if(comboboxData[index].label==obj.label&&comboboxData[index].value==obj.value){
+                        isNothave=false;
+                    }
+                }
+                if(isNothave)
+                {
+                    comboboxData.push(obj);
+                }
+            }else{
+                comboboxData.push(obj);
+            }
+            $scope.$("#tagLayer").combobox("loadData",comboboxData);
+        }
+        //删除目标图层数组中的数据
+        $scope.deletecomboboxData=function(valueData){
+            for(var index in comboboxData){
+                if(comboboxData[index].value == valueData){
+                    comboboxData.splice(index,1);
+                }
+                $scope.$("#tagLayer").combobox("clear").combobox("loadData",comboboxData);
+            }
+        }
+        //全选复选框触发的事件
+        $scope.selectAll=function(event){
+            var target = event.currentTarget;
+            if(target.checked){
+                $scope.$("input[name='layer']").each(function(){
+                    this.checked=true;
+                    $(this).change();//触发change事件
+                });
+            }
+            else{
+                $scope.$("input[name='layer']").each(function(){
+                    this.checked=false;
+                    $(this).change();
+                });
+            }
+        }
+
+        //触发change事件添加图层到地图上
+        $scope.addLayer=function(event){
+            var target = event.currentTarget;
+            if(target.checked){
+                $scope.pushcomboboxData(layerData[target.value].label,target.value);
+
+                $scope.$ajaxRequest({
+                    url : layerData[target.value].url,
+                    params :{},
+                    success :function(data){
+
+                        if(layerData[target.value].layer.features.length>0){
+                            layerData[target.value].layer.removeAllFeatures();
+                        }
+                        for(var index in data){
+                            var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+
+                            geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                            var feature = new OpenLayers.Feature.Vector(geometry);
+                            feature.attributes = data[index];
+                            layerData[target.value].layer.addFeatures(feature);
+                        }
+                    },
+                    fail : function(){}
+                });
+            }
+            else {
+                if(layerData[target.value].layer!=null){
+                    $scope.deletecomboboxData(layerData[target.value].value);
+                    layerData[target.value].layer.removeAllFeatures();
+                }
+            }
+
+        };
+        //打开新的属性窗口
+        $scope.openDialog = function(obj) {
+            var element;
+            if($scope.$("#tagLayer").combobox("getValue")){
+                element =layerData[$scope.$("#tagLayer").combobox("getValue")];
+            }
+            else{
+                alert("请选择目标图层！");
+            }
+            $scope.$setParam("newData",obj);
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("createDialog").dialog("close");
+            })
+
+            $scope.$openDialog("createDialog", {
+                title: "属性信息",
+                height: element.height,
+                width: element.width,
+                href: element.href
+            }, true);
+        }
+    });
+
+</script>
+
+<style>
+    #spacialSection .th{
+        width:80px;
+        text-align: right;
+        height:23px;
+        line-height: 23px;
+        font-weight: bold;
+    }
+    #spacialSection .td{
+        width:70px;
+        text-align: left;
+
+    }
+</style>
+

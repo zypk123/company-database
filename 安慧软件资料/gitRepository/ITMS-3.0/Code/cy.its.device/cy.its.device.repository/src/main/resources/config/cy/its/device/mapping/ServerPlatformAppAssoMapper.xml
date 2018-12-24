@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ServerPlatformAppAssoMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.ServerPlatformAppAsso" >
+    <result column="SERVER_APP_ID" property="serverAppId" jdbcType="VARCHAR" />
+    <result column="SERVER_PLAT_ID" property="serverPlatId" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="cy.its.device.domain.model.ServerPlatformAppAsso" >
+    insert into T_DEVICE_SERVER_APP_SSO_PLAT (SERVER_APP_ID, SERVER_PLAT_ID)
+    values (#{serverAppId,jdbcType=VARCHAR}, #{serverPlatId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.ServerPlatformAppAsso" >
+    insert into T_DEVICE_SERVER_APP_SSO_PLAT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serverAppId != null" >
+        SERVER_APP_ID,
+      </if>
+      <if test="serverPlatId != null" >
+        SERVER_PLAT_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serverAppId != null" >
+        #{serverAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="serverPlatId != null" >
+        #{serverPlatId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <delete id="delete" parameterType="cy.its.device.domain.model.ServerPlatformAppAsso">
+		delete from T_DEVICE_SERVER_APP_SSO_PLAT
+		where SERVER_APP_ID = #{serverAppId,jdbcType=VARCHAR} AND
+		      SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="selectAssos" resultMap="BaseResultMap"
+	        parameterType="java.util.Map" >
+	     select SERVER_PLAT_ID, SERVER_APP_ID 
+           from T_DEVICE_SERVER_APP_SSO_PLAT   
+         <where>
+			<if test="serverAppId != null and serverAppId != '' ">
+				and server_app_id = #{serverAppId,jdbcType=VARCHAR}
+			</if>
+			<if test="serverPlatId != null and serverPlatId != '' ">
+				and server_plat_id = #{serverPlatId,jdbcType=VARCHAR}
+			</if>
+		 </where>
+	</select>
+</mapper>

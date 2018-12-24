@@ -1,0 +1,118 @@
+<div class="easyui-layout" id="queryView" style="height:100%">
+    <div data-options="region:'north'">
+        <form cy-form="cyFrmCond" id="searchForm" method="post">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr" style="text-align: center">
+                        <div class="th">违法时间:</div>
+                        <div class="td">
+                            <input class="easyui-datetimebox"
+                                   data-options="required:true,validType:['maxDate[\'violationEndTime\']','dateInFormater[\'yyyy-MM-dd hh:mm\',\'\',\':59\']']" type="text"
+                                   name="violationBeginTime" id="violationBeginTime" style="width: 150px"/>
+                        </div>
+                        <div class="th" style="width: 50px">到</div>
+                        <div class="td">
+                            <input class="easyui-datetimebox"
+                                   data-options="required:true,validType:['minDate[\'violationBeginTime\']','maxEndDate','dateInFormater[\'yyyy-MM-dd hh:mm\',\'\',\':59\']']" type="text"
+                                   name="violationEndTime" id="violationEndTime" style="width: 150px"/>
+                        </div>
+
+                        <div class="td" style="text-align: right;width: 100px">
+                            <a class="easyui-linkbutton button" cy-click="SearchAsync" id="searchButton"
+                               data-options="iconCls:'icon-search'">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div data-options="region:'center'">
+        <table id="tbVio" cy-datagrid="options" cy-querydata="cyFrmCond" cy-url="violation/queryViolationSet">
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(['deviceSysNbr'], function ($scope) {
+
+        $scope.$getData("vio", "VioInit")($scope);
+        $.extend($scope, {
+
+            //查询表单
+            cyFrmCond: {
+                violationBeginTime: (new Date()).format('yyyy-MM-dd ')+"00:00",
+                violationEndTime: (new Date()).format('yyyy-MM-dd HH:mm:ss')
+            },
+            /**
+             * 加载
+             */
+            load: function () {
+                $scope.cyFrmCond.deviceSysNbr = $scope.deviceSysNbr;
+                $scope.SearchAsync();
+                $("#violationEndTime").datebox('calendar').calendar({
+                    validator: function (date) {
+                        var now = new Date();
+                        var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        return date <= d1;
+                    }
+                });
+                console.log("load success ");
+            },
+            enter: function () {
+                console.log("enter");
+            },
+            leave: function () {
+                console.log("leave");
+            },
+            close: function () {
+                console.log("close");
+            },
+            //列表绑定选项
+            options: {
+                columns: [
+                    [//注意，此处是二维数组
+                        {title: "号牌号码",align : 'center', field: "plateNbr", width: 10},
+                        {title: "号牌类型",align : 'center', field: "plateType", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.PLATETYPE)},//
+                        {title: "违法时间",align : 'center', field: "violationTime", width: 15},
+                        {title: "违法类型",align : 'center', field: "violationType", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.VIOLATION_TYPE)},//
+                        {title: "违法地点",align : 'center', field: "addressDesc", width: 15},//
+                        {title: "采集机构",align : 'center', field: "orgCode", width: 10, formatter: $scope.Formatter.gridColumnOrgFmt},
+                        {title: "记录状态",align : 'center', field: "statusFlag", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.STATUS)}
+                    ]
+                ],
+                singleSelect: true,
+                method: 'get',
+                fitColumns: true,
+                striped: true,
+                selectOnCheck: false,
+                pagination: true,
+                nowrap: false
+            },
+
+            /**
+             * 查询
+             * @constructor
+             */
+            SearchAsync: function () {
+                $scope.$updateData("cyFrmCond");
+                if(!$scope.$("#searchForm").form('validate'))
+                {
+                    return;
+                }
+                $("#tbVio").datagrid('getPager').pagination(
+                        {
+                            pageNumber:1
+                        });
+                $scope.cyFrmCond.pageNumber=1;
+                $scope.$search("cyFrmCond", "", function (data) {
+                    if (data && data != null && data.rows.length > 0) {
+                        $scope.$('#tbVio').datagrid('selectRow', 0);
+                    }
+                });
+            }
+        });
+    });
+
+</script>

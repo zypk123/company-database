@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.TDeviceLedTaskManualMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.mybatis.model.TDeviceLedTaskManual" >
+    <id column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+    <result column="PROGRAM_ID" property="programId" jdbcType="VARCHAR" />
+    <result column="TASK_NAME" property="taskName" jdbcType="VARCHAR" />
+    <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="APPROVER" property="approver" jdbcType="VARCHAR" />
+    <result column="APPROVE_TIME" property="approveTime" jdbcType="TIMESTAMP" />
+    <result column="ISSUE_STATUS" property="issueStatus" jdbcType="VARCHAR" />
+    <result column="ISSUE_COUNT" property="issueCount" jdbcType="DECIMAL" />
+    <result column="TASK_TYPE" property="taskType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TASK_ID, PROGRAM_ID, TASK_NAME, CREATOR, CREATE_TIME, APPROVER, APPROVE_TIME, ISSUE_STATUS, 
+    ISSUE_COUNT, TASK_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_TASK_MANUAL
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED_TASK_MANUAL
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.mybatis.model.TDeviceLedTaskManual" >
+    insert into T_DEVICE_LED_TASK_MANUAL (TASK_ID, PROGRAM_ID, TASK_NAME, 
+      CREATOR, CREATE_TIME, APPROVER, 
+      APPROVE_TIME, ISSUE_STATUS, ISSUE_COUNT, 
+      TASK_TYPE)
+    values (#{taskId,jdbcType=VARCHAR}, #{programId,jdbcType=VARCHAR}, #{taskName,jdbcType=VARCHAR}, 
+      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{approver,jdbcType=VARCHAR}, 
+      #{approveTime,jdbcType=TIMESTAMP}, #{issueStatus,jdbcType=VARCHAR}, #{issueCount,jdbcType=DECIMAL}, 
+      #{taskType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.mybatis.model.TDeviceLedTaskManual" >
+    insert into T_DEVICE_LED_TASK_MANUAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        TASK_ID,
+      </if>
+      <if test="programId != null" >
+        PROGRAM_ID,
+      </if>
+      <if test="taskName != null" >
+        TASK_NAME,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="approver != null" >
+        APPROVER,
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME,
+      </if>
+      <if test="issueStatus != null" >
+        ISSUE_STATUS,
+      </if>
+      <if test="issueCount != null" >
+        ISSUE_COUNT,
+      </if>
+      <if test="taskType != null" >
+        TASK_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="programId != null" >
+        #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskName != null" >
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approver != null" >
+        #{approver,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueStatus != null" >
+        #{issueStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="issueCount != null" >
+        #{issueCount,jdbcType=DECIMAL},
+      </if>
+      <if test="taskType != null" >
+        #{taskType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.mybatis.model.TDeviceLedTaskManual" >
+    update T_DEVICE_LED_TASK_MANUAL
+    <set >
+      <if test="programId != null" >
+        PROGRAM_ID = #{programId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskName != null" >
+        TASK_NAME = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approver != null" >
+        APPROVER = #{approver,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueStatus != null" >
+        ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="issueCount != null" >
+        ISSUE_COUNT = #{issueCount,jdbcType=DECIMAL},
+      </if>
+      <if test="taskType != null" >
+        TASK_TYPE = #{taskType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.mybatis.model.TDeviceLedTaskManual" >
+    update T_DEVICE_LED_TASK_MANUAL
+    set PROGRAM_ID = #{programId,jdbcType=VARCHAR},
+      TASK_NAME = #{taskName,jdbcType=VARCHAR},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      APPROVER = #{approver,jdbcType=VARCHAR},
+      APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      ISSUE_STATUS = #{issueStatus,jdbcType=VARCHAR},
+      ISSUE_COUNT = #{issueCount,jdbcType=DECIMAL},
+      TASK_TYPE = #{taskType,jdbcType=VARCHAR}
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </update>
+</mapper>

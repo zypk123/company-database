@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.VioDeviceMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.VioDevice" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="INTEGRATE_PLATFORM_NBR" property="integratePlatformNbr" jdbcType="VARCHAR" />
+    <result column="COLLCETION_ORG" property="collcetionOrg" jdbcType="VARCHAR" />
+    <result column="COLLECTION_PERSON" property="collectionPerson" jdbcType="VARCHAR" />
+    <result column="VALIDITY_DATE" property="validityDate" jdbcType="TIMESTAMP" />
+    <result column="VIO_COLLECTION_TYPE" property="vioCollectionType" jdbcType="VARCHAR" />
+    <result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+    <result column="LIMIT_OTHERS" property="limitOthers" jdbcType="DECIMAL" />
+    <result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+    <result column="LIMIT_LARGE_MARGIN" property="limitLargeMargin" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL_MARGIN" property="limitSmallMargin" jdbcType="DECIMAL" />
+    <result column="RELATED_VIDEO_LIST" property="relatedVideoList" jdbcType="VARCHAR" />
+    <result column="RELATED_VARIABLE_SPEED" property="relatedVariableSpeed" jdbcType="VARCHAR" />
+    <result column="IS_TOLLGATE_SUPPORT" property="isTollgateSupport" jdbcType="CHAR" />
+    <result column="IS_CONNECT_TRACK_SYS" property="isConnectTrackSys" jdbcType="CHAR" />
+    <result column="TRACK_SYS_NBR_MAP" property="trackSysNbrMap" jdbcType="VARCHAR" />
+	<result column="IS_FLOW_SUPPORT" property="isFlowSupport" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_ID, INTEGRATE_PLATFORM_NBR, COLLCETION_ORG, COLLECTION_PERSON, VALIDITY_DATE, 
+    VIO_COLLECTION_TYPE, LIMIT_LARGE, LIMIT_SMALL, LIMIT_OTHERS, LIMIT_LOWER, LIMIT_LARGE_MARGIN, 
+    LIMIT_SMALL_MARGIN, RELATED_VIDEO_LIST, RELATED_VARIABLE_SPEED, IS_TOLLGATE_SUPPORT, 
+    IS_CONNECT_TRACK_SYS, TRACK_SYS_NBR_MAP,IS_FLOW_SUPPORT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_VIO_DEVICE
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_VIO_DEVICE
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.VioDevice" >
+    insert into T_DEVICE_VIO_DEVICE (DEVICE_ID, INTEGRATE_PLATFORM_NBR, COLLCETION_ORG, 
+      COLLECTION_PERSON, VALIDITY_DATE, VIO_COLLECTION_TYPE, 
+      LIMIT_LARGE, LIMIT_SMALL, LIMIT_OTHERS, 
+      LIMIT_LOWER, LIMIT_LARGE_MARGIN, LIMIT_SMALL_MARGIN, 
+      RELATED_VIDEO_LIST, RELATED_VARIABLE_SPEED, 
+      IS_TOLLGATE_SUPPORT, IS_CONNECT_TRACK_SYS, TRACK_SYS_NBR_MAP, IS_FLOW_SUPPORT
+      )
+    values (#{deviceId,jdbcType=VARCHAR}, #{integratePlatformNbr,jdbcType=VARCHAR}, #{collcetionOrg,jdbcType=VARCHAR}, 
+      #{collectionPerson,jdbcType=VARCHAR}, #{validityDate,jdbcType=TIMESTAMP}, #{vioCollectionType,jdbcType=VARCHAR}, 
+      #{limitLarge,jdbcType=DECIMAL}, #{limitSmall,jdbcType=DECIMAL}, #{limitOthers,jdbcType=DECIMAL}, 
+      #{limitLower,jdbcType=DECIMAL}, #{limitLargeMargin,jdbcType=DECIMAL}, #{limitSmallMargin,jdbcType=DECIMAL}, 
+      #{relatedVideoList,jdbcType=VARCHAR}, #{relatedVariableSpeed,jdbcType=VARCHAR}, 
+      #{isTollgateSupport,jdbcType=CHAR}, #{isConnectTrackSys,jdbcType=CHAR}, #{trackSysNbrMap,jdbcType=VARCHAR},
+      #{isFlowSupport,jdbcType=CHAR}     
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.VioDevice" >
+    insert into T_DEVICE_VIO_DEVICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="integratePlatformNbr != null" >
+        INTEGRATE_PLATFORM_NBR,
+      </if>
+      <if test="collcetionOrg != null" >
+        COLLCETION_ORG,
+      </if>
+      <if test="collectionPerson != null" >
+        COLLECTION_PERSON,
+      </if>
+      <if test="validityDate != null" >
+        VALIDITY_DATE,
+      </if>
+      <if test="vioCollectionType != null" >
+        VIO_COLLECTION_TYPE,
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE,
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL,
+      </if>
+      <if test="limitOthers != null" >
+        LIMIT_OTHERS,
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER,
+      </if>
+      <if test="limitLargeMargin != null" >
+        LIMIT_LARGE_MARGIN,
+      </if>
+      <if test="limitSmallMargin != null" >
+        LIMIT_SMALL_MARGIN,
+      </if>
+      <if test="relatedVideoList != null" >
+        RELATED_VIDEO_LIST,
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        RELATED_VARIABLE_SPEED,
+      </if>
+      <if test="isTollgateSupport != null" >
+        IS_TOLLGATE_SUPPORT,
+      </if>
+      <if test="isConnectTrackSys != null" >
+        IS_CONNECT_TRACK_SYS,
+      </if>
+      <if test="trackSysNbrMap != null" >
+        TRACK_SYS_NBR_MAP,
+      </if>
+      <if test="isFlowSupport != null" >
+        IS_FLOW_SUPPORT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="integratePlatformNbr != null" >
+        #{integratePlatformNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="collcetionOrg != null" >
+        #{collcetionOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionPerson != null" >
+        #{collectionPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="validityDate != null" >
+        #{validityDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="vioCollectionType != null" >
+        #{vioCollectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="limitLarge != null" >
+        #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitOthers != null" >
+        #{limitOthers,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLargeMargin != null" >
+        #{limitLargeMargin,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmallMargin != null" >
+        #{limitSmallMargin,jdbcType=DECIMAL},
+      </if>
+      <if test="relatedVideoList != null" >
+        #{relatedVideoList,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        #{relatedVariableSpeed,jdbcType=VARCHAR},
+      </if>
+      <if test="isTollgateSupport != null" >
+        #{isTollgateSupport,jdbcType=CHAR},
+      </if>
+      <if test="isConnectTrackSys != null" >
+        #{isConnectTrackSys,jdbcType=CHAR},
+      </if>
+      <if test="trackSysNbrMap != null" >
+        #{trackSysNbrMap,jdbcType=VARCHAR},
+      </if>
+      <if test="isFlowSupport != null" >
+        #{isFlowSupport,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.VioDevice" >
+    update T_DEVICE_VIO_DEVICE
+    <set >
+      <if test="integratePlatformNbr != null" >
+        INTEGRATE_PLATFORM_NBR = #{integratePlatformNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="collcetionOrg != null" >
+        COLLCETION_ORG = #{collcetionOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionPerson != null" >
+        COLLECTION_PERSON = #{collectionPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="validityDate != null" >
+        VALIDITY_DATE = #{validityDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="vioCollectionType != null" >
+        VIO_COLLECTION_TYPE = #{vioCollectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitOthers != null" >
+        LIMIT_OTHERS = #{limitOthers,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLargeMargin != null" >
+        LIMIT_LARGE_MARGIN = #{limitLargeMargin,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmallMargin != null" >
+        LIMIT_SMALL_MARGIN = #{limitSmallMargin,jdbcType=DECIMAL},
+      </if>
+      <if test="relatedVideoList != null" >
+        RELATED_VIDEO_LIST = #{relatedVideoList,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedVariableSpeed != null" >
+        RELATED_VARIABLE_SPEED = #{relatedVariableSpeed,jdbcType=VARCHAR},
+      </if>
+      <if test="isTollgateSupport != null" >
+        IS_TOLLGATE_SUPPORT = #{isTollgateSupport,jdbcType=CHAR},
+      </if>
+      <if test="isConnectTrackSys != null" >
+        IS_CONNECT_TRACK_SYS = #{isConnectTrackSys,jdbcType=CHAR},
+      </if>
+      <if test="trackSysNbrMap != null" >
+        TRACK_SYS_NBR_MAP = #{trackSysNbrMap,jdbcType=VARCHAR},
+      </if>
+      <if test="isFlowSupport != null" >
+        IS_FLOW_SUPPORT = #{isFlowSupport,jdbcType=CHAR},
+      </if>
+    </set>
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.VioDevice" >
+    update T_DEVICE_VIO_DEVICE
+    set INTEGRATE_PLATFORM_NBR = #{integratePlatformNbr,jdbcType=VARCHAR},
+      COLLCETION_ORG = #{collcetionOrg,jdbcType=VARCHAR},
+      COLLECTION_PERSON = #{collectionPerson,jdbcType=VARCHAR},
+      VALIDITY_DATE = #{validityDate,jdbcType=TIMESTAMP},
+      VIO_COLLECTION_TYPE = #{vioCollectionType,jdbcType=VARCHAR},
+      LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      LIMIT_OTHERS = #{limitOthers,jdbcType=DECIMAL},
+      LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      LIMIT_LARGE_MARGIN = #{limitLargeMargin,jdbcType=DECIMAL},
+      LIMIT_SMALL_MARGIN = #{limitSmallMargin,jdbcType=DECIMAL},
+      RELATED_VIDEO_LIST = #{relatedVideoList,jdbcType=VARCHAR},
+      RELATED_VARIABLE_SPEED = #{relatedVariableSpeed,jdbcType=VARCHAR},
+      IS_TOLLGATE_SUPPORT = #{isTollgateSupport,jdbcType=CHAR},
+      IS_CONNECT_TRACK_SYS = #{isConnectTrackSys,jdbcType=CHAR},
+      TRACK_SYS_NBR_MAP = #{trackSysNbrMap,jdbcType=VARCHAR},
+      IS_FLOW_SUPPORT = #{isFlowSupport,jdbcType=CHAR}
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

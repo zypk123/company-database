@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.PoliceAreaMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.traffic.PoliceArea" >
+    <id column="POLICE_AREA_ID" property="policeAreaId" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="LON_LAT" property="lonLat" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    POLICE_AREA_ID, ORG_ID, LON_LAT
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE_AREA
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POLICE_AREA
+    where POLICE_AREA_ID = #{policeAreaId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_POLICE_AREA
+    where POLICE_AREA_ID = #{policeAreaId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.traffic.PoliceArea" >
+    insert into T_SYS_POLICE_AREA (POLICE_AREA_ID, ORG_ID, LON_LAT
+      )
+    values (#{policeAreaId,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{lonLat,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.traffic.PoliceArea" >
+    insert into T_SYS_POLICE_AREA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="policeAreaId != null" >
+        POLICE_AREA_ID,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="policeAreaId != null" >
+        #{policeAreaId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        #{lonLat,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.traffic.PoliceArea" >
+    update T_SYS_POLICE_AREA
+    <set >
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="lonLat != null" >
+        LON_LAT = #{lonLat,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where POLICE_AREA_ID = #{policeAreaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.traffic.PoliceArea" >
+    update T_SYS_POLICE_AREA
+    set ORG_ID = #{orgId,jdbcType=VARCHAR},
+      LON_LAT = #{lonLat,jdbcType=VARCHAR}
+    where POLICE_AREA_ID = #{policeAreaId,jdbcType=VARCHAR}
+  </update>
+</mapper>

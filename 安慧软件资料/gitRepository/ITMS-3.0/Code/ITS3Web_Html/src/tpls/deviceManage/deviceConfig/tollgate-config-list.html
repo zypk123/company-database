@@ -1,0 +1,273 @@
+<div id="tollgateConfigMgrDiv" class="easyui-layout">
+    <!--查询条件区 -->
+    <div data-options="region:'north',border:false" style="width: 100%">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="td">机构：</div>
+                        <div class="td">
+                            <input class="easyui-combotree" id="org" name="orgId"
+                                    />
+                        </div>
+                        <div class="td">道路：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="road" name="roadId" style="width:120px"
+                                   data-options="valueField:'roadId',textField:'roadName'"/>
+                        </div>
+                        <div class="td">点位：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="site" name="siteId"
+                                   data-options="valueField:'siteId',textField:'siteName'"/>
+                        </div>
+                        <div class="td">使用状态：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:70px"
+                                   data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                        <div class="td">厂家：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="contractor" name="contractor" style="width:120px"
+                                   data-options="valueField:'id',textField:'name'"/>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" cy-click="searchData"
+                               data-options="iconCls:'icon-search',plain:true">查询</a></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!--一行按钮区域-->
+        <div  class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" cy-click="addData"
+               data-options="iconCls:'icon-add',plain:true">新增</a>
+            <a href="#" class="easyui-linkbutton button-enable"
+               data-options="iconCls:'icon-enable',plain:true" cy-click="startUse">启用</a>
+            <a href="#" class="easyui-linkbutton button-disable"
+               data-options="iconCls:'icon-disable',plain:true" cy-click="stopUse">停用</a>
+            <a href="#" class="easyui-linkbutton button-drop"
+               data-options="iconCls:'icon-drop',plain:true" cy-click="destroyUse">报废</a>
+            <a href="#" class="easyui-linkbutton button-remove"
+               data-options="iconCls:'icon-remove',plain:true" cy-click="deleteTollgate">删除</a>
+            <a href="#" class="easyui-linkbutton button"
+               data-options="iconCls:'icon-import',plain:true">导入</a>
+            <a href="#" class="easyui-linkbutton button"
+               data-options="iconCls:'icon-export',plain:true">导出</a>
+        </div>
+    </div>
+
+    <!--数据展示区 -->
+    <div data-options="region:'center',border:true">
+        <table id="tollgateGrd" cy-datagrid="options" cy-querydata="formData" cy-url="data/deviceManage/deviceConfig/qryTollgateRecords.json">
+
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript" >
+    InitPage([],function($scope){
+        /**
+         * 页面加载完后一些初始化处理
+         */
+        $scope.load=function(){
+            //请求页面的数据字典等初始化信息
+            $scope.$ajaxRequest({
+                url: "data/deviceManage/deviceConfig/deviceConfigMgr.json",
+                params: { OrgCode: $scope.UserInfo.OrgCode },
+                success: function (retData) {
+                    if (retData.Error != "") {
+                        alert("初始化页面报错,详细：" + retData.Error);
+                    }
+                    else {
+                        $scope.initCombobox(retData.Result);
+                    }
+                },
+                fail: function (errTxt) {
+                    alert(errTxt);
+                }
+            });
+        };
+
+        //给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+        $.extend($scope, {
+            /**
+             * 将初始化信息绑定到页面控件上
+             * @param retData
+             */
+            initCombobox:function (retData) {
+                $scope.$("#org").combotree("loadData", retData.orgTree);
+                $scope.$('#road').combobox("loadData", retData.road);
+                $scope.$('#site').combobox('loadData', retData.site);
+                $scope.$('#deviceUseStatus').combobox('loadData', retData.dicts["405"]);
+                $scope.$('#contractor').combobox('loadData', retData.contractor);
+            },
+            formData :  {
+
+            },
+            /**
+             * 查询卡口数据
+             */
+            searchData : function(){
+                $scope.$search("formData",{
+
+                },function(data){
+
+                });
+            },
+            options : {
+                columns : [[
+                    {halign:'center',field:"DEVICE_ID",checkbox:true},
+                    {halign:'center',title:"设备编号",field:"DEVICE_NBR",width:100},
+                    {halign:'center',title:"设备名称",field:"DEVICE_NAME",width:250},
+                    {halign:'center',title:"管辖机构",field:"ORG_NAME",width:150},
+                    {halign:'center',title:"所属道路",field:"ROAD_NAME",width:100},
+                    {halign:'center',title:"所在点位",field:"SITE_NAME",width:200},
+                    {halign:'center',title:"厂家",field:"CONTRACTOR",width:100},
+                    {halign:'center',title:"设备型号",field:"DEVICE_MODEL",width:100},
+                    {halign:'center',title:"安装时间",field:"INSTALL_DATE",width:100},
+                    {halign:'center',title:"使用状态",field:"USE_STATUS",width:80},
+                    {halign:'center',title:"操作",field:"opt",width:100,formatter:opteratersForamt}
+                ]]
+            },
+            /**
+             * 新增卡口备案信息
+             * @param event
+             */
+            addData : function(event){
+                $scope.$ajaxRequest({
+                    url: "data/deviceManage/deviceConfig/deviceConfigBaseInfo.json",
+                    params: { OrgCode: $scope.UserInfo.OrgCode },
+                    success: function (retData) {
+                        if (retData.Error != "") {
+                            alert("初始化卡口新增页面报错,详细：" + retData.Error);
+                        }
+                        else {
+                            $scope.$setParam("initData",retData.Result);
+                            $scope.$setParam("mode","ADD");
+                            $scope.$setParam("closeDialog",$scope.closeTollgateConfig);
+                            $scope.$openDialog("detailDailog",{
+                                title : "卡口设备备案",
+                                width : 900,
+                                height : 550,
+                                href : "tpls/deviceManage/deviceConfig/tollgate-config.html"
+                            });
+                        }
+                    },
+                    fail: function (errTxt) {
+                        alert(errTxt);
+                    }
+                });
+            },
+            /**
+             * 新增窗体关闭回调事件，如果是通过点击保存关闭的，则要刷新该页面的列表信息，否则直接关闭
+             */
+            closeTollgateConfig:function()
+            {
+                //刷新列表记录todo
+
+                //关闭窗体
+               $scope.$getDialog("detailDailog").dialog("destroy");
+               delete $scope.$dialog["detailDailog"];
+            },
+            /**
+             * 启用
+             * @param event
+             */
+            startUse:function(event){
+               var checkedRows=$scope.getCheckedRows();
+               //设置选择的这些行的使用状态为启用todo
+               alert("设置选择的这"+checkedRows.length+"行记录的使用状态为启用！");
+            },
+            /**
+             * 停用
+             * @param event
+             */
+            stopUse:function(event){
+
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("设置选择的这"+checkedRows.length+"行记录的使用状态为停用！");
+            },
+            /**
+             * 报废
+             * @param event
+             */
+            destroyUse:function(event){
+
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("设置选择的这"+checkedRows.length+"行记录的使用状态为报废！");
+            },
+            /**
+             * 删除
+             * @param event
+             */
+            deleteTollgate:function(event){
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("删除这"+checkedRows.length+"行记录！");
+            },
+            /**
+             * 获取选择的行
+             * @returns {*}
+             */
+            getCheckedRows:function(){
+                var checkedRows = $scope.$('#tollgateGrd').datagrid('getChecked');
+                if($.isEmptyObject(checkedRows)||checkedRows.length==0)
+                {
+                    alert("您未选中任何记录");
+                }else
+                {
+                    return checkedRows;
+                }
+            },
+            /**
+             * 编辑卡口备案信息
+             * @param DEVICE_ID
+             */
+            editDevice: function (DEVICE_ID) {
+             // var rowDatas =  $scope.$('#tollgateGrd').datagrid('getData').rows;
+                alert(DEVICE_ID);
+            },
+            /**
+             * 删除卡口备案记录
+             * @param DEVICE_ID
+             */
+            deleteDevice: function (DEVICE_ID) {
+                alert(DEVICE_ID);
+            }
+
+        });
+
+        /**
+         * grid列表中最后一列格式化
+         * @param value  当前单元格值
+         * @param rowData 当前行
+         * @param rowIndex 当前行所在索引值
+         * @returns {*|jQuery}
+         */
+        function opteratersForamt(value,rowData,rowIndex){
+
+            var editBtn=$("<a  title='编辑' class='button-edit'></a>");
+            editBtn.linkbutton({
+                iconCls:"icon-edit"
+            });
+            editBtn.attr('cy-click',"editDevice('" + rowData.DEVICE_ID + "')");
+            var deleteBtn=$("<a  title='删除' class='button-remove'></a>");
+            deleteBtn.linkbutton({
+                iconCls:"icon-remove"
+            }).attr('cy-click',"deleteDevice('" + rowData.DEVICE_ID + "')");
+            return  $("<span/>").append(editBtn).append("  ").append(deleteBtn).html();
+        }
+
+    });
+</script>
+<style>
+    #tollgateConfigMgrDiv .td > input[class^='easyui-'] {
+        width: 170px;
+    }
+    #tollgateConfigMgrDiv .td:nth-child(odd) {
+       margin-left: 15px;
+    }
+</style>

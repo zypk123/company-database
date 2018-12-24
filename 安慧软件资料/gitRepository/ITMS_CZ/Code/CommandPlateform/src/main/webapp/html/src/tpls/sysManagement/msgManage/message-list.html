@@ -1,0 +1,152 @@
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: auto">
+		<form id="form" cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div id="message" class="table">
+					<div class="tr">
+                        <div class="th">发送者：</div>
+						<div class="td">
+							<input class="easyui-textbox" name="sender" />
+						</div>
+						<div class="th">接收人号码：</div>
+						<div class="td">
+							<input class="easyui-textbox" name="receiver" />
+						</div>
+						<div class="th">发送时间：</div>
+						<div class="td">
+							<input class="easyui-datetimebox"
+								data-options="showSeconds:true,editable:true,validType:['maxDate[\'SendTimeEnd\']','date']"
+								type="text" id="sendTimeStart" name="sendTimeStart" style="width: 150px" />
+						</div>
+						<div class="th">截止时间：</div>
+						<div class="td">
+							<input class="easyui-datetimebox"
+								data-options="showSeconds:true,editable:true,validType:['minDate[\'sendTimeStart\']','date']"
+								type="text" id="SendTimeEnd" name="SendTimeEnd" style="width: 150px" />
+						</div>
+						<div class="td" style="margin-left: 20px;width: 70px;">
+							<a class="easyui-linkbutton button-search"
+								data-options="iconCls:'icon-search'" cy-click="searchData"
+								style="width: 60px; float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<!-- 		<div class="linkbutton_toolbar">
+          <a class="easyui-linkbutton " data-options="iconCls:'icon-remove'" cy-click="deleteDm">删除</a>
+		</div> -->
+	</div>
+	<div data-options="region:'center'">
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="formData"
+			cy-url="sysCfg/MessageAction/getMessageList"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode([ '073' ]);
+		$scope.load = function() {
+			$scope.formData.orderName = "sendTime";
+			$scope.formData.orderType = "desc";
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+		};
+		$scope.searchData = function() {
+			if ($scope.$("#form").form("validate")) {
+			$scope.$updateData("formData");
+			//获得当前第几页页数
+			var count = $scope.$("#dmData").datagrid("getPager").pagination("options").pageNumber;
+			if (count > 1) {
+				//刷新,跳转到第一页
+				$scope.$("#dmData").datagrid("getPager").pagination("select", 1);
+			} 
+			else{
+			$scope.$search("formData");
+			}
+		  }
+		},
+		$scope.optionsDm = {
+			sortName : "sendTime",
+    		sortOrder : "desc",
+			columns : [ [{
+				field : 'sender',
+				title : '发送者',
+				align : 'center',
+				width : 30
+			}, /* {
+				field : 'msgType',
+				title : '短信类型',
+				align : 'center',
+				formatter : msgType,
+				width : 30
+			}, {
+				field : 'msgTitle',
+				title : '短信标题',
+				align : 'center',
+				width : 30
+			}, */{
+				field : 'msgContent',
+				title : '短信内容',
+				align : 'center',
+				width : 90
+			}, {
+				field : 'sendTime',
+				title : '发送时间',
+				align : 'center',
+				formatter : formatDateTimeStamp,
+				width : 50,
+				sortable : true
+			}, {
+				field : 'receiver',
+				title : '接收人号码',
+				align : 'center',
+				width : 30
+			}/* , {
+				field : 'remark',
+				title : '备注',
+				align : 'center',
+				width : 30
+			}  */] ],
+			onSortColumn : function(sortName,sortType){
+            	$scope.formData.orderName = sortName;
+           		$scope.formData.orderType = sortType;
+           		$(this).datagrid("getPager").pagination("select",1);
+            },
+			nowrap : false
+		};
+
+		function msgType(value, row, index) {
+			var msgType = $scope.$getCodeName("073", value);
+			return msgType;
+		}
+		
+		/**
+		 *把时间戳转化为yyyy-MM-dd hh:mm:ss格式
+		 */
+		function formatDateTimeStamp(value,row,index) {
+			if (value == undefined) {
+				return "-";
+			}
+			var newDate = new Date();
+			newDate.setTime(value);
+			return newDate.format('yyyy-MM-dd hh:mm:ss');
+		}
+		
+     	$scope.$('.easyui-datetimebox').each(function() {
+    		$(this).datebox('calendar').calendar({
+    			validator : function(date) {
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+    	});
+	});
+</script>
+<style type="text/css">
+#message .th {
+	text-align: right;
+	width: 80px;
+}
+</style>

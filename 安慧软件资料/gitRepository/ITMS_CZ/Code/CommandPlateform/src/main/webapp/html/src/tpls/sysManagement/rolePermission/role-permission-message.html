@@ -1,0 +1,221 @@
+<!--角色权限面板信息-->
+<div class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<div class="linkbutton_toolbar" id="Js-toolbar">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-add'" cy-click="addRole">添加</a>
+			<a class="easyui-linkbutton " data-options="iconCls:'icon-remove'" cy-click="removeRoles">删除</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="roleGird" cy-datagrid="optionsJs" cy-querydata="queryData"
+		cy-url="/sysCfg/permission/findPermission"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		//获得默系统代码，启用状态
+		$scope.$getDefaultCode(['018', '119']);
+
+		//初始化
+		$scope.load = function() {
+			$scope.$search("queryData");
+		};
+
+		$scope.optionsJs = {
+			pagination : false,
+			columns : [[{
+				field : 'roleId ',
+				checkbox : true,
+				width : 100
+			}, {
+				field : 'roleName',
+				title : '角色名称',
+				align : 'center',
+				width : 100
+
+			}, {
+				field : 'roleRemark',
+				title : '备注',
+				align : 'center',
+				width : 100
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : operateCz,
+				width : 50
+			}]],
+			nowrap : false
+		};
+		
+		//操作栏按钮信息
+		function operateCz(value, row, index) {
+			var button = $("<a title='配置报警权限' cy-click='editAlarmRole(\"" + row.roleId + "\")'></a>");
+			var button1 = $("<a title='编辑' cy-click='editJs(" + index + ")'></a>");
+			var button2 = $('<a title="删除"  cy-click="removeRole(\'' + row.roleId + '\')"></a>');
+			button.linkbutton({
+				plain : true,
+				iconCls : "icon-alert-solid"
+			});
+			button1.linkbutton({
+				plain : true,
+				iconCls : "icon-edit-solid"
+			});
+			button2.linkbutton({
+				plain : true,
+				iconCls : "icon-remove-solid"
+			});
+			return $("<span/>").append(button).append(" ").append(button1).append(" ").append(button2).html();
+		}
+
+		//添加角色权限的窗口
+		$scope.addRole = function() {
+			$scope.$setParam("saveRole", function(data) {
+				if (!data.functions) {
+					$.messager.alert("提示", "请分配权限！");
+				} else {
+					//保存数据
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/permission/saveRole",
+						params : data,
+						success : function(result) {
+							if (result == "success") {
+								$scope.$getDialog("addDialog").dialog("close");
+								$scope.$search("queryData");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "添加失败！");
+						}
+					});
+				}
+			});
+			$scope.$openDialog("addDialog", {
+				title : "创建角色权限",
+				width : 600,
+				height : 500,
+				href : "tpls/sysManagement/rolePermission/role-permission-message-add.html?type=add"
+			});
+		};
+		//编辑窗口
+		$scope.editJs = function(index) {
+			var rowDatas = $scope.$("#roleGird").datagrid("getData").rows;
+			$scope.$setParam("roleData", rowDatas[index]);
+			$scope.$setParam("saveRole", function(data) {
+				if (!data.functions) {
+					$.messager.alert("提示", "请分配权限！");
+				} else {
+					//保存数据
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/permission/updateRole",
+						params : data,
+						success : function(result) {
+							if (result == "success") {
+								$scope.$getDialog("editDialog").dialog("close");
+								$scope.$search("queryData");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "更新失败！");
+						}
+					});
+				}
+			});
+			$scope.$openDialog("editDialog", {
+				title : "修改角色权限",
+				width : 600,
+				height : 500,
+				href : "tpls/sysManagement/rolePermission/role-permission-message-add.html?type=edit"
+			});
+		};
+
+		$scope.editAlarmRole = function(roleId) {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/permission/findAlarmSubsribePermission",
+				params : {roleId : roleId},
+				success : function(data){
+					$scope.$setParam("subsribeList",findSubsribeList(data));
+					$scope.$setParam("updateWarningSubsribe",function(add,del,all){
+						saveAlarmSubsribePermission(all,roleId);
+					});
+					$scope.$openDialog("alertRole", {
+						href : "tpls/public/warning-set-list.html",
+						width : 700,
+						height : 470,
+						title : "报警权限设置"
+					});
+				}
+			});
+		};
+	
+		/**
+		 * 保存报警订阅权限 
+		 */
+		function saveAlarmSubsribePermission(subsribes,roleId){
+			var keys = [];
+			for(var index in subsribes){
+				keys.push(subsribes[index].messageKey);
+			}
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/permission/saveAlarmSubsribePermission",
+				params : {
+					roleId : roleId,
+					keys : keys.join(",")
+				},
+				success : function(data){
+					if(data == "success"){
+						$scope.$getDialog("alertRole").dialog("close");
+					}
+				}
+			});
+		}
+
+		function findSubsribeList(keys){
+			var subsribeList = [];
+			for(var index in keys){
+				subsribeList.push(SubsribeType[keys[index]]);
+			}
+			return subsribeList;
+		}
+
+		//批量删除
+		var remove = function(ids) {
+			if (ids.length > 0) {
+				$.messager.confirm("提示", "你确定删除吗？", function(r) {
+					if (r) {
+						$scope.$ajaxRequest({
+							url : $scope.$restRoot + "/sysCfg/permission/removeRole",
+							params : {
+								ids : ids
+							},
+							success : function(data) {
+								if (data == "success") {
+									$scope.$search("queryData");
+								}
+							},
+							fail : function(errMsg) {
+								$.messager.alert("提示", "删除失败！");
+							}
+						});
+					}
+				});
+
+			} else {
+				$.messager.alert('提示', ' 请选择一条需要删除的记录 ');
+			}
+		};
+		//单行删除
+		$scope.removeRole = function(id) {
+			remove(id);
+		};
+		//批量删除
+		$scope.removeRoles = function() {
+			var rows = $scope.$("#roleGird").datagrid("getChecked");
+			var ids = "";
+			for (var index in rows) {
+				ids += rows[index].roleId + ",";
+			}
+			remove(ids.substring(0, ids.length - 1));
+		};
+	}); 
+</script>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Position_TypeMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Position_Type" >
+    <id column="POSITION_TYPE_ID" property="positionTypeId" jdbcType="VARCHAR" />
+    <result column="POSITION_TYPE_CODE" property="positionTypeCode" jdbcType="CHAR" />
+    <result column="POSITION_TYPE_NAME" property="positionTypeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    POSITION_TYPE_ID, POSITION_TYPE_CODE, POSITION_TYPE_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_POSITION_TYPE
+    where POSITION_TYPE_ID = #{positionTypeId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_POSITION_TYPE
+    where POSITION_TYPE_ID = #{positionTypeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_Type" >
+    insert into T_SYS_POSITION_TYPE (POSITION_TYPE_ID, POSITION_TYPE_CODE, POSITION_TYPE_NAME
+      )
+    values (#{positionTypeId,jdbcType=VARCHAR}, #{positionTypeCode,jdbcType=CHAR}, #{positionTypeName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_Type" >
+    insert into T_SYS_POSITION_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="positionTypeId != null" >
+        POSITION_TYPE_ID,
+      </if>
+      <if test="positionTypeCode != null" >
+        POSITION_TYPE_CODE,
+      </if>
+      <if test="positionTypeName != null" >
+        POSITION_TYPE_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="positionTypeId != null" >
+        #{positionTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="positionTypeCode != null" >
+        #{positionTypeCode,jdbcType=CHAR},
+      </if>
+      <if test="positionTypeName != null" >
+        #{positionTypeName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_Type" >
+    update T_SYS_POSITION_TYPE
+    <set >
+      <if test="positionTypeCode != null" >
+        POSITION_TYPE_CODE = #{positionTypeCode,jdbcType=CHAR},
+      </if>
+      <if test="positionTypeName != null" >
+        POSITION_TYPE_NAME = #{positionTypeName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where POSITION_TYPE_ID = #{positionTypeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Position_Type" >
+    update T_SYS_POSITION_TYPE
+    set POSITION_TYPE_CODE = #{positionTypeCode,jdbcType=CHAR},
+      POSITION_TYPE_NAME = #{positionTypeName,jdbcType=VARCHAR}
+    where POSITION_TYPE_ID = #{positionTypeId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,154 @@
+<!--区间信息添加页面-->
+<div class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form  cy-form="checkRegionalData">
+            <div class="searchPanel">
+                <div class="panel_title">
+                           路段信息
+                </div>
+                <div id="checkedRegional" class="table">
+                    <div class="tr">
+                        <div class="th">
+                            区间编号：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.regionalCode"  ></div>
+                        <div class="th">
+                            区间名称：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.regionalName"  ></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            行政区划：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.districtCode" cy-filter="$getDistrictName"></div>
+                               
+                        <div class="th">
+                            管理机构：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.orgId" cy-filter="$getOrgName"></div>
+                       </div>
+                       <div class="tr">
+                        <div class="th">
+                            所属道路：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.roadId" cy-filter="$getRoadName"></div>
+                        <div class="th">
+                            方向类型：
+                        </div>
+                        <div class="td"  cy-name="checkRegionalData.directionType" cy-filter="directionName"></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">
+                            方向名称：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.directionName" style="width: 200px;"></div>
+                    
+                        <div class="th" style="width: 80px;">
+                            区间距离：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.distance" style="width: 80px;"></div>
+                    </div>
+                    <div class="tr">     
+                        <div class="th">
+                            起点位置：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.entrySiteName" style="width: 180px"></div>
+                        <div class="th">
+                            终点位置：
+                        </div>
+                          <div class="td" cy-name="checkRegionalData.exitSiteName"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">
+                    功能参数
+                </div>
+                <div id="regional" class="table">
+                    <div class="tr">
+                        <div class="th">
+                            启用标识：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.enableFlag" cy-filter="enableFlag"></div>
+                        <div class="th">
+                            大车限高速：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.limitLarge"></div>
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="width: 140px;">
+                            小车限高速：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.limitSmall"></div>
+                        <div class="th">
+                            其它车限高速：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.limitOthers" style="width: 90px;"></div>
+                        <div class="th">
+                            限低速：
+                        </div>
+                        <div class="td" cy-name="checkRegionalData.limitLower" style="width: 90px;"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false" style="height: 40px;">
+        <div class="tr">
+            <div class="td" style="text-align: center">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                cy-click="$closeSelf">关闭</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    InitPage(["checkRegionalData"], function($scope) {
+        $scope.directionName=function(value){
+           if(value==0){
+               return "上行";
+           }else{
+               return "下行";
+           }
+        };
+        $scope.hasSupportSpeed=function(value){
+            if(value=="1"){
+                return "是";
+            }else{
+                return "否"; 
+            }
+        };
+        $scope.hasSupportVehicleFlow=function(value){
+            if(value=="1"){
+                return "是";
+            }else{
+                return "否"; 
+            }
+        };
+        $scope.enableFlag=function(value){
+            if(value=="1"){
+                return "是";
+            }else{
+                return "否"; 
+            }
+        };
+    }); 
+</script>
+<style type="text/css">
+    #checkedRegional .th {
+        text-align: right;
+        width: 100px;
+    }
+    #checkedRegional .td {
+        width: 180px;
+    }
+    #regional .th {
+        text-align: right;
+        width: 130px;
+    }
+    #regional .td {
+        width: 80px;
+    }
+
+</style>

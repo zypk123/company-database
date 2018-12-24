@@ -1,0 +1,282 @@
+<div class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height: 120px;">
+		<form cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div id="certificationMessage" class="table">
+					<div class="tr">
+						<div class="th">管理机构：</div>
+						<div class="td">
+                            <input class="cy-org-radio" id="orgId" name="orgId" />
+                        </div>
+						<div class="th">设备类型：</div>
+						<div class="td">
+							<input class="easyui-combobox" id="equipmentType" name="equipmentType" cy-code="488"  data-options="valueField:'value',textField:'text',multiple:true"/>
+						</div>
+						<div class="th">设备编号：</div>
+						<div class="td">
+									<input class="easyui-textbox" id="equipmentNbr"
+										name="equipmentNbr" />
+								</div>
+						<div class="th">检定日期：</div>
+						<div class="td">
+							<input class="easyui-datebox" data-options="showSeconds:false,validType:['maxDate[\'endCertificatedDate\']','date']"
+								type="text" id="beginCertificatedDate" name="beginCertificatedDate" style="width: 135px" />
+						</div>
+						<div class="th" style="width:30px">至：</div>
+						<div class="td">
+							<input class="easyui-datebox" data-options="showSeconds:false,validType:['minDate[\'beginCertificatedDate\']','date']"
+								type="text" id="endCertificatedDate" name="endCertificatedDate" style="width: 135px" />
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">证书状态：</div>
+						<div class="td">
+							<input type="checkbox" name="certificationStatus" value="4" style="margin-left: 5px">超期 
+							<input type="checkbox" name="certificationStatus" value="3" style="margin-left: 5px">1个月内过期
+							<input type="checkbox" name="certificationStatus" value="2" style="margin-left: 5px">2个月内过期
+							<input type="checkbox" name="certificationStatus" value="1" style="margin-left: 5px">正常
+						</div>
+						<div class="th">
+							<a class="easyui-linkbutton" cy-click="searchData"
+								data-options="iconCls:'icon-search'">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center'">
+		<table id="certificationGrd" cy-datagrid="optionsDm" cy-querydata="formData"
+			cy-url="device/certificationManage/getEquipmentCertificationList"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([],
+			function($scope) {
+				var deviceId = null;
+				$scope.$getDefaultCode(['488']);
+				//初始化查询
+				$scope.load = function() {
+					$scope.formData.orderName = "certificatedDate";
+        			$scope.formData.orderType = "asc";
+					$scope.$updateData("formData");
+					$scope.$search("formData");
+				};
+			    $scope.searchData = function() {
+			    	if ($scope.$("#form").form("validate")) {
+					$scope.$updateData("formData");
+					$scope.formData.equipmentTypeArray = $scope.$("#equipmentType").combobox("getValues").join(",");
+					$scope.formData.expireDateSectionArray = $("input[name='certificationStatus']:checked").map(function() {
+							return $(this).val();
+					}).get().join(',');
+					//获得当前第几页页数
+					var count = $scope.$("#certificationGrd").datagrid("getPager").pagination("options").pageNumber;
+					if (count > 1) {
+						//刷新,跳转到第一页
+						$scope.$("#certificationGrd").datagrid("getPager").pagination("select", 1);
+					} 
+					else{
+				    $scope.$search("formData");
+			    	  }
+			    	}
+				};
+				//检定信息列表字段
+				$scope.optionsDm = {
+					sortName : "certificatedDate",
+        			sortOrder : "asc",
+					columns : [ [ {
+						field : 'certificationId',
+						checkbox : true,
+						align : 'center',
+						width : 30,
+						hidden : true
+					}, {
+						field : 'equipmentNbr',
+						title : '设备编号',
+						align : 'center',
+						width : 60,
+						sortable : true
+					}, {
+						field : 'equipmentTypeName',
+						title : '设备类型',
+						align : 'center',
+						width : 30
+					}, {
+						field : 'equipmentName',
+						title : '设备名称',
+						align : 'center',
+						width : 60
+					}, {
+						field : 'orgName',
+						title : '管理机构',
+						align : 'center',
+						width : 70
+					}, {
+						field : 'certificationNbr',
+						title : '证书编号',
+						align : 'center',
+						width : 50,
+						sortable : true
+					}, {
+						field : 'expireDate',
+						title : '证书有效期',
+						align : 'center',
+						formatter:expireDate,
+						width : 50
+					}, {
+						field : 'certificatedDate',
+						title : '最近检定日期',
+						align : 'center',
+						width : 50,
+						sortable : true
+					}, {
+						field : 'cz',
+						title : '检定证书',
+						align : 'center',
+						formatter : optionsDmCz,
+						width : 40
+					} ] ],
+					onSortColumn : function(sortName,sortType){
+		            	$scope.formData.orderName = sortName;
+		           		$scope.formData.orderType = sortType;
+		           		$(this).datagrid("getPager").pagination("select",1);
+		            },
+					pagination : true,
+					nowrap : false
+				};
+
+				function equipmentType(value, row, index) {
+					var equipmentType = $scope.$getCodeName("488", value);
+					return equipmentType;
+				}
+
+				 //显示隐藏机构名称
+			    function optionsOrgName(value, row, index) {
+			        var orgName = $scope.$getOrgName(value);
+			        if(orgName == null){
+			            return "<span/>";
+			        }
+			        var orgNameStr = "";
+			        if (orgName) {
+			            orgNameStr = '' + orgName + '';
+			        }
+			        return "<span title='" + orgName + "'>" + orgNameStr + "</span>";
+			    };
+			    
+			    function expireDate(value, row, index) {
+			    	var expireDate = value;
+			    	if(expireDate == null || expireDate == undefined){
+			    		return "<span/>";
+			    	}
+			    	var date = new Date(expireDate.replace(/-/g,"/"));
+			    	var day =parseInt((new Date(date.format("yyyy-MM-dd")).getTime()-new Date(new Date().format("yyyy-MM-dd")).getTime())/(1000*60*60*24)); 
+			    	if(day<0){
+			    		return "<span style='color:red'>超期 </span>";
+			    	}
+			    	else if(day>=0 && day<30){
+			    		return "<span style='color:#ff00ff'>1个月内过期 </span>";
+			    	}
+			    	else if(day>=30 && day<60){
+			    		return "<span style='color:orange'>2个月内过期 </span>";	
+			    	}
+			    	else{
+			    		return "<span>" + expireDate + "</span>";	
+			    	}
+			    }
+				//操作
+				function optionsDmCz(value, row, index) {
+					//构造html内容 
+					var btnAdd = $("<a id='a' class='button-add' cy-click='addCertificationDm("
+							+ index + ")'></a>");
+
+					btnAdd.linkbutton({
+						iconCls : "icon-add-solid",
+						plain : true
+					});
+					var btnEdit = $("<a id='a' class='button-edit' cy-click='editCertificationDm("
+							+ index + ")'></a>");
+
+					btnEdit.linkbutton({
+						iconCls : "icon-edit-solid",
+						plain : true
+					});
+
+					if (row.certificationNbr == null) {//检定证书未录入
+						btnEdit.linkbutton('disable').removeAttr('cy-click');//禁止编辑
+					}
+					
+					return $("<span/>").append(btnAdd).append(" ").append(
+							btnEdit).append(" ").html();
+				}
+				
+				$scope.addCertificationDm = function(rowIndex){
+            	   $scope.$setParam("mode","ADD");
+            	   var rowData = $scope.$("#certificationGrd").datagrid("getData").rows[rowIndex];
+                   $scope.$setParam("equipmentNbr",rowData.equipmentNbr);
+                   $scope.$openDialog("certificationDetailDailog",{
+                       title : "新增年检信息",
+                       width : 900,
+                       height : 550,
+                       href : "tpls/deviceManage/deviceConfig/certification-baseinfo.html"
+                   },true);
+                   //保存
+                	$scope.$setParam("saveData",function(data){
+                	$scope.$ajaxRequest({
+                		url: $scope.$restRoot+'device/certificationManage/addCertificationInfo',
+                		params: data,
+                		method: 'post',
+                		success: function(data){
+                			if(data != 2){
+                			$scope.$getDialog("certificationDetailDailog").dialog("close");
+                			$.messager.alert("提示","添加年检信息成功！","info",function () {
+            		            	$.messager.progress("close");
+            		            });
+                			$scope.$search("formData");
+                			}else{
+                				$.messager.alert("提示","证书编号已存在，请重新输入！","info",function () {
+                		            	$.messager.progress("close");
+                		            	});
+                			}
+                		},
+                		fail: function(errMsg){
+                			$.messager.alert("提示","添加年检信息失败！","info",function () {
+            		            	$.messager.progress("close");
+            		            });
+                		}
+                	});
+                });
+            };
+			$scope.editCertificationDm = function(rowIndex){
+         	   $scope.$setParam("mode","EDIT");
+         	   var rowData = $scope.$("#certificationGrd").datagrid("getData").rows[rowIndex];
+                $scope.$setParam("equipmentNbr",rowData.equipmentNbr);
+                $scope.$openDialog("certificationDetailDailog",{
+                    title : "编辑年检信息",
+                    width : 900,
+                    height : 550,
+                    href : "tpls/deviceManage/deviceCertification/certification-info-operate.html"
+                },true);
+				//编辑成功后，刷新查询列表界面(编辑界面没有事件关闭框)
+				$scope.$setParam("refresh", function() {
+					//$scope.$getDialog("certificationDetailDailog").dialog("close");
+					$scope.$search("formData");
+				});
+         };
+         
+     	$scope.$('.easyui-datebox').each(function() {
+    		$(this).datebox('calendar').calendar({
+    			validator : function(date) {
+    				var now = new Date();
+    				var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    				return date <= d1;
+    			}
+    		});
+    	});
+	});
+</script>
+<style type="text/css">
+#certificationMessage .th {
+	text-align: right;
+	width: 80px;
+}

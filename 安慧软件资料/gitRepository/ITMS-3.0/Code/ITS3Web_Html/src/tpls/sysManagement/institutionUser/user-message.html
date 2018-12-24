@@ -1,0 +1,217 @@
+<div class="easyui-layout">
+<!--定义机构导航-->
+<div data-options="region:'west',title:'机构导航',split : true," style="width:200px;">
+    <div id="cy-tree"></div>
+</div>
+
+<div data-options="region:'center'">
+    <div class="easyui-layout">
+        <div data-options="region:'north'" style="height: 120px;">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr" id="userId">
+                        <div class="th">姓名：</div>
+                        <div class="td">
+                            <input type="text" name="yhm" class="easyui-textbox" style="width:90px;">
+                        </div>
+                        <div class="th" style="width: 85px;text-align: right;">警号：</div>
+                        <div class="td">
+                            <input type="text" name="fzh" class="easyui-textbox" style="width: 150px;">
+                        </div>
+                        <div class="th" style="width: 70px;text-align: right;">在线状态：</div>
+                            <div class="td">&nbsp;&nbsp;
+                                在线<input type="radio" name="qyzt" value="是"/>
+                                离线<input type="radio" name="qyzt" value="否"/>
+                            </div>
+                        <div class="td" style="width: 70px;">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                               cy-click="searchData" style="width: 60px;float: right;">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="linkbutton_toolbar">
+                <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'"
+                   cy-click="addYh">添加</a>
+                <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'"
+                   cy-click="deleteYh">删除</a>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+            <table id="yhData" cy-datagrid="optionsYh" cy-querydata="deptQueryYh"
+                   cy-url="data/sysManagement/yh-data.json"></table>
+
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        $scope.load = function () {
+            //加载树操作
+            $scope.$('#cy-tree').tree({
+
+                animate: true,
+                url: "data/sysManagement/tree.json",
+                //当用户选择树节点时触发
+                onSelect: function (node) {
+                    $scope.deptQueryYh.id = node.id;
+                    $scope.$search("deptQueryYh");
+                },
+                //默认加载树的第一个节点信息
+                onLoadSuccess: function (node, data) {
+                    //获得所有树节点
+                    var roots = $scope.$('#cy-tree').tree("getRoots");
+                    //默认第一个节点信息
+                    $scope.$('#cy-tree').tree("select", roots[0].target)
+                }
+            });
+        };
+        $scope.optionsYh = {
+            columns: [
+                [
+                    {field: 'id', checkbox: true, align: 'center', width: 100},
+                    {field: 'xm', title: '姓名', align: 'center', width: 15},
+                    {field: 'yhm', title: '用户名', align: 'center', width: 20},
+                    {field: 'ssjg', title: '所属机构', align: 'center', width: 40},
+                    {field: 'lxdh', title: '联系电话', align: 'center', width: 30},
+                    {field: 'sfzh', title: '身份证号', align: 'center', width: 40},
+                    {field: 'jh', title: '警号', align: 'center', width: 30},
+                    {field: 'qyzt', title: '在线状态', align: 'center', width: 30},
+                    {field: 'dlcs', title: '登陆次数', align: 'center', width: 20},
+                    {field: 'zjzlsj', title: '最近登陆时间', align: 'center', width: 30},
+                    {field: 'jsfp', title: '角色分配', align: 'center', formatter: operateYhJs, width: 25},
+                    {field: 'cz', title: '操作', align: 'center', formatter: operateYhCz, width: 40}
+                ]
+            ],
+
+            //双击事件查看当前用户信息
+            onDblClickRow: function (rowIndex, rowData) {
+
+                $scope.$setParam("userInfo", rowData);//注入行内数据
+                $scope.$setParam("close", function () {
+                    $scope.$getDialog("checkDialog").dialog("close");
+                });
+                $scope.$openDialog("checkDialog", {
+                    title: "机构信息",
+                    height: 630,
+                    width: 800,
+                    href: "tpls/sysManagement/institutionUser/user-information.html"
+                });
+            }
+        };
+        //用户操作栏
+        function operateYhCz(value, row, index) {
+            var button1 = $("<a class='button-edit' cy-click='editYh(" + index + ")'></a>");//编辑按钮
+            var button2 = $("<a class='button-remove' cy-click='removeYh(" + index + ")'></a>");//删除按钮
+
+            button1.linkbutton({
+                iconCls: "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls: "icon-remove"
+            });
+
+            return $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+
+        //角色分配栏
+        function operateYhJs(value, row, index) {
+            var button1 = $("<a class='button-add' cy-click='addJs(" + index + ")'></a>");//分配按钮
+            button1.linkbutton({
+                iconCls: "icon-add"
+            });
+            return $("<span/>").append(button1).append(" ").html();
+        }
+
+        //添加角色信息
+        $scope.addJs = function () {
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("jsDialog").dialog("close");
+            });
+            //打开角色窗口
+            $scope.$openDialog("jsDialog", {
+                title: "角色分配",
+                width: 600,
+                height: 450,
+                href: "tpls/sysManagement/institutionUser/roles-allocation.html"
+            });
+        };
+        //添加用户信息
+        $scope.addYh = function () {
+            //保存按钮
+            // 通过Ajax提交和后台交
+
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("add").dialog("close");
+            });
+            //打开用户信息窗口
+            $scope.$openDialog("add", {
+                title: "用户信息",
+                height: 630,
+                width: 800,
+                href: "tpls/sysManagement/institutionUser/user-info.html?type=add"
+            });
+        };
+        //删除单行或者多行用户函数
+        $scope.deleteYh = function () {
+            var rows = $scope.$("#yhData").datagrid("getChecked");
+            //选择要删除的行
+            if (rows.length > 0) {
+                $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                    if (r) {
+                        var ids = [];
+                        for (var i = 0; i < rows.length; i++) {
+                            ids.push(rows[i].ID);
+                        }
+                        //将选择到的行存入数组并用,分隔转换成字符串，
+                        //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id
+                        // alert(ids.join(','));
+                    }
+                });
+            } else {
+                $.messager.alert(' 警告操作', ' 删除记录至少选定一条数据！ ');
+            }
+        };
+        //编辑用户信息
+        $scope.editYh = function (index) {
+            //获取当前页面所有行数数据
+            var row = $scope.$("#yhData").datagrid("getData").rows;
+            //用户信息注入当前行数据
+            $scope.$setParam("userInfo", row[index]);
+
+            //保存按钮
+            // 通过Ajax提交和后台交
+
+            //设置关闭按钮
+            $scope.$setParam("close", function () {
+                $scope.$getDialog("edit").dialog("close");
+            });
+            //打开机用户息窗口
+            $scope.$openDialog("edit", {
+                title: "用户信息",
+                height: 630,
+                width: 800,
+                href: "tpls/sysManagement/institutionUser/user-info.html?type=edit"
+            });
+        };
+        //删除当前行用户信息
+        $scope.removeYh = function (index) {
+            $.messager.confirm("提示", "你确定要删除吗?", function (r) {
+                if (r) {
+
+                }
+            });
+        };
+
+    })
+</script>
+ <style type="text/css">
+     #userId .th{
+         width: 60px;
+         text-align: right;
+     }
+ </style>

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceFaultMapper" >
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.DeviceFault" >
+		<id column="FAULT_ID" property="faultId" jdbcType="VARCHAR" />
+		<result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+		<result column="FAULT_ALARM" property="faultAlarm" jdbcType="CHAR" />
+		<result column="FAULT_TYPE" property="faultType" jdbcType="VARCHAR" />
+		<result column="FAULT_SUB_TYPE" property="faultSubType" jdbcType="VARCHAR" />
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="COLLECT_METHOD" property="collectMethod" jdbcType="CHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="IS_VALIDITY" property="isValidity" jdbcType="CHAR" />
+		<result column="PROCESS_STATE" property="processState" jdbcType="CHAR" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="PROCESS_TIME" property="processTime" jdbcType="TIMESTAMP" />
+		<result column="SYS_COMPONENT_ID" property="sysComponentId" jdbcType="VARCHAR" />
+		<result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List" >FAULT_ID, DEVICE_ID, FAULT_ALARM, FAULT_TYPE, FAULT_SUB_TYPE, START_TIME, END_TIME,
+		COLLECT_METHOD, REMARK, IS_VALIDITY, PROCESS_STATE, CREATE_BY, CREATE_TIME, PROCESS_TIME,
+		SYS_COMPONENT_ID, ORG_PRIVILEGE_CODE</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_FAULT
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String" >delete from T_DEVICE_FAULT
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.DeviceFault" >insert into T_DEVICE_FAULT (FAULT_ID, DEVICE_ID, FAULT_ALARM,
+		FAULT_TYPE, FAULT_SUB_TYPE, START_TIME,
+		END_TIME, COLLECT_METHOD, REMARK,
+		IS_VALIDITY, PROCESS_STATE, CREATE_BY,
+		CREATE_TIME, PROCESS_TIME, SYS_COMPONENT_ID,
+		ORG_PRIVILEGE_CODE)
+		values (#{faultId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{faultAlarm,jdbcType=CHAR},
+		#{faultType,jdbcType=VARCHAR}, #{faultSubType,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP},
+		#{endTime,jdbcType=TIMESTAMP}, #{collectMethod,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR},
+		#{isValidity,jdbcType=CHAR}, #{processState,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{processTime,jdbcType=TIMESTAMP}, #{sysComponentId,jdbcType=VARCHAR},
+		#{orgPrivilegeCode,jdbcType=VARCHAR})</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.DeviceFault" >
+		insert into T_DEVICE_FAULT
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="faultId != null" >FAULT_ID,</if>
+			<if test="deviceId != null" >DEVICE_ID,</if>
+			<if test="faultAlarm != null" >FAULT_ALARM,</if>
+			<if test="faultType != null" >FAULT_TYPE,</if>
+			<if test="faultSubType != null" >FAULT_SUB_TYPE,</if>
+			<if test="startTime != null" >START_TIME,</if>
+			<if test="endTime != null" >END_TIME,</if>
+			<if test="collectMethod != null" >COLLECT_METHOD,</if>
+			<if test="remark != null" >REMARK,</if>
+			<if test="isValidity != null" >IS_VALIDITY,</if>
+			<if test="processState != null" >PROCESS_STATE,</if>
+			<if test="createBy != null" >CREATE_BY,</if>
+			<if test="createTime != null" >CREATE_TIME,</if>
+			<if test="processTime != null" >PROCESS_TIME,</if>
+			<if test="sysComponentId != null" >SYS_COMPONENT_ID,</if>
+			<if test="orgPrivilegeCode != null" >ORG_PRIVILEGE_CODE,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="faultId != null" >#{faultId,jdbcType=VARCHAR},</if>
+			<if test="deviceId != null" >#{deviceId,jdbcType=VARCHAR},</if>
+			<if test="faultAlarm != null" >#{faultAlarm,jdbcType=CHAR},</if>
+			<if test="faultType != null" >#{faultType,jdbcType=VARCHAR},</if>
+			<if test="faultSubType != null" >#{faultSubType,jdbcType=VARCHAR},</if>
+			<if test="startTime != null" >#{startTime,jdbcType=TIMESTAMP},</if>
+			<if test="endTime != null" >#{endTime,jdbcType=TIMESTAMP},</if>
+			<if test="collectMethod != null" >#{collectMethod,jdbcType=CHAR},</if>
+			<if test="remark != null" >#{remark,jdbcType=VARCHAR},</if>
+			<if test="isValidity != null" >#{isValidity,jdbcType=CHAR},</if>
+			<if test="processState != null" >#{processState,jdbcType=CHAR},</if>
+			<if test="createBy != null" >#{createBy,jdbcType=VARCHAR},</if>
+			<if test="createTime != null" >#{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="processTime != null" >#{processTime,jdbcType=TIMESTAMP},</if>
+			<if test="sysComponentId != null" >#{sysComponentId,jdbcType=VARCHAR},</if>
+			<if test="orgPrivilegeCode != null" >#{orgPrivilegeCode,jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.DeviceFault" >
+		update T_DEVICE_FAULT
+		<set >
+			<if test="deviceId != null" >DEVICE_ID = #{deviceId,jdbcType=VARCHAR},</if>
+			<if test="faultAlarm != null" >FAULT_ALARM = #{faultAlarm,jdbcType=CHAR},</if>
+			<if test="faultType != null" >FAULT_TYPE = #{faultType,jdbcType=VARCHAR},</if>
+			<if test="faultSubType != null" >FAULT_SUB_TYPE = #{faultSubType,jdbcType=VARCHAR},</if>
+			<if test="startTime != null" >START_TIME = #{startTime,jdbcType=TIMESTAMP},</if>
+			<if test="endTime != null" >END_TIME = #{endTime,jdbcType=TIMESTAMP},</if>
+			<if test="collectMethod != null" >COLLECT_METHOD = #{collectMethod,jdbcType=CHAR},</if>
+			<if test="remark != null" >REMARK = #{remark,jdbcType=VARCHAR},</if>
+			<if test="isValidity != null" >IS_VALIDITY = #{isValidity,jdbcType=CHAR},</if>
+			<if test="processState != null" >PROCESS_STATE = #{processState,jdbcType=CHAR},</if>
+			<if test="createBy != null" >CREATE_BY = #{createBy,jdbcType=VARCHAR},</if>
+			<if test="createTime != null" >CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},</if>
+			<if test="processTime != null" >PROCESS_TIME = #{processTime,jdbcType=TIMESTAMP},</if>
+			<if test="sysComponentId != null" >SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR},</if>
+			<if test="orgPrivilegeCode != null" >ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},</if>
+		</set>
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.DeviceFault" >update T_DEVICE_FAULT
+		set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+		FAULT_ALARM = #{faultAlarm,jdbcType=CHAR},
+		FAULT_TYPE = #{faultType,jdbcType=VARCHAR},
+		FAULT_SUB_TYPE = #{faultSubType,jdbcType=VARCHAR},
+		START_TIME = #{startTime,jdbcType=TIMESTAMP},
+		END_TIME = #{endTime,jdbcType=TIMESTAMP},
+		COLLECT_METHOD = #{collectMethod,jdbcType=CHAR},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		IS_VALIDITY = #{isValidity,jdbcType=CHAR},
+		PROCESS_STATE = #{processState,jdbcType=CHAR},
+		CREATE_BY = #{createBy,jdbcType=VARCHAR},
+		CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		PROCESS_TIME = #{processTime,jdbcType=TIMESTAMP},
+		SYS_COMPONENT_ID = #{sysComponentId,jdbcType=VARCHAR},
+		ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+		where FAULT_ID = #{faultId,jdbcType=VARCHAR}</update>
+	<select id="findDeviceFaults" resultMap="BaseResultMap"
+	parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_FAULT t
+		<if test="deviceType!=null and deviceType!='' or roadId!=null and roadId!='' or contractorId != null and contractorId !='' " >left join t_device_sys d on t.device_id=d.device_id</if>
+		<if test="contractorId != null and contractorId !='' " >left join t_device_contractor dc on d.contractor_id=dc.contractor_id</if>
+		<where>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode !='' " >and  t.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'</if>
+			<if test="deviceType != null and deviceType !='' " >and  d.device_type = #{deviceType,jdbcType=VARCHAR}</if>
+			<if test="roadId != null and roadId !='' " >
+			  and d.site_id in (select site_id from t_sys_site where road_id = #{roadId,jdbcType=VARCHAR}) 
+			</if>
+			<if test="contractorId != null and contractorId !='' " >and  dc.contractor_id = #{contractorId,jdbcType=VARCHAR}</if>
+			<if test="isValid != null and isValid !='' " >and  t.is_validity = #{isValid,jdbcType=CHAR}</if>
+			<if test="faultType != null and faultType !='' " >and  t.fault_type = #{faultType,jdbcType=VARCHAR}</if>
+			<if test="deviceId != null and deviceId != '' ">
+				AND t.DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="deviceSysNbr != null and deviceSysNbr != '' ">
+				AND t.DEVICE_ID in (SELECT DEVICE_ID FROM T_DEVICE_SYS WHERE DEVICE_SYS_NBR LIKE '%'|| #{deviceSysNbr,jdbcType=VARCHAR}||'%')
+			</if>
+			<if test="startTimeFrom != null and startTimeFrom != '' ">
+				<![CDATA[    AND t.START_TIME >= #{startTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="startTimeTo != null and startTimeTo != '' ">
+				<![CDATA[    AND t.START_TIME <= #{startTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</select>
+	<select id="countDeviceFaults" resultType="java.lang.Integer"
+	parameterType="java.util.Map">
+		select count(t.fault_id)
+		FROM T_DEVICE_FAULT t
+		<if test="deviceType!=null and deviceType!='' or roadId!=null and roadId!='' or contractorId != null and contractorId !='' " >left join t_device_sys d on t.device_id=d.device_id</if>
+		<if test="contractorId != null and contractorId !='' " >left join t_device_contractor dc on d.contractor_id=dc.contractor_id</if>
+		<where>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode !='' " >and  t.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'</if>
+			<if test="deviceType != null and deviceType !='' " >and  d.device_type = #{deviceType,jdbcType=VARCHAR}</if>
+			<if test="roadId != null and roadId !='' " >
+			  and d.site_id in (select site_id from t_sys_site where road_id = #{roadId,jdbcType=VARCHAR}) 
+			</if>
+			<if test="contractorId != null and contractorId !='' " >and  dc.contractor_id = #{contractorId,jdbcType=VARCHAR}</if>
+			<if test="isValid != null and isValid !='' " >and  t.is_validity = #{isValid,jdbcType=CHAR}</if>
+			<if test="faultType != null and faultType !='' " >and  t.fault_type = #{faultType,jdbcType=VARCHAR}</if>
+			<if test="deviceId != null and deviceId != '' ">
+				AND t.DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="deviceSysNbr != null and deviceSysNbr != '' ">
+				AND t.DEVICE_ID in (SELECT DEVICE_ID FROM T_DEVICE_SYS WHERE DEVICE_SYS_NBR LIKE '%'|| #{deviceSysNbr,jdbcType=VARCHAR}||'%')
+			</if>
+			<if test="startTimeFrom != null and startTimeFrom != '' ">
+				<![CDATA[    AND t.START_TIME >= #{startTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="startTimeTo != null and startTimeTo != '' ">
+				<![CDATA[    AND t.START_TIME <= #{startTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</select>
+	<delete id="deleteNoValidFaults" parameterType="java.lang.String" >delete from T_DEVICE_FAULT
+		where FAULT_ID in '(' || #{faultId,jdbcType=VARCHAR} || ')' and is_validity='2'</delete>
+	
+	<select id="findDevFaultsMataince" resultMap="BaseResultMap"
+	parameterType="java.util.Map">
+		select t.fault_type,t.process_state,max(t.start_time) as start_time
+		from T_DEVICE_FAULT t
+		<where>
+			 and t.fault_sub_type is not null and t.process_state is not null
+			<if test="deviceId != null and deviceId !='' " >and  t.device_id = #{deviceId,jdbcType=VARCHAR}</if>
+			<if test="faultTypeLst != null and faultTypeLst.size() > 0">
+				AND t.fault_sub_type IN
+				<foreach collection="faultTypeLst" index="index" item="fault"
+				open="(" separator="," close=")">#{fault,jdbcType=VARCHAR}</foreach>
+			</if>
+		</where>
+		group by t.fault_type,t.process_state
+	</select>
+	
+	<select id="findDevLatestFaultsMataince" resultMap="BaseResultMap"
+	parameterType="java.util.Map">
+		select device_id,fault_sub_type,substr(fault_sub_type,0,2) as fault_type,max(t.start_time) as start_time,process_state 
+         from t_device_fault t
+		<where>
+			 t.fault_sub_type is not null and t.process_state is not null
+			  and t.device_id in (select d.device_id from t_device_sys d <include refid="deviceFilterWhere" />)
+		</where>
+		group by t.device_id, t.fault_sub_type, t.process_state
+	</select>
+	 <sql id="deviceFilterWhere">
+	 	<where>
+	 		<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+			AND d.ORG_PRIVILEGE_CODE like
+			#{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+		    </if>
+	 		<if test="deviceName != null and deviceName != ''">
+			AND UPPER(d.DEVICE_NAME) like
+			'%'|| UPPER(#{deviceName,jdbcType=VARCHAR}) ||'%'
+		   </if>
+		   <if test="deviceType != null and deviceType != ''">
+			AND d.DEVICE_TYPE = #{deviceType,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceTypeArry != null and deviceTypeArry.length > 0 ">
+			AND d.DEVICE_TYPE in 
+			<foreach collection="deviceTypeArry" index="index" item="devType"
+				open="(" separator="," close=")">
+				#{devType,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="useStatusFlag != null and useStatusFlag != ''">
+			AND d.USE_STATUS_FLAG = #{useStatusFlag,jdbcType=CHAR}
+		</if>
+		<if test="contractorId != null and contractorId != ''">
+			AND d.contractor_id = #{contractorId,jdbcType=VARCHAR}
+		</if>		
+		<if test="ownership != null and ownership != ''">
+			AND d.ownership = #{ownership,jdbcType=CHAR}
+		</if>
+		<if test="roadTypeArr != null and roadTypeArr.length > 0 ">
+		    AND d.SITE_ID in (
+				SELECT DISTINCT S.SITE_ID
+				  FROM T_SYS_SITE S, T_SYS_ROAD R
+				 WHERE S.ROAD_ID = R.ROAD_ID
+				   AND R.ROAD_TYPE in 
+				   <foreach collection="roadTypeArr" index="index" item="roadType"
+					open="(" separator="," close=")">
+					#{roadType,jdbcType=VARCHAR}
+				   </foreach>)
+		</if>
+		<if test="roadId != null and roadId != ''">
+			AND d.SITE_ID in (
+				SELECT DISTINCT S.SITE_ID
+				  FROM T_SYS_SITE S
+				 WHERE S.ROAD_ID = #{roadId,jdbcType=VARCHAR}
+				)
+		</if>
+		<if test="siteId != null and siteId != ''">
+			AND d.SITE_ID = #{siteId,jdbcType=VARCHAR}
+		</if>	
+	 	</where>
+	 </sql>
+	<select id="selectFaultList" parameterType="java.util.Map" resultType="cy.its.device.domain.model.DeviceFaultList">
+		select ts.device_sys_nbr  as deviceSysNbr,
+		       ts.device_type     as deviceType,
+		       tsi.site_name      as siteName,
+		       ts.org_id          as orgId,
+		       tc.contractor_name as contractorName,
+		       ts.fault_id        as faultId,
+		       ts.fault_type      as faultType,
+		       ts.start_time      as startTime,
+		       ts.collect_method  as collectMethod,
+		       ts.process_state   as processState,
+		       ts.is_validity     as isValidity,
+		       ts.org_privilege_code as orgPrivilegeCode
+		  from (select tf.fault_id,
+		               tf.fault_type,
+		               tf.start_time,
+		               tf.collect_method,
+		               tf.process_state,
+		               tf.is_validity,
+		               tf.org_privilege_code,
+               		   tf.device_id,
+		               td.device_sys_nbr,
+		               td.device_type,
+		               td.org_id,
+		               td.site_id,
+		               td.contractor_id
+		          from t_device_fault tf, t_device_sys td
+		         where tf.device_id = td.device_id) ts
+		  left join t_sys_site tsi
+		    on ts.site_id = tsi.site_id
+		  left join t_device_contractor tc
+		    on ts.contractor_id = tc.contractor_id
+		 <where>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode !='' " >and  ts.org_privilege_code like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'</if>
+			<if test="deviceType != null and deviceType !='' " >and  ts.device_type = #{deviceType,jdbcType=VARCHAR}</if>
+			<if test="roadId != null and roadId !='' " >
+			  and ts.site_id in (select site_id from t_sys_site where road_id = #{roadId,jdbcType=VARCHAR}) 
+			</if>
+			<if test="contractorId != null and contractorId !='' " >and  tc.contractor_id = #{contractorId,jdbcType=VARCHAR}</if>
+			<if test="isValid != null and isValid !='' " >and  ts.is_validity = #{isValid,jdbcType=CHAR}</if>
+			<if test="faultType != null and faultType !='' " >and  ts.fault_type = #{faultType,jdbcType=VARCHAR}</if>
+			<if test="deviceId != null and deviceId != '' ">
+				AND ts.DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="deviceSysNbr != null and deviceSysNbr != '' ">
+				AND ts.DEVICE_ID in (SELECT DEVICE_ID FROM T_DEVICE_SYS WHERE DEVICE_SYS_NBR LIKE '%'|| #{deviceSysNbr,jdbcType=VARCHAR}||'%')
+			</if>
+			<if test="startTimeFrom != null and startTimeFrom != '' ">
+				<![CDATA[    AND ts.START_TIME >= #{startTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="startTimeTo != null and startTimeTo != '' ">
+				<![CDATA[    AND ts.START_TIME <= #{startTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+		</where>
+	</select>
+</mapper>

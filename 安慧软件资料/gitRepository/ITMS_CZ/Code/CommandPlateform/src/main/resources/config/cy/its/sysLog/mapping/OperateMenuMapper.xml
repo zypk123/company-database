@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.sysLog.client.OperateMenuMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.sysLog.domain.OperateMenu" >
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="MENU_ID" property="menuId" jdbcType="VARCHAR" />
+    <result column="MEN_NAME" property="menName" jdbcType="VARCHAR" />
+    <result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="OPER_IP" property="operIp" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="cy.its.sysLog.domain.OperateMenu" >
+    insert into T_SYS_OPERATE_MENU_LOG (USER_ID, MENU_ID, MEN_NAME, 
+      OPERATE_TIME, REMARK, ORG_ID, 
+      OPER_IP)
+    values (#{userId,jdbcType=VARCHAR}, #{menuId,jdbcType=VARCHAR}, #{menName,jdbcType=VARCHAR}, 
+      #{operateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, 
+      #{operIp,jdbcType=VARCHAR})
+  </insert>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.ZinkMapper">
+  <resultMap id="BaseResultMap" type="cy.its.device.mybatis.model.ZAB" >
+    <result column="C1" property="c1" jdbcType="VARCHAR" />
+    <result column="C2" property="c2" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    C1, C2
+  </sql>
+  <select id="select" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from AB
+  </select>
+  <insert id="insert" parameterType="cy.its.device.mybatis.model.ZAB" >
+    insert into AB (C1, C2)
+    values (#{c1,jdbcType=VARCHAR}, #{c2,jdbcType=CLOB})
+  </insert>  
+  <update id="update" parameterType="cy.its.device.mybatis.model.ZAB" >
+    update AB
+    <set >
+      <if test="c1 != null" >
+        C1 = #{c1,jdbcType=VARCHAR},
+      </if>
+      <if test="c2 != null" >
+        C2 = #{c2,jdbcType=CLOB},
+      </if>
+    </set>
+  </update>
+</mapper>

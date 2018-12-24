@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.StatusLogMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.StatusLog" >
+    <id column="SATUS_LOG_ID" property="satusLogId" jdbcType="VARCHAR" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="STATUS_TYPE" property="statusType" jdbcType="CHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="DURATION_SECS" property="durationSecs" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SATUS_LOG_ID, DEVICE_ID, STATUS_TYPE, START_TIME, END_TIME, DURATION_SECS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_STATUS_LOG
+    where SATUS_LOG_ID = #{satusLogId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_STATUS_LOG
+    where SATUS_LOG_ID = #{satusLogId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.StatusLog" >
+    insert into T_DEVICE_STATUS_LOG (SATUS_LOG_ID, DEVICE_ID, STATUS_TYPE, 
+      START_TIME, END_TIME, DURATION_SECS
+      )
+    values (#{satusLogId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{statusType,jdbcType=CHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{durationSecs,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.StatusLog" >
+    insert into T_DEVICE_STATUS_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="satusLogId != null" >
+        SATUS_LOG_ID,
+      </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="statusType != null" >
+        STATUS_TYPE,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="durationSecs != null" >
+        DURATION_SECS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="satusLogId != null" >
+        #{satusLogId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="statusType != null" >
+        #{statusType,jdbcType=CHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="durationSecs != null" >
+        #{durationSecs,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.StatusLog" >
+    update T_DEVICE_STATUS_LOG
+    <set >
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="statusType != null" >
+        STATUS_TYPE = #{statusType,jdbcType=CHAR},
+      </if>
+      <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="durationSecs != null" >
+        DURATION_SECS = #{durationSecs,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where SATUS_LOG_ID = #{satusLogId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.StatusLog" >
+    update T_DEVICE_STATUS_LOG
+    set DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      STATUS_TYPE = #{statusType,jdbcType=CHAR},
+      START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      DURATION_SECS = #{durationSecs,jdbcType=DECIMAL}
+    where SATUS_LOG_ID = #{satusLogId,jdbcType=VARCHAR}
+  </update>
+</mapper>

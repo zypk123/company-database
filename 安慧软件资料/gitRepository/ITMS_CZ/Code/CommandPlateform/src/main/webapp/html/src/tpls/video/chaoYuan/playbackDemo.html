@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>录像回放Demo</title>
+    <style type="text/css">
+        div,td,input
+        {
+        	font-size:12px;
+        }
+        .ptzBtn
+        {
+        	width:32px;
+        }
+        #Select1
+        {
+            width: 67px;
+        }
+        #SelectWnd
+        {
+            width: 70px;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align:left;font-size:14px">视频监控平台 回放网页控件</div>
+    <div style="text-align:left;background-color: #C0C0C0;width:800px">回放信息</div>
+	<div style="padding: 1px; margin: 1px;">
+        ServerIP:&nbsp;<input id="serverIP" type="text" value="192.168.10.107" />&nbsp;&nbsp;&nbsp;
+        <input type="button" value="初始化" onclick="initServer()"  />
+    </div>   
+   <div style="padding: 1px; margin: 1px;">
+        设备ID:&nbsp;<input id="TextID" type="text" value="44020000001320000002" />&nbsp;&nbsp;&nbsp;
+        设备名称:&nbsp;<input id="TextNAME" type="text" value="IPdome" />&nbsp;&nbsp;
+    </div>
+    <div style="padding: 1px; margin: 1px;">
+        开始时间:&nbsp;<input id="StartTime" type="text" value="2015-12-11 08:00:00" />&nbsp;&nbsp;
+        结束时间:&nbsp;<input id="EndTime" type="text" value="2015-12-11 18:00:00" />&nbsp;&nbsp;
+        存储类型:&nbsp;<input id="StoreType" type="text" value="0" />&nbsp;&nbsp;
+        <input type="button" value="回放" onclick="playrecord()"  />
+    </div>
+    <div style="text-align:left;background-color: #C0C0C0;width:800px" >&nbsp;</div>
+    <div style="width:1000px">
+            
+        <div style="width:800px;float:left;overflow:hidden">
+            <!-- 添加预览控件（需要先在windows下注册） -->
+            <!--<object classid="CLSID:4188fadd-e305-43e1-bcb2-da63682335dd" id="VMDPlayerOCX"  width="800" height="500" name="ocx" >-->
+            <!--</object>-->
+            <object clsid="{4188fadd-e305-43e1-bcb2-da63682335dd}"  type="application/x-itst-activex"
+                    id="VMDPlayerOCX"  width="800" height="500" name="ocx" >
+            </object>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    //34020000001320000002
+    //播放的控件
+    var Ocx = document.getElementById("VMDPlayerOCX");
+    //动态改变控件大小
+    function changeSize() {
+        alert(document.body.offsetHeight);
+        Ocx.height = document.body.offsetHeight - 5;
+    }
+
+	function initServer() 
+	{
+	   var serverIP = document.getElementById('serverIP').value;
+	   Ocx.SetVideoServerIp(serverIP);
+	   Ocx.SetCapturePath("E:\ps");
+	   Ocx.SetDownloadPath("E:\ps");
+	   Ocx.EnableDisplayPreview(0);
+	}
+    function playrecord() {
+        var id = document.getElementById('TextID').value;
+        var name = document.getElementById('TextNAME').value;
+        var stTime = document.getElementById('StartTime').value;
+        var edTime = document.getElementById('EndTime').value;
+        var stType = document.getElementById('StoreType').value;
+        Ocx.PlayRecordPrepare(name, id);
+        Ocx.PlayDeviceRecordInfo(stTime, edTime, stType);
+    }
+
+    
+</script>
+</html>
+
+

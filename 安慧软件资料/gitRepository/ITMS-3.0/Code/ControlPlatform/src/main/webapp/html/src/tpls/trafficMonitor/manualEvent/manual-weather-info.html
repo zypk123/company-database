@@ -1,0 +1,149 @@
+<div id="manualEventInfo" class="easyui-layout">
+	<div data-options="region:'center',border:false">
+        <div class="table">
+            <div class="tr">
+                <div class="th">
+                    气象类型：
+                </div>
+                <div class="td"  >
+                	<span cy-name="newData.meteorologyType" cy-filter="options_eventType" ></span>
+                </div>
+                <div class="th">
+                  所在道路：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.roadId" cy-filter="$getRoadName" ></span>
+                </div>
+                
+                 <div class="td" style="column-span: 4|all">
+						<div id="map" style="width:240px;height: 200px;border:1px solid red">
+						</div>
+				</div>
+                
+            </div>
+            <div class="tr">
+                <div class="th">
+                    管辖机构：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.orgId" cy-filter="$getOrgName" ></span>
+                </div>
+                  <div class="th">
+                方向：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.directionType" cy-filter="options_directionType" ></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    事件描述：
+                </div>
+                <div class="td" cy-name="newData.eventDesc" style="width: 383px;height: auto;">
+                </div>
+               
+            </div>
+            <div class="tr">
+                <div class="th">
+                    经度：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.lon" ></span>
+                </div>
+                <div class="th">
+                    纬度：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.lat" ></span>
+                </div>
+            </div>
+             <div class="tr">
+                <div class="th">
+                    登记人：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.reportBy" ></span>
+                </div>
+                <div class="th">
+                    登记时间：
+                </div>
+                <div class="td" >
+                	<span cy-name="newData.reportTime" ></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'south',height:'38px',border:false">
+    	 <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>                
+            </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage(["newData"],function($scope){
+    	$scope.$getDefaultCode(["502", "070"]);
+		
+        var cyMap = new CYMap($scope.$("#map")[0]);
+		var centerPoint = new OpenLayers.LonLat(105.70405, 28.58103);
+		var point;
+		var wkt_c = new OpenLayers.Format.WKT();
+		var type = $scope.$params.get("type");
+		
+		//转换事件类型
+		$scope.options_eventType = function(value) {
+			return $scope.$getCodeName("502", value);
+		};
+		$scope.options_directionType= function(value) {
+			return $scope.$getCodeName("070", value);
+		};
+        //页面登录时加载
+		$scope.load = function() {
+			init();
+			moveToMap();
+		};
+		//初始化地图及双击事件
+		function init() {
+			point = new OpenLayers.Layer.Vector("point");
+			cyMap.map.addLayer(point);
+		}
+
+		//移动地图至中心点
+		function moveToMap() {
+			if ($scope.newData.lonLat) {
+				var style = {
+					graphicWidth : 18,
+					graphicHeight : 18,
+					externalGraphic : "frameworks/Openlayers/img/marker.png"
+				};
+				var geometry = wkt_c.read($scope.newData.lonLat).geometry.clone();
+				geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				var feature = new OpenLayers.Feature.Vector(geometry, null, style);
+				point.addFeatures(feature);
+				cyMap.map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+			} else {
+				centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+				cyMap.map.panTo(centerPoint);
+			}
+		}
+    });
+</script>
+
+<style>
+    #manualEventInfo .th{
+        width: 100px;
+        text-align: right;
+    }
+    #manualEventInfo .td{
+        width: 155px;
+        text-align: left;
+        white-space: normal;
+        word-break: break-all;
+        color: #0000ff;
+    }
+    #manualEventInfo span[cy-name] {
+		color: #0000ff;
+	}
+   
+</style>

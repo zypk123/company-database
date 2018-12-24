@@ -1,0 +1,398 @@
+<div id="cameraInfoOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData" id="form">
+            <div class="table">
+                <div class="tr">
+                    <div class="th">相机编号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="deviceNbr" data-options="required:true"/>
+                    </div>
+                    <div class="th">唯一性标识：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="deviceKey" data-options="required:true"/>
+                    </div>
+                    <div class="th">相机名称：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="componentName"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">品牌：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="brand"/>
+                    </div>
+                    <div class="th">相机型号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="model"/>
+                    </div>
+                	<div class="th">相机序列号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="assembleSerialNbr"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">规格：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="specification"/>
+                    </div>
+                    <div class="th">相机IP：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="cameraIp" validType="ip"/>
+                    </div>
+                	<div class="th">端口号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="cameraPort"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">通道号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="connChannel"/>
+                    </div>
+                    <div class="th">软件版本：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="softwareVersion"/>
+                    </div>
+                    <div class="th">用户名：</div> 
+                    <div class="td">
+                        <input class="easyui-textbox" name="userName"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">密码：</div>
+                    <div class="td">
+                        <input type="password" class="easyui-textbox" name="password"/>
+                    </div>
+                    <div class="th">监控方向：</div>
+                    <div class="td high_speed">
+                        <input type="radio" id="upDirection" name="directionType" value="1" cy-click="showAddUpLane"/>上行
+                        <input type="radio" id="downDirection" name="directionType" value="2" cy-click="showAddDownLane"/>下行
+                    </div>
+                    <div class="td city">
+                        <input class="easyui-combobox" id="directionType" name="directionType" after-change="selectDirection" cy-code="071"/>
+                    </div>
+                </div>
+                <div class="tr">
+                <div class="th">监控车道：</div>
+                <div class="td">
+                	<input type="hidden" id="driveLaneId" name="driveLaneId" />
+                    <div id="laneDiv" style="width: 700px;border:silver solid 2px">
+                        <div id="downContainer" class="containerDown">
+                            <!--左边图标-->
+                            <div class="leftDown">
+                                <div>
+                                    <img src="themes/default/images/arrow_left.png"  style="height: 30px;width: 90px">
+                                    <span id="down">下行</span>
+                                </div>
+                            </div>
+                            <!--中间车道-->
+                            <div id="downLaneDiv" class="centerDown">
+
+                            </div>
+                            <!--右边空白-->
+                            <div class="rightDown">
+
+                            </div>
+                        </div>
+                        <div id="upContainer" class="containerDown">
+                            <div class="leftDown">
+                                <div>
+                                    <img src="themes/default/images/arrow_right.png"  style="height: 30px;width: 90px">
+                                    <span id="up">上行</span>
+                                </div>
+                            </div>
+                            <div id="upLaneDiv" class="centerDown">
+                            
+                            </div>
+                            <div class="rightDown">
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">
+        <div class="linkbutton_toolbar" style="text-align: center">
+            <a class="easyui-linkbutton button-main" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf" >取消</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * saveData ：保存数据的方法
+     */
+    InitPage(["saveData","deviceId","rowDatas","siteId","sectionId","type"],function($scope){
+    	var type = "";//判断编辑或添加的标识
+    	var laneIds = [];	//编辑时获取到的车道ID数组
+    	var lane = [];//车道信息数组
+    	var directionType = ""; //方向类型
+    	var deviceId = $scope.deviceId; //设备ID
+    	var siteId = ""; //初始化点位Id
+    	var siteType = "";//初始化点位类型
+    	var carmerInfo;
+        $scope.load = function(){
+            $scope.$("#laneDiv").hide();
+            $scope.$("#downContainer").hide();
+            $scope.$("#upContainer").hide();
+            if($scope.type != undefined){
+            	type = $scope.type;
+            	carmerInfo = $scope.rowDatas;
+            	if(carmerInfo != undefined){
+            		siteId = $scope.siteId;
+            		$scope.$ajaxRequest({
+		        		url: $scope.$restRoot+'device/site/querySite',
+		        		params: {siteId : siteId},
+		        		method: 'post',
+		        		success: function(data){
+		        			siteType = data.siteType;
+				        	if(siteType == "1"){//路口点位
+				        		$scope.$(".high_speed").remove();
+				        	}else if(siteType == "2" || siteType == "3"){//2路段点位，3道路点位
+				        		$scope.$(".city").remove();
+				        	}
+				        	$scope.formData = carmerInfo;
+				        	$scope.$updateDom("formData");
+				        	laneIds = carmerInfo.driveLaneId.split(",");
+			            	directionType = carmerInfo.directionType;
+			            	if(siteType == "1"){//路口点位
+				        		$scope.selectDirection();
+				        	}else if(siteType == "2" || siteType == "3"){//2路段点位，3道路点位
+				        		if(directionType == 1){
+				        			$scope.showAddUpLane();
+				        		}else{
+				        			$scope.showAddDownLane();
+				        		}
+				        	}
+		        		},
+		        		fail: function(errMsg){
+		        			$.messager.alert("提示","获取点位信息失败！");
+		        		}
+		        	});
+	            }
+            }else{
+            	siteId = $scope.siteId;
+            	$scope.$ajaxRequest({
+	        		url: $scope.$restRoot+'device/site/querySite',
+	        		params: {siteId : siteId},
+	        		method: 'post',
+	        		success: function(data){
+	        			siteType = data.siteType;
+			        	if(siteType == "1"){//路口点位
+			        		$scope.$(".high_speed").remove();
+			        	}else if(siteType == "2" || siteType == "3"){//2路段点位，3道路点位
+			        		$scope.$(".city").remove();
+			        	}
+	        		},
+	        		fail: function(errMsg){
+	        			$.messager.alert("提示","获取点位信息失败！");
+	        		}
+	        	});
+            }
+        };
+        $scope.selectDirection = function(){
+        	directionType = $scope.$("#directionType").textbox("getValue");
+        	if(directionType == 1){//1由东向西
+        		$scope.$("#up").text("由东向西");
+        	}else if(directionType == 2 ){//2由西向东
+        		$scope.$("#down").text("由西向东");
+        	}else if(directionType == 3){//3由南向北
+        		$scope.$("#up").text("由南向北");
+        	}else if(directionType == 4){//4由北向南
+        		$scope.$("#down").text("由北向南");
+        	}else if(directionType == 5){//5东北
+        		$scope.$("#up").text("东北");
+        	}else if(directionType == 6 ){//6西南
+        		$scope.$("#down").text("西南");
+        	}else if(directionType == 7){//7东南
+        		$scope.$("#up").text("东南");
+        	}else if(directionType == 8){//8西北
+        		$scope.$("#down").text("西北");
+        	}
+        	//alert(siteId+"------"+directionType);
+        	getLane(siteId,directionType);
+        };
+        
+        //根据点位ID和方向类型查询断面下车道信息
+        function getLane(siteId,directionType){
+        	$scope.$ajaxRequest({
+        		url: $scope.$restRoot+'device/site/queryLane',
+        		params: {siteId : siteId, directionType : directionType},
+        		method: 'post',
+        		success: function(data){
+        			lane = data;
+        			for(var i = 0; i < lane.length; i++){
+        				if(directionType == 1){//上行或由东向西
+        					$scope.createLane("#upLaneDiv",lane[i].laneId,i + 1);
+        				}else if(directionType == 2){//下行或由西向东
+        					$scope.createLane("#downLaneDiv",lane[i].laneId,i + 1);
+        				}else if(directionType == 3){//3由南向北
+			        		$scope.createLane("#upLaneDiv",lane[i].laneId,i + 1);
+			        	}else if(directionType == 4){//4由北向南
+			        		$scope.createLane("#downLaneDiv",lane[i].laneId,i + 1);
+			        	}else if(directionType == 5){//5东北
+			        		$scope.createLane("#upLaneDiv",lane[i].laneId,i + 1);
+			        	}else if(directionType == 6 ){//6西南
+			        		$scope.createLane("#downLaneDiv",lane[i].laneId,i + 1);
+			        	}else if(directionType == 7){//7东南
+			        		$scope.createLane("#upLaneDiv",lane[i].laneId,i + 1);
+			        	}else if(directionType == 8){//8西北
+			        		$scope.createLane("#downLaneDiv",lane[i].laneId,i + 1);
+			        	}
+	            	}
+        		},
+        		fail: function(errMsg){
+        			$.messager.alert("提示","获取车道数失败！");
+        		}
+        	});
+        };
+       
+        /** 
+         * 显示点位上行方向车道
+         */
+        $scope.showAddUpLane = function(){
+            $scope.$('#upLaneDiv>div').remove();
+            directionType = $scope.$("#upDirection").val();
+            getLane(siteId,directionType);
+            $scope.$("#up").text("上行");
+            /*上行车道div显示*/
+            $scope.$("#laneDiv").show();
+            $scope.$("#upContainer").show();
+            $scope.$("#downContainer").hide();
+        };
+        /**
+         * 显示点位下行方向车道
+         */
+        $scope.showAddDownLane = function(){
+            //获取该点位下行车道数目，多少数目执行多少次creatLane函数
+            $scope.$('#downLaneDiv>div').remove();
+            directionType = $scope.$("#downDirection").val();
+            getLane(siteId,directionType);
+            $scope.$("#down").text("下行");
+            /*下行车道div显示*/
+            $scope.$("#laneDiv").show();
+            $scope.$("#downContainer").show();
+            $scope.$("#upContainer").hide();
+        };
+        /**
+         *创建车道
+         * laneId ： 整数 车道下标
+         * laneCode ：整数 车道对应数值
+         */
+        $scope.createLane = function(container,laneId,laneCode){
+        	if(type = "edit" && laneIds.length > 0){
+        		for(var i = 0; i < laneIds.length; i++){
+	        		if(laneIds[i] == laneId){
+	        			var div = $('<div name="driveLaneId" class="selectedLane" laneNbr="'+laneCode+'" date-value="'+laneId+'">车道'+laneCode+'</div>');
+	        			break;
+	        		}else{
+	        			var div = $('<div name="driveLaneId" laneNbr="'+laneCode+'" date-value="'+laneId+'">车道'+laneCode+'</div>');
+	        		}
+        		}
+        	}else{
+        		var div = $('<div name="driveLaneId" laneNbr="'+laneCode+'" date-value="'+laneId+'">车道'+laneCode+'</div>');
+        	}
+            div.click($scope.clickLane);
+            $scope.$(container).append(div);
+        };
+        /**
+         *点击车道选择/取消选中
+         */
+        $scope.clickLane = function(event){
+            $(event.currentTarget).toggleClass("selectedLane");
+        };
+        
+        
+        /**
+         *相机信息保存 
+         */
+        $scope.save = function(){
+        	//获取监控的车道ID
+        	var laneId = "";
+        	var laneNbr = "";
+            $scope.$("div[class='selectedLane']").each(function(index){
+            	var thiz = $(this);
+            	if(index == 0){
+            		laneId = thiz.attr("date-value");
+            		laneNbr = thiz.attr("laneNbr");
+            	}else{
+            		laneId = laneId + "," + thiz.attr("date-value");
+            		laneNbr = laneNbr + "," + thiz.attr("laneNbr");
+            	}
+            });
+            $scope.$("#driveLaneId").val(laneId);
+            //更新form中的数据
+            if($scope.$("#form").form("validate")){
+	            $scope.$updateData("formData");
+	            deviceId = $scope.deviceId;//添加时设备的ID
+	            $scope.formData.deviceId = deviceId;
+	            $scope.formData.laneNbr = laneNbr;
+            	trimObject($scope.formData);//对对象中的每个元素进行trim操作
+	            //添加保存相机信息
+           		$scope.saveData($scope.formData);
+            }
+        };
+    });
+</script>
+<style type="text/css">
+    #cameraInfoOperate .th{
+        width: 100px;
+        text-align: right;
+    }
+    #cameraInfoOperate .td{
+        height: auto;
+        width: 174px;
+      }
+    #cameraInfoOperate .td>input[class^='easyui-']{
+        width: 174px;
+    }
+    #cameraInfoOperate .selectedLane{
+        background:orange;
+    }
+    #cameraInfoOperate .containerDown{
+        display:-moz-box;
+        display:-webkit-box;
+        display:box;
+        width: 100%;
+        -moz-box-align:center;
+        -webkit-box-align:center;
+        box-align:center;
+        -moz-box-pack:center;
+        -webkit-box-pack:center;
+        box-pack:center;
+        background: rgba(94, 94, 121, 0.93);
+    }
+    #cameraInfoOperate .leftDown{
+        width: 150px;
+        text-align: center;
+        vertical-align: middle;
+        height: 100%;
+        font-size: 18px;
+        color: #ffffff;
+    }
+    #cameraInfoOperate .centerDown{
+        -moz-box-flex:1;
+        -webkit-box-flex:1;
+        box-flex:1;
+    }
+    #cameraInfoOperate .centerDown div{
+        border-bottom: dashed #ffffff 2px;
+        height: 30px;
+        text-align: center;
+        color: #ffffff;
+    }
+    #cameraInfoOperate .rightDown{
+        width: 150px;
+        height: 100%;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 18px;
+        color: #ffffff;
+    }
+    #cameraInfoOperate .centerDown div:nth-last-child(1){
+        border-bottom: 0px
+    }
+</style>

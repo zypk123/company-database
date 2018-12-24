@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_FunctionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Function" >
+    <id column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+    <result column="MENU_CODE" property="menuCode" jdbcType="VARCHAR" />
+    <result column="FUNCTION_NAME" property="functionName" jdbcType="VARCHAR" />
+    <result column="FUNCTION_FLAG" property="functionFlag" jdbcType="CHAR" />
+    <result column="FUNCTION_DEPENDENCY" property="functionDependency" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FUNCTION_CODE, MENU_CODE, FUNCTION_NAME, FUNCTION_FLAG, FUNCTION_DEPENDENCY
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_FUNCTION
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_FUNCTION
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function" >
+    insert into T_SYS_FUNCTION (FUNCTION_CODE, MENU_CODE, FUNCTION_NAME, 
+      FUNCTION_FLAG, FUNCTION_DEPENDENCY)
+    values (#{functionCode,jdbcType=VARCHAR}, #{menuCode,jdbcType=VARCHAR}, #{functionName,jdbcType=VARCHAR}, 
+      #{functionFlag,jdbcType=CHAR}, #{functionDependency,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function" >
+    insert into T_SYS_FUNCTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="functionCode != null" >
+        FUNCTION_CODE,
+      </if>
+      <if test="menuCode != null" >
+        MENU_CODE,
+      </if>
+      <if test="functionName != null" >
+        FUNCTION_NAME,
+      </if>
+      <if test="functionFlag != null" >
+        FUNCTION_FLAG,
+      </if>
+      <if test="functionDependency != null" >
+        FUNCTION_DEPENDENCY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="functionCode != null" >
+        #{functionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="menuCode != null" >
+        #{menuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null" >
+        #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionFlag != null" >
+        #{functionFlag,jdbcType=CHAR},
+      </if>
+      <if test="functionDependency != null" >
+        #{functionDependency,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function" >
+    update T_SYS_FUNCTION
+    <set >
+      <if test="menuCode != null" >
+        MENU_CODE = #{menuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null" >
+        FUNCTION_NAME = #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionFlag != null" >
+        FUNCTION_FLAG = #{functionFlag,jdbcType=CHAR},
+      </if>
+      <if test="functionDependency != null" >
+        FUNCTION_DEPENDENCY = #{functionDependency,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Function" >
+    update T_SYS_FUNCTION
+    set MENU_CODE = #{menuCode,jdbcType=VARCHAR},
+      FUNCTION_NAME = #{functionName,jdbcType=VARCHAR},
+      FUNCTION_FLAG = #{functionFlag,jdbcType=CHAR},
+      FUNCTION_DEPENDENCY = #{functionDependency,jdbcType=VARCHAR}
+    where FUNCTION_CODE = #{functionCode,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_FUNCTION
+  </select>
+
+</mapper>

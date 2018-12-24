@@ -1,0 +1,75 @@
+<div class="easyui-layout" id="trafficControlCurrent" >
+		<table id="currentData" cy-datagrid="optionsCur" cy-querydata="queryCurrentData"
+		cy-url="trafficSituation/trafficControl/searchValid">
+		</table>
+</div>
+
+<script type="text/javascript">
+	InitPage(["locationSite1"], function($scope) {
+		$scope.$getDefaultCode(["515"]);
+		$scope.load = function() {
+			//查询默认数据
+			//$scope.$search("queryCurrentData");
+			queryCur();
+		};
+		$scope.optionsCur = {
+			columns : [[
+				{field : 'roadId',title : '管制道路',align : 'center',formatter : $scope.$getRoadName,width : 20},
+				{field : 'startSite',title : '起点',align : 'center',width : 20}, 
+				{field : 'endSite',title : '终点',align : 'center',width : 20},
+				{field : 'directionType',title : '管制方向',align : 'center',formatter : options_direction,width : 15},
+				{field : 'cz',title : '详情',align : 'center',formatter : optionsDmCz,width : 15}
+				]
+			],
+             onDblClickRow: function (rowIndex, rowData) {
+             	if(rowData.lonLat){
+             		$scope.locationSite1(rowData.lonLat);
+             	}
+             	else{
+             		$.messager.alert("警告","无法获取位置信息！");
+             	}
+             },
+			nowrap : false
+		};
+		function queryCur(){
+			$scope.$search("queryCurrentData");
+			//setTimeout(function() {queryCur();},100000);
+		}
+		
+		//方向direction的格式化
+		function options_direction(value,row,index){
+			return $scope.$getCodeName("515",value);
+		}	
+		
+		//操作栏信息
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a title='详情' cy-click='showInfo(" + index + ")'></a>");
+			//定位按钮
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+				});
+			return $("<span/>").append(button1).html();
+		}
+		
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#currentData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			//打开修改窗口
+			$scope.$openDialog("editDialog", {
+				title : "交通管制详情",
+				height : 500,
+				width : 550,
+				href : "tpls/trafficMonitor/trafficControl/traffic-control-info.html"
+			});
+		};
+	}); 
+</script>
+<style>
+	#trafficControlCurrent .datagrid-cell {
+		font-size: 11px;
+	}
+
+</style>

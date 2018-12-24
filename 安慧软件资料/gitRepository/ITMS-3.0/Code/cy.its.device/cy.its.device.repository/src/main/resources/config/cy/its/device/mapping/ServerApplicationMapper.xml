@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ServerApplicationMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.ServerApplication" >
+    <id column="SERVER_APP_ID" property="serverAppId" jdbcType="VARCHAR" />
+    <result column="SERVER_ID" property="serverId" jdbcType="VARCHAR" />
+    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" />
+    <result column="SERVER_PORT" property="serverPort" jdbcType="VARCHAR" />
+    <result column="CONTEX" property="contex" jdbcType="VARCHAR" />
+    <result column="SUFFIX" property="suffix" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERVER_APP_ID, SERVER_ID, APP_TYPE, SERVER_PORT, CONTEX, SUFFIX, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_SERVER_APPLICATION
+    where SERVER_APP_ID = #{serverAppId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_SERVER_APPLICATION
+    where SERVER_APP_ID = #{serverAppId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.ServerApplication" >
+    insert into T_DEVICE_SERVER_APPLICATION (SERVER_APP_ID, SERVER_ID, APP_TYPE, 
+      SERVER_PORT, CONTEX, SUFFIX, 
+      REMARK)
+    values (#{serverAppId,jdbcType=VARCHAR}, #{serverId,jdbcType=VARCHAR}, #{appType,jdbcType=VARCHAR}, 
+      #{serverPort,jdbcType=VARCHAR}, #{contex,jdbcType=VARCHAR}, #{suffix,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.ServerApplication" >
+    insert into T_DEVICE_SERVER_APPLICATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serverAppId != null" >
+        SERVER_APP_ID,
+      </if>
+      <if test="serverId != null" >
+        SERVER_ID,
+      </if>
+      <if test="appType != null" >
+        APP_TYPE,
+      </if>
+      <if test="serverPort != null" >
+        SERVER_PORT,
+      </if>
+      <if test="contex != null" >
+        CONTEX,
+      </if>
+      <if test="suffix != null" >
+        SUFFIX,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serverAppId != null" >
+        #{serverAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="serverId != null" >
+        #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="serverPort != null" >
+        #{serverPort,jdbcType=VARCHAR},
+      </if>
+      <if test="contex != null" >
+        #{contex,jdbcType=VARCHAR},
+      </if>
+      <if test="suffix != null" >
+        #{suffix,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.ServerApplication" >
+    update T_DEVICE_SERVER_APPLICATION
+    <set >
+      <if test="serverId != null" >
+        SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        APP_TYPE = #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="serverPort != null" >
+        SERVER_PORT = #{serverPort,jdbcType=VARCHAR},
+      </if>
+      <if test="contex != null" >
+        CONTEX = #{contex,jdbcType=VARCHAR},
+      </if>
+      <if test="suffix != null" >
+        SUFFIX = #{suffix,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SERVER_APP_ID = #{serverAppId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.ServerApplication" >
+    update T_DEVICE_SERVER_APPLICATION
+    set SERVER_ID = #{serverId,jdbcType=VARCHAR},
+      APP_TYPE = #{appType,jdbcType=VARCHAR},
+      SERVER_PORT = #{serverPort,jdbcType=VARCHAR},
+      CONTEX = #{contex,jdbcType=VARCHAR},
+      SUFFIX = #{suffix,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where SERVER_APP_ID = #{serverAppId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectServerApps" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from (SELECT V.*, ROWNUM RN
+		FROM T_DEVICE_SERVER_APPLICATION V
+		<where>
+		    <if test="serverId != null and serverId != ''">
+				AND V.SERVER_ID = #{serverId,jdbcType=VARCHAR}
+			</if>
+			<if test="serverPlatId != null and serverPlatId != ''">
+				AND V.SERVER_APP_ID IN (SELECT DISTINCT SERVER_APP_ID FROM 
+				 T_DEVICE_SERVER_APP_SSO_PLAT
+				 WHERE SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR})
+			</if>
+			 <if test="surveySystemId != null and surveySystemId != ''">
+				AND V.SERVER_ID IN (SELECT SR.SERVER_ID FROM T_DEVICE_SERVER SR
+				 WHERE SR.SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR})
+			</if>
+		</where>
+		)
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where>
+	</select>
+
+  <select id="countServerApps" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) 
+		FROM T_DEVICE_SERVER_APPLICATION V
+		<where>
+		    <if test="serverId != null and serverId != ''">
+				AND V.SERVER_ID = #{serverId,jdbcType=VARCHAR}
+			</if>
+			<if test="serverPlatId != null and serverPlatId != ''">
+				AND V.SERVER_APP_ID IN (SELECT DISTINCT SERVER_APP_ID FROM 
+				 T_DEVICE_SERVER_APP_SSO_PLAT
+				 WHERE SERVER_PLAT_ID = #{serverPlatId,jdbcType=VARCHAR})
+			</if>
+			 <if test="surveySystemId != null and surveySystemId != ''">
+				AND V.SERVER_ID IN (SELECT SR.SERVER_ID FROM T_DEVICE_SERVER SR
+				 WHERE SR.SURVEY_SYSTEM_ID = #{surveySystemId,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</select>
+</mapper>

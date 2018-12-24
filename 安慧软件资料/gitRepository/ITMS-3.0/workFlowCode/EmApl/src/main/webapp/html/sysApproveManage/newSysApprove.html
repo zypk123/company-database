@@ -1,0 +1,190 @@
+<div ng-controller="NewSysApproveController">
+    <form class="form-horizontal" role="form" name="form" ng-submit="save()" novalidate="novalidate">
+        <div style="margin-left: 10px;height: 99%;width: 99%;overflow-y:auto;overflow-x:hidden">
+            <div class="container-fluid">
+                <div class="row">
+                    <div style="margin-top: 15px">
+                        <div><b>系统报备信息</b></div>
+                        <div style="width: 100%; height: 2px; border-top: 1px dashed #9C9C9C; clear: both; margin-top: 2px;" /></div>
+                    <br>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-sm-2 control-label">申报单位：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="unitName" ng-model="showInfo.unitName" placeholder="Search for...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" ng-click="searchUnit()">查询</button>
+                                  </span>
+                            </div>
+                            <!-- /input-group -->
+                            <!-- <input type="text" name="unitName" class="form-control" id="recipient-name" ng-model="unitName" required ng-maxlength="100"> -->
+                            <!-- <span ng-show="form.unitName.$dirty&&form.unitName.$invalid"> -->
+                            <span ng-show="form.$dirty && form.unitName.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.unitName.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-sm-2 control-label">系统名称：</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="systemName" class="form-control" id="recipient-name" ng-model="showInfo.systemName" required ng-maxlength="100">
+                            <!-- <span ng-show="form.systemName.$dirty&&form.systemName.$invalid"> -->
+                            <span ng-show="form.$dirty && form.systemName.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.systemName.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-sm-2 control-label">使用部门：</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="userDepartments" class="form-control" id="recipient-name" ng-model="showInfo.userDepartments" required ng-maxlength="100" placeholder="（可填写多个部门，以逗号隔开）">
+                            <!-- <span ng-show="form.userDepartments.$dirty&&form.userDepartments.$invalid"> -->
+                            <span ng-show="form.$dirty && form.userDepartments.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.userDepartments.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-sm-2 control-label">系统负责人：</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="systemManageer" class="form-control" id="recipient-name" ng-model="showInfo.systemManageer" required ng-maxlength="100">
+                            <!-- <span ng-show="form.systemManageer.$dirty&&form.systemManageer.$invalid"> -->
+                            <span ng-show="form.$dirty && form.systemManageer.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.systemManageer.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                        <label for="recipient-name" class="col-sm-2 control-label">联系电话：</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="phone" class="form-control" id="recipient-name" ng-model="showInfo.phone" required ng-maxlength="100" ng-pattern="/1[3|5|7|8|][0-9]{9}/">
+                            <!-- <span ng-show="form.phone.$dirty&&form.phone.$invalid"> -->
+                            <span ng-show="form.phone.$dirty&&form.phone.$invalid" style="color:red;">*填写格式不正确</span>
+                            <span ng-show="form.$dirty && form.phone.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.phone.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-sm-2 control-label">主要功能：</label>
+                        <div class="col-sm-8">
+                            <textarea type="text" name="systemFunction" class="form-control" id="recipient-name" ng-model="showInfo.sysytemFunction" required ng-maxlength="100"></textarea>
+                            <!-- <span ng-show="form.systemFunction.$dirty&&form.systemFunction.$invalid"> -->
+                            <span ng-show="form.$dirty && form.systemFunction.$error.required" style="color:red;">*不能为空</span>
+                            <span ng-show="form.$dirty && form.systemFunction.$error.maxlength" style="color:red;">*最大不能超过100字</span>
+                            <!-- </span> -->
+                        </div>
+                    </div>
+                    <div><b>附件信息</b></div>
+                    <div style="width: 100%; height: 2px; border-top: 1px dashed #9C9C9C; clear: both; margin-top: 2px;" /></div>
+                <br>
+                <div class="form-group">
+                    <label for="recipient-name" class="col-sm-3 control-label">01系统立项申请请示：</label>
+                    <div class="col-sm-6">
+                        <div ng-repeat="approveImgInfo in showInfo.approveImg track by $index">
+                            <a href="{{approveImgInfo.value}}">{{approveImgInfo.name}}</a>
+                            <img src='/EmApl/img/commn/Delete.png' ng-click="deleteAccessories(approveImgInfo,'approveImgType')" style='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+                            </img>
+                        </div>
+                        <!-- <input type="text" name="approveImg" class="form-control" id="recipient-name" ng-model="approveImg" required ng-maxlength="100"> -->
+                        <!-- <span ng-show="form.approveImg.$dirty&&form.approveImg.$invalid"> -->
+                        <!-- <span ng-show="form.$dirty && form.approveImg.$error.required" style="color:red;">*不能为空</span> -->
+                        <!-- <span ng-show="form.$dirty && form.approveImg.$error.maxlength" style="color:red;">*最大不能超过100字</span> -->
+                        <!-- </span> -->
+                    </div>
+                    <div class="col-sm-2" style="line-height:30px;">
+                        <input type='file' onchange="angular.element(this).scope().uploadAccessories(this,'approveImgType')" multiple class="form-control uploadInput" accept=".doc,.docx,.wps,.png,.jpg,.gif,.jpeg,.bmp,.xlsx" id="approveImgFile">
+                        <a class="glyphicon glyphicon-open" style="cursor:pointer;" title="上传"></a>&nbsp;&nbsp;&nbsp;
+                        <!-- <a class="glyphicon glyphicon-trash" style="cursor:pointer;" title="删除" ng-click="deleteAccessories('approveImgType')"></a> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="col-sm-3 control-label">02发改财政等部门同意立项审批：</label>
+                    <div class="col-sm-6">
+                        <div ng-repeat="departmentsImgInfo in showInfo.departmentsImg track by $index">
+                            <a href="{{departmentsImgInfo.value}}">{{departmentsImgInfo.name}}</a>
+                            <img src='/EmApl/img/commn/Delete.png' ng-click="deleteAccessories(departmentsImgInfo,'departmentsImgType')" style='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+                        </div>
+                        <!-- <input type="text" name="departmentsImg" class="form-control" id="recipient-name" ng-model="departmentsImg" required ng-maxlength="100">
+                        <span ng-show="form.$dirty && form.departmentsImg.$error.required" style="color:red;">*不能为空</span>
+                        <span ng-show="form.$dirty && form.departmentsImg.$error.maxlength" style="color:red;">*最大不能超过100字</span> -->
+                        <!-- </span> -->
+                    </div>
+                    <div class="col-sm-2" style="line-height:30px;">
+                        <input type='file' onchange="angular.element(this).scope().uploadAccessories(this,'departmentsImgType')" multiple class="form-control uploadInput" accept=".doc,.docx,.wps,.png,.jpg,.gif,.jpeg,.bmp,.xlsx" id="departmentsImgFile">
+                        <a class="glyphicon glyphicon-open" style="cursor:pointer;" title="上传"></a>&nbsp;&nbsp;&nbsp;
+                        <!-- <a class="glyphicon glyphicon-trash" style="cursor:pointer;" title="删除" ng-click="deleteAccessories('departmentsImgType')"></a> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="col-sm-3 control-label">03技术方案：</label>
+                    <div class="col-sm-6">
+                         <div ng-repeat="solutionFileInfo in showInfo.solutionFile track by $index">
+                            <a href="{{solutionFileInfo.value}}">{{solutionFileInfo.name}}</a>
+                            <img src='/EmApl/img/commn/Delete.png' ng-click="deleteAccessories(solutionFileInfo,'solutionFileType')" style='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+                        </div>
+                       <!--  <input type="text" name="solutionFile" class="form-control" id="recipient-name" ng-model="solutionFile" required ng-maxlength="100"> -->
+
+                       <!--  <span ng-show="form.$dirty && form.solutionFile.$error.required" style="color:red;">*不能为空</span>
+                        <span ng-show="form.$dirty && form.solutionFile.$error.maxlength" style="color:red;">*最大不能超过100字</span> -->
+                        <!-- </span> -->
+                    </div>
+                    <div class="col-sm-2" style="line-height:30px;">
+                        <input type='file' onchange="angular.element(this).scope().uploadAccessories(this,'solutionFileType')" multiple class="form-control uploadInput" accept=".doc,.docx,.wps,.png,.jpg,.gif,.jpeg,.bmp,.xlsx" id="solutionFile">
+                        <a class="glyphicon glyphicon-open" style="cursor:pointer;" title="上传"></a>&nbsp;&nbsp;&nbsp;
+                        <!-- <a class="glyphicon glyphicon-trash" style="cursor:pointer;" title="删除" ng-click="deleteAccessories('solutionFileType')"></a> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="col-sm-3 control-label">04实施方案：</label>
+                    <div class="col-sm-6">
+                    <div ng-repeat="plansFileInfo in showInfo.plansFile track by $index">
+                            <a href="{{plansFileInfo.value}}">{{plansFileInfo.name}}</a>
+                            <img src='/EmApl/img/commn/Delete.png' ng-click="deleteAccessories(plansFileInfo,'plansFileType')" style='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+                        </div>
+                        <!-- <input type="text" name="plansFile" class="form-control" id="recipient-name" ng-model="plansFile" required ng-maxlength="100">
+                        <span ng-show="form.$dirty && form.plansFile.$error.required" style="color:red;">*不能为空</span>
+                        <span ng-show="form.$dirty && form.plansFile.$error.maxlength" style="color:red;">*最大不能超过100字</span> -->
+                        <!-- </span> -->
+                    </div>
+                    <div class="col-sm-2" style="line-height:30px;">
+                        <input type='file' onchange="angular.element(this).scope().uploadAccessories(this,'plansFileType')" multiple class="form-control uploadInput" accept=".doc,.docx,.wps,.png,.jpg,.gif,.jpeg,.bmp,.xlsx" id="plansFile">
+                        <a class="glyphicon glyphicon-open" style="cursor:pointer;" title="上传"></a>&nbsp;&nbsp;&nbsp;
+                        <!-- <a class="glyphicon glyphicon-trash" style="cursor:pointer;" title="删除" ng-click="deleteAccessories('plansFileType')"></a> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="col-sm-3 control-label">05方案专家论证意见：</label>
+                    <div class="col-sm-6">
+                    <div ng-repeat="expertOpinionImgInfo in showInfo.expertOpinionImg track by $index">
+                            <a href="{{expertOpinionImgInfo.value}}">{{expertOpinionImgInfo.name}}</a>
+                            <img src='/EmApl/img/commn/Delete.png' ng-click="deleteAccessories(expertOpinionImgInfo,'expertOpinionImgType')" style='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+                        </div>
+                       <!--  <input type="text" name="expertOpinionImg" class="form-control" id="recipient-name" ng-model="expertOpinionImg" required ng-maxlength="100">
+                        <span ng-show="form.$dirty && form.expertOpinionImg.$error.required" style="color:red;">*不能为空</span>
+                        <span ng-show="form.$dirty && form.expertOpinionImg.$error.maxlength" style="color:red;">*最大不能超过100字</span> -->
+                        <!-- </span> -->
+                    </div>
+                    <div class="col-sm-2" style="line-height:30px;">
+                        <input type='file' onchange="angular.element(this).scope().uploadAccessories(this,'expertOpinionImgType')" multiple class="form-control uploadInput" accept=".doc,.docx,.wps,.png,.jpg,.gif,.jpeg,.bmp,.xlsx" id="expertOpinionImgFile">
+                        <a class="glyphicon glyphicon-open" style="cursor:pointer;" title="上传"></a>&nbsp;&nbsp;&nbsp;
+                        <!-- <a class="glyphicon glyphicon-trash" style="cursor:pointer;" title="删除" ng-click="deleteAccessories(,'expertOpinionImgType')"></a> -->
+                    </div>
+                </div>
+                <div style="float:right">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" ng-click="cancel()">取消</button>
+                    <button name=comfirm class="btn btn-primary" type="submit" ng-disabled="form.$invalid">保存</button>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+</form>
+</div>
+<style>
+.uploadInput {
+    width: 30px!important;
+    opacity: 0!important;
+    position: absolute;
+    cursor: pointer;
+    z-index: 9999
+}
+</style>

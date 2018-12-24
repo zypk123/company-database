@@ -1,0 +1,92 @@
+<div id="deviceSysConfigTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+    <div title="设备信息" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-manage-operate.html'">
+
+    </div>
+    <div title="相机信息" data-options="href:'tpls/deviceManage/deviceRecord/camera-info-list.html'">
+
+    </div>
+    <div title="年检信息" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-certification.html'">
+
+    </div>
+    <div title="实景图片" data-options="href:'tpls/deviceManage/deviceRecord/bayonet-photo.html'">
+
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * mode ：判断访问tab页面的参数
+     * whichType ：设备类型
+     */
+    InitPage(["mode","saveData","closeSelf","deviceInfoDto","deviceId","equipmentNbr","certificationUnregistered"],function($scope) {
+        //传递保存卡口信息方法
+        $scope.$setParam("saveData",$scope.saveData);
+        if($scope.certificationUnregistered != undefined){
+        	$scope.$setParam("certificationUnregistered", $scope.certificationUnregistered);
+        }
+        //传递卡口设备信息值
+        if($scope.deviceInfoDto != undefined){
+        	var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','设备信息');  // 获取设备信息的面板
+			$scope.$('#deviceSysConfigTabs').tabs('update', {
+				tab: tab,
+				options: {
+					cache : false,
+					href :'tpls/deviceManage/deviceRecord/bayonet-manage-operate.html'  // 新内容的URL
+				}
+			});
+			var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','相机信息');  // 获取相机信息的面板
+			$scope.$('#deviceSysConfigTabs').tabs('update', {
+				tab: tab,
+				options: {
+					cache : false,
+					href :'tpls/deviceManage/deviceRecord/camera-info-list.html'  // 新内容的URL
+				}
+			});
+        	$scope.$('#deviceSysConfigTabs').tabs({
+				onSelect: function(title,index){
+					$scope.$setParam("deviceId1",$scope.deviceId);//相机信息
+					$scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+					$scope.$setParam("destroyTab1",$scope.closeSelf);
+					$scope.$setParam("destroyTab2",$scope.closeSelf);
+					//传递保存卡口信息方法
+        			$scope.$setParam("saveData",$scope.saveData);
+			        var currentMode= $scope.mode;
+			        $scope.$setParam("remark",currentMode);
+				}
+			});
+       		$scope.$setParam("deviceInfoDto",$scope.deviceInfoDto);
+            $scope.$setParam("deviceSysNbr",$scope.deviceInfoDto.deviceSysNbr);//年检信息设备编号
+        }
+        //传递deviceId到其他三个tab页
+        $scope.$setParam("deviceId1",$scope.deviceId);//相机信息
+        $scope.$setParam("deviceId2",$scope.deviceId);//年检信息
+        $scope.$setParam("deviceId3",$scope.deviceId);//实景图片
+        //刷新实景图片页面
+        var photoRefresh = function(deviceId){
+        	var tab = $scope.$('#deviceSysConfigTabs').tabs('getTab','实景图片');  // 获取相机信息的面板
+        	$scope.$setParam("deviceId3",deviceId);//实景图片
+        	$scope.$setParam("destroyTab4",$scope.closeSelf);
+        	$scope.$setParam("photoRefresh",photoRefresh);
+        	tab.panel('refresh', 'tpls/deviceManage/deviceRecord/bayonet-photo.html');
+        };
+        $scope.$setParam("photoRefresh",photoRefresh);
+        //获取mode参数
+        var currentMode= $scope.mode;
+        $scope.$setParam("remark",currentMode);
+        //设置访问tab页
+        if(currentMode=="ADD"){
+            var deviceSysConfigTabs=$scope.$("#deviceSysConfigTabs");
+            $scope.$setParam("deviceSysConfigTabs",deviceSysConfigTabs);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 1);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 2);
+            $scope.$("#deviceSysConfigTabs").tabs('disableTab', 3);
+            if($scope.equipmentNbr){
+		    	$scope.$setParam("equipmentNbr", $scope.equipmentNbr);
+		    }
+        }
+        //传递关闭弹出框的方法
+        $scope.$setParam("destroyTab1",$scope.closeSelf);
+        $scope.$setParam("destroyTab2",$scope.closeSelf);
+        $scope.$setParam("destroyTab3",$scope.closeSelf);
+        $scope.$setParam("destroyTab4",$scope.closeSelf);
+    });
+</script>

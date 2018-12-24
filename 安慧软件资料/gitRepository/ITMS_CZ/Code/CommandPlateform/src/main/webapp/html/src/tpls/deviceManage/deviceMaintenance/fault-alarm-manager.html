@@ -1,0 +1,461 @@
+<div class="easyui-layout" id="faultAlarm">
+	<div data-options="region:'north',border:false">
+		<form method="post" cy-form="formData" id="form">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">
+							所属机构：
+						</div>
+						<div class="td">
+							<input id="orgId" class="cy-org-radio" name="orgId" style="width: 150px;"/>
+						</div>
+						<div class="th">
+							设备类型：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" cy-code="400" id="deviceType" name="deviceType"/>
+						</div>
+						<div class="th">
+							所属道路：
+						</div>
+						<div class="td">
+							<input class="cy-road-radio" name="roadId" style="width: 150px;">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							设备编号：
+						</div>
+						<div class="td">
+							<input id="deviceSysNbr" name="deviceSysNbr" class="easyui-textbox"/>
+						</div>
+						<div class="th">
+							设备厂商：
+						</div>
+						<div class="td">
+							<input id="contractorId" class="easyui-combobox" name="contractorId" data-options="valueField:'contractorId',textField:'contractorName'" style="width:150px"/>
+						</div>
+						<div class="th">
+							有效性：
+						</div>
+						<div class="td">
+							<input type="radio" name="isValidity" value="" checked="checked"/>
+							全部
+							<input type="radio" name="isValidity" value="1"/>
+							有效
+							<input type="radio" name="isValidity" value="2"/>
+							无效
+							<input type="radio" name="isValidity" value="3"/>
+							未确认
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">
+							故障类型：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" name="faultType" cy-code="442"/>
+						</div>
+						<div class="th">
+							发生时间：
+						</div>
+						<div class="td">
+							<input class="easyui-datebox faultTime" name="startTimeFrom" style="width:150px" id="start" data-options="validType:['maxDate[\'end\']','date']"/>
+							至
+							<input class="easyui-datebox faultTime" name="startTimeTo" style="width:150px" id="end" data-options="validType:['minDate[\'start\']','date']"/>
+						</div>
+						<div class="td" style="margin-left:10px;">
+							<a class="easyui-linkbutton button-search" style="width:60px" iconCls="icon-search" cy-click="searchData">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+			<!--<a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+			<a class="easyui-linkbutton button-reload" data-options="iconCls:'icon-reload'" cy-click="exportData">导出</a>-->
+			<a class="easyui-linkbutton" style="width:90px" cy-click="maintenance">生成维护单</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:true">
+		<table cy-datagrid="options" id="faultAlarmList" cy-querydata="formData" cy-url="device/faultAlarmManage/queryFaultAlarm">
+
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage(["deviceId", "deviceSysNbr"], function($scope) {
+		//debugger;
+		$scope.$getDefaultCode(["412", "465", "466", "467"]);
+		$scope.load = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/companyManage/queryCompany",
+				params : {},
+				method : "post",
+				success : function(data) {
+					$scope.$("#contractorId").combobox("loadData", data);
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "初始化承建商失败！");
+				}
+			});
+
+			//debugger;
+
+			if ($scope.deviceSysNbr != null) {
+				//debugger;
+				$scope.formData.deviceSysNbr = $scope.deviceSysNbr;
+				$scope.$("#deviceSysNbr").textbox("setText", $scope.formData.deviceSysNbr);
+				$scope.$("#deviceSysNbr").textbox("setValue", $scope.formData.deviceSysNbr);
+			}
+			$scope.formData.orderName = "deviceSysNbr";
+			$scope.formData.orderType = "asc";
+			$scope.$updateData("formData");
+			$scope.$search("formData");
+			//查询故障发生时间不能大于当前时间
+			$scope.$('.faultTime').each(function() {
+				$(this).datebox('calendar').calendar({
+					validator : function(date) {
+						var now = new Date();
+						var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+						return date <= d1;
+					}
+				});
+			});
+		};
+		$scope.options = {
+			sortName : "deviceSysNbr",
+			sortType : "asc",
+			columns : [[//注意，此处是二维数组
+			{
+				align : 'center',
+				field : 'faultId',
+				checkbox : true
+			}, {
+				align : 'center',
+				title : "设备编号",
+				field : "deviceSysNbr",
+				width : 15,
+				sortable : true
+			}, {
+				align : 'center',
+				title : "设备类型",
+				field : "deviceType",
+				width : 10,
+				formatter : queryNameByDeviceType
+			}, {
+				align : 'center',
+				title : "安装地点",
+				field : "siteName",
+				width : 15
+			}, {
+				align : 'center',
+				title : "所属机构",
+				field : "orgId",
+				width : 10,
+				formatter : queryNameByOrgId
+			}, {
+				align : 'center',
+				title : "设备厂商",
+				field : "contractorName",
+				width : 10
+			}, {
+				align : 'center',
+				title : "故障/报警类型",
+				field : "faultType",
+				width : 10,
+				formatter : queryNameByFaultType
+			}, {
+				align : 'center',
+				title : "发生时间",
+				field : "startTime",
+				width : 10
+			}, {
+				align : 'center',
+				title : "采集方式",
+				field : "collectMethod",
+				width : 10,
+				formatter : queryCollectMethodByCode
+			}, {
+				align : 'center',
+				title : "处理状态",
+				field : "processState",
+				width : 10,
+				formatter : queryProcessStateByCode
+			}, {
+				align : 'center',
+				title : "有效/无效",
+				field : "isValidity",
+				width : 10,
+				formatter : queryIsValidityByCode
+			}, {
+				align : 'center',
+				title : "操作",
+				field : "operate",
+				width : 10,
+				formatter : operate
+			}]],
+			onSortColumn : function(sortName,sortType){
+				$scope.formData.orderName = sortName;
+				$scope.formData.orderType = sortType;
+				$(this).datagrid("getPager").pagination("select",1);
+			},
+			nowrap : false
+		};
+		function operate(value, rowData, index) {
+			var okBtn = $("<a  title='有效' class='button-ok'></a>");
+			okBtn.linkbutton({
+				plain : true,
+				iconCls : "icon-ok-solid"
+			}).attr('cy-click', "validityData('" + index + "')");
+			var disableBtn = $("<a  title='无效' class='button-disable'></a>");
+			disableBtn.linkbutton({
+				plain : true,
+				iconCls : "icon-disable-solid"
+			}).attr('cy-click', "failureData('" + index + "')");
+			if (rowData.processState == '2'|| rowData.processState == '3') {//2未解决，3已解决
+				okBtn.linkbutton('disable').removeAttr('cy-click');
+				disableBtn.linkbutton('disable').removeAttr('cy-click');
+			}
+			return $("<span/>").append(okBtn).append("  ").append(disableBtn).html();
+		}
+
+		function queryNameByDeviceType(value, rowData, index) {
+			var deviceType = $scope.$getCodeName("400", value);
+			//设备类型
+			return deviceType;
+		}
+
+		function queryNameByOrgId(value, rowData, index) {
+			var orgId = $scope.$getOrgName(value);
+			//所属机构
+			return orgId;
+		}
+
+		function queryNameByStatusType(value, rowData, index) {
+			var statusType = $scope.$getCodeName("412", value);
+			//设备状态
+			return statusType;
+		}
+
+		function queryNameByFaultType(value, rowData, index) {
+			var faultType = $scope.$getCodeName("442", value);
+			//故障类型
+			return faultType;
+		}
+
+		function queryCollectMethodByCode(value, rowData, index) {
+			var collectMethod = $scope.$getCodeName("467", value);
+			//采集方式
+			return collectMethod;
+		}
+
+		function queryProcessStateByCode(value, rowData, index) {
+			var processState = $scope.$getCodeName("466", value);
+			//处理状态
+			return processState;
+		}
+
+		function queryIsValidityByCode(value, rowData, index) {
+			var isValidity = $scope.$getCodeName("465", value);
+			//故障有效性
+			return isValidity;
+		}
+
+		/**
+		 *条件查询
+		 */
+		$scope.searchData = function() {
+			if ($scope.$("#form").form("validate")) {
+				$scope.$updateData("formData");
+				$scope.formData.pageNumber = 1;
+				$scope.$search("formData");
+			}
+		};
+
+		/**
+		 *故障信息生效
+		 */
+		$scope.validityData = function(index) {
+			var rowData = $scope.$("#faultAlarmList").datagrid("getData").rows[index];
+			var faultId = rowData.faultId;
+			var validType = "1";
+			//有效
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + 'device/faultAlarmManage/updateValidateFault',
+				params : {
+					faultId : faultId,
+					validType : validType
+				},
+				success : function(data) {
+					$scope.$updateData("formData");
+					$scope.$search("formData");
+					$.messager.alert("提示", "设置有效成功！");
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "设置有效失败！");
+				}
+			});
+		};
+		/**
+		 *故障信息失效
+		 */
+		$scope.failureData = function(index) {
+			var rowData = $scope.$("#faultAlarmList").datagrid("getData").rows[index];
+			var faultId = rowData.faultId;
+			var validType = "2";
+			//无效
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + 'device/faultAlarmManage/updateValidateFault',
+				params : {
+					faultId : faultId,
+					validType : validType
+				},
+				success : function(data) {
+					$scope.$updateData("formData");
+					$scope.$search("formData");
+					$.messager.alert("提示", "设置无效成功！");
+				},
+				fail : function(errMsg) {
+					$.messager.alert("提示", "设置无效失败！");
+				}
+			});
+		};
+
+		/**
+		 *手动添加故障信息
+		 */
+		$scope.addData = function() {
+			$scope.$openDialog("addDialog", {
+				width : 720,
+				height : 240,
+				title : "添加故障信息",
+				href : "tpls/deviceManage/deviceMaintenance/add-fault-info.html"
+			});
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + 'device/faultAlarmManage/addFaultAlarm',
+					params : data,
+					success : function(data) {
+						$scope.$getDialog("addDialog").dialog("close");
+						$("#faultAlarmList").datagrid("getPager").pagination("select", 1);
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "添加失败！");
+					}
+				});
+			});
+		};
+		/**
+		 * 批量删除故障信息
+		 */
+		$scope.removeSomeData = function() {
+			var rows = $scope.$('#faultAlarmList').datagrid('getChecked');
+			//勾选选中的行数组
+			var dataNum = $scope.$("#faultAlarmList").datagrid("getRows").length;
+			//当前页行数
+			var options = $scope.$("#faultAlarmList").datagrid("getPager").data("pagination").options;
+			var pageNumber = options.pageNumber;
+			//获取当前页
+			if (rows.length == 0) {
+				$.messager.alert("提示", "请选择需要删除的信息！");
+				return false;
+			} else {
+				var faultIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (i > 0) {
+						faultIdStr = faultIdStr + "," + rows[i].faultId;
+					} else {
+						faultIdStr = faultIdStr + rows[i].faultId;
+					}
+				}
+			}
+			$.messager.confirm("提示", "是否确认删除信息？", function(flag) {
+				if (flag) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "device/faultAlarmManage/deleteFaultAlarm",
+						params : {
+							faultIdStr : faultIdStr
+						},
+						method : "post",
+						success : function(data) {
+							if (rows.length == dataNum) {
+								$scope.$("#faultAlarmList").datagrid("getPager").pagination("select", pageNumber - 1);
+								//跳转大当前页的前一页
+							} else {
+								$scope.$updateData("formData");
+								$scope.$search("formData");
+							}
+							$.messager.alert("提示", "删除成功！");
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+
+		/**
+		 *生成维护单
+		 */
+		$scope.maintenance = function() {
+			var rows = $scope.$('#faultAlarmList').datagrid('getChecked');
+			//勾选选中的行数组
+			if (rows.length == 0) {
+				$.messager.alert("提示", "请选择需要生成维护单的设备！");
+				return false;
+			} else {
+				var orgPrivilegeCode = rows[0].orgPrivilegeCode;
+				//当前用户机构权限过滤代码
+				var faultIdStr = "";
+				for (var i = 0; i < rows.length; i++) {
+					if (orgPrivilegeCode != rows[i].orgPrivilegeCode) {
+						$.messager.alert("提示", "请选择同一机构下的设备故障生成维护单！");
+						return false;
+					} else if (rows[i].processState != "0" || rows[i].isValidity != "1") {//0表示未处理状态,1表示有效状态
+						$.messager.alert("提示", "请选择未处理的有效故障生成维护单！");
+						return false;
+					}
+					if (i > 0) {
+						faultIdStr = faultIdStr + "," + rows[i].faultId;
+					} else {
+						faultIdStr = faultIdStr + rows[i].faultId;
+					}
+				}
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + 'device/faultAlarmManage/addMaintainRegister',
+					params : {
+						faultIdStr : faultIdStr,
+						orgPrivilegeCode : orgPrivilegeCode
+					},
+					success : function(data) {
+						$scope.$updateData("formData");
+						$scope.$search("formData");
+						$.messager.alert("提示", "生成维护单成功！");
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "生成维护单失败！");
+					}
+				});
+			}
+		};
+	}); 
+</script>
+<style type="text/css">
+	#faultAlarm .th {
+		width: 70px;
+		text-align: right;
+	}
+	#faultAlarm .td {
+		height: auto;
+	}
+	#faultAlarm .td > input[class^='easyui-'] {
+		width: 144px;
+	}
+</style>

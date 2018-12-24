@@ -1,0 +1,79 @@
+<div id="zadao" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    匝道代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="zddm">
+                </div>
+                <div class="th">
+                    匝道名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+
+
+            <div class="tr">
+                <div class="th">
+                    匝道类型：
+                </div>
+                <div class="td">
+                    <select  class="easyui-combobox"  style="width: 135px" name="zdlx">
+                        <option value="">--请选择--</option>
+                        <option value="21">入口匝道</option>
+                        <option value="22">出口匝道</option>
+                    </select>
+                </div>
+                <div class="th">
+                    匝道长度：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="zdcd" >
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    匝道限速值：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="xsz">
+                </div>
+            </div>
+
+            <div class="tr">
+            </div>
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #zadao .th{
+        width : 100px;
+        text-align: right;
+    }
+    #zadao .td{
+        width : 150px;
+    }
+
+</style>

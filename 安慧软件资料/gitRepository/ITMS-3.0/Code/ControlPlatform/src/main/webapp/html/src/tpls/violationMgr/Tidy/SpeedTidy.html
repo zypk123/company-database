@@ -1,0 +1,470 @@
+<div class="SpeedTidyView" style="height: 100%;">
+<div class="easyui-layout" id="queryView" style="height: 100%;width: 100%">
+    <div data-options="region:'north'">
+        <div class="toolbar" style="float:left;width:100%;clear: both">
+            <form cy-form="cyFrmCond" class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown"
+                           cy-click="searchSlideDown" style="display:none">展开</a>
+
+                        <div class="tr hide" style="text-align: center;">
+                            <div class="th">违法时间:</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" data-options="showSeconds:false,width:'130px'"
+                                       type="text"
+                                       name="violationBeginTime" />
+                            </div>
+                            <div class="th">到</div>
+                            <div class="td">
+                                <input class="easyui-datetimebox" data-options="showSeconds:false,width:'130px'"
+                                       type="text"
+                                       name="violationEndTime" />
+                            </div>
+
+                            <div class="th">采集机构:</div>
+                            <div class="td">
+                                <input class="cy-org-radio" id="cmbOrgQ" name="orgCode" iscode="true" data-options="width:'120px'">
+                                </input>
+                            </div>
+                            <div class="th">采集点位:</div>
+                            <div class="td">
+                                <input class="cy-site-radio" name="siteCode" iscode="true" style="width: 135px"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tr  hide">
+
+                            <div class="th" style="width: 50px">速度:</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="speedMin" data-options="width:'130px'"/>
+                            </div>
+                            <div class="th">到</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="speedMax" data-options="width:'130px'"/>
+                            </div>
+
+                            <div class="th">记录状态:</div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="cmbStatusQ" name="statusFlag" cy-code="301"
+                                       data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                            </div>
+                            <div class="th">测速类别:</div>
+                            <div class="td">
+                                <input class="easyui-combobox" id="cmbSpeedCollateTypeQ" name="speedingType"
+                                       cy-code="309"
+                                       data-options="valueField:'value',textField:'text',panelHeight:'auto',width:'130px'"/>
+                            </div>
+
+
+                            <div class="td" style="margin-left: 20px">
+
+                                <a class="easyui-linkbutton button" data-options="iconCls:'icon-up',width:'80px'"
+                                   id="searchSlideUp"
+                                   cy-click="searchSlideUp" style="display:none">收起</a>
+
+                                <a class="easyui-linkbutton button" style="width: 80px;text-align: right"
+                                   cy-click="SearchAsync()" iconCls="icon-search ">查询</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="linkbutton_toolbar">
+                    <a class="easyui-menubutton button" id="btnExport"
+                       cy-click="" data-options="iconCls:'icon-export'">导出</a>
+
+                    <div id="mbtnExport" style="width: 150px;display: none">
+                        <div cy-click="SelectExport">选择导出</div>
+                        <div cy-click="AllExport">全部导出</div>
+                    </div>
+
+
+                    <a class="easyui-menubutton button-drop" id="btnDiscardBatch"
+                       cy-click="" data-options="iconCls:'icon-drop'">废弃</a>
+
+                    <div id="mbtnDiscardBatch" style="width: 150px;display: none">
+                        <div cy-click="SelectDiscard">选择废弃</div>
+                        <div cy-click="AllDiscard">全部废弃</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div data-options="region:'center'">
+        <table id="tbVio" cy-datagrid="options" cy-querydata="cyFrmCond" cy-url="/violation/queryViolationSet">
+        </table>
+    </div>
+
+    <div data-options="region:'east'" style="width: 250px">
+        <div class="easyui-panel" id="imageArea0"></div>
+
+        <div class="easyui-panel" id="imageArea1"></div>
+        <!--<div style="overflow-y: auto;height: auto;width:250px;">-->
+        <!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_0.jpg"/>-->
+        <!--<img style="width: 100%;height: 100%" src="data/violationMgr/img/overSpeed_1.jpg"/>-->
+        <!--</div>-->
+    </div>
+</div>
+<div class="easyui-layout" id="detailView" style="height: 100%;width: 100%;display: none;">
+    <!--上边图片-->
+    <div data-options="region:'center'" id="imgAreaDetail">
+        <!--<div class="easyui-panel" data-options="cls:'picture',width:'49%',height:'100%',border:false" id="imageArea2"/>-->
+
+        <!--<div class="easyui-panel" data-options="cls:'picture',width:'49%',height:'100%',border:false" id="imageArea3"/>-->
+        <!--<img style="width: 49%;height:100%" src="data/violationMgr/img/overSpeed_0.jpg"/>-->
+        <!--<img style="width: 49%;height:100%" src="data/violationMgr/img/overSpeed_1.jpg"/>-->
+
+        <div class="easyui-panel picture" id="imageArea2" data-options="style:{float:'left'}"
+             style="width:49%;height: 100%"></div>
+
+        <div class="easyui-panel picture" id="imageArea3" data-options="style:{float:'left'}"
+             style="width:49%;height: 100%"></div>
+    </div>
+    <!--中部详细-->
+    <div data-options="region:'south'" style="width: 100%;height: 180px">
+        <form cy-form="VioDetail">
+            <!--违法信息-->
+            <div class="portlet" style="text-align: center">
+                <div class="portlet-body" style="width:100%;margin-left:auto;margin-right: auto">
+                    <div class="row tr" style="display: none">
+                        <input name="VIOLATION_ID" type="text"/>
+                    </div>
+                    <div class="row tr">
+                        <div class="col-5">
+                            <div class="th col-2">
+                                违法道路：
+                            </div>
+                            <div class="td col-2" cy-name="VioDetail.roadCode">
+                                <!--<input class="inputlabel" name="ROAD_CODE" type="text" readonly="true" style="width:100%" />-->
+                            </div>
+                            <div class="th col-3">
+                                路口/路段：
+                            </div>
+                            <div class="td col-2" cy-name="VioDetail.junctionCode">
+                            </div>
+                            <div class="th col-1">
+                                米数：
+                            </div>
+                            <div class="td col-2">
+                                <input class="inputlabel" name="mileage" type="text" readonly="true"
+                                       style="width: 30px"/>米
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="th col-2">
+                                地点描述：
+                            </div>
+                            <div class="td col-10">
+                                <input class="inputlabel" type="text" name="addressDesc"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row tr">
+                        <div class="col-5">
+                            <div class="th col-2">号牌号码：</div>
+                            <div class="td col-4">
+                                <input class="cy-vehNumberbox" name="plateNbr" type="text" style="width: 120px"/>
+                            </div>
+                            <div class="th col-2">号牌种类：</div>
+                            <div class="td col-4" cy-name="VioDetail.plateType"
+                                 cy-filter="Formatter.getCyFilterSysCodeFmt('002')">
+
+                            </div>
+                        </div>
+                        <div class="col-5">
+
+                            <div class="th col-2">
+                                违法时间：
+                            </div>
+                            <div class="td col-4" cy-name="VioDetail.violationTime">
+
+                            </div>
+                            <!--<input class="easyui-datebox" type="text" name="VIOLATION_TIME" style="width: 120px"/>-->
+                            <div class="th col-2">
+                                采集机构：
+                            </div>
+                            <div class="td col-4" cy-name="VioDetail.orgCode" cy-filter="Formatter.CyFilterOrgFmt">
+                                <!--<input class="easyui-combobox" id="cmbOrg" name="ORG_CODE"-->
+                                <!--data-options="valueField:'ID',textField:'NAME',panelHeight:'auto'" style="width: 120px"/>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row tr">
+                        <div class="col-5">
+                            <div class="th col-2">号牌颜色：</div>
+                            <div class="td col-4" cy-name="VioDetail.plateColor"
+                                 cy-filter="Formatter.getCyFilterSysCodeFmt('003')"></div>
+                            <div class="th col-2">发证机关：</div>
+                            <div class="td col-4" cy-name="VioDetail.vehicleIssueOrg"
+                                 cy-filter="Formatter.getCyFilterSysCodeFmt('008')"></div>
+                        </div>
+                        <div class="col-5">
+
+                            <label class="th col-2">车辆品牌：</label>
+
+                            <div class="td col-4" cy-name="VioDetail.vehicleBrand"
+                                 cy-filter="Formatter.getCyFilterSysCodeFmt('012')"></div>
+                            <label class="th col-2">车身颜色：</label>
+
+                            <div class="td col-4" cy-name="VioDetail.vehicleColor"
+                                 cy-filter="Formatter.getCyFilterSysCodeFmt('006')"></div>
+                        </div>
+                    </div>
+
+                    <div class=" row tr">
+                        <div class="col-5">
+
+                            <div class="th col-2">
+                                车辆速度：
+                            </div>
+                            <div class="td col-2">
+                                <input class="inputlabel" name="speed" type="text" readonly="true"/>
+                            </div>
+                            <div class="td col-2">
+                                (km/h)
+                            </div>
+                            <div class="th col-2">
+                                超速比例：
+                            </div>
+                            <div class="td  qcol-2">
+                                <input class="inputlabel" name="overSpeedPercent" type="text" readonly="true"/>
+                            </div>
+                            <div class="td col-2">
+                                (%)
+                            </div>
+                        </div>
+                        <div class="col-5">
+
+                            <div class="th col-2">
+                                大车限速：
+                            </div>
+                            <div class="td col-2">
+                                <input class="inputlabel" name="limitLarge" type="text" readonly="true"/>
+                            </div>
+                            <div class="td col-2">
+                                (km/h)
+                            </div>
+
+                            <div class="th col-2">
+                                小车限速：
+                            </div>
+                            <div class="td col-2">
+                                <input class="inputlabel" name="limitSmall" type="text" readonly="true"/>
+                            </div>
+                            <div class="td col-2">
+                                (km/h)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class=" row tr">
+                        <div class="col-5">
+                            <div class="th col-2">
+                                违法代码：
+                            </div>
+                            <div class="td col-4">
+                                <input class="inputlabel" type="text" name="violationCode"/>
+                            </div>
+                            <div class="th col-2">
+                                罚款金额：
+                            </div>
+                            <div class="td col-4">
+                                <input class="inputlabel" type="text" name="violationDesc"/>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="th col-2">
+                                违法内容：
+                            </div>
+                            <div class="td col-10">
+                                <input class="inputlabel" type="text" name="violationDesc"/>
+                                <!--<input class="easyui-combobox" id="cmbVioAction" name="VIOLATION_CODE"-->
+                                <!--data-options="valueField:'VIO_ACTION_CODE',textField:'VIO_SUMMARY',panelHeight:'auto'"  style="width: 200px"/>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--下部按钮-->
+            <div class="row tr" style="text-align: center;height:30px;">
+                <div class="portlet-body">
+                    <a class="easyui-linkbutton button easyui-tooltip" title="Shift+e"
+                       data-options="iconCls:'icon-inport'"
+                       cy-click="InputViolation()" style="width: 80px">录入(<span
+                            style="text-decoration: underline;">E</span>)</a>
+
+                    <a id="btnDiscard" class="easyui-menubutton button-drop"
+                       data-options="iconCls:'icon-drop'" style="width: 80px">废弃</a>
+
+                    <div id="mbtnDiscard" style="width:150px;display:none">
+                        <div cy-click="DiscardViolation('02')" title="Shift+c">车速不足(<span
+                                style="text-decoration: underline;">C</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('04')" title="Shift+m">无效图像(<span
+                                style="text-decoration: underline;">M</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('05')" title="Shift+z">号牌不全(<span
+                                style="text-decoration: underline;">Z</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('06')" title="Shift+w">无号牌(<span
+                                style="text-decoration: underline;">W</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('08')" title="Shift+d">其它(<span
+                                style="text-decoration: underline;">D</span>)
+                        </div>
+                        <div class="menu-sep"></div>
+                        <div cy-click="DiscardViolation('21')" title="Shift+t">套牌车(<span
+                                style="text-decoration: underline;">T</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('22')" title="Shift+f">假牌车(<span
+                                style="text-decoration: underline;">F</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('24')" title="Shift+j">军警车(<span
+                                style="text-decoration: underline;">J</span>)
+                        </div>
+                        <div cy-click="DiscardViolation('25')" title="Shift+n">农用车(<span
+                                style="text-decoration: underline;">N</span>)
+                        </div>
+                    </div>
+
+                    <a class="easyui-linkbutton" cy-click="returnToListView()" title="Shift+r">显示列表(<span
+                            style="text-decoration: underline;">R</span>)</a>
+                    <a class="easyui-linkbutton" style="width: 60px" cy-click="selectPre()">上一条</a>
+
+                    <a class="easyui-linkbutton" style="width: 60px" cy-click="selectNext()">下一条</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+InitPage([], function ($scope) {
+    $scope.$getData("vio", "TidyInit")($scope,"SpeedTidyView","queryVioForSpeedTidy");
+
+    $.extend($scope, {
+
+        //easyui绑定列表项
+        options: {
+            columns: [
+                [//注意，此处是二维数组
+                    {field: 'id', checkbox: true},
+                    {title: "号牌号码", field: "plateNbr", width: 10},
+                    {title: "号牌种类", field: "plateType", width: 10, formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.PLATETYPE)},
+                    {title: "违法时间", field: "violationTime", width: 10},
+                    {title: "违法地点", field: "addressDesc", width: 10},
+                    {title: "违法行为", field: "violationDesc", width: 10},
+                    {title: "速度(km/h)", field: "speed", width: 10},
+                    {title: "采集机构", field: "orgCode", width: 10, formatter: $scope.Formatter.gridColumnOrgFmt},
+                    {title: "记录状态", field: "statusFlag", width: 10,formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.STATUS)},
+                    {title: "测速类别", field: "speedingType", width: 10,formatter: $scope.Formatter.getGridColumnSysCodeFmt($scope.CodeTypeDic.SPEEDING_TYPE)}
+                ]
+            ],
+            singleSelect: true,
+            method: 'get',
+            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            pagination: true,
+
+            //双击进入详细页面
+            onDblClickRow: function (index, row) {
+                clearTimeout($scope.timeout);
+                $scope.selectViewFn('SpeedTidyView', 'detailView');
+
+                var row = $scope.$('#tbVio').datagrid('getSelected');
+                if (row) {
+                    $scope.VioDetail = row;
+                    $scope.$updateDom('VioDetail');
+                    $scope.LoadDetailViolation($scope.VioDetail);
+                }
+                else {
+                    console.log("nodata");
+                }
+            },
+            onClickRow: function (index, row) {
+                $scope.displayListImage(row);
+            }
+        },
+
+        load: function () {
+
+            $scope.selectViewFn("SpeedTidyView", "queryView");
+
+            $scope.SearchAsync();
+            console.log("loadSuccess!");
+        },
+
+        enter: function () {
+            console.log("enter");
+        },
+        leave: function () {
+            console.log("leave");
+        },
+        close: function () {
+            console.log("close");
+        },
+
+        /**
+         * 显示列表页面图片
+         * @param violation
+         */
+        displayListImage:function(data){
+            $scope.timeout = setTimeout(function () {
+                if(data&&data.image){
+                    var urlArr=data.image.split(';');
+                    if(urlArr[0]){
+                        $scope.$setParam("images", [urlArr[0]]);
+                        $scope.$("#imageArea0").panel("refresh", "tpls/public/image-view.html");
+                        if(urlArr[1])
+                        {
+                            $scope.timeout = setTimeout(function () {
+                                $scope.$setParam("images", [urlArr[1]]);
+                                $scope.$("#imageArea1").panel("refresh", "tpls/public/image-view.html");
+                            }, 200);
+                        }
+                    }
+                }
+            }, 500);
+        },
+
+
+        /**
+         * 显示详细页面图片
+         * @param violation
+         */
+        displayDetailImage:function(violation){
+            //图片列表
+            if(violation&&violation.image){
+                var urlArr=violation.image.split(';');
+                if(urlArr[0]){
+                    $scope.$setParam("images", [urlArr[0]]);
+                    $scope.$("#imageArea2").panel("refresh", "tpls/public/image-view.html");
+                    if(urlArr[1])
+                    {
+                        $scope.timeout = setTimeout(function () {
+                            $scope.$setParam("images", [urlArr[1]]);
+                            $scope.$("#imageArea3").panel("refresh", "tpls/public/image-view.html");
+                        }, 200);
+                    }
+                }
+            }
+        }
+    });
+});
+
+</script>
+<style>
+    #detailView .picture {
+        float: left;
+    }
+
+    .portlet .th {
+        color: #09f;
+    }
+</style>

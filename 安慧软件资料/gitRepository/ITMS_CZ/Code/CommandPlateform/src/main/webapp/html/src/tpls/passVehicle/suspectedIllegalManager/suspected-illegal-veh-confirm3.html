@@ -1,0 +1,228 @@
+<div id="suspected-illegal-veh-confirm" class="easyui-layout">
+	<!--查询条件区 -->
+	<div data-options="region:'north',border:false,height:350">
+		<div id="container" style="overflow-x:auto; overflow-y:hidden;height:350px;">
+			<div class="table" style="margin-top: 5px">
+				<!-- 实景图片区域 -->
+				<div class="tr">
+					<div class="td" style="width: 100%;" id="photoTd">
+						<div id="photoDiv" style="float: left"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div data-options="region:'center',border:false,height:170" id="centerDiv">
+		<form cy-form="formData" id="form">
+		<div class="table" style="margin-top: 5px">
+			<div class="tr">
+				<div class="th">
+					异常原因:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+					<span cy-name="formData.vioSuspectedDesc"></span>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					结果记录:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+					<input class="easyui-textbox" data-options="multiline:true" 
+	 				 name="confirmResult" id="confirm_desc"  style="width:500px;height: 50px;"/>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="th" >
+					操作:
+				</div>
+				<div class="td" style="margin-left: 20px;">
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','1')">确认有效</a>
+				<a class="easyui-linkbutton" style="width: 90px"
+				cy-click="confirmButton('invalid','2')">确认无效</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	InitPage(['data','searchForm','closeDialog'], function($scope) {
+		var area1Count;
+
+		$scope.load = function() {
+			//给确认秒速赋值
+        	$scope.$("#confirm_desc").textbox("setValue",$scope.data.confirmResult)
+			updateDom($scope.data);
+			refreshData($scope.data);
+		};
+		
+		 /**
+		 *  更新页面数据
+		 */
+		var updateDom = function(data) {
+			$scope.formData = data;
+			//更新其他数据
+			$scope.$updateDom("formData");
+		};
+
+		/**
+		 * 刷新数据
+		 */
+		var refreshData = function(data, callback) {
+			var params = {};
+			if(!data.identifyAccordance|| data.identifyAccordance==''){
+				return ;
+			}
+			var identifyAccordance  = jQuery.parseJSON(data.identifyAccordance);
+			params.pageSize = 20;
+			params.pageNumber = 1;
+			params.totalCount = 0;
+			params.passTimeStart = (identifyAccordance.startTime).substr(0,19);
+			params.passTimeEnd = (identifyAccordance.endTime).substr(0,19);
+			params.plateNbr = data.plateNbr;
+			//params.plateType = data.plateType;
+			area1Count = 0;
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/vehTrack/pass/findPassInfo",
+				params : params,
+				success : function(data) {
+					//更新数据
+					updatePassData(data);
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+					$scope.$excute(callback, data);
+				},
+				fail : function() {
+					$.messager.progress("close");
+					$.messager.alert("提示", "服务器繁忙");
+				}
+			});
+		};
+
+		/**
+		 * 更新数据
+		 */
+		var updatePassData = function(data) {
+			if (!data.result.rows || data.result.rows.length == 0) {
+				$.messager.alert("提示", "没有数据");
+			}
+			//更新数据
+			var allRows = data.result.rows;
+			var row;
+			var areaList1;
+			for (var i = 0; i < allRows.length; i++) {
+				row = allRows[i];
+				createDbImg(row.imageUrlPath, row.passTime, row.siteName)
+			}
+		};
+
+		//查看创建图片
+		function createDbImg(url, passTime, siteName) {
+			var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+			var infoDiv = $("<p class='info'>" + passTime + "," + siteName + "</p>");
+			var img = $("<img style='width: 300px;height: 270px'/>");
+			img.attr("src", $scope.$servletRoot + "/PassImage?imageUrl=" + url);
+			imgDiv.append(infoDiv);
+			imgDiv.append(img);
+			var imageView = $('<div style="width: 300px;height: 270px;float: left"></div>');
+			imageView.attr("id","imageView"+area1Count);
+			/*
+			 var deleteButton = $("<a class='deleteButton' style='margin-top:-450px;'></a>").linkbutton({
+			 iconCls : "icon-cancel-solid",
+			 plain : true
+			 });
+			 deleteButton.click(function() {
+			 //鎶婅繖涓猟iv鍒犻櫎
+			 $(this).parent().remove();
+			 var src = $(this).siblings("img").attr("src");
+			 });
+			 imgDiv.append(deleteButton);*/
+			if (area1Count > 1) {
+				var width1 = $scope.$("#photoTd").css("width");
+				width1 = parseInt(width1) + 320;
+				$scope.$("#photoTd").css("width", width1 + "px");
+			}
+			$scope.$("#photoDiv").append(imageView);
+			 $scope.$('#imageView'+area1Count).panel({
+				style:{float: 'left'}
+			});   
+			$scope.$setParam("images", [$scope.$servletRoot + "/PassImage?imageUrl=" + url]);
+			imageView.panel("refresh", "tpls/public/image-view.html");
+			area1Count++;
+		};
+		/**
+		 *确认按钮
+		 */
+		$scope.confirmButton = function(flag,value) {
+			var row = $scope.data;
+			var confirmDesc= $scope.$("#confirm_desc").val();
+			var param ={};
+			param.id = row.vioSuspectedId;
+			param.confirmResult = confirmDesc;
+			param.confirmFlag = value;
+			//获取后台数据
+			$scope.$ajaxRequest({
+					url : $scope.$restRoot + "/vehTrack/vehtrackPassVio/updateVehById",
+					params : param,
+					success : function(data) {
+						if(1 == data.result){
+							$.messager.alert("提示", "确认成功");
+							$scope.searchForm();
+							$scope.closeDialog('editPLDialog');
+						}
+					},
+					fail : function() {
+						$.messager.alert("提示", "服务器繁忙");
+					}
+				});
+		};
+
+	}); 
+</script>
+<style>
+	#suspected-illegal-veh-confirm .imgDiv {
+		float: left;
+		border: dashed 1px silver;
+		margin: 5px;
+		height: 300px;
+		width: 320px
+	}
+	#suspected-illegal-veh-confirm .info {
+		margin: 5px;
+		height: 16px;
+		width: 300px;
+		text-align: center
+	}
+	#suspected-illegal-veh-confirm .info span {
+		text-align: center;
+		margin-top: 120px;
+		display: block;
+	}
+	#suspected-illegal-veh-confirm .tr {
+		height: 260px;
+	}
+	#suspected-illegal-veh-confirm .th {
+		width: 80px;
+		text-align: right;
+	}
+	#suspected-illegal-veh-confirm .td {
+		width: 208px;
+	}
+	#suspected-illegal-veh-confirm .deleteButton {
+		margin-top: -450px;
+		position: relative;
+		margin-left: -35px;
+		margin-top: 5px;
+		z-index: 100000
+	}
+	#suspected-illegal-veh-confirm #centerDiv .tr {
+		height: 50px;
+	}
+
+</style>

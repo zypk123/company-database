@@ -1,0 +1,85 @@
+<div class="easyui-layout">
+	<div data-options="region:'north',border:false">
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main"
+			data-options="iconCls:'icon-add'" cy-click="addLD">添加领导</a>
+			<a class="easyui-linkbutton button-main"
+			data-options="iconCls:'icon-add'" cy-click="addMJ">添加民警</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="..." cy-datagrid="options" cy-querydata="queryData"
+			cy-url="......."></table>
+	</div>
+</div>
+<script>
+	InitPage([], function($scope) {
+		$scope.options = {
+			columns : [[{
+				field : 'xm',
+				title : '姓名',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'rybh',
+				title : '人员编号',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'sfzhm',
+				title : '身份证号码',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'ssbm',
+				title : '所属部门',
+				align : 'center',
+				width : 60
+			}, {
+				field : 'lxdh',
+				title : '联系电话',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'rylx',
+				title : '人员类型',
+				align : 'center',
+				width : 40
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				width : 40
+			}]],
+			pagination:false
+		};
+		
+		$scope.addLD = function() {
+			$scope.$openDialog("addDialog", {
+				title : "添加值班人员",
+				width : 700,
+				height : 300,
+				href : "tpls/serviceManagement/onDutyManagement/leader-add.html"
+			}, true);
+		};
+		
+		$scope.addMJ = function() {
+			$scope.$openDialog("addDialog", {
+				title : "添加值班人员",
+				width : 700,
+				height : 300,
+				href : "tpls/serviceManagement/onDutyManagement/policeman-add.html"
+			}, true);
+		};
+		
+		
+	})
+	
+	
+</script>
+<style>
+	
+	
+	
+	
+</style>

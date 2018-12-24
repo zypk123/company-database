@@ -1,0 +1,138 @@
+<div id="sectionFlow" class="easyui-layout" style="width:600px;height:400px;">
+    <div data-options="region:'center'" >
+        <div id="map" style="width:100%;height: 100%;">
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope) {
+
+        var cyMap=new CYMap($scope.$("#map")[0]);
+        var wkt_c = new OpenLayers.Format.WKT();
+        var sectionFlowLayer,regionFlowLayer;
+
+        //页面登录时调用
+        $scope.load = function(){
+            $scope.initData();
+            $scope.addSectionFlow();
+        }
+        //初始化地图及相关图层和样式
+        $scope.initData=function(){
+            var layerListeners= {
+                featureover: function (e) {
+                    var popup = new OpenLayers.Popup("info",
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            new OpenLayers.Size(160,120),$scope.fieldInfo(e),false, null);
+                    popup.setBackgroundColor("ghostwhite");
+                    popup.setOpacity(5);
+                    popup.setBorder("1px solid gray");
+                    e.feature.popup = popup;
+                    cyMap.map.addPopup(popup);
+                },
+                featureout: function (e) { e.feature.popup.hide(); },
+               featureclick:function(e){
+                   e.feature.popup.hide();
+                   $scope.openDialog(e.feature.attributes);}
+            };
+
+            var rules = [
+                new OpenLayers.Rule({
+                    filter: new OpenLayers.Filter.Function({
+                        evaluate: function(properties) {
+                            return properties.speed >=40&&properties.speedx>=40;
+                        }
+                    }),
+                    symbolizer: {
+                        pointRadius: 8, fillColor: "green",
+                        fillOpacity: 1, strokeColor: "darkgreen"
+                    }
+                }),
+                new OpenLayers.Rule({
+                    filter: new OpenLayers.Filter.Function({
+                        evaluate: function(properties) {
+                            return (properties.speed >= 20 && properties.speed <=40&&properties.speedx>=20)||(properties.speedx>=20&&properties.speedx<=40&&properties.speed>=20);
+                        }
+                    }),
+                    symbolizer: {
+                        pointRadius: 8, fillColor: "orange",
+                        fillOpacity: 1, strokeColor: "darkgoldenrod"
+                    }
+                }),
+                new OpenLayers.Rule({
+                    filter: new OpenLayers.Filter.Function({
+                        evaluate: function(properties) {
+                            return properties.speed <= 20||properties.speedx<=20;
+                        }
+                    }),
+                    symbolizer: {
+                        pointRadius: 8, fillColor: "red",
+                        fillOpacity: 1, strokeColor: "darkred"
+                    }
+                })
+            ];
+            var style = new OpenLayers.Style();
+            style.addRules(rules);
+            sectionFlowLayer=new OpenLayers.Layer.Vector("section",{styleMap: new OpenLayers.StyleMap(style),eventListeners: layerListeners});
+            regionFlowLayer=new OpenLayers.Layer.Vector("region",{styleMap: new OpenLayers.StyleMap(style),eventListeners: layerListeners});
+            cyMap.map.addLayers([sectionFlowLayer,regionFlowLayer]);
+        }
+
+        //添加流量图元到图层中
+        $scope.addSectionFlow=function(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficState/sectionFlow.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        sectionFlowLayer.addFeatures(feature);
+
+                        //var geo=new OpenLayers.Geometry.Polygon.createRegularPolygonCurve(geometry,100,100,90);画扇形
+
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        //用于popup显示信息
+        $scope.fieldInfo=function(obj){
+            var name=obj.object.name;
+            if(name=="section"){
+                return "<div style='font-size:1em'> "
+                        + obj.feature.attributes['dwwz']+"："
+                        +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;"+ obj.feature.attributes['speed']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;"+ obj.feature.attributes['ctsj']
+                        +"<br>&nbsp;&nbsp;"+ obj.feature.attributes['fxx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;"+ obj.feature.attributes['speedx']
+                        +"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;"+ obj.feature.attributes['ctsjx'];
+            }
+            else if(name=="region"){
+
+            }
+        }
+
+        //打开新的openDialog
+        $scope.openDialog = function(obj) {
+            $scope.$setParam("newData",obj);
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("createDialog").dialog("close");
+            });
+            $scope.$openDialog("createDialog", {
+                title: "断面信息",
+                height: 340,
+                width: 480,
+                href: "tpls/trafficMonitor/trafficState/sectionFlow.html"
+            }, true);
+        }
+    });
+
+</script>

@@ -1,0 +1,205 @@
+﻿<div id="PersonWorkLoadDiv"  style="height: 100%;">
+<div class="easyui-layout" id="queryView">
+    <div data-options="region:'north'">
+        <form cy-form="cyFrmCond" class="searchForm" method="post">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th" style="padding-left:5px">采集机关：</div>
+                        <div class="td">
+                            <input class="cy-org-radio" id="cmbOrgQ" name="orgCode" data-options="required:true" iscode="true" width="120px;">
+                        </div>
+                        <div class="th" style="padding-left:5px">处理人员：</div>
+                        <div class="td">
+                    <input class="easyui-combobox" id="user" type="text" name="user" style="width:135px;"
+                    data-options="valueField:'loginName',textField:'policeName'"/>
+                        </div>
+                      	<div class="th" style="padding-left: 5px">时间方式：</div>
+							<div class="td">
+								<select id="timeType" name="timeType"
+									style="width: 75px;" >
+									<option value="D">日</option>
+									<option value="M">月</option>
+									<option value="Y">年</option>
+									<option value="O">非整月</option>
+								</select>
+							</div>
+							<div class="th" style="padding-left: 5px; display: inline">统计日期：</div>
+							<div class="td start-date-hide" style="display: none">
+								<input class="easyui-datebox"
+									data-options="showSeconds:false,editable:false,required:true"
+									type="text" id="violationBeginTime" name="violationBeginTime" style="width: 135px" />
+							</div>
+							<div class="td year-hide" style="display: none">
+								<input class="easyui-combobox" " id="year" name="year" data-options="valueField:'value',textField:'text'"
+									style="width: 75px;"/>
+							</div>
+							<div class="td month-hide" style="padding-left: 5px; display: none">
+								<input class="easyui-combobox" " id="month" name="month" data-options="valueField:'value',textField:'text'"
+									style="width: 75px;"/>
+							</div>
+							<div class="th start-date-hide" style="padding-left: 5px; display: none">至：</div>
+							<div class="td end-date-hide" style="display: inline">
+								<input class="easyui-datebox"
+									data-options="showSeconds:false,editable:false,required:true"
+									type="text" id="violationEndTime" name="violationEndTime" style="width: 135px" />
+							</div>
+                        <div class="td" style="text-align: right;width: 100px">
+                            <a class="easyui-linkbutton button" cy-click="searchReport" id="searchButton"
+                               data-options="iconCls:'icon-search'">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'center'">
+        <iframe  id="iframe" src=""
+                 align="center" width="100%" height="100%" marginwidth=0
+                 scrolling="yes" frameborder="0" >
+        </iframe>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    InitPage([], function ($scope) {
+        $.extend($scope, {
+            //查询表单
+            cyFrmCond: {
+                violationBeginTime: (new Date().dateAdd('d', -7)).format('yyyy-MM-dd'),
+                violationEndTime:   (new Date().dateAdd('d', -1)).format('yyyy-MM-dd')
+            },
+            enter: function () {
+                console.log("enter");
+            },
+            leave: function () {
+                console.log("leave");
+            },
+            close: function () {
+                console.log("close");
+            },
+            searchReport: function () {
+            	 var paramString="";
+            	 var orgCode = $scope.$("#cmbOrgQ").textbox("getValue")
+                 if(orgCode==""){
+                 	orgCode = $scope.UserInfo.orgCode;
+                 	}
+                 paramString +="&orgCode="+orgCode;//机构
+                 paramString +="&user=" + $scope.$("#user").combobox("getValue");//违法类型
+                 if($scope.$('#timeType').combobox('getValue')=="D")
+                 	{
+                 	paramString +="&violationBeginTime="+$scope.$("#violationEndTime").datebox('getValue');
+                 	paramString +="&violationEndTime="+$scope.$("#violationEndTime").datebox('getValue');
+                 	}
+                 else if($scope.$('#timeType').combobox('getValue')=="M")
+             	{
+                 	var year  = $scope.$('#year').combobox('getValue');//获取选择年份、月份
+                 	var month = $scope.$('#month').combobox('getValue')- 1;
+                    var myDate = new Date(year,month,1);  
+             	paramString +="&violationBeginTime="+myDate.format("yyyy-MM-dd");
+             	myDate.setMonth(month + 1); //设置截止日期 当月最后一天
+             	myDate.setDate(0);
+             	if(myDate>new Date()){
+             		myDate = new Date(new Date().getTime()-1000*24*60*60);
+             		}
+             	paramString +="&violationEndTime="+ myDate.format("yyyy-MM-dd");
+             	}
+                 else if($scope.$('#timeType').combobox('getValue')=="Y")
+            	    {
+                  var year = $scope.$('#year').combobox('getValue');
+                  var myDate = new Date(year,0,1);//设置开始日期为年份第一天
+            	     paramString +="&violationBeginTime="+myDate.format("yyyy-MM-dd");
+            	     myDate = new Date(year,11,31);//设置截止日期为年份最后一天
+           	         if(myDate>=new Date()){//如果截止日期大于等于当前系统时间，时间设置为当前时间前一天
+            		 myDate = new Date(new Date().getTime()-1000*24*60*60);
+            		 }
+            	     paramString +="&violationEndTime="+myDate.format("yyyy-MM-dd");
+            	     }
+                else
+             	{
+             	 paramString +="&violationBeginTime="+$scope.$("#violationBeginTime").datebox('getValue');
+                	 paramString +="&violationEndTime="+$scope.$("#violationEndTime").datebox('getValue');
+             	}
+/*                  alert(paramString); */
+                 $scope.$("#iframe").attr("src", "../../../Report/run?__report=VioPersonWorkTidy.rptdesign" + paramString);
+                 /*   $scope.$("#iframe").reload(); */
+                 console.log("../../../Report/run?____report=VioPersonWorkTidy.rptdesign"+paramString);
+             },
+         	loadTime : function() {
+         				//获取当前年份,月份        
+         			var yearData = [];
+         		    var monthData = [];
+         			var currentYear = new Date().getFullYear();
+         			var currentMonth = new Date().getMonth() + 1;
+         				//构造年份、月份数据，加载到年月下拉控件中       
+         			for (var i = currentYear; i >= 2010; i--) 
+         			{
+         				yearData.push({"value":i,"text":i+"年"});
+         			}
+         			$scope.$('#year').combobox('loadData',yearData);
+         			if(yearData.length>0){
+         			$scope.$('#year').combobox('select', yearData[0].value);
+         				}
+         			for (var i = 1; i <= 12; i++) 
+         			{
+         				monthData.push({"value":i,"text":i+"月"});
+         			}
+         			$scope.$('#month').combobox('loadData',monthData);
+         			$scope.$('#timeType').combobox('select',"D");
+         			if(monthData.length>0){
+         			$scope.$('#month').combobox('select', currentMonth);
+         				}
+         		}
+         	})//根据日期选择方式，控制日期相关控件显示 与 隐藏
+         	$scope.$('#timeType').combobox({
+         					onSelect : function(rec) {
+         						if (rec.value == "D") {
+         							$scope.$(".start-date-hide").hide();//开始日期显示，年、月隐藏
+         							$scope.$(".year-hide").hide();
+         							$scope.$(".month-hide").hide();
+         							$scope.$(".end-date-hide").show();
+
+         						} else if (rec.value == "M") {
+         							$scope.$(".year-hide").show();//年、月显示，日期隐藏
+         							$scope.$(".month-hide").show();
+         							$scope.$(".start-date-hide").hide();
+         							$scope.$(".end-date-hide").hide();
+         						} else if (rec.value == "Y") {
+         							$scope.$(".year-hide").show();//年显示，月日期隐藏
+         							$scope.$(".start-date-hide").hide();
+         							$scope.$(".month-hide").hide();
+         							$scope.$(".end-date-hide").hide();
+         						}
+         						else
+         							{
+         							$scope.$(".start-date-hide").show();//日期显示，年、月隐藏
+         							$scope.$(".year-hide").hide();
+         							$scope.$(".month-hide").hide();
+         							$scope.$(".end-date-hide").show();
+         							}
+         					}
+         				});
+        $scope.load = function() {
+        	var inOrgId = $scope.UserInfo.orgId;
+           	 $scope.$ajaxRequest({
+                url : $scope.$restRoot + "sysCfg/userAction/selectUser",
+                params : {orgId : inOrgId},
+                method : "post",
+                success : function(data) {
+                    //加载本地数据
+                    var userData = data.result.rows;
+//                 	for(i in userData[0] ){
+//                 		   alert(i+' : '+userData[0][i]);           //获得属性 ,属性值
+//                 		}
+                    $scope.$('#user').combobox("loadData", userData);
+
+                },
+                fail : function(errMsg) {
+                    $.messager.alert("提示", "加载失败！");
+                }
+            });
+           	 $scope.loadTime();
+            }
+        });
+         </script>

@@ -1,0 +1,387 @@
+<div id="fastMenuSetDiv" class="easyui-layout">
+	<div data-options="region:'north',border:true" style="height: 60px;">
+		<div id="selectedMenuDiv" style="line-height: 38px">
+
+			<!-- <a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			<a class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+			-->
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="menuTable" cellpadding="10" cellspacing="0">
+			<!-- <tr>
+			<td>
+			<div class="left-td-item">
+			<input type="checkbox"/>
+			<a>电子地图</a>
+			</div></td>
+			<td>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域车辆分析</a>
+			</div>
+			<div class="right-td-item">
+			<input type="checkbox"/>
+			<a>高危地域</a>
+			</div></td>
+			</tr> -->
+		</table>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div class="linkbutton_toolbar"  style="text-align: center">
+			<div style="left: 2px;position: absolute;line-height:25px;color: red">
+				最多只能选择8个快捷菜单
+			</div>
+			<a id="save" class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+			<a id="cancel" class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'"  cy-click="$destroySelf">取消</a>
+		</div>
+	</div>
+
+	<div id="firstMenuDiv" class="left-td-item" style="display: none">
+		<input type="checkbox"/>
+		<a></a>
+	</div>
+	<div id="thirdMenuDiv" class="right-td-item" style="display: none">
+		<input type="checkbox"/>
+		<a></a>
+	</div>
+	<a id="selectedMenuItem" style="display: none" class="easyui-linkbutton"> <span class="menu-text">车辆分析</span> <span class="menu-close icon-cancel"> </span> </a>
+</div>
+<script type="text/javascript">
+	InitPage(["fastMenuLst", "reloadFastMenu"], function($scope) {
+		var menuContainerNum = 0;
+		var menuContainer = [];
+		var oldMenuCodes = [];
+		$scope.load = function() {
+			loadUserMenu();
+		};
+		function loadUserMenu() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/getUserMenu",
+				params : {
+				},
+				success : function(result) {
+					loadMenu(result);
+					//加载用户原来已经有的菜单到选中的菜单头区域中，并勾选上菜单表格区域相应的菜单
+					loadOldFastMenu();
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function loadOldFastMenu() {
+			//加载已经有的菜单
+			if ($scope.fastMenuLst && $scope.fastMenuLst.length > 0) {
+				for (var fm in $scope.fastMenuLst) {
+					var fmenu = $scope.fastMenuLst[fm];
+					//保存旧菜单
+					oldMenuCodes.push({
+						dailyMenuId : fmenu.dailyMenuId,
+						menuCode : fmenu.menuCode
+					});
+					//addSelectedMenu(fmenu.menuCode, fmenu.menuName);
+					//选中菜单表格中相应菜单
+					var chkId = "#" + fmenu.menuCode;
+					$scope.$(chkId).click();
+				}
+			}
+		}
+
+		function loadMenu(menuDtos) {
+			var menuTable = $scope.$("#menuTable");
+			for (var fm in menuDtos) {
+				var tr = $("<tr></tr>");
+				var tdFirstMenu = $("<td></td>");
+				var tdThirdMenu = $("<td></td>");
+				//创建、填充一级菜单到td中
+				var firstMenu = createFirstMenu(menuDtos[fm]);
+				tdFirstMenu.append(firstMenu);
+
+				//创建、填充三级菜单到td中
+				var sonMenus = menuDtos[fm].sonMenus;
+				for (var sm in sonMenus) {
+					var thirdMenu = createThirdMenu(sonMenus[sm]);
+					tdThirdMenu.append(thirdMenu);
+				}
+				//把2个td填充到tr中
+				tr.append(tdFirstMenu);
+				tr.append(tdThirdMenu);
+				//把tr放到table中
+				menuTable.append(tr);
+			}
+		}
+
+		/**
+		 *创建一级菜单，一级菜单中checkbox的id存储的是菜单的编码【menuCode】
+		 */
+		function createFirstMenu(menuDto) {
+			var divRow = $scope.$("#firstMenuDiv").clone().show();
+			divRow.removeAttr("id");
+			var titleClm = divRow.find("a");
+			titleClm.eq(0).text(menuDto.menuName);
+			var chk = divRow.find("input");
+			chk.eq(0).attr("id", menuDto.menuCode);
+			chk.eq(0).click(function() {
+				var parentTd = $(this).parentsUntil('tr').get(1);
+				var nextTd = $(parentTd).next();
+				var findCondition = "input[id^=" + menuDto.menuCode + "]";
+				var sonMenu = nextTd.find(findCondition);
+				if ($(this).is(":checked")) {
+					var notChkSonMenu=filterRepeatMenu(sonMenu);
+					//判断最多还能加载几个快捷菜单
+					var remainNum = 8 - menuContainer.length;
+					if (remainNum < notChkSonMenu.length) {
+						alert("已经加载" + menuContainer.length + "个菜单了，最多还能加载" + remainNum + "个");
+						$(this).removeAttr("checked");
+						return;
+					}
+					//选中所有的三级菜单
+					//sonMenu.attr("checked", "true");这种方式在火狐浏览器下存在bug，使用下面元素的dom操作方法
+					notChkSonMenu.each(function(){
+						this.checked=true;
+					});
+					//增加到头上的选择的菜单行中
+					addFirstLevelSelectedMenu(notChkSonMenu);
+				} else {
+					//取消全选
+					sonMenu.removeAttr("checked");
+					//从头上的选择的菜单行中去除
+					removeFirstLevelSelectedMenu(sonMenu);
+				}
+			});
+			return divRow;
+		}
+		
+		function filterRepeatMenu(sonMenu)
+		{
+			for (var i = 0; i < sonMenu.length; i++) {
+				var isChk = $(sonMenu[i]).is(":checked");
+				if(isChk)
+				{
+					sonMenu.splice(i,1);
+				}				
+			}
+			return sonMenu;
+		}
+
+		/**
+		 *创建三级菜单，三级菜单中checkbox的id存储的是菜单的编码【menuCode】
+		 */
+		function createThirdMenu(menuDto) {
+			var divRow = $scope.$("#thirdMenuDiv").clone().show();
+			divRow.removeAttr("id");
+			var titleClm = divRow.find("a");
+			titleClm.eq(0).text(menuDto.menuName);
+			var chk = divRow.find("input");
+			chk.eq(0).attr("id", menuDto.menuCode);
+			chk.eq(0).attr("name", menuDto.menuName);
+			chk.eq(0).click(function() {
+				if ($(this).is(":checked")) {
+					//debugger;
+					//判断最多还能加载几个快捷菜单
+					var remainNum = 8 - menuContainer.length;
+					if (remainNum < 1) {
+						alert("已经加载8个菜单了，不能再加了！");
+						$(this).removeAttr("checked");
+						return;
+					}
+					//判断该类三级菜单是否都选中了，要是都选中，则一级菜单也要选中
+					var parentTd = $(this).parentsUntil('tr').get(1);
+					if (isAllChecked(parentTd)) {
+						//一级菜单checkbox也要选中
+						var firstMenuId = "#" + menuDto.menuCode.substr(0, 2);
+						$scope.$(firstMenuId).get(0).checked = true;
+					}
+					//增加到头上的选择的菜单行中
+					addSelectedMenu(menuDto.menuCode, menuDto.menuName);
+				} else {
+					//一级菜单checkbox也要取消选中
+					$scope.$("#" + menuDto.menuCode.substr(0, 2)).removeAttr("checked");
+					//从头上的选择的菜单行中去除
+					removeSelectedMenu(menuDto.menuCode);
+				}
+
+			});
+			return divRow;
+		}
+
+		function isAllChecked(parentTd) {
+			var otherChk = $(parentTd).find("input");
+			for (var i = 0; i < otherChk.length; i++) {
+				var isChk = $(otherChk[i]).is(":checked");
+				if (!isChk) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		function addFirstLevelSelectedMenu(sonMenuObj) {
+			for (var i = 0; i < sonMenuObj.length; i++) {
+				var code = $(sonMenuObj[i]).attr("id");
+				var name = $(sonMenuObj[i]).attr("name");
+				addSelectedMenu(code, name);
+			}
+		}
+
+		function addSelectedMenu(menuCode, menuName) {
+			menuContainer.push(menuCode);
+			$scope.$("#selectedMenuDiv").append(createSelectedMenu(menuCode, menuName));
+		}
+
+		function createSelectedMenu(menuCode, menuName) {
+			var a = $scope.$("#selectedMenuItem").clone().show();
+			a.removeAttr("id");
+			a.removeAttr("style");
+			a.attr("name", menuCode);
+			var txt = a.find(".menu-text");
+			txt.eq(0).text(menuName);
+			var closeSpan = a.find(".menu-close");
+			closeSpan.eq(0).attr("name", menuCode);
+			closeSpan.eq(0).click(function() {
+				//从缓存中删除
+				var index = $.inArray(menuCode, menuContainer);
+				if (index > -1) {
+					menuContainer.splice(index, 1);
+				}
+				//移除该元素
+				a.remove();
+				//把下方菜单表格中对于的checkbox取消选中
+				$scope.$("#" + menuCode).removeAttr("checked");
+				//一级菜单checkbox也要取消选中
+				$scope.$("#" + menuCode.substr(0, 2)).removeAttr("checked");
+			});
+			return a;
+		}
+
+		function removeFirstLevelSelectedMenu(sonMenuObj) {
+			for (var i = 0; i < sonMenuObj.length; i++) {
+				var code = $(sonMenuObj[i]).attr("id");
+				removeSelectedMenu(code);
+			}
+		}
+
+		function removeSelectedMenu(menuCode) {
+			//从缓存中删除
+			var index = $.inArray(menuCode, menuContainer);
+			if (index > -1) {
+				menuContainer.splice(index, 1);
+			}
+			var findCondition = "a[name=" + menuCode + "]";
+			$scope.$("#selectedMenuDiv").find(findCondition).remove();
+		}
+
+
+		$scope.save = function() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/sysCfg/HomeAction/saveUserFastMenu",
+				params : {
+					userId : $scope.UserInfo.userId,
+					oldMenus : JSON.stringify(oldMenuCodes),
+					newMenus : JSON.stringify(menuContainer)
+				},
+				success : function(result) {
+					$scope.reloadFastMenu();
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+
+		};
+
+	}); 
+</script>
+<style>
+	#fastMenuSetDiv table {
+		border-right: 1px solid silver;
+		border-bottom: 1px solid silver;
+	}
+	#fastMenuSetDiv table td {
+		border-left: 1px solid silver;
+		border-top: 1px solid silver;
+	}
+	#fastMenuSetDiv table tr td:nth-child(1) {
+		width: 20%;
+	}
+	#fastMenuSetDiv table tr td:nth-child(2) {
+		width: 80%;
+	}
+	#fastMenuSetDiv table tr {
+		padding-top: 8px;
+		padding-bottom: 8px;
+	}
+	#fastMenuSetDiv .left-td-item {
+		text-align: center;
+	}
+	#fastMenuSetDiv .right-td-item {
+		float: left;
+		text-align: center;
+		margin-left: 15px;
+	}
+	#fastMenuSetDiv .selected-menu {
+		position: relative;
+		float: left;
+		background: #38aae1;
+		border: 1px solid #38aae1;
+		border-radius: 5px;
+		color: #fff;
+		padding-right: 5px;
+	}
+	#fastMenuSetDiv .menu-text {
+		display: inline-block;
+		font-size: 13px;
+		line-height: 24px;
+		margin: 0 16px 4px 2px;
+		padding: 0;
+		vertical-align: top;
+		width: auto;
+	}
+	#fastMenuSetDiv .menu-close {
+		display: inline-block;
+		font-size: 1px;
+		height: 16px;
+		line-height: 16px;
+		right: 2px;
+		margin-top: -8px;
+		position: absolute;
+		top: 50%;
+		width: 16px;
+	}
+</style>

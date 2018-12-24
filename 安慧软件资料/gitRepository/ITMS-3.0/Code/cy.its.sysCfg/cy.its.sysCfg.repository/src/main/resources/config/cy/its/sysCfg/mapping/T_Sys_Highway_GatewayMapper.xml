@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Highway_GatewayMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Highway_Gateway" >
+    <id column="GATEWAY_ID" property="gatewayId" jdbcType="VARCHAR" />
+    <result column="GATEWAY_CODE" property="gatewayCode" jdbcType="VARCHAR" />
+    <result column="GATEWAY_NAME" property="gatewayName" jdbcType="VARCHAR" />
+    <result column="INTERSECTION_ROAD_ID" property="intersectionRoadId" jdbcType="VARCHAR" />
+    <result column="INTERSECTION_ROAD_NAME" property="intersectionRoadName" jdbcType="VARCHAR" />
+    <result column="DESTINATION" property="destination" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_RAMP_LENGTH" property="entranceRampLength" jdbcType="FLOAT" />
+    <result column="EXIT_RAMP_LENGTH" property="exitRampLength" jdbcType="FLOAT" />
+    <result column="RAMP_LIMIT_SPEED" property="rampLimitSpeed" jdbcType="VARCHAR" />
+    <result column="TOLLGATE_VIDEO_ID" property="tollgateVideoId" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_TOLLGATE_ID" property="entranceTollgateId" jdbcType="VARCHAR" />
+    <result column="EXIT_TOLLGATE_ID" property="exitTollgateId" jdbcType="VARCHAR" />
+    <result column="HAS_LAW_SERVICE_STATION" property="hasLawServiceStation" jdbcType="CHAR" />
+    <result column="LAW_SER_STAT_VIDEO_ID" property="lawSerStatVideoId" jdbcType="VARCHAR" />
+    <result column="ENTRANCE_ROAD_ID" property="entranceRoadId" jdbcType="VARCHAR" />
+    <result column="EXIT_ROAD_ID" property="exitRoadId" jdbcType="VARCHAR" />
+    <result column="IS_INTERCHANGE_HUB" property="isInterchangeHub" jdbcType="CHAR" />
+    <result column="INTERCHANGE_HUB_NAME" property="interchangeHubName" jdbcType="VARCHAR" />
+    <result column="LEADING_ROAD_ID" property="leadingRoadId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GATEWAY_ID, GATEWAY_CODE, GATEWAY_NAME, INTERSECTION_ROAD_ID, INTERSECTION_ROAD_NAME, 
+    DESTINATION, ENTRANCE_RAMP_LENGTH, EXIT_RAMP_LENGTH, RAMP_LIMIT_SPEED, TOLLGATE_VIDEO_ID, 
+    ENTRANCE_TOLLGATE_ID, EXIT_TOLLGATE_ID, HAS_LAW_SERVICE_STATION, LAW_SER_STAT_VIDEO_ID, 
+    ENTRANCE_ROAD_ID, EXIT_ROAD_ID, IS_INTERCHANGE_HUB, INTERCHANGE_HUB_NAME, LEADING_ROAD_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_HIGHWAY_GATEWAY
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_HIGHWAY_GATEWAY
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Highway_Gateway" >
+    insert into T_SYS_HIGHWAY_GATEWAY (GATEWAY_ID, GATEWAY_CODE, GATEWAY_NAME, 
+      INTERSECTION_ROAD_ID, INTERSECTION_ROAD_NAME, 
+      DESTINATION, ENTRANCE_RAMP_LENGTH, EXIT_RAMP_LENGTH, 
+      RAMP_LIMIT_SPEED, TOLLGATE_VIDEO_ID, ENTRANCE_TOLLGATE_ID, 
+      EXIT_TOLLGATE_ID, HAS_LAW_SERVICE_STATION, LAW_SER_STAT_VIDEO_ID, 
+      ENTRANCE_ROAD_ID, EXIT_ROAD_ID, IS_INTERCHANGE_HUB, 
+      INTERCHANGE_HUB_NAME, LEADING_ROAD_ID)
+    values (#{gatewayId,jdbcType=VARCHAR}, #{gatewayCode,jdbcType=VARCHAR}, #{gatewayName,jdbcType=VARCHAR}, 
+      #{intersectionRoadId,jdbcType=VARCHAR}, #{intersectionRoadName,jdbcType=VARCHAR}, 
+      #{destination,jdbcType=VARCHAR}, #{entranceRampLength,jdbcType=FLOAT}, #{exitRampLength,jdbcType=FLOAT}, 
+      #{rampLimitSpeed,jdbcType=VARCHAR}, #{tollgateVideoId,jdbcType=VARCHAR}, #{entranceTollgateId,jdbcType=VARCHAR}, 
+      #{exitTollgateId,jdbcType=VARCHAR}, #{hasLawServiceStation,jdbcType=CHAR}, #{lawSerStatVideoId,jdbcType=VARCHAR}, 
+      #{entranceRoadId,jdbcType=VARCHAR}, #{exitRoadId,jdbcType=VARCHAR}, #{isInterchangeHub,jdbcType=CHAR}, 
+      #{interchangeHubName,jdbcType=VARCHAR}, #{leadingRoadId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Highway_Gateway" >
+    insert into T_SYS_HIGHWAY_GATEWAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="gatewayId != null" >
+        GATEWAY_ID,
+      </if>
+      <if test="gatewayCode != null" >
+        GATEWAY_CODE,
+      </if>
+      <if test="gatewayName != null" >
+        GATEWAY_NAME,
+      </if>
+      <if test="intersectionRoadId != null" >
+        INTERSECTION_ROAD_ID,
+      </if>
+      <if test="intersectionRoadName != null" >
+        INTERSECTION_ROAD_NAME,
+      </if>
+      <if test="destination != null" >
+        DESTINATION,
+      </if>
+      <if test="entranceRampLength != null" >
+        ENTRANCE_RAMP_LENGTH,
+      </if>
+      <if test="exitRampLength != null" >
+        EXIT_RAMP_LENGTH,
+      </if>
+      <if test="rampLimitSpeed != null" >
+        RAMP_LIMIT_SPEED,
+      </if>
+      <if test="tollgateVideoId != null" >
+        TOLLGATE_VIDEO_ID,
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID,
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID,
+      </if>
+      <if test="hasLawServiceStation != null" >
+        HAS_LAW_SERVICE_STATION,
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        LAW_SER_STAT_VIDEO_ID,
+      </if>
+      <if test="entranceRoadId != null" >
+        ENTRANCE_ROAD_ID,
+      </if>
+      <if test="exitRoadId != null" >
+        EXIT_ROAD_ID,
+      </if>
+      <if test="isInterchangeHub != null" >
+        IS_INTERCHANGE_HUB,
+      </if>
+      <if test="interchangeHubName != null" >
+        INTERCHANGE_HUB_NAME,
+      </if>
+      <if test="leadingRoadId != null" >
+        LEADING_ROAD_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="gatewayId != null" >
+        #{gatewayId,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayCode != null" >
+        #{gatewayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayName != null" >
+        #{gatewayName,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadId != null" >
+        #{intersectionRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadName != null" >
+        #{intersectionRoadName,jdbcType=VARCHAR},
+      </if>
+      <if test="destination != null" >
+        #{destination,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRampLength != null" >
+        #{entranceRampLength,jdbcType=FLOAT},
+      </if>
+      <if test="exitRampLength != null" >
+        #{exitRampLength,jdbcType=FLOAT},
+      </if>
+      <if test="rampLimitSpeed != null" >
+        #{rampLimitSpeed,jdbcType=VARCHAR},
+      </if>
+      <if test="tollgateVideoId != null" >
+        #{tollgateVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="hasLawServiceStation != null" >
+        #{hasLawServiceStation,jdbcType=CHAR},
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        #{lawSerStatVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRoadId != null" >
+        #{entranceRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitRoadId != null" >
+        #{exitRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="isInterchangeHub != null" >
+        #{isInterchangeHub,jdbcType=CHAR},
+      </if>
+      <if test="interchangeHubName != null" >
+        #{interchangeHubName,jdbcType=VARCHAR},
+      </if>
+      <if test="leadingRoadId != null" >
+        #{leadingRoadId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Highway_Gateway" >
+    update T_SYS_HIGHWAY_GATEWAY
+    <set >
+      <if test="gatewayCode != null" >
+        GATEWAY_CODE = #{gatewayCode,jdbcType=VARCHAR},
+      </if>
+      <if test="gatewayName != null" >
+        GATEWAY_NAME = #{gatewayName,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadId != null" >
+        INTERSECTION_ROAD_ID = #{intersectionRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="intersectionRoadName != null" >
+        INTERSECTION_ROAD_NAME = #{intersectionRoadName,jdbcType=VARCHAR},
+      </if>
+      <if test="destination != null" >
+        DESTINATION = #{destination,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRampLength != null" >
+        ENTRANCE_RAMP_LENGTH = #{entranceRampLength,jdbcType=FLOAT},
+      </if>
+      <if test="exitRampLength != null" >
+        EXIT_RAMP_LENGTH = #{exitRampLength,jdbcType=FLOAT},
+      </if>
+      <if test="rampLimitSpeed != null" >
+        RAMP_LIMIT_SPEED = #{rampLimitSpeed,jdbcType=VARCHAR},
+      </if>
+      <if test="tollgateVideoId != null" >
+        TOLLGATE_VIDEO_ID = #{tollgateVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceTollgateId != null" >
+        ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitTollgateId != null" >
+        EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      </if>
+      <if test="hasLawServiceStation != null" >
+        HAS_LAW_SERVICE_STATION = #{hasLawServiceStation,jdbcType=CHAR},
+      </if>
+      <if test="lawSerStatVideoId != null" >
+        LAW_SER_STAT_VIDEO_ID = #{lawSerStatVideoId,jdbcType=VARCHAR},
+      </if>
+      <if test="entranceRoadId != null" >
+        ENTRANCE_ROAD_ID = #{entranceRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="exitRoadId != null" >
+        EXIT_ROAD_ID = #{exitRoadId,jdbcType=VARCHAR},
+      </if>
+      <if test="isInterchangeHub != null" >
+        IS_INTERCHANGE_HUB = #{isInterchangeHub,jdbcType=CHAR},
+      </if>
+      <if test="interchangeHubName != null" >
+        INTERCHANGE_HUB_NAME = #{interchangeHubName,jdbcType=VARCHAR},
+      </if>
+      <if test="leadingRoadId != null" >
+        LEADING_ROAD_ID = #{leadingRoadId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Highway_Gateway" >
+    update T_SYS_HIGHWAY_GATEWAY
+    set GATEWAY_CODE = #{gatewayCode,jdbcType=VARCHAR},
+      GATEWAY_NAME = #{gatewayName,jdbcType=VARCHAR},
+      INTERSECTION_ROAD_ID = #{intersectionRoadId,jdbcType=VARCHAR},
+      INTERSECTION_ROAD_NAME = #{intersectionRoadName,jdbcType=VARCHAR},
+      DESTINATION = #{destination,jdbcType=VARCHAR},
+      ENTRANCE_RAMP_LENGTH = #{entranceRampLength,jdbcType=FLOAT},
+      EXIT_RAMP_LENGTH = #{exitRampLength,jdbcType=FLOAT},
+      RAMP_LIMIT_SPEED = #{rampLimitSpeed,jdbcType=VARCHAR},
+      TOLLGATE_VIDEO_ID = #{tollgateVideoId,jdbcType=VARCHAR},
+      ENTRANCE_TOLLGATE_ID = #{entranceTollgateId,jdbcType=VARCHAR},
+      EXIT_TOLLGATE_ID = #{exitTollgateId,jdbcType=VARCHAR},
+      HAS_LAW_SERVICE_STATION = #{hasLawServiceStation,jdbcType=CHAR},
+      LAW_SER_STAT_VIDEO_ID = #{lawSerStatVideoId,jdbcType=VARCHAR},
+      ENTRANCE_ROAD_ID = #{entranceRoadId,jdbcType=VARCHAR},
+      EXIT_ROAD_ID = #{exitRoadId,jdbcType=VARCHAR},
+      IS_INTERCHANGE_HUB = #{isInterchangeHub,jdbcType=CHAR},
+      INTERCHANGE_HUB_NAME = #{interchangeHubName,jdbcType=VARCHAR},
+      LEADING_ROAD_ID = #{leadingRoadId,jdbcType=VARCHAR}
+    where GATEWAY_ID = #{gatewayId,jdbcType=VARCHAR}
+  </update>
+</mapper>

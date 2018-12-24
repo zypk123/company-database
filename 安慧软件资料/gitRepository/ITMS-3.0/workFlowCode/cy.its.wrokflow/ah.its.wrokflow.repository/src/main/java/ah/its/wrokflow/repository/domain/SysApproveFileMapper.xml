@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.SysApproveFileMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.SysApproveFile" >
+    <id column="ID_" property="id" jdbcType="VARCHAR" />
+    <result column="FUNDS_FILE" property="fundsFile" jdbcType="VARCHAR" />
+    <result column="PURCHASE_FILE" property="purchaseFile" jdbcType="VARCHAR" />
+    <result column="CONTRACT_FILE" property="contractFile" jdbcType="VARCHAR" />
+    <result column="CHECK_FILE" property="checkFile" jdbcType="VARCHAR" />
+    <result column="REMARK_FILE" property="remarkFile" jdbcType="VARCHAR" />
+    <result column="EXTEND_FIELD" property="extendField" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="DISABLED" property="disabled" jdbcType="VARCHAR" />
+    <result column="PROCESS_ID" property="processId" jdbcType="VARCHAR" />
+    <result column="APPROVE_TIME" property="approveTime" jdbcType="TIMESTAMP" />
+    <result column="SYSTEM_APPROVE_ID" property="systemApproveId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID_, FUNDS_FILE, PURCHASE_FILE, CONTRACT_FILE, CHECK_FILE, REMARK_FILE, EXTEND_FIELD, 
+    STATUS, DISABLED, PROCESS_ID, APPROVE_TIME, SYSTEM_APPROVE_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_SYS_APPROVE_FILE
+    where ID_ = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_SYS_APPROVE_FILE
+    where ID_ = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.SysApproveFile" >
+    insert into T_WF_SYS_APPROVE_FILE (ID_, FUNDS_FILE, PURCHASE_FILE, 
+      CONTRACT_FILE, CHECK_FILE, REMARK_FILE, 
+      EXTEND_FIELD, STATUS, DISABLED, 
+      PROCESS_ID, APPROVE_TIME, SYSTEM_APPROVE_ID
+      )
+    values (#{id,jdbcType=VARCHAR}, #{fundsFile,jdbcType=VARCHAR}, #{purchaseFile,jdbcType=VARCHAR}, 
+      #{contractFile,jdbcType=VARCHAR}, #{checkFile,jdbcType=VARCHAR}, #{remarkFile,jdbcType=VARCHAR}, 
+      #{extendField,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{disabled,jdbcType=VARCHAR}, 
+      #{processId,jdbcType=VARCHAR}, #{approveTime,jdbcType=TIMESTAMP}, #{systemApproveId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.SysApproveFile" >
+    insert into T_WF_SYS_APPROVE_FILE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID_,
+      </if>
+      <if test="fundsFile != null" >
+        FUNDS_FILE,
+      </if>
+      <if test="purchaseFile != null" >
+        PURCHASE_FILE,
+      </if>
+      <if test="contractFile != null" >
+        CONTRACT_FILE,
+      </if>
+      <if test="checkFile != null" >
+        CHECK_FILE,
+      </if>
+      <if test="remarkFile != null" >
+        REMARK_FILE,
+      </if>
+      <if test="extendField != null" >
+        EXTEND_FIELD,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="disabled != null" >
+        DISABLED,
+      </if>
+      <if test="processId != null" >
+        PROCESS_ID,
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME,
+      </if>
+      <if test="systemApproveId != null" >
+        SYSTEM_APPROVE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="fundsFile != null" >
+        #{fundsFile,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseFile != null" >
+        #{purchaseFile,jdbcType=VARCHAR},
+      </if>
+      <if test="contractFile != null" >
+        #{contractFile,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFile != null" >
+        #{checkFile,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkFile != null" >
+        #{remarkFile,jdbcType=VARCHAR},
+      </if>
+      <if test="extendField != null" >
+        #{extendField,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        #{disabled,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null" >
+        #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="systemApproveId != null" >
+        #{systemApproveId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.SysApproveFile" >
+    update T_WF_SYS_APPROVE_FILE
+    <set >
+      <if test="fundsFile != null" >
+        FUNDS_FILE = #{fundsFile,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseFile != null" >
+        PURCHASE_FILE = #{purchaseFile,jdbcType=VARCHAR},
+      </if>
+      <if test="contractFile != null" >
+        CONTRACT_FILE = #{contractFile,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFile != null" >
+        CHECK_FILE = #{checkFile,jdbcType=VARCHAR},
+      </if>
+      <if test="remarkFile != null" >
+        REMARK_FILE = #{remarkFile,jdbcType=VARCHAR},
+      </if>
+      <if test="extendField != null" >
+        EXTEND_FIELD = #{extendField,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="disabled != null" >
+        DISABLED = #{disabled,jdbcType=VARCHAR},
+      </if>
+      <if test="processId != null" >
+        PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTime != null" >
+        APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      </if>
+      <!-- <if test="systemApproveId != null" >
+        SYSTEM_APPROVE_ID = #{systemApproveId,jdbcType=VARCHAR},
+      </if> -->
+    </set>
+    where ID_ = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.SysApproveFile" >
+    update T_WF_SYS_APPROVE_FILE
+    set FUNDS_FILE = #{fundsFile,jdbcType=VARCHAR},
+      PURCHASE_FILE = #{purchaseFile,jdbcType=VARCHAR},
+      CONTRACT_FILE = #{contractFile,jdbcType=VARCHAR},
+      CHECK_FILE = #{checkFile,jdbcType=VARCHAR},
+      REMARK_FILE = #{remarkFile,jdbcType=VARCHAR},
+      EXTEND_FIELD = #{extendField,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      DISABLED = #{disabled,jdbcType=VARCHAR},
+      PROCESS_ID = #{processId,jdbcType=VARCHAR},
+      APPROVE_TIME = #{approveTime,jdbcType=TIMESTAMP},
+      SYSTEM_APPROVE_ID = #{systemApproveId,jdbcType=VARCHAR}
+    where ID_ = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectAllData" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		 select 
+		  a.ID_ Id,
+		  a.SYSTEM_APPROVE_ID systemApproveId,
+		  a.FUNDS_FILE fundsFile,
+		  a.PURCHASE_FILE purchaseFile,
+		  a.CONTRACT_FILE contractFile,
+		  a.CHECK_FILE checkFile,
+		  a.REMARK_FILE remarkFile,
+		  c.name_ unitName,
+		  t.unit unit,
+		  t.system_manageer systemManageer,
+		  t.system_name systemName,
+		  t.SYSYTEM_FUNCTION sysytemFunction,
+		  t.USER_DEPARTMENTS userDepartments,
+		  a.status,
+		  a.approve_Time,
+		  a.process_id processId,
+		  t.phone phone,
+		  t.approve_Img approveImg,
+		  t.departments_Img departmentsImg,
+		  t.solution_File solutionFile,
+		  t.plans_File plansFile,
+		  t.EXPERT_OPINION_IMG expertOpinionImg
+		from t_wf_sys_approve_file a
+		left join t_wf_sys_approve t on t.system_approve_id=a.system_approve_id
+		left  join act_id_group c on c.id_=t.unit
+		where a.disabled='0'
+	    <if test="systemName != null and systemName != '' " > 
+	           and  T.SYSTEM_NAME  like  '%'||#{systemName,jdbcType=VARCHAR}||'%' 
+	    </if>
+	    <if test="startTime!=null and startTime != ''" >
+			   <![CDATA[AND T.approve_time >= #{startTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="endTime!=null and endTime != ''" >
+			<![CDATA[AND T.approve_time <= #{endTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="approveStatus!=null and approveStatus!= ''" >
+			AND a.status = #{approveStatus,jdbcType=VARCHAR} 
+		</if>
+		<if test="groupId!=null and groupId != ''" >
+			AND T.unit like #{groupId,jdbcType=VARCHAR}||'%' 
+		</if>
+		order by t.approve_time desc 
+  </select>
+</mapper>

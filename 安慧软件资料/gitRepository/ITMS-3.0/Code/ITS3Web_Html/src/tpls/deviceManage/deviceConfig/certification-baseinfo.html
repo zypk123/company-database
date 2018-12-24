@@ -1,0 +1,207 @@
+<form method="post" id="certificationDetailFrm" cy-form="certificationDetail">
+    <div style="width: 100%;">
+        <div style="position:absolute;overflow-y:auto;height:511px;width: 884px">
+            <div class="table" style="margin-top: 5px">
+                <div class="tr">
+                    <div class="th">证书编号：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="certificaitonNbr"/>
+                    </div>
+                    <div class="th">检定时间：</div>
+                    <div class="td">
+                        <input id="certificationDate" class="easyui-datebox" name="certificationDate"/>
+                    </div>
+                    <div class="th">有效期至：</div>
+                    <div class="td">
+                        <input id="expireDate" class="easyui-datebox" name="expireDate"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">检定机构：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="certificationOrg"/>
+                    </div>
+                    <div class="th">检定人员：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="certificationPerson"/>
+                    </div>
+                    <div class="th">质检网址：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="webSite"/>
+                    </div>
+                </div>
+                <!--检定证书图片区域-->
+                <div class="tr">
+                    <div class="td" style="width: 100%">
+                    <div id="photoDiv" style="float: left">
+                    </div>
+                        <div id="upPhotoTemDiv" class='imgDiv'>
+                            <img id="upPhoto" src="themes/default/images/upload.png" style="margin: 70px">
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="td" style="width: 100%">
+                        <div style="color: red;float: left;font-size: 14px">最多只能上传5张检定证书图片</div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <!--保存按钮-->
+                    <div style="text-align: center;margin-right: 10px;margin-top: 10px">
+                        <a class="easyui-linkbutton button-save" iconCls="icon-save" cy-click="saveCertification">保存</a>
+                        <a class="easyui-linkbutton button-close" iconCls="icon-close" cy-click="closeDialog">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+
+    /**
+     * mode ：判断访问tab页面的参数
+     *closeDialog ：关闭弹出框的方法
+     */
+    InitPage(["mode","closeDialog"],function($scope) {
+
+        $scope.load = function(){
+            initPageDefaultInfo();
+            //初始化文件上传组件
+            $scope.uploader = initUpload();
+            $scope.uploader.init();
+            $scope.imageFiles = {};//保存文件对象
+            $scope.imageUrls = {};//保存文件URL
+
+        };
+        /**
+         * 初始化页面默认值设置
+         */
+        function initPageDefaultInfo(){
+            var date=new Date();
+            var exDate= new Date(date.setFullYear(date.getFullYear()+1));
+            $scope.$("#certificationDate").datebox('setValue',new Date().format("yyyy-MM-dd"));
+            $scope.$("#expireDate").datebox('setValue',exDate.format("yyyy-MM-dd"));
+        }
+
+        /**
+         * 初始化文件上传
+         * @return {[type]} [description]
+         */
+        function initUpload(){
+            return new plupload.Uploader({
+                runtimes : 'html5',
+                browse_button : $scope.$("#upPhoto")[0], // you can pass in id...
+                container: $scope.$("#upPhotoTemDiv")[0], // ... or DOM Element itself
+                url : 'upload.php',
+                filters : {
+                    max_file_size : '10mb',
+                    prevent_duplicates : true, //不允许选取重复文件
+                    mime_types: [
+                        {title : "照片文件", extensions : "jpg,png,jpeg,bmp,gif"}
+                    ]
+                },
+                init: {
+                    PostInit: function() {
+
+                    },
+                    /**
+                     *添加文件
+                     */
+                    FilesAdded: function(up, files) {
+                        if(this.files.length>5){
+                            for(var i=0;i<files.length; i++){
+                                //删除本次选择的图片
+                                this.removeFile(files[i]);
+                            }
+                            alert("最多只能上传5张证书图片！");
+                            return;
+                        }
+                        if(this.files.length==5) {
+                            $scope.$("#upPhotoTemDiv").hide();
+                        }
+                        for(var index=0; index<files.length; index++){
+                            var file = files[index];
+                                //请按照文件名的形式，存储文件信息到页面变量中
+                                parseImageFile(file);
+                        }
+                    },
+                    /**
+                     * 删除文件
+                     */
+                    FilesRemoved: function(up, files) {
+                        if(this.files.length<5){
+                            $scope.$("#upPhotoTemDiv").show();
+                        }
+                    },
+                    Error: function(up, err) {
+                        console.log(err);
+                    }
+                }
+            })
+        }
+        /**
+         * 获得图片文件的路径
+         * @return {[type]} [description]
+         */
+        function parseImageFile(file){
+            var name = file.name;
+            $scope.imageFiles[name]=file;
+            var reader = new FileReader();
+            reader.readAsDataURL(file.getSource().getSource());
+            reader.onload = function(e){
+                $scope.imageUrls[name]=this.result;
+                var imgDiv=$("<div class='imgDiv'></div>");
+                var img=$("<img style='width: 270px;height: 270px'/>");
+                img.attr("src",this.result);
+                imgDiv.append(img);
+                var deleteDiv=$("<div style='position: absolute;margin-left: 130px;margin-bottom: 5px'>删除</div>");
+                deleteDiv.click(function(){
+                   //把这个div删除
+                    $(this).parent().remove();
+                    //把文件队列中文件删除
+                   $scope.uploader.removeFile(file);
+                });
+                imgDiv.append(deleteDiv);
+                $scope.$("#photoDiv").append(imgDiv);
+            }
+        }
+
+        /**
+         * 保存证书
+         */
+        $scope.saveCertification=function(){
+            $scope.$updateData("certificationDetail");
+            $scope.certificationDetail.mode=$scope.mode;
+            var arrayUrl=[];
+            for(var url in $scope.imageUrls){
+                arrayUrl.push(url);
+            }
+            if(arrayUrl!=null&&arrayUrl.length>0){
+                $scope.certificationDetail.fileUrl=$scope.imageUrls[arrayUrl[0]];
+            }
+            $scope.$setParam("certificationDetailInfo",$scope.certificationDetail);//保存当前页面内容
+            $scope.closeDialog();
+        };
+
+    });
+</script>
+<style>
+    #certificationDetailFrm .imgDiv{
+    float: left;
+    border: dashed 1px silver;
+    margin: 5px;
+    height: 270px;
+    width: 270px
+}
+    #certificationDetailFrm .th{
+        width : 80px;
+        text-align:right;
+    }
+    #certificationDetailFrm .td{
+        width : 208px;
+    }
+    #certificationDetailFrm .td>input[class^='easyui-']{
+        width : 170px;
+    }
+
+</style>

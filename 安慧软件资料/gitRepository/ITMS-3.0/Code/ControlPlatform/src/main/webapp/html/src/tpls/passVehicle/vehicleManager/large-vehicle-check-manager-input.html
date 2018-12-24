@@ -1,0 +1,118 @@
+<div class="easyui-layout" id="importentVehInput">
+	<div data-options="region:'center',border:false">
+		<form cy-form="formData">
+			<div class="table">
+				<div class="tr">
+					<div class="th">号牌号码：</div>
+					<div class="td">
+						<input class="cy-vehNumberbox" name="plateNumber" data-options="required:true"
+							 style="width:110px;">
+					</div>
+					<div class="th">号牌种类：</div>
+					<div class="td">
+						<input id="plateType" class="easyui-combobox" name="plateType" style="width:110px;">
+					</div>
+					<div class="th">号牌颜色：</div>
+					<div class="td">
+						<input id="plateColor" class="easyui-combobox" name="plateColor" style="width:110px;">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">使用性质：</div>
+					<div class="td">
+						<input id="useType" class="easyui-combobox" name="useType" style="width:110px;">
+					</div>
+					<div class="th">车辆类型：</div>
+					<div class="td">
+						<input id="vehType" class="easyui-combobox" name="vehType" style="width:110px;">
+					</div>
+					<div class="th">驾驶员：</div>
+					<div class="td">
+						<input class="easyui-textbox" name="vehHost" style="width:110px;">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">驾驶员电话：</div>
+					<div class="td">
+						<input class="easyui-textbox" name="phoneNumber" style="width:110px;">
+					</div>
+					<div class="th">实载人数：</div>
+					<div class="td">
+						<input class="easyui-numberbox" name="realLoad" style="width:110px;">
+					</div>
+					<div class="th">核载人数：</div>
+					<div class="td">
+						<input class="easyui-numberbox" name="nuclearLoad" style="width:110px;">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">核定载重：</div>
+					<div class="td">
+						<input class="easyui-numberbox" name="approvedLoad" style="width:110px;">
+					</div>
+					<div class="th">检查民警：</div>
+					<div class="td">
+						<input class="easyui-textbox" name="checkPlice" style="width:110px;">
+					</div>
+					<div class="th" style="width:80px;">检查时间：</div>
+					<div class="td">
+						<input class="easyui-datetimebox" name="checkDatetime" style="width:130px;">
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">交通违法情况：</div>
+					<div class="td">
+						<textarea style="width:546px;height:50px;"></textarea>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">处理情况：</div>
+					<div class="td">
+						<textarea style="width:546px;height:50px;"></textarea>
+					</div>
+				</div>
+				<div class="tr">
+					<div class="th">备注：</div>
+					<div class="td">
+						<textarea style="width:546px;height:50px;"></textarea>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false,height:40">
+		<div class="linkbutton_toolbar" style="text-align:center">
+			<a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="saveOrUpdate">保存</a>
+	        <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="$destroySelf">取消</a>
+	    </div>
+	</div>
+</div>
+<script type="text/javascript">
+	//启用严格模式
+	'use strict';
+	/**
+	 * dicts : 数据字典,Object格式，key：数据字典code，value：数据字典项数组
+	 * district : 行政区划，easyui树格式（数组）
+	 * formData : 页面数据，Object格式，easyui中datagrid行数据
+	 */
+	InitPage(["dicts","district","formData"],function($scope){
+		//初始化下拉菜单
+		$scope.$("#plateType").combobox("loadData",$scope.dicts["002"]);//号牌种类
+		$scope.$("#plateColor").combobox("loadData",$scope.dicts["005"]);//号牌颜色
+		$scope.$("#useType").combobox("loadData",$scope.dicts["001"]);//使用性质
+		$scope.$("#vehType").combobox("loadData",$scope.dicts["003"]);//车辆类型
+		$scope.$("#vehColor").combobox("loadData",$scope.dicts["006"]);//车身颜色
+		$scope.$("#districtCode").combotree("loadData",$scope.district);//行政区划
+
+		
+	});
+</script>
+<style>
+	#importentVehInput .th{
+		width : 100px;
+		text-align: right;
+	}
+	#importentVehInput .td{
+		width : 120px;
+	}
+</style>

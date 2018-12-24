@@ -1,0 +1,237 @@
+<div id="contractManage" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">所属机构：</div>
+                        <div class="td">
+                            <input id="CERTIFICATED_ORG" class="easyui-combotree" name="CERTIFICATED_ORG"/>
+                        </div>
+                        <div class="th">合同类型：</div>
+                        <div class="td">
+                            <input id="CONTRACT_TYPE" class="easyui-combobox" name="CONTRACT_TYPE"/>
+                        </div>
+                        <div class="th">承建商：</div>
+                        <div class="td">
+                            <input id="CONTRACTOR_NAME" class="easyui-textbox" name="CONTRACTOR_NAME"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">签署时间：</div>
+                        <div class="td">
+                            <input id="startTime" class="easyui-datebox" name="" style="width:150px"/>
+                            到
+                            <input id="endTime" class="easyui-datebox" name="" style="width:150px"/>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addData">新增</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="contractInfo" cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/informationManage/contractData.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //保存本页面数据字典，object类型，key：code，value：字典项数组
+        var dicts;
+        //保存所属机构，easyui树类型（数组）
+        var orgTree;
+        //页面初始化
+        $scope.load = function(){
+            //获取数据字典并填入选项
+            getData();
+        };
+        /**
+         * ajax请求后台获取页面初始数据
+         */
+        function getData(){
+            //查询初始数据
+            $scope.$ajaxRequest({
+                url:"data/deviceManage/informationManage/dict.json",
+                success:function(data){
+                    //保存数据字典
+                    dicts = data.dicts;
+                    //保存所属机构树
+                    orgTree = data.orgTree;
+                    $scope.$("#CERTIFICATED_ORG").combotree("loadData",orgTree);
+                    $scope.$("#CONTRACT_TYPE").combobox("loadData",dicts["437"]);
+                },
+                fail : function(errTxt){
+                    alert(errTxt);
+                }
+            });
+        }
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns:[[
+                {field : "id",checkbox : true},
+                {title : "合同编号",field : "CONTRACT_NBR",width:80},
+                {title : "合同名称",field : "CONTRACT_NAME",width:100},
+                {title : "合同类型",field : "CONTRACT_TYPE",width:100},
+                {title : "招标编号",field : "BID_NBR",width:80},
+                {title : "承建商",field : "CONTRACTOR_NAME",width:100},
+                {title : "签署时间",field : "CONTRACT_TIME",width:100},
+                {title : "投标联系人",field : "BID_CONTACT_NAME",width:80},
+                {title : "投标联系人电话",field : "BID_CONTACT_TEL",width:120},
+                {title : "售后服务期始",field : "BEGIN_SERVICE_DATE",width:100},
+                {title : "售后服务期至",field : "END_SERVICE_DATE",width:100},
+                {title : "售后服务联系人",field : "SERVICE_PERSON",width:120},
+                {title : "售后服务联系人电话",field : "SERVICE_PERSON_TEL",width:150},
+                {title : "操作",field : "OPERATER",width : 100,formatter : operate}
+            ]]
+        }
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         * 新增合同信息
+         */
+        $scope.addData = function(){
+            //传递本页面的数据字典
+            $scope.$setParam("dicts",dicts);
+            $scope.$openDialog("addDialog",{
+                title : "新增合同信息",
+                width : 600,
+                height : 430,
+                href : "tpls/deviceManage/informationManage/contract-operate.html"
+            },true);
+            //关闭弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+        }
+        /**
+         * 编辑合同信息
+         * @param index  整数类型 行下标
+         */
+        $scope.editData = function(index){
+            //传递本页面的数据字典
+            $scope.$setParam("dicts",dicts)
+            //获取行数据
+            var rowData = $scope.$("#contractInfo").datagrid("getData").rows[index];
+            $scope.$setParam("formData",rowData);
+            //创建弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑合同信息",
+                width : 600,
+                height : 430,
+                href : "tpls/deviceManage/informationManage/contract-operate.html"
+            },true);
+            //关闭弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("editDialog").dialog("close");
+            });
+            saveData(data);
+        }
+        //保存
+        function saveData(data){
+            $.ajax({
+                url: "",
+                data: data ,
+                dataType: "json",
+                success: function (data) {
+                    //刷新列表
+                    $scope.search("queryData");
+                }
+            });
+        }
+        /**
+         *删除合同信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $.messager.alert("提示",index+"删除成功！");
+                }
+            });
+        }
+        //批量删除
+        $scope.removeSomeData = function(){
+            var rows = $('#contractInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                    if(flag){
+                        $.messager.alert("提示","删除成功！");
+                    }
+                });
+            }
+        }
+        //条件查询
+        $scope.searchData = function(){
+            $scope.$search("queryData");
+        }
+        //选择时间验证
+        $("#startTime").datebox({
+            onSelect: function(date){
+                var nowDate = new Date();
+                if(nowDate < date){
+                    alert("请选择正确的时间！");
+                    $("#startTime").datebox("setValue","");
+                    return false;
+                }
+            }
+        });
+        //选择时间验证
+        $("#endTime").datebox({
+            onSelect: function(date){
+                var startTime = $("#startTime").datebox("getValue");
+                if(startTime == null || startTime == ""){
+                    alert("请选择开始时间！");
+                    $("#endTime").datebox("setValue","");
+                    return false;
+                }
+                var startTimes = new Date(startTime);
+                var nowDate = new Date();
+                if(date < startTimes || date > nowDate){
+                    alert("请选择正确的时间！");
+                    $("#endTime").datebox("setValue","");
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<style type="text/css">
+    #contractManage .th{
+        width: 80px;
+        text-align: right;
+    }
+    #contractManage .easyui-combobox{
+        width: 120px;
+    }
+    #contractManage .button-search{
+       margin-left: 10px;
+    }
+</style>

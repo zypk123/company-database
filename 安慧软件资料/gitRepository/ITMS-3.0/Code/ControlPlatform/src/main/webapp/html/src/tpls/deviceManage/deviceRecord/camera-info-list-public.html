@@ -1,0 +1,195 @@
+<div id="cameraInfo" class="easyui-layout">
+    <div data-options="region:'north', border:false"  style="padding: 8px">
+        <a class="easyui-linkbutton button-add button-main" data-options="iconCls:'icon-add'" cy-click="addCameraInfo" >新增</a>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="destroyTab2">关闭</a>
+    </div>
+    <div id="cameraInfoListDiv" data-options="region:'center', border:false">
+        <table id="cameraInfoList" cy-datagrid="options" cy-querydata="formData" cy-url="device/cameraManage/queryCameraInfo">
+        
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * tollgateTabs ：检定tab页可用参数
+     */
+    InitPage(["destroyTab2","deviceSysConfigTabs","directionData","deviceId1","siteId","sectionId","deviceType"],function($scope){
+    	//获取相机信息页面的传递的设备Id
+    	var deviceId1=$scope.deviceId1;
+    	var deviceType = $scope.deviceType;
+    	$scope.load = function(){
+        	if(deviceId1){
+        		$scope.formData.deviceId =deviceId1;
+        		$scope.$search("formData");
+            }
+            //判断设备类型来隐藏相应标签,"16"表示车载设备
+            if($scope.deviceType=="16"){
+            	$scope.$('#cameraInfoList').datagrid('hideColumn', 'directionName'); 
+            }
+        	     	
+        };
+   
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns : [[//注意，此处是二维数组
+            	{align:'center',title:"部件编号",field:"deviceNbr",width:150},
+                {align:'center',title:"部件名称",field:"componentName",width:150},
+                {align:'center',title:"相机IP",field:"cameraIp",width:150},
+                {align:'center',title:"端口号",field:"cameraPort",width:100},
+                {align:'center',title:"监控方向",field:"directionName",width:100},
+                {align:'center',title:"操作",field : "OPERATER",width : 100,formatter : operate}
+            ]],
+            pagination : false
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+            	plain : true,
+				iconCls : "icon-edit-solid"
+            });
+            button2.linkbutton({
+            	plain : true,
+				iconCls : "icon-remove-solid"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+      /**
+         * 新增相机信息
+         */
+        
+        $scope.addCameraInfo = function(){
+         	$scope.$setParam("deviceId1",$scope.deviceId1);
+        	$scope.$setParam("siteId",$scope.siteId);//传递新增设备点位的ID
+        	$scope.$setParam("directionData",$scope.directionData);//传递断面下的方向
+        	$scope.$setParam("deviceType",deviceType);//传递新增设设备类型
+        	$scope.$setParam("derictionName",$scope.derictionName);//传递断面下的方向
+        	$scope.$setParam("type","add");
+        	$scope.$setParam("sectionId",$scope.sectionId);//传递新增设备点位下的断面ID
+            $scope.$openDialog("camerInfoDialog",{
+                title:"新增相机信息",
+                width:700,
+                height:400,
+                href:"tpls/deviceManage/deviceRecord/camera-info-operate-public.html?type=add"
+            },true);
+            //建立保存方法
+            $scope.$setParam("saveData",function(datas){
+            	$scope.$ajaxRequest({
+            		url: $scope.$restRoot+'device/cameraManage/addCameraInfo',
+            		params: datas,
+            		method: 'post',
+            		success: function(data){
+            			if(data != "keyError"){
+	        				$scope.$getDialog("camerInfoDialog").dialog("close");
+	                        $scope.formData.deviceId = deviceId1;
+	                        $scope.$updateData("formData");
+	                        $scope.$search("formData");
+            			}else if(data == "keyError"){
+            				$.messager.alert("提示","相机唯一序列号已存在，请重新输入！");
+    	       	   	   		return false;
+            			}
+            		},
+            		fail: function(errMsg){
+            			$.messager.alert("提示","添加失败！");
+            		}
+            	});
+            });
+        };
+        /**
+         *编辑相机信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+       
+            var rowDatas = $scope.$("#cameraInfoList").datagrid("getData").rows[index];
+            var oldDeviceKey = rowDatas.deviceKey;
+            $scope.$setParam("directionData",$scope.directionData);//传递断面下的方向
+            $scope.$setParam("formDatas",rowDatas);	
+            $scope.$setParam("deviceType",deviceType);//传递新增设设备类型
+            $scope.$setParam("deviceId1",deviceId1);
+            $scope.$setParam("type","edit");
+            //创建编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title:"编辑相机信息",
+                width:700,
+                height:400,
+                href:"tpls/deviceManage/deviceRecord/camera-info-operate-public.html?type=edit"
+            },true);
+            //保存
+            $scope.$setParam("saveData",function(data) {
+            	data.oldDeviceKey = oldDeviceKey;
+                $scope.$ajaxRequest({
+                    url: $scope.$restRoot+"device/cameraManage/editCameraInfo",
+                    params: data,
+                    method: "post",
+                    success: function(data){
+                    	if(data == 1){
+                    		$.messager.alert("提示","编辑成功！");
+                            $scope.$getDialog("editDialog").dialog("close");
+                            $scope.formData.deviceId = deviceId1;
+                            $scope.$updateData("formData");
+                            $scope.$search("formData");
+            			}else if(data == 0){
+            				$.messager.alert("提示","相机唯一序列号已存在，请重新输入！");
+    	       	   	   		return false;
+            			}
+                    },
+                    fail: function(errMsg){
+                        $.messager.alert("提示","编辑失败！");
+                    }
+                });
+            });
+        };
+        /**
+         *删除相机信息
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            var rowDatas = $scope.$("#cameraInfoList").datagrid("getData").rows[index];//选中的数据
+            var sysComponentId = rowDatas.sysComponentId;
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $scope.$ajaxRequest({
+                        url: $scope.$restRoot+"device/cameraManage/deleteCameraInfo",
+                        params: {sysComponentId: sysComponentId},
+                        method: "post",
+                        success: function(data){
+                        	$scope.$updateData("formData");
+                            $scope.$search("formData");
+                            $.messager.alert("提示","删除成功！");
+                        },
+                        fail: function(errMsg){
+                            $.messager.alert("提示","删除失败！");
+                        }
+                    });
+                }
+            });
+        };
+                
+    });
+</script>
+<style type="text/css">
+    #cameraInfoListDiv .tableDiv{
+        height: 170px;
+        border: solid 1px silver;
+    }
+    #cameraInfoListDiv .th{
+        width: 80px;
+        text-align: right;
+    }
+    #cameraInfoListDiv .td{
+        width: 174px;
+    }
+    #cameraInfoListDiv .td>input[class^='easyui-']{
+        width: 174px;
+    }
+</style>

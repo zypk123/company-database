@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.BaseStationMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.BaseStation" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    DEVICE_ID
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_BASE_STATION
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.BaseStation" >
+    insert into T_DEVICE_BASE_STATION (DEVICE_ID)
+    values (#{deviceId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.BaseStation" >
+    insert into T_DEVICE_BASE_STATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_BASE_STATION
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.BaseStation">
+		update T_DEVICE_BASE_STATION
+		set DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+		where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+	</update>
+</mapper>

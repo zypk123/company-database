@@ -1,0 +1,106 @@
+<!--假套牌主页面-->
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+	<form cy-form="falseDeckChecked">
+		<div class="searchPanel">
+			<div class="panel_title">查询条件</div>
+			<div id="falseDeck" class="table">
+				<div class="tr">
+					<div class="th">号牌号码：</div>
+					<div class="td">
+						<input type="title" name="flapperCode"  class="easyui-textbox"/>
+					</div>
+					<div class="th">号牌种类：</div>
+					<div class="td">
+						<select name="flapperType" class="easyui-combobox" style="width: 100px;"></select>
+					</div>
+					<div class="th">布控时间 从：</div>
+					<div class="td">
+						<input name="timeHorizon" class="easyui-datebox" />到
+						<input name="timeHorizon" class="easyui-datebox" />
+					</div>
+					<div class="th" style="width: 100px;text-align: right">布控状态：</div>
+					<div class="td">
+						<input type="radio" value="1"/>已布控
+						<input type="radio" value="2"/>已撤控
+					</div>
+					<div class="td" style="width: 100px;">
+						  <a class="easyui-linkbutton " data-options="iconCls:'icon-search'"
+                                  cy-click="searchData" style="width: 60px;float: right;">查询</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			 <a class="easyui-linkbutton " data-options="iconCls:'icon-add'"
+                       cy-click="addFalseDeck">添加</a>
+             <a class="easyui-linkbutton " data-options="iconCls:'icon-remove'"
+                       cy-click="deleteFalseDeck">撤销</a>
+             <a class="easyui-linkbutton " data-options="iconCls:'icon-import'"
+                       cy-click="importFalseDeck">导入</a>
+		</div>
+	</div>
+	<div data-options="region: 'center'">
+	  <table cy-datagrid="optionsFalseDeck" cy-querydata="deptFalseDeck"
+              cy-url="../html/src/data/passvehicle/false-deck.json"></table>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		//初始化加载数据
+		$scope.load=function(){
+			$scope.$search("deptFalseDeck");
+		};
+		//列表主字段
+		$scope.optionsFalseDeck = {
+				 columns: [
+					[
+						{field: 'id', checkbox: true, align: 'center', width: 100},
+                    	{field: 'hphm', title: '号牌号码', align: 'center', width: 25},
+                    	{field: 'hpzl', title: '号牌种类', align: 'center', width: 20},
+                    	{field: 'hpys', title: '号牌颜色', align: 'center', width: 40},
+                    	{field: 'clpp', title: '车辆品牌', align: 'center', width: 30},
+                     	{field: 'clys', title: '车辆颜色', align: 'center', width: 30},
+                    	{field: 'jphtp', title: '假牌或套牌', align: 'center', width: 20},
+                    	{field: 'bkjg', title: '布控机关', align: 'center', width: 20},
+                    	{field: 'bkksj', title: '布控开始时间', align: 'center', width: 20},
+                    	{field: 'bkjsj', title: '布控结束时间', align: 'center', width: 20},
+                    	{field: 'bkzt', title: '布控状态', align: 'center', width: 20},
+                    	{field: 'cz', title: '操作', align: 'center', formatter: operatetFalseDeck, width: 40}
+					]
+				]
+			};
+			//增加操作栏按钮
+			function operatetFalseDeck (value,row,index) {
+		    	var button1 = $("<a class='button-edit' cy-click='editRedList(" + index + ")'></a>");//编辑按钮
+            	var button2 = $("<a class='button-remove' cy-click='removeRedList(" + index + ")'></a>");//删除按钮
+
+            	button1.linkbutton({
+                	iconCls: "icon-edit"
+           		});
+            	button2.linkbutton({
+                	iconCls: "icon-remove"
+            	});
+            	return $("<span/>").append(button1).append(" ").append(button2).html();
+			};
+			//打开添加信息窗口
+			$scope.addFalseDeck=function(){
+				$scope.$openDialog("falseDeckDialog",{
+					title:'车辆详情',
+					width: 800,
+					height: 300,
+					href:'tpls/passVehicle/controlManager/false-deck-manager-add.html'
+				});
+			};
+			
+	});
+</script>
+<style type="text/css">
+	#falseDeck .th{
+		text-align: right;
+		width: 100px;
+	}
+</style>
+
+

@@ -1,0 +1,153 @@
+<div id="trafficWeather" class="easyui-layout" >
+
+    <div data-options="region:'center',split:true" >
+        <div id="map"style="height:100%;width:100%" >
+
+        </div>
+
+    </div>
+    <div id="prompt" style="display: none">
+        <div style='font-size:1em'>
+            <span class="dwwz"></span>
+            <span class="none"></span>
+            <span class="up"></span>
+            <span class="down"></span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope) {
+        //初始化cyMap容器
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        //wkt字符串转换器
+        var wkt_c = new OpenLayers.Format.WKT();
+        //中心点坐标
+        var centerPoint=new OpenLayers.LonLat(105.70045,28.58540);
+        //气象设备图层
+        var weatherLayer;
+        var yjjbData;
+
+        $scope.load=function(){
+            moveToCenterPoint();
+            initData();
+            readWeatherData();
+            readDict();
+        };
+
+        /**
+         * 地图平移至中心点
+         */
+        function moveToCenterPoint() {
+            centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            cyMap.map.panTo(centerPoint);
+        }
+
+        function initData(){
+            //定义feature的监听事件over out click
+            var layerListeners= {
+                featureover: function (e) {
+                    var htmlStr=fieldInfo(e);
+                    var popup = new OpenLayers.Popup.FramedCloud("info",
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            null,htmlStr,null,null, null);//new OpenLayers.Size(160,150)
+                    popup.setBackgroundColor("ghostwhite");
+                    popup.setOpacity(5);
+                    popup.setBorder("1px solid gray");
+                    e.feature.popup = popup;
+                    cyMap.map.addPopup(popup);
+                },
+                featureout: function (e) { e.feature.popup.hide(); },
+                featureclick:function(e){
+                    e.feature.popup.hide();
+                    openDialog(e);
+                }
+            };
+            // create a styleMap for sectionLayer with a custom default symbolizer
+            var styleMap = new OpenLayers.StyleMap({
+                pointRadius: 10,
+                fillColor:"red"
+            });
+            // create a lookup table for weatherLayer with different symbolizers for
+            // 1-气象仪在线无预警，2-气象仪在线有预警，3-气象仪离线
+            // 4-能见度仪在线无预警，5-能见度仪在线有预警，6-能见度仪离线
+            // 7-路感在线无预警，8-路感在线有预警，9-路感离线
+            var lookup = {
+                1: {externalGraphic: "frameworks/Openlayers/img/marker-green.png"},
+                2: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                3: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                4: {externalGraphic: "frameworks/Openlayers/img/marker-blue.png"},
+                5: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                6: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                7: {externalGraphic: "frameworks/Openlayers/img/marker-gold.png"},
+                8: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                9: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to
+            // the "type" property of the features, for the "default" intent
+            styleMap.addUniqueValueRules("default", "type", lookup);
+            //设置断面图层的option
+            weatherLayer=new OpenLayers.Layer.Vector("weather",{styleMap: styleMap,eventListeners: layerListeners});
+            //添加断面、区间图层到map容器中
+            cyMap.map.addLayers([weatherLayer]);
+        }
+
+
+        /**
+         * 读取气象数据载入地图
+         */
+        function readWeatherData(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficWeather/weather-data.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        weatherLayer.addFeatures(feature);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        /**
+         * 获取popup显示信息
+         * @param obj 鼠标点击事件
+         * @returns {string}div字符串
+         */
+        function fieldInfo(obj){
+            var str= "<div style='font-size:1em'> ";
+            str+=obj.feature.attributes.sbmc;
+            str+="<br>在线状态：&nbsp;&nbsp;"+ obj.feature.attributes.state;
+            str+="<br>有无预警：&nbsp;&nbsp;"+ obj.feature.attributes.isalarm;
+            return str;
+        }
+        //读取预警级别数据字典
+        function readDict(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/dict.json",
+                params :{},
+                success :function(data){
+                    yjjbData=data.yjjb;
+                },
+                fail : function(){}
+            });
+        }
+        //弹出交通气象信息框
+        function openDialog(obj){
+            $scope.$setParam("newData",obj.feature.attributes);
+            $scope.$setParam("yjjbData",yjjbData);
+
+            $scope.$openDialog("createDialog", {
+                title: "交通气象信息",
+                height: 420,
+                width: 490,
+                href: "tpls/trafficMonitor/trafficWeather/weather-device-info.html"
+            }, true);
+
+        }
+
+    });
+</script>

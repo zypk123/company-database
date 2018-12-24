@@ -1,0 +1,562 @@
+<div id="dataLatencyAnylisi" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:120"
+		style="border-bottom: solid 1px #ddd">
+		<form cy-form="dataLatencyForm" id="form1">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+					<div class="th" style="margin-left: 25px;">
+							管理单位：
+						</div>
+						<div class="td">
+							 <!--行政区划单选 -->
+							<!--<input class="cy-district-radio" iscode="true" width="120px;"
+								name="distritCode" id="district" data-options="required:true"> -->
+								<input id="orgId"  class="cy-org-radio"  name="orgId" style="width: 180px;" />
+								
+						</div>
+						
+							<div class="th" style="margin-left: 75px;">分析时间：</div>
+							<div class="td" style="width: 300px;">
+							<input name="fromDate" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date']" 
+                                   class="easyui-datebox" style="width: 150px;" id="start"/> 至 
+                            <input name="endDate" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date']"
+                                class="easyui-datebox" style="width: 150px;" id="end"/>
+							</div>
+						 <div class="th" style="margin-left: 25px;">时段(起)：</div>
+						<div class="td" style="width: 80px;">
+							<input name="startTime" id="startTime" class="easyui-timespinner"
+								style="width: 80px;" required="required"
+								data-options="showSeconds:true" autocomplete="on" />
+						</div>
+						<div class="th" style="margin-left: 25px;">时段(止)：</div>
+						<div class="td" style="width:80px;">
+                          <input name="endTime" id="endTime" class="easyui-timespinner"  style="width:80px;" required="required" data-options="showSeconds:true" autocomplete="on" />
+						</div>
+					</div>
+					
+					<div class="tr">
+					<div class="th" style="width: 120px;">
+							监控中心与接入平台：
+						</div>
+						<div class="td" style="width: 220px;">
+							<input id ="cy-tree" style="width: 220px;" name = "serverId"/>
+						</div>
+						<div class="th" style="margin-left: 25px;">卡口类型：</div>
+						<div class="td" >
+							<input class="easyui-combobox" id="tollgateType" cy-code="421"
+								name="deviceType" style="width: 120px"
+								data-options="valueField:'value',textField:'text',multiple:true" />
+								<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search" style="width:70px;margin-left: 50px">分析</a>
+						</div>
+					</div>
+				</div>
+				</div>
+		</form>
+	</div>
+	<div data-options="region:'west',border:false" style="display: none" >
+	<div  class="easyui-layout">
+	<div data-options="region:'west'" title="数据" style="width:40%;padding:10px">
+		<table id="datagrid" cy-datagrid="options" cy-querydata="dataLatencyForm"
+			cy-url="../dangerousVeh.rest?searchType=PageSearch">
+		</table>
+		</div> 
+	</div>
+	</div>
+	<div data-options="region:'center'" id="BarContainer">
+	<div id="container" style="height:580px;padding:20px,width:650px;padding-left: 30px">
+	</div>
+	<div style="text-align: center">
+	<a class="easyui-linkbutton" data-options="iconCls:'icon-left'"
+		cy-click="selectPre">上一页</a> 
+		<a class="easyui-linkbutton"
+			data-options="iconCls:'icon-right'" cy-click="selectNext">下一页</a>
+	</div> 
+	</div>
+	<!-- <div data-options="region:'south',border:false,height:30">
+		<div  id="pagination" style="border-top: solid 1px #ddd" >
+			&nbsp;
+		</div>
+	</div> -->
+</div>
+<script type="text/javascript">
+    //启用严格模式
+    'use strict';
+    InitPage([],function($scope){
+    	$scope.$getDefaultCode(['421']);
+    	//页面总页数
+    	var totalPageNumber;
+		var allData;
+		var districtsText;
+		var xAxisDataTemp = ['设备至监控服务器延迟时长','监控服务器至队列延迟时长','队列至前置机延迟时长','前置机至后置机处理延迟时长','六合一上传延迟时长','六合一上传处理延迟时长'];
+        //页面初始化动作
+        $scope.load = function(){
+        	//初始化分页
+			/* $scope.$("#pagination").pagination({
+				pageNumber : $scope.dataLatencyForm.pageNumber ? $scope.dataLatencyForm.pageNumber : 1,
+				pageSize : $scope.dataLatencyForm.pageSize ? $scope.dataLatencyForm.pageSize : 5,
+				total : 0,
+				pageList : [5],
+				onSelectPage : function() {
+					//$scope.searchProgress();
+					//refreshData($scope.searchData);
+				}
+			}); */
+        	initData();
+			loadTree(0);
+            $scope.$updateDom("dataLatencyForm");
+        	$scope.$updateData("dataLatencyForm");
+        }
+        var monitorTree = [];//监控中心树数组
+        //查询监控中心与服务器形成树
+        function loadTree(datas){
+            //查询监控中心数据
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot+"device/monitorPlatformManage/queryMonitorAndPlatform",
+                params: {},
+                method: "post",
+                success: function(data){
+                    monitorTree = data;
+                    //加载树操作
+                    $scope.$('#cy-tree').combotree({
+                    	editable:true,
+                        lines : true,
+                        animate : true,
+                       /*  multiple:true, */
+                        checkbox : true,
+                        data : monitorTree,
+                        initialState:"collapsed",
+                        onlyLeafCheck:false,
+                        onContextMenu : $scope.showTreeMenu,
+                        onSelect : $scope.clickTreeMenu,
+                        onLoadSuccess : function(){
+                        	if(datas != undefined){
+                        		var node = $(this).tree("getChildren")[0];
+	                            $(this).tree("select",node.target);
+	                            //获取树的第一个父节点的第一个子节点
+						        var nodes = $scope.$("#cy-tree").tree("getChildren")[0].children;//第一个父节点获取下的子节点数组
+						       /*  $scope.formData.serverPlatId = nodes[0].id;
+						        $scope.formData.surveySystemId = $scope.$("#cy-tree").tree("getChildren")[0].id;
+						        $scope.formData.surveySystemName = $scope.$("#cy-tree").tree("getChildren")[0].text;
+						        $scope.$search("formData"); */
+                        	}
+                        }
+                    });
+                },
+                fail: function(){
+                    $.messager.alert("提示","查询初始化监控中心树失败！");
+                }
+            });
+         }
+
+        $.extend($scope, {
+            /**
+             * datagrid配置
+             * @type easyui的datagrid中的参数对象
+             */
+            options : {
+                columns:[[
+                    {field:"id",checkbox:false},
+                    {field:"deviceNbr",title:"设备编号",width:100,sortable:true},
+                    {field:"tatolCost",title:"平均延迟时间(毫秒)",width:100
+                    },
+                    {field:"xAxis",hidden:true},
+                    {field:"yAxis",hidden:true},
+                    {field:"tollgateType",hidden:true},
+                    {field:"site_name",hidden:true}
+                    
+                ]],
+                pageSize:5,
+                pageList:[5],
+                 //双击查看详情
+                onClickRow : function(rowIndex, rowData){
+                	//柱状图
+                	//showChart(rowData,districtsText);
+                	showAllChart($scope.$('#datagrid').datagrid(
+							'getRows'),districtsText);
+                	//饼状图
+                	//showPieChart(rowData);
+                },
+                //是否远程排序
+                remoteSort:false
+            },
+            /**
+             * 查询操作
+             * @return {[type]} [description]
+             */
+            search : function(){
+            	if(!$scope.$("#form1").form("validate")){
+					return;
+				}
+            	districtsText = '';
+            	 $scope.$updateData("dataLatencyForm");
+            	//显示加载中。。
+				 $scope.$('#datagrid').datagrid("loading");
+				//查询数据
+				$scope.searchProgress();
+            	//查询初始数据
+                $scope.$ajaxRequest({
+               	    url: $scope.$restRoot+'vehTrack/dataLantency/findDataLatencyList2',
+                    //url: "../../html/src/tpls/passVehicle/dangerCarManager/hightchart.json",
+                    params:$scope.dataLatencyForm,
+                    type : "post",
+                    dataType : "json",
+                    success : function(retData){
+                    $scope.$("#datagrid").datagrid("loaded");
+                    $.messager.progress("close");
+                   	 allData = retData.result.rows;
+                   	//查询成功 加载数据
+                   	if (allData.length>0){
+                   		//页面总页数
+                   		if (allData.length%5==0){
+                   		totalPageNumber = allData.length/5;
+                   		}else {
+                   			totalPageNumber = Math.ceil(allData.length/5);
+                   			if (allData.length < 5){
+                   				totalPageNumber = 1;
+                   			}
+                   		}
+	                   	//前台分页
+	                    $scope.$('#datagrid').datagrid({loadFilter:pagerFilter}).datagrid('loadData', allData);
+	                     //显示柱状图   
+	                   	$scope.$('#datagrid').datagrid('selectRow', 0);
+	                     
+	                    //showChart($scope.$('#datagrid').datagrid(
+						//	'getSelected'),districtsText); 
+					   showAllChart($scope.$('#datagrid').datagrid(
+							'getRows'),districtsText); 
+                   	}else {
+                   		$.messager.progress("close");
+                   	// 基于准备好的dom，初始化echarts实例
+        		        var myChart = require('echarts').init($scope.$("#container").get(0));
+                   		var option ={};
+        		        myChart.setOption(option);
+                   		$.messager.alert("提示","无分析结果！");
+                   	}
+                   	//showPieChart($scope.$('#datagrid').datagrid(
+    						//'getSelected'))
+                    },
+                    fail : function(errTxt){
+                     $.messager.progress("close");
+                     var myChart = require('echarts').init($scope.$("#container").get(0));
+     		       	 myChart.setOption(null);
+                     $scope.$("#datagrid").datagrid("loaded");
+                   	 $.messager.alert("提示","服务器正忙！");
+                    }
+                });
+        		
+            },
+            /**
+             * 设置默认时间，今天00:00到当前时间
+             * @type {Object}
+             */
+             dataLatencyForm : {
+            	fromDate : new Date().format("yyyy-MM-dd 00:00"),
+            	endDate : new Date().format("yyyy-MM-dd HH:mm"),
+            	startTime : new Date().format("00:00"),
+        		endTime : "23:59:59"
+            }
+         });
+        
+        /**
+		 * 号牌颜色过滤器
+		 */
+		$scope.CodeFilter = function(code) {
+			if(!code) return;
+             return $scope.$getCodeName("421",code);
+		};
+        
+        /**
+         * 前台分页
+         * 
+         */
+        function pagerFilter(data){
+			if (typeof data.length == 'number' && typeof data.splice == 'function'){	// is array
+				data = {
+					total: data.length,
+					rows: data
+				}
+			}
+			var dg = $(this);
+			var opts = dg.datagrid('options');
+			var pager = dg.datagrid('getPager');
+			pager.pagination({
+				onSelectPage:function(pageNum, pageSize){
+					opts.pageNumber = pageNum;
+					opts.pageSize = pageSize;
+					pager.pagination('refresh',{
+						pageNumber:pageNum,
+						pageSize:pageSize
+					});
+					dg.datagrid('loadData',data);
+					  //显示柱状图   
+                   	$scope.$('#datagrid').datagrid('selectRow', 0);
+                   	showAllChart($scope.$('#datagrid').datagrid(
+					'getRows'),districtsText); 
+				}
+			});
+			if (!data.originalRows){
+				data.originalRows = (data.rows);
+			}
+			var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
+			var end = start + parseInt(opts.pageSize);
+			data.rows = (data.originalRows.slice(start, end));
+			return data;
+		} ;
+		
+		    
+	    //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar',
+                        'echarts/chart/pie'
+                    ]
+                    /* ,
+                     function (ec) {
+                    	showChart();
+                    	showPieChart();
+                    }   */
+            );
+        }
+		    
+		    function showChart(rowData,districtsText) {
+		    	// 基于准备好的dom，初始化echarts实例
+		        var myChart = require('echarts').init($scope.$("#container").get(0));
+		        // 指定图表的配置项和数据
+		        var option = {
+		            title: {
+		            	//标题居中
+		            	x:'center',
+		                text: districtsText+'内设备编号:'+rowData.deviceNbr+'延迟分析柱状图'
+		            },
+		            tooltip: {},
+		            toolbox: {
+		                show : true,
+		                feature : {
+		                    dataView : {show: true, readOnly: false},
+		                    magicType : {show: true, type: ['line', 'bar']},
+		                    restore : {show: true},
+		                    saveAsImage : {show: true}
+		                }
+		            },
+		            legend: {
+		            	//在底部位置
+		            	y:'bottom',
+		                data:['延迟时间/s(毫秒)']
+		            },
+		            xAxis: {
+		                data: convertXAxis(rowData.xAxis)
+		            },
+		            yAxis: {},
+		            series: [{
+		                name: '延迟时间/s(毫秒)',
+		                type: 'bar',
+		                data: rowData.yAxis
+		            }]
+		        };
+
+		        // 使用刚指定的配置项和数据显示图表。
+		        myChart.setOption(option);
+		    	
+		    };
+		    
+		    /**
+		    *显示所有卡扣设备的柱状图
+		    */
+		    function showAllChart(allRows,districtsText) {
+		    	// 基于准备好的dom，初始化echarts实例
+		        var myChart = require('echarts').init($scope.$("#container").get(0));
+		    	//存放卡编号或者名称
+		    	var yData= [];
+		    	var seriesData= [];
+		    	var row;
+		    	var time1Data= [];
+		    	var time2Data= [];
+		    	var time3Data= [];
+		    	var time4Data= [];
+		    	var time5Data= [];
+		    	var time6Data= [];
+		    	var allData =[];
+		    	var rowTitle;
+		    	//var color='black';
+		    	for (var i =0;i<allRows.length;i++){
+		    		row= allRows[i];
+		    		rowTitle = row.deviceNbr+","+$scope.CodeFilter(row.tollgateType)+"\n"+row.site_name+",延迟"+row.tatolCost +"秒"
+		    		/* if (row.tatolCost>=6){
+		    			color = 'red';
+		    		} */
+		    		time1Data.push(row.yAxis[0]);
+		    		time2Data.push(row.yAxis[1]);
+		    		time3Data.push(row.yAxis[2]);
+		    		time4Data.push(row.yAxis[3]);
+		    		time5Data.push(row.yAxis[4]);
+		    		time6Data.push(row.yAxis[5]);
+		    		yData.push(rowTitle);
+		    	}
+		    	
+		    	allData.push(time1Data);
+		    	allData.push(time2Data);
+		    	allData.push(time3Data);
+		    	allData.push(time4Data);
+		    	allData.push(time5Data);
+		    	allData.push(time6Data);
+		    	
+		    	for (var i = 0;i<6;i++){
+		    		var simpleData=	{
+	        	            name:xAxisDataTemp[i],
+	        	            type:'bar',
+	        	            stack: '延迟时间/s(秒)',
+	        	          	markLine : {  
+	        	                data : [  
+	        	                       [
+	        	           {name: '标线2起点', value: 8, xAxis: 8, yAxis: 0},     // 当xAxis或yAxis为数值轴时，不管传入是什么，都被理解为数值后做空间位置换算
+	        	           {name: '标线2终点', xAxis: 8, yAxis:10}
+	        	       			], 
+	        	                      ]  
+	        	                      } , 
+	        	            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+	        	            data:allData[i]
+	        	        }
+		    		seriesData.push(simpleData);
+		    	}
+		        	
+		        	var option = {
+		        		    tooltip : {
+		        		        trigger: 'axis',
+		        		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		        		            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+		        		        }
+		        		    },
+		        		    grid :{
+		        		    	x:250,
+		        		    },
+		        		    legend: {
+		        		    	x:'left',
+		        		        data:xAxisDataTemp
+		        		    },
+		        		    toolbox: {
+		        		        show : true,
+		        		        feature : {
+		        		            mark : {show: false},
+		        		            dataView : {show: true, readOnly: false},
+		        		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+		        		            restore : {show: true},
+		        		            saveAsImage : {show: true}
+		        		        }
+		        		    },
+		        		    calculable : true,
+		        		    xAxis : [
+		        		        {
+		        		            type : 'value',
+		        		            axisLabel : {
+		        		                formatter: '{value} s(秒)'
+		        		            }
+		        		        }
+		        		    ],
+		        		    yAxis : [
+		        		        {
+		        		        	/* axisLabel:{
+		        		                 textStyle:{color:color}
+		        		                 }, */
+		        		            type : 'category',
+		        		            data : yData
+		        		        }
+		        		    ],
+		        		    series : seriesData
+		        		        
+		        		};
+						// 使用刚指定的配置项和数据显示图表。
+						myChart.setOption(option);
+		    };
+		    
+		    
+		    function convertXAxis(xAxis){
+		    	var xAxisData =[];
+		    	if (xAxis.length == 6){
+		    		xAxisData = xAxisDataTemp;
+		    	}else {
+		    		var msg;
+		    		for(var i= 0;i<xAxis.length;i++){
+		    			switch(xAxis[i]){
+		    			case 1:
+		    			msg=xAxisDataTemp[1];
+		    			break;
+		    			case 2:
+		    			msg=xAxisDataTemp[2];
+		    			break;
+		    			case 3:
+		    			msg=xAxisDataTemp[3];
+		    			break;
+		    			case 4:
+		    			msg=xAxisDataTemp[4];
+		    			break;
+		    			case 5:
+		    			msg=xAxisDataTemp[5];
+		    			break;
+		    			case 6:
+		    			msg=xAxisDataTemp[6];
+		    			break;
+		    			}
+		    			xAxisData.push(msg);
+		    		}
+		    	}
+		    	return xAxisData;
+		    };
+		    
+		  //选择下一条
+			$scope.selectNext = function() {
+				var currentPage = $scope.$("#datagrid").datagrid(
+				"getPager").pagination("options").pageNumber;
+				if( currentPage < totalPageNumber){
+					$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage + 1);
+				}else{
+					$.messager.alert('提示','已到最后一条!',"warning");
+				}
+			};
+			
+			//选择上一条
+			$scope.selectPre = function() {
+				var currentPage = $scope.$("#datagrid").datagrid(
+				"getPager").pagination("options").pageNumber;
+				if( currentPage > 1 && currentPage <= totalPageNumber){
+					$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage - 1);
+				}else{
+					$.messager.alert('提示','已到第一条!',"warning");
+				}
+			};
+			/**
+			 * 显示查询进度条
+			 */
+			$scope.searchProgress = function() {
+				$.messager.progress({
+					title : false,
+					msg : "正在查询，请稍后...",
+					interval : 1000,
+					text : "查询中..."
+				});
+			};
+    });
+    
+	
+</script>
+<style type="text/css">
+#dataLatencyAnylisi .th {
+	margin-left: 30px;
+	width: 70px;
+	text-align: right;
+}
+
+#dataLatencyAnylisi .td {
+	width: 120px;
+}
+</style>

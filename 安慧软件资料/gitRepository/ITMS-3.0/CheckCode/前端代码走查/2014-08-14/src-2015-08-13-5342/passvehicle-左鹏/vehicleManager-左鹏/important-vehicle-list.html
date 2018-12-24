@@ -1,0 +1,252 @@
+<div id="importantVehicle" class="easyui-layout">
+	<div data-options="region:'north',border:false,height:110" style="border-bottom:solid 1px #ddd">
+		<form cy-form="searchParams">
+            <div class="searchPanel">
+            	<div class="panel_title">查询条件</div>
+            	<div class="table">
+            		<div class="tr">
+            			<div class="th" style="width:100px;">车辆使用性质：</div>
+            			<div class="td">
+            				<input id="useType" class="easyui-combobox" name="useType" style="width:110px;">
+            			</div>
+            			<div class="th">号牌号码：</div>
+            			<div class="td">
+            				<input class="cy-vehNumberbox" name="plateNumber" style="width:110px;">
+            			</div>
+            			<div class="th">号牌种类：</div>
+            			<div class="td">
+            				<input id="plateType" class="easyui-combobox" name="plateType" style="width:110px;">
+            			</div>
+            			<div class="th" style="width:80px;">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查找</a>
+            			</div>
+            		</div>
+            	</div>
+           	</div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-add" data-options="iconCls:'icon-add'" cy-click="addVeh">添加</a>
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'">删除</a>
+            <a class="easyui-linkbutton button" data-options="iconCls:'icon-import'">导入</a>
+       	</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="datagrid" cy-datagrid="options" cy-querydata="searchParams" cy-url="data/passvehicle/vehManagerData.json">
+			
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+    //启用严格模式
+    'use strict';
+    InitPage([],function($scope){
+
+        //保存本页面数据字典，object类型，key：code，value：字典项数组
+        var dicts;
+        //保存行政区划，easyui树类型（数组）
+        var district;
+
+        $.extend($scope, {
+            /**
+             * datagrid配置
+             * @type easyui的datagrid中的参数对象
+             */
+            options : {
+                columns:[[
+                    {field:"id",checkbox:true},
+                    {field:"plateNumber",title:"号牌号码",width:100},
+                    {field:"plateType",title:"号牌种类",width:100,formatter:formatPlateType},
+                    {field:"useType",title:"使用性质",width:100,formatter:formatUseType},
+                    {field:"vehType",title:"车辆类型",width:100,formatter:formatVehType},
+                    {field:"vehBrand",title:"车辆品牌",width:100,formatter:$scope.$getBrandNameByCode},
+                    {field:"vehHost",title:"车主",width:100},
+                    {field:"phoneNumber",title:"车主电话",width:100},
+                    {field:"validateDate",title:"有效期",width:100},
+                    {field:"scrapDate",title:"轻质报废期止",width:100},
+                    {field:"operate",title:"操作",width:100,formatter:operater}
+                ]],
+                //双击查看详情
+                onDblClickRow : function(rowIndex, rowData){
+                    $scope.$setParam("vehData",rowData);
+                    $scope.$setParam("formatters",{
+                        plateType : formatPlateType,
+                        useType : formatUseType,
+                        vehType : formatVehType,
+                        district : formatDistrict
+                    })
+                    $scope.$openDialog("addDialog",{
+                        title : "车辆详细信息",
+                        width : 700,
+                        height : 345,
+                        href : "tpls/passVehicle/vehicleManager/important-vehicle-view.html"
+                    });
+                }
+            },
+            /**
+             * 加载完毕后执行方法
+             */
+            load : function(){
+                //查询数据字典
+                $scope.$ajaxRequest({
+                    url : "data/passvehicle/dict.json",
+                    success : function(data){
+                        dicts = data.dicts;
+                        district = data.district;
+                        $scope.$("#useType").combobox("loadData",dicts["001"]);
+                        $scope.$("#plateType").combobox("loadData",dicts["002"])
+                    },
+                    fail : function(errTxt){
+                        $.massager.alert(errTxt);
+                    }
+                });
+            },
+            /**
+             * 查询操作
+             * @return {[type]} [description]
+             */
+            search : function(){
+                $scope.$search("searchParams");
+            },
+            /**
+             * 打开添加车辆窗口
+             */
+            addVeh : function(){
+                //传递本页面的数据字典
+                $scope.$setParam("dicts",dicts);
+                //传递行政区划参数
+                $scope.$setParam("district",district)
+                $scope.$openDialog("addDialog",{
+                    title : "添加车辆信息",
+                    width : 700,
+                    height : 345,
+                    href : "tpls/passVehicle/vehicleManager/important-vehicle-input.html"
+                });
+            },
+            /**
+             * 编辑车辆信息
+             * @param  整数类型 index 修改行下标 
+             */
+            editVeh : function(index){
+                var data = $scope.$("#datagrid").datagrid("getData").rows[index];
+                //传递本页面的数据字典
+                $scope.$setParam("dicts",dicts);
+                //传递行政区划参数
+                $scope.$setParam("district",district);
+                //数据内容
+                $scope.$setParam("formData",data);
+                $scope.$openDialog("addDialog",{
+                    title : "编辑车辆信息",
+                    width : 700,
+                    height : 345,
+                    href : "tpls/passVehicle/vehicleManager/important-vehicle-input.html"
+                });
+            },
+            /**
+             * 删除车辆信息
+             * @param  整数类型 index 删除行下标
+             */
+            removeVeh : function(index){
+                var data = $scope.$("#datagrid").datagrid("getData").rows[index];
+                $.messager.confirm("提示","是否删除该记录?",function(flag){
+                    if(flag){
+                        //与后台交互
+                    }
+                })
+            }
+         });
+        
+        /**
+         * 格式化号牌种类
+         * @param  字符串 value 号牌编码 
+         * @return 字符串 号牌名称
+         */
+        function formatPlateType(value){
+            if(!value) return;
+            return getDictValue("001",value);
+        }
+        /**
+         * 格式化使用性质
+         * @return {[type]} [description]
+         */
+        function formatUseType(value){
+            if(!value) return;
+            return getDictValue("002",value);
+        }
+        /**
+         * 格式化车辆种类
+         * @return {[type]} [description]
+         */
+        function formatVehType(value){
+            if(!value) return;
+            return getDictValue("003",value);
+        }
+       
+        /**
+         * 格式化行政机构
+         * @param  {[type]} code 机构编码
+         * @return {[type]}      
+         */
+        function formatDistrict(code){
+           return getDistrictNameByCode(district,code);
+        }
+
+        /**
+         * 根据code获得行政机构名称
+         * @param  {[type]} items 行政机构数组
+         * @param  {[type]} code  需要查找的机构代码
+         * @return {[type]}       机构名称
+         */
+        function getDistrictNameByCode(items,code){
+            for(var index in district){
+                var item = district[index];
+                if(item.id == code){
+                    return item.text;
+                }else if(item.children.length > 0){
+                    return getDistrictNameByCode(item.children,code);
+                }
+            }
+        }
+        /**
+         * 根据字典的类别和id获取对应的字典值
+         * @param  string root 类别code
+         * @param  string key  字典项Id
+         * @return string      字典值
+         */
+        function getDictValue(code,key){
+            var datas = dicts[code];
+            for(var index in datas){
+                var item = datas[index];
+                if(item.value == key){
+                    return item.text;
+                }
+            }
+        }
+
+        /**
+         * 格式化操作列
+         * @return {[type]} [description]
+         */
+        function operater(value,row,index){
+            //定义好所有按钮，点击事件采用cy-click来代替,参数自己拼装
+            var button1 = $("<a title='修改' class='button-edit' cy-click='editVeh("+index+")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeVeh(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls : "icon-edit"
+            });
+            button2.linkbutton({
+                iconCls : "icon-remove"
+            });
+            //采用以下的方式添加按钮到页面中，按照从左到右的顺序，按钮键要增加一个空格
+            return $("<span/>").append(button1).append("  ").append(button2).html();
+        }
+    });
+</script>
+<style type="text/css">
+	#importantVehicle .th{
+		width : 70px;
+		text-align: right;
+	}
+	#importantVehicle .td{
+		width : 120px;
+	}
+</style>

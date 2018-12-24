@@ -1,0 +1,135 @@
+<div id="tableTitle" class="table">
+	<div class="tr" style="background: #005AB5;color: white;font-size: 12px;">
+		<div class="th" style="width: 90px;float: left">
+			&nbsp;&nbsp;路况播报
+		</div>
+		<div class="td" style="width: 80px;text-align: right; float: left">
+			<a data-options="plain:true" style="color:white;line-height: 12px;cursor: pointer" cy-click="dataImportant.showState">更多>></a>
+		</div>
+		
+	</div>
+</div>
+<div id="wrap" class="wrap">
+	<ul id="roads">
+	</ul>
+</div>
+<script type="text/javascript">
+	InitPage(["dataImportant","childScopeList"], function($scope) {
+		$scope.$getDefaultCode(["501"]);
+		var dataList=$scope.dataImportant.important;
+		$scope.load = function() {
+			 addLis();
+			 goMarquee();
+			$scope.childScopeList.refreshImportant=editData;
+		};
+		function goMarquee(){
+			if($scope.$("#roads").children("li").length>7){
+					$scope.$('#wrap').marquee({
+						auto : true,
+						interval : 4000,
+						showNum : 7,
+						stepLen : 1,
+						type : 'vertical'
+					});		
+			}
+		}
+		function editData(feature,newData){
+			var i=0;
+			for (var index=0 ;index< dataList.length;index++) {
+				if(dataList[index].attributes.regionalId == newData.regionalId){
+					i++;
+					//删除
+					var li=$scope.$("#"+dataList[index].attributes.regionalId);
+					li.remove();					
+					dataList.splice(index--,1);
+					goMarquee();
+				}
+			}
+			
+			if(i==0){
+				if(newData.trafficState=="0"||newData.trafficState=="1"){
+					return;
+				}
+				//新增
+				$.extend(feature.attributes,newData);
+				//addLi(feature.attributes);
+				addLi_changeLength(feature.attributes);
+				dataList.push(feature);
+				goMarquee();
+			}
+			
+		}
+		
+		function addLis() {
+			for (var index in dataList) {
+				//addLi(dataList[index].attributes);
+				addLi_changeLength(dataList[index].attributes);
+			}
+		}
+		function addLi(data){
+			var ul=$scope.$("#roads");
+			var li = $("<li id='"+data.regionalId+"'></li>");
+			var str1=("<span>")+data.name+"("+data.fRoadName+"-"+data.bRoadName+")"+"&nbsp;"+options_state(data.trafficState)+"</span>";
+			//var str2=("<span>")+options_state(data.trafficState)+"</span>";				
+			li.append(str1);
+			ul.append(li);
+		}
+		 function options_state(value){         	
+          	return $scope.$getCodeName("501",value);
+        }
+         //显示隐藏行政区划名称
+        function addLi_changeLength(data) {
+        	var ul=$scope.$("#roads");
+			var li = $("<li id='"+data.regionalId+"'></li>");
+			var str_name=data.name+"("+data.fRoadName+"->"+data.bRoadName+")";
+			var str1;
+			if(str_name.length>14){
+				var str='' + str_name.substring(0, 12) + '...';
+				str1="<span title='" + str_name + "'>" +str+"&nbsp;&nbsp;"+options_state(data.trafficState)+"</span>";
+			}else{
+				str1=("<span>")+str_name+"&nbsp;&nbsp;"+options_state(data.trafficState)+"</span>";
+			}
+			li.append(str1);
+			ul.append(li);
+        };
+	}); 
+</script>
+<style>
+
+    #tableTitle .tr {
+		background: darkseagreen;
+		border-bottom: solid 1px #D1E9E9;
+		border-top: solid 1px #D1E9E9;
+		opacity: 0.6;
+		line-height: 15px;
+		
+	}
+	#tableTitle .td {
+		width: 72px;
+		text-align: center;
+		height: 13px;
+		line-height: 12px;
+	}
+	#tableTitle .th {
+		width: 85px;
+		height: 13px;
+		line-height: 15px;
+		font-size: 12px;
+	}
+	
+	
+	#wrap ul{
+		margin-top:2px;		
+		padding: 0px;
+		overflow:hidden;
+		clear:both;
+		*zoom:1;
+	}
+	#wrap li {
+		list-style: none;
+		padding:0px;
+		height:24px;
+		text-align:center;
+	}
+	#wrap li:nth-child(odd){background-color:#e5f8e5; } 
+</style>

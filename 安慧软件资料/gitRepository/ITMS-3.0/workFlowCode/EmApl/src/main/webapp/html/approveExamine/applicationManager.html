@@ -1,0 +1,585 @@
+<html ng-app="newApproveApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<script src="/EmApl/js/lib/jquery-1.12.3.min.js"></script>
+<script src="/EmApl/js/lib/angular/angular.js"></script>
+<script src="/EmApl/js/lib/angular/angular-animate.js"></script>
+<script src="/EmApl/js/lib/angular/angular-cookies.js"></script>
+<script src="/EmApl/js/ui/ui-bootstrap-tpls-1.2.5.min.js"></script>
+<script src="/EmApl/js/lib/ngDialog.js"></script>
+<script src="/EmApl/js/approveExamine/newApproveForm.js"></script>
+<script src="/EmApl/js/upload/ng-file-upload.min.js"></script>
+<script src="/EmApl/js/upload/ng-file-upload-shim.js"></script>
+<script src="/EmApl/js/lib/jquery.ztree.all.js"></script>
+<link href="/EmApl/css/bootstrap-3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/EmApl/css/ngDialog.css"
+	rel="stylesheet">
+	<link href="/EmApl/css/ngDialog-theme-default.css"
+	rel="stylesheet">
+<link href="/EmApl/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+</head>
+<style>
+.input {
+	width: 200px;
+}
+
+table {
+	margin-top: 10px;
+	width: 100%;
+}
+.input-group-addon {
+	width: 130px;
+	text-align: left;
+}
+.form-control {
+	width: 190px !important;
+}
+
+fieldset{padding:0px;margin:0 2px;border:1px solid silver}
+fieldset div{
+margin-top:-20px;
+}
+legend{
+padding:.5em;border:0;
+width:auto;
+font-size: 14px !important;
+}
+
+</style>
+<body  ng-controller="approveForm">
+<table width="100%" align="center" style='width:3px'>
+<tr>
+<td align="center">
+	<div  style='width:1150px;'>
+		<form name="formObj" novalidate>
+			<input type=hidden name="unit" ng-model="unit" /> <input type=hidden
+				name="roadStatusImg" ng-model="formModel.roadStatusImg" value="" />
+			<input type=hidden name="signatureImg"
+				ng-model="formModel.signatureImg"  value="" />
+				<input
+				type=hidden name="processId" ng-model="formModel.processId"
+				value="deviceApprove" />
+			<table>
+				<tr>
+					<td>
+						<div class="input-group" style='width:345px;'>
+							<span class="input-group-addon">申请单位： <span
+								style="color: red"
+								ng-show="(formObj.unitName.$pristine || formObj.unitName.$invalid)">
+									<span ng-show="formObj.unitName.$error.required">*</span>
+							</span>
+							</span> <input type="text" name="unitName" ng-model="formModel.unitName"
+								class="form-control" style='width:137px !important;'
+								placeholder="请选择机构信息" required disabled> </input><span
+								class="input-group-btn">
+								<button class="btn btn-default" type="button"
+									ng-click="userEdit()">查询</button>
+							</span>
+						</div>
+					</td>
+					<td>
+						<div class="input-group" style='width:345px;'>
+							<span class="input-group-addon"> 联系人： <span
+								style="color: red"
+								ng-show="formObj.contacts.$pristine||formObj.contacts.$invalid">
+									<span ng-show="formObj.contacts.$error.required">*</span>
+							</span>
+							</span> <input type="text" name="contacts" ng-model="formModel.contacts"
+								class="form-control" required placeholder="请输入联系人"> </input>
+
+						</div>
+					</td>
+					<td>
+						<div class="input-group" style='width:345px;'>
+							<span class="input-group-addon">联系电话： <span
+								style="color: red"
+								ng-show="formObj.phone.$pristine||formObj.phone.$invalid">
+									<span ng-show="formObj.phone.$error.required">*</span> <span
+									ng-show="formObj.phone.$error.minlength">长度为11</span>
+									<span
+									ng-show="formObj.phone.$error.maxlength">长度为11</span>
+
+							</span>
+							</span> <input type="text" name="phone"
+								onkeyup="this.value=this.value.replace(/\D/g,'')"
+								ng-model="formModel.phone" class="form-control" required
+								ng-minlength="11" ng-maxlength="11"></input>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">申请内容： </span> <select
+								name="content" ng-model="formModel.content"
+								ng-options="m.value as m.name for m in contents"
+								class="form-control" style='width: 200px'>
+							</select>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">类型：</span> <select
+								name="approveType" ng-model="formModel.approveType"
+								ng-options="m.value as m.name for m in approveTypes"
+								class="form-control" style='width: 200px'>
+							</select>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">所属项目：</span> <input type="text"
+								name="approveSys" ng-model="formModel.approveSys"
+								class="form-control"></input>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td colspan="3">
+						<div class="input-group" style='width: 97%'>
+							<span class="input-group-addon">位置满足： <span
+								style="color: red"
+								ng-show=" formModel.devicePosition == undefined ">
+									<span ng-show="formObj.devicePosition.$error.required">*</span>
+							</span>
+							</span> <select name="devicePosition"
+								ng-model="formModel.devicePosition" required
+								ng-options="m.value as m.name for m in devicePositions"
+								class="form-control" style='width: 100% !important'>
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;' ng-show="formModel.approveType != '000005'"></tr>
+				<tr ng-show="formModel.approveType != '000005'">
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">道路名称： <span
+								style="color: red"
+								ng-show=" formModel.approveType != '000005' && formModel.roadId == undefined ">
+									<span ng-show="formObj.road.$error.required">*</span>
+							</span>
+							</span> <select name="roadId" ng-model="formModel.roadId"
+								class="form-control"
+								ng-options="m.value as m.name for m in roads" required>
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+					<td
+						ng-show="formModel.approveType=='000001' || formModel.approveType=='000002'">
+						<div class="input-group">
+							<span class="input-group-addon">路口路段： <span
+								style="color: red"
+								ng-show="  formModel.approveType != '000005' && formModel.section == undefined ">
+									<span ng-show="formObj.section.$error.required">*</span>
+							</span>
+							</span> </span> <select name="section" ng-model="formModel.section"
+								class="form-control" required
+								ng-options="m.value as m.name for m in sections">
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+					<td
+						ng-show="formModel.approveType=='000003' || formModel.approveType=='000004'">
+						<div class="input-group">
+							<span class="input-group-addon" style='width: 80px;'><span
+								ng-show="formModel.content == '000007' &&(formModel.approveType=='000003' || formModel.approveType=='000004')">起点</span>公里数
+								<span style="color: red"
+								ng-show="  formModel.approveType != '000005' &&(formObj.kmeter.$pristine||formObj.kmeter.$invalid)">
+									<span ng-show="formObj.kmeter.$error.required">*</span>
+							</span> </span> <input type="number" name="kmeter" ng-model="formModel.kmeter"
+								class="form-control" required style='width: 70px !important;'></input>
+							<span class="input-group-addon" style='width: 62.5px;'>米数：
+								<span style="color: red"
+								ng-show="  approveType != '000005' &&(formObj.meter.$pristine||formObj.meter.$invalid)">
+									<span ng-show="formObj.meter.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="meter" ng-model="formModel.meter"
+								class="form-control" required style='width: 80px !important;'></input>
+						</div>
+					</td>
+					<td
+						ng-show="formModel.approveType=='000003' || formModel.approveType=='000004'">
+						<div class="input-group">
+							<span class="input-group-addon" style='width: 60px;'>经度：
+								<span style="color: red"
+								ng-show=" formModel.approveType != '000005' && (formObj.longitude.$pristine||formObj.longitude.$invalid ) ">
+									<span ng-show="formObj.longitude.$error.required">*</span> <span
+									ng-show="formObj.longitude.$error.max">小于90</span>
+							</span>
+							</span> <input type="number" name="longitude"
+								ng-model="formModel.longitude" required class="form-control"
+								ng-max='90' style='width: 90px !important;'></input> <span
+								class="input-group-addon" style='width: 60px;'>维度： <span
+								style="color: red"
+								ng-show=" formModel.approveType != '000005' && (formObj.latitude.$pristine||formObj.latitude.$invalid ) ">
+									<span ng-show="formObj.latitude.$error.required">*</span> <span
+									ng-show="formObj.latitude.$error.max">小于180</span>
+							</span>
+							</span> <input type="number" name="latitude"
+								ng-model="formModel.latitude" class="form-control" ng-max='180'
+								required style='width: 90px !important;'></input>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'
+					ng-show="formModel.content == '000007'&&(formModel.approveType=='000003' || formModel.approveType=='000004')"></tr>
+				<tr
+					ng-show="formModel.content == '000007' &&(formModel.approveType=='000003' || formModel.approveType=='000004')">
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon" style='width: 85px;'>终点公里数
+								<span style="color: red"
+								ng-show="  approveType != '000005' &&(formObj.ekmeter.$pristine||formObj.ekmeter.$invalid)">
+									<span ng-show="formObj.ekmeter.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="ekmeter" ng-model="formModel.ekmeter"
+								class="form-control" required style='width:70px !important;'></input>
+							<span class="input-group-addon" style='width: 62.5px;'>米数：
+								<span style="color: red"
+								ng-show="  approveType != '000005' &&(formObj.emeter.$pristine||formObj.emeter.$invalid)">
+									<span ng-show="formObj.emeter.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="emeter" ng-model="formModel.emeter"
+								class="form-control" required style='width: 80px !important;'></input>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon" style='width: 60px;'>经度：
+								<span style="color: red"
+								ng-show=" approveType != '000005' && (formObj.elongitude.$pristine||formObj.elongitude.$invalid ) ">
+									<span ng-show="formObj.elongitude.$error.required">*</span> <span
+									ng-show="formObj.elongitude.$error.max">小于90</span>
+							</span>
+							</span> <input type="number" name="elongitude"
+								ng-model="formModel.elongitude" required class="form-control"
+								ng-max='90' style='width: 90px !important;'></input> <span
+								class="input-group-addon" style='width: 60px;'>维度： <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (formObj.elatitude.$pristine||formObj.elatitude.$invalid ) ">
+									<span ng-show="formObj.elatitude.$error.required">*</span> <span
+									ng-show="formObj.elatitude.$error.max">小于180</span>
+							</span>
+							</span> <input type="number" name="elatitude"
+								ng-model="formModel.elatitude" class="form-control" ng-max='180'
+								required style='width: 90px !important;'></input>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td colspan="2">
+						<div class="input-group" style='width: 95%;'>
+							<span class="input-group-addon">设备名称： <span
+								style="color: red"
+								ng-show="formObj.approveType != '000005' && (formObj.deviceName.$pristine||formObj.deviceName.$invalid )">
+									<span ng-show="formObj.deviceName.$error.required">*</span>
+							</span>
+							</span> <input type="text" name="deviceName"
+								ng-model="formModel.deviceName" class="form-control" required
+								style='width: 99% !important;'> </input> <span
+								class="input-group-btn">
+								<button class="btn btn-default" type="button"
+									ng-click="generateDeviceName()"
+									style='margin-left: -7px !important;'>生成</button>
+							</span>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;' ng-show="formModel.approveType != '000005'"></tr>
+				<tr
+					ng-show="formModel.approveType != '000005' && (formModel.content=='000007'||formModel.content=='000006') ">
+					<td ng-show="formModel.approveType != '000005'">
+						<div class="input-group">
+							<span class="input-group-addon">限速KM/H大车: <span
+								style="color: red"
+								ng-show=" formObj.approveType != '000005' && (formObj.vehicleLimit.$pristine||formObj.vehicleLimit.$invalid )">
+									<span ng-show="formObj.vehicleLimit.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="vehicleLimit"
+								ng-model="formModel.vehicleLimit" class="form-control" required></input>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">限速KM/H小车: <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (formObj.carLimit.$pristine||formObj.carLimit.$invalid )">
+									<span ng-show="formObj.carLimit.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="carLimit"
+								ng-model="formModel.carLimit" class="form-control" required></input>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">限速KM/H其他: <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (formObj.otherLimit.$pristine||formObj.otherLimit.$invalid )">
+									<span ng-show="formObj.otherLimit.$error.required">*</span>
+							</span>
+							</span> <input type="number" name="otherLimit"
+								ng-model="formModel.otherLimit" class="form-control" required></input>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'
+					ng-show=" formModel.approveType != '000005' "></tr>
+				<tr ng-show=" formModel.approveType != '000005'">
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">道路类型： <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (formObj.roadType.$pristine||formObj.roadType.$invalid )">
+									<span ng-show="formObj.roadType.$error.required">*</span>
+							</span>
+							</span> <select name="roadType" ng-model="formModel.roadType"
+								ng-options="m.value as m.name for m in roadTypes" required
+								class="form-control">
+								<option value="">-- 请选择 --</option>
+							</select>
+
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">道路行政等级： <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (formObj.roadLevel.$pristine||formObj.roadLevel.$invalid )">
+									<span ng-show="formObj.roadLevel.$error.required">*</span>
+							</span>
+							</span> <select name="roadLevel" ng-model="formModel.roadLevel" required
+								ng-options="m.value as m.name for m in roadLevels"
+								class="form-control">
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+					<td>
+						<div class="input-group">
+							<span class="input-group-addon">道路路面等级: <span
+								style="color: red"
+								ng-show=" approveType != '000005' && (newApprove.pavementLevel.$pristine||formObj.pavementLevel.$invalid )">
+									<span ng-show="formObj.pavementLevel.$error.required">*</span>
+							</span>
+							</span> <select name="pavementLevel" ng-model="formModel.pavementLevel"
+								required ng-options="m.value as m.name for m in pavementLevels"
+								class="form-control">
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td ng-show=" formModel.approveType != '000005'">
+						<div class="input-group">
+							<span class="input-group-addon">线形或地形： <span
+								style="color: red"
+								ng-show=" approveType != '000005' && formObj.terrain != undefined ">
+									<span ng-show="formObj.terrain.$error.required">*</span>
+							</span>
+							</span> <select name="terrain" ng-model="formModel.terrain"
+								class="form-control" required
+								ng-options="m.value as m.name for m in terrains">
+								<option value="">-- 请选择 --</option>
+							</select>
+						</div>
+					</td>
+					<td colspan="2">
+						<div class="input-group" style='width: 95%'>
+							<span class="input-group-addon">设置理由：</span>
+							<textarea name="reason" ng-model="formModel.reason"
+								class="form-control" rows="2" style='width: 100% !important'></textarea>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td style='text-align: center' colspan='3'>
+						<div style="display: flex;">
+							<div
+								style='width: 48.5%; height: 330px; border: 1px dashed #999999;'
+								ng-show=" formModel.approveType != '000005'">
+								<div class="input-group" style='width: 99%; height: 30px;'>
+									<span class="input-group-addon">道路概况图</span>
+									 <input type='text' style='width: 100% !important;'  disabled  class="form-control"
+									 ng-model="imges1" value="" />
+									 <span class="input-group-btn">
+										 <input type='file'
+											multiple class="form-control"
+											onchange="angular.element(this).scope().preViewImg(this)"
+											style='width:90px !important;opacity:0!important;position:absolute;cursor:pointer;z-index:9999'
+											accept=".png,.jpg,.gif,.jpeg,.bmp"
+											>
+										</input>
+										<button class="btn btn-default" type="button"  ng-show="deviceApproveId == ''">文件浏览</button>
+									</span>
+								</div>
+								<div
+									style='width: 100%; height: 300px; border-top: 1px dashed #999999;'>
+									<uib-carousel active="active" interval="myInterval"
+										no-wrap="noWrapSlides"> <uib-slide
+										ng-repeat="slide in slides track by slide.id" index="slide.id">
+									<img ng-src="{{slide.image}}"
+										style="width: 99%; height: 290px;">
+									<div class="carousel-caption">
+										<p>{{slide.text}}</p>
+									</div>
+									</uib-slide> </uib-carousel>
+								</div>
+							</div>
+							<div
+								style='width: 48.5%; height: 330px; border: 1px dashed #999999;'>
+								<div class="input-group" style='width: 99%; height: 30px;'>
+									<span class="input-group-addon">申报单位签章
+										<span style="color: red" ng-show=" signatureImgFile == '' ">*</span>
+										</span>
+										 <input type='text' style='width: 100% !important;'  disabled  class="form-control"  ng-model="imges2" />
+									 <span class="input-group-btn">
+										 <input type='file'  name='imgr'
+											multiple class="form-control"
+											onchange="angular.element(this).scope().preViewImg2(this)"
+											style='width:90px !important;opacity:0!important;position:absolute;cursor:pointer;z-index:9999'
+											accept=".png,.jpg,.gif,.jpeg,.bmp"
+											>
+										</input>
+										<button ng-show="deviceApproveId == ''" class="btn btn-default" type="button">文件浏览</button>
+									</span>
+								</div>
+								<div
+									style='width: 100%; height: 300px; border-top: 1px dashed #999999;'>
+									<img id="img2" ng-src='{{signatureImgFile}}'
+										style="width: 99%; height: 290px;"></img>
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr>
+					<td colspan="3">
+						<div class="input-group" style='width: 97%;'>
+							<span class="input-group-addon">技术方案附件</span>
+								<input type='text' style='width: 100% !important;' disabled  class="form-control"
+								ng-model="files1"/>
+								<span class="input-group-btn">
+								<input type='file'
+								onchange="angular.element(this).scope().preViewImg3(this)"
+								multiple class="form-control"
+								style='width:90px !important;opacity:0!important;position:absolute;cursor:pointer;z-index:9999'
+								accept=".doc,.docx,.wps"  id="file1"> </input>
+									<button class="btn btn-default" type="button"  ng-show="deviceApproveId == ''">文件浏览</button>
+								</span>
+						</div>
+					</td>
+				</tr>
+				<tr style='height: 6px;'></tr>
+				<tr ng-show=" viewFlag == '0'">
+					<td colspan="3" style='text-align: center'>
+						<button class="btn btn-default" type="button"  ng-show="deviceApproveId != ''" ng-click="enclosureManager()">附件管理</button>
+						<button class="btn btn-default" type="button"
+							style='margin-left: 15px;' ng-click="submitFormData()" ng-show="deviceApproveId == ''">保存</button>
+						<button class="btn btn-default" type="button"
+							style='margin-left: 15px;' ng-click="submitFormAndstart()"  ng-show="deviceApproveId == ''">保存并提交</button>
+						<button class="btn btn-default" type="button"
+							style='margin-left: 15px;' ng-click="editFormData()" ng-show="deviceApproveId != ''">修改</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div>
+		<script type="text/ng-template" id="userEdit.html">
+          <div z-tree style="font:normal 12px/35px 'Arial';color:#dcdcdc;" class="ztree" ng-model="selectNode"></div>
+      </script>
+	</div>
+
+	<div>
+		<script type="text/ng-template" id="enclosureManager">
+           <div>
+				<div style="overflow:auto;">
+					<fieldset style="width:99%;" ng-show=" approveType != '000005'">
+   						<legend>道路状况图 （最多5张）&nbsp;&nbsp;
+							<span>
+									<img src='/EmApl/img/commn/add.png' style = 'width:20px;height:20px;'>
+									</img>
+									<input type='file'
+										onchange="angular.element(this).scope().addRoadSatus(this)"
+										multiple class="form-control"
+										style='width:25px!important;opacity:0!important;position:absolute;margin-left:150px;margin-top:-30px;cursor:pointer;z-index:9999'
+										accept=".png,.jpg,.gif,.jpeg,.bmp"  id="file1">
+									</input>
+							</span>
+						</legend>
+						<div style="display:flex;margin-top:0px;">
+							<div style = 'width:175px;height:175px;margin-left:2px;' ng-repeat="item in items">
+								<img ng-src='{{item.value}}' style='width:100%;height:100%'>
+									</img>
+									<img src='/EmApl/img/commn/Delete.png' style ='width:20px;height:20px;position:absolute;margin-left:-25px;margin-top:5px;cursor:pointer;'
+									ng-click='deleteFile(item.name)'>
+								</img>
+							</div>
+						</div>
+  					</fieldset>
+				</div>
+				<div style="display:flex;">
+				<div style="width:50%;">
+					<fieldset style="width:99%;height:270px;">
+   						 <legend>单位签章 </legend>
+						<div>
+							<img ng-src='{{unitImg}}' style='width:100%;height:230px;border:0px;' ></img>
+							<img src='/EmApl/img/commn/Refresh.png' style ='width:20px;height:20px;position:absolute;margin-left:-25px;margin-top:5px;cursor: pointer; '>
+							</img>
+							<input type='file'
+										onchange="angular.element(this).scope().refresh(this)"
+										multiple class="form-control"
+										style='width:25px!important;opacity:0!important;position:absolute;margin-left:415px;margin-top:-230px;cursor:pointer;z-index:9999'
+										accept=".png,.jpg,.gif,.jpeg,.bmp"  id="file1">
+							</input>
+						</div>
+  					</fieldset>
+				</div>
+				<div style="width:50%;">
+					<fieldset style="width:99%;height:270px;">
+   						 <legend>技术方案（最多5个） &nbsp;&nbsp;<span>
+									<img src='/EmApl/img/commn/add.png' style = 'width:20px;height:20px;'>
+									</img>
+									<input type='file'
+										onchange="angular.element(this).scope().addFiles(this)"
+										multiple class="form-control"
+										style='width:25px!important;opacity:0!important;position:absolute;margin-left:150px;margin-top:-30px;cursor:pointer;z-index:9999'
+										accept=".doc,.docx,.wps"  id="file1">
+									</input>
+							</span>
+						</legend>
+   						<ul   class="list-group" style='margin-top:-20px;list-style-type:none'>
+							<li class="list-group-item" ng-repeat="item in solides" style='width:99% !important;margin-top:5px;display:flex;font-size: 13px;'>
+								<a href='{{item.value}}'>{{item.name}}</a>
+								<img src='/EmApl/img/commn/Delete.png' ng-click='deleteFile2(item.name)' style ='width:20px;height:20px;margin-left:5px;cursor:pointer;'>
+								</img>
+							<li>
+						</ul>
+  					</fieldset>
+				</div>
+				</div>
+		   </div>
+			<div style="margin:8px;text-align:center">
+				<button class="btn btn-default" type="button" style='margin-left: 15px;' ng-click='submit()'>确定</button>
+			</div>
+      </script>
+	</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

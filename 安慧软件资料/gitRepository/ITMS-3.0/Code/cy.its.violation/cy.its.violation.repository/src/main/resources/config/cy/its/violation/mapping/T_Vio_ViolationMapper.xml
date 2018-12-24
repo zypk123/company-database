@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.violation.mybatis.client.T_Vio_ViolationMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.violation.mybatis.model.T_Vio_Violation" >
+    <id column="VIOLATION_ID" property="violationId" jdbcType="VARCHAR" />
+    <result column="VEHICLE_REG_ID" property="vehicleRegId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="SNAP_NBR" property="snapNbr" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="COLLECTION_TYPE" property="collectionType" jdbcType="CHAR" />
+    <result column="COLLECTION_POLICE" property="collectionPolice" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="VIO_SITE_CODE" property="vioSiteCode" jdbcType="VARCHAR" />
+    <result column="ADDRESS_DESC" property="addressDesc" jdbcType="VARCHAR" />
+    <result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_CODE" property="roadSectionCode" jdbcType="VARCHAR" />
+    <result column="MILEAGE" property="mileage" jdbcType="DECIMAL" />
+    <result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+    <result column="DIRECTION_NAME" property="directionName" jdbcType="VARCHAR" />
+    <result column="LANE_NBR" property="laneNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_NBR" property="plateNbr" jdbcType="VARCHAR" />
+    <result column="PLATE_TYPE" property="plateType" jdbcType="VARCHAR" />
+    <result column="PLATE_COLOR" property="plateColor" jdbcType="VARCHAR" />
+    <result column="VIOLATION_TIME" property="violationTime" jdbcType="TIMESTAMP" />
+    <result column="VIOLATION_TYPE" property="violationType" jdbcType="VARCHAR" />
+    <result column="VIOLATION_CODE" property="violationCode" jdbcType="VARCHAR" />
+    <result column="VIOLATION_DESC" property="violationDesc" jdbcType="VARCHAR" />
+    <result column="SPEED" property="speed" jdbcType="DECIMAL" />
+    <result column="LIMIT_LARGE" property="limitLarge" jdbcType="DECIMAL" />
+    <result column="LIMIT_SMALL" property="limitSmall" jdbcType="DECIMAL" />
+    <result column="LIMIT_LOWER" property="limitLower" jdbcType="DECIMAL" />
+    <result column="OVER_SPEED_PERCENT" property="overSpeedPercent" jdbcType="DECIMAL" />
+    <result column="ENTRY_SITE_CODE" property="entrySiteCode" jdbcType="VARCHAR" />
+    <result column="REGION_ENTRY_TIME" property="regionEntryTime" jdbcType="TIMESTAMP" />
+    <result column="REGION_DISTANCE" property="regionDistance" jdbcType="DECIMAL" />
+    <result column="RED_LIGHT_BEGIN_TIME" property="redLightBeginTime" jdbcType="TIMESTAMP" />
+    <result column="RED_LIGHT_END_TIME" property="redLightEndTime" jdbcType="TIMESTAMP" />
+    <result column="SPEEDING_TYPE" property="speedingType" jdbcType="CHAR" />
+    <result column="SPECIAL_VEH_TYPE" property="specialVehType" jdbcType="CHAR" />
+    <result column="DISCARDED_REASON" property="discardedReason" jdbcType="CHAR" />
+    <result column="DISCARDED_TYPE" property="discardedType" jdbcType="CHAR" />
+    <result column="LOCAL_PUNISH_FLAG" property="localPunishFlag" jdbcType="CHAR" />
+    <result column="EXPORT_FLAG" property="exportFlag" jdbcType="CHAR" />
+    <result column="EXPORT_TIME" property="exportTime" jdbcType="TIMESTAMP" />
+    <result column="LOCK_FLAG" property="lockFlag" jdbcType="CHAR" />
+    <result column="LOCK_USER" property="lockUser" jdbcType="VARCHAR" />
+    <result column="LOCK_TIME" property="lockTime" jdbcType="TIMESTAMP" />
+    <result column="STATUS_FLAG" property="statusFlag" jdbcType="CHAR" />
+    <result column="ENTRY_BY" property="entryBy" jdbcType="VARCHAR" />
+    <result column="ENTRY_TIME" property="entryTime" jdbcType="TIMESTAMP" />
+    <result column="UPLOAD_FLAG" property="uploadFlag" jdbcType="CHAR" />
+    <result column="UPLOAD_BY" property="uploadBy" jdbcType="VARCHAR" />
+    <result column="UPLOAD_TIME" property="uploadTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="IMAGE" property="image" jdbcType="VARCHAR" />
+    <result column="VIDEO" property="video" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="VEH_LOCALIZATION" property="vehLocalization" jdbcType="CHAR" />
+    <result column="DISCARDED_BY" property="discardedBy" jdbcType="VARCHAR" />
+    <result column="DISCARDED_TIME" property="discardedTime" jdbcType="TIMESTAMP" />
+	<result column="DEVICE_NBR" property="deviceNbr" jdbcType="VARCHAR" />
+	<result column="ORG_AUTHORITY_CODE" property="orgAuthorityCode" jdbcType="VARCHAR" />
+	<result column="CROSS_CODE" property="crossCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VIOLATION_ID, VEHICLE_REG_ID, DEVICE_SYS_NBR, SNAP_NBR, ORG_CODE, COLLECTION_TYPE, COLLECTION_POLICE, 
+    DISTRICT_CODE, VIO_SITE_CODE, ADDRESS_DESC, ROAD_CODE, ROAD_SECTION_CODE, MILEAGE, DIRECTION_TYPE, 
+    DIRECTION_NAME, LANE_NBR, PLATE_NBR, PLATE_TYPE, PLATE_COLOR, VIOLATION_TIME, VIOLATION_TYPE, 
+    VIOLATION_CODE, VIOLATION_DESC, SPEED, LIMIT_LARGE, LIMIT_SMALL, LIMIT_LOWER, OVER_SPEED_PERCENT, 
+    ENTRY_SITE_CODE, REGION_ENTRY_TIME, REGION_DISTANCE, RED_LIGHT_BEGIN_TIME, RED_LIGHT_END_TIME, 
+    SPEEDING_TYPE, SPECIAL_VEH_TYPE, DISCARDED_REASON, DISCARDED_TYPE, LOCAL_PUNISH_FLAG, 
+    EXPORT_FLAG, EXPORT_TIME, LOCK_FLAG, LOCK_USER, LOCK_TIME, STATUS_FLAG, ENTRY_BY, 
+    ENTRY_TIME, UPLOAD_FLAG, UPLOAD_BY, UPLOAD_TIME, CREATE_TIME, UPDATE_TIME, IMAGE, 
+    VIDEO, REMARK, VEH_LOCALIZATION, DISCARDED_BY, DISCARDED_TIME,DEVICE_NBR,ORG_AUTHORITY_CODE,CROSS_CODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_VIO_VIOLATION
+    where VIOLATION_ID = #{violationId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_VIO_VIOLATION
+    where VIOLATION_ID = #{violationId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.violation.mybatis.model.T_Vio_Violation" >
+    insert into T_VIO_VIOLATION (VIOLATION_ID, VEHICLE_REG_ID, DEVICE_SYS_NBR, 
+      SNAP_NBR, ORG_CODE, COLLECTION_TYPE, 
+      COLLECTION_POLICE, DISTRICT_CODE, VIO_SITE_CODE, 
+      ADDRESS_DESC, ROAD_CODE, ROAD_SECTION_CODE, 
+      MILEAGE, DIRECTION_TYPE, DIRECTION_NAME, 
+      LANE_NBR, PLATE_NBR, PLATE_TYPE, 
+      PLATE_COLOR, VIOLATION_TIME, VIOLATION_TYPE, 
+      VIOLATION_CODE, VIOLATION_DESC, SPEED, 
+      LIMIT_LARGE, LIMIT_SMALL, LIMIT_LOWER, 
+      OVER_SPEED_PERCENT, ENTRY_SITE_CODE, REGION_ENTRY_TIME, 
+      REGION_DISTANCE, RED_LIGHT_BEGIN_TIME, RED_LIGHT_END_TIME, 
+      SPEEDING_TYPE, SPECIAL_VEH_TYPE, DISCARDED_REASON, 
+      DISCARDED_TYPE, LOCAL_PUNISH_FLAG, EXPORT_FLAG, 
+      EXPORT_TIME, LOCK_FLAG, LOCK_USER, 
+      LOCK_TIME, STATUS_FLAG, ENTRY_BY, 
+      ENTRY_TIME, UPLOAD_FLAG, UPLOAD_BY, 
+      UPLOAD_TIME, CREATE_TIME, UPDATE_TIME, 
+      IMAGE, VIDEO, REMARK, 
+      VEH_LOCALIZATION, DISCARDED_BY, DISCARDED_TIME,DEVICE_NBR,
+      ORG_AUTHORITY_CODE,CROSS_CODE
+      )
+    values (#{violationId,jdbcType=VARCHAR}, #{vehicleRegId,jdbcType=VARCHAR}, #{deviceSysNbr,jdbcType=VARCHAR}, 
+      #{snapNbr,jdbcType=VARCHAR}, #{orgCode,jdbcType=VARCHAR}, #{collectionType,jdbcType=CHAR}, 
+      #{collectionPolice,jdbcType=VARCHAR}, #{districtCode,jdbcType=VARCHAR}, #{vioSiteCode,jdbcType=VARCHAR}, 
+      #{addressDesc,jdbcType=VARCHAR}, #{roadCode,jdbcType=VARCHAR}, #{roadSectionCode,jdbcType=VARCHAR}, 
+      #{mileage,jdbcType=DECIMAL}, #{directionType,jdbcType=VARCHAR}, #{directionName,jdbcType=VARCHAR}, 
+      #{laneNbr,jdbcType=VARCHAR}, #{plateNbr,jdbcType=VARCHAR}, #{plateType,jdbcType=VARCHAR}, 
+      #{plateColor,jdbcType=VARCHAR}, #{violationTime,jdbcType=TIMESTAMP}, #{violationType,jdbcType=VARCHAR}, 
+      #{violationCode,jdbcType=VARCHAR}, #{violationDesc,jdbcType=VARCHAR}, #{speed,jdbcType=DECIMAL}, 
+      #{limitLarge,jdbcType=DECIMAL}, #{limitSmall,jdbcType=DECIMAL}, #{limitLower,jdbcType=DECIMAL}, 
+      #{overSpeedPercent,jdbcType=DECIMAL}, #{entrySiteCode,jdbcType=VARCHAR}, #{regionEntryTime,jdbcType=TIMESTAMP}, 
+      #{regionDistance,jdbcType=DECIMAL}, #{redLightBeginTime,jdbcType=TIMESTAMP}, #{redLightEndTime,jdbcType=TIMESTAMP}, 
+      #{speedingType,jdbcType=CHAR}, #{specialVehType,jdbcType=CHAR}, #{discardedReason,jdbcType=CHAR}, 
+      #{discardedType,jdbcType=CHAR}, #{localPunishFlag,jdbcType=CHAR}, #{exportFlag,jdbcType=CHAR}, 
+      #{exportTime,jdbcType=TIMESTAMP}, #{lockFlag,jdbcType=CHAR}, #{lockUser,jdbcType=VARCHAR}, 
+      #{lockTime,jdbcType=TIMESTAMP}, #{statusFlag,jdbcType=CHAR}, #{entryBy,jdbcType=VARCHAR}, 
+      #{entryTime,jdbcType=TIMESTAMP}, #{uploadFlag,jdbcType=CHAR}, #{uploadBy,jdbcType=VARCHAR}, 
+      #{uploadTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{image,jdbcType=VARCHAR}, #{video,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{vehLocalization,jdbcType=CHAR}, #{discardedBy,jdbcType=VARCHAR}, #{discardedTime,jdbcType=TIMESTAMP},
+      #{deviceNbr,jdbcType=CHAR},#{orgAuthorityCode,jdbcType=CHAR},#{crossCode,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Violation" >
+    insert into T_VIO_VIOLATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="violationId != null" >
+        VIOLATION_ID,
+      </if>
+      <if test="vehicleRegId != null" >
+        VEHICLE_REG_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+      <if test="snapNbr != null" >
+        SNAP_NBR,
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE,
+      </if>
+      <if test="collectionType != null" >
+        COLLECTION_TYPE,
+      </if>
+      <if test="collectionPolice != null" >
+        COLLECTION_POLICE,
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE,
+      </if>
+      <if test="vioSiteCode != null" >
+        VIO_SITE_CODE,
+      </if>
+      <if test="addressDesc != null" >
+        ADDRESS_DESC,
+      </if>
+      <if test="roadCode != null" >
+        ROAD_CODE,
+      </if>
+      <if test="roadSectionCode != null" >
+        ROAD_SECTION_CODE,
+      </if>
+      <if test="mileage != null" >
+        MILEAGE,
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE,
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME,
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR,
+      </if>
+      <if test="plateNbr != null" >
+        PLATE_NBR,
+      </if>
+      <if test="plateType != null" >
+        PLATE_TYPE,
+      </if>
+      <if test="plateColor != null" >
+        PLATE_COLOR,
+      </if>
+      <if test="violationTime != null" >
+        VIOLATION_TIME,
+      </if>
+      <if test="violationType != null" >
+        VIOLATION_TYPE,
+      </if>
+      <if test="violationCode != null" >
+        VIOLATION_CODE,
+      </if>
+      <if test="violationDesc != null" >
+        VIOLATION_DESC,
+      </if>
+      <if test="speed != null" >
+        SPEED,
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE,
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL,
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER,
+      </if>
+      <if test="overSpeedPercent != null" >
+        OVER_SPEED_PERCENT,
+      </if>
+      <if test="entrySiteCode != null" >
+        ENTRY_SITE_CODE,
+      </if>
+      <if test="regionEntryTime != null" >
+        REGION_ENTRY_TIME,
+      </if>
+      <if test="regionDistance != null" >
+        REGION_DISTANCE,
+      </if>
+      <if test="redLightBeginTime != null" >
+        RED_LIGHT_BEGIN_TIME,
+      </if>
+      <if test="redLightEndTime != null" >
+        RED_LIGHT_END_TIME,
+      </if>
+      <if test="speedingType != null" >
+        SPEEDING_TYPE,
+      </if>
+      <if test="specialVehType != null" >
+        SPECIAL_VEH_TYPE,
+      </if>
+      <if test="discardedReason != null" >
+        DISCARDED_REASON,
+      </if>
+      <if test="discardedType != null" >
+        DISCARDED_TYPE,
+      </if>
+      <if test="localPunishFlag != null" >
+        LOCAL_PUNISH_FLAG,
+      </if>
+      <if test="exportFlag != null" >
+        EXPORT_FLAG,
+      </if>
+      <if test="exportTime != null" >
+        EXPORT_TIME,
+      </if>
+      <if test="lockFlag != null" >
+        LOCK_FLAG,
+      </if>
+      <if test="lockUser != null" >
+        LOCK_USER,
+      </if>
+      <if test="lockTime != null" >
+        LOCK_TIME,
+      </if>
+      <if test="statusFlag != null" >
+        STATUS_FLAG,
+      </if>
+      <if test="entryBy != null" >
+        ENTRY_BY,
+      </if>
+      <if test="entryTime != null" >
+        ENTRY_TIME,
+      </if>
+      <if test="uploadFlag != null" >
+        UPLOAD_FLAG,
+      </if>
+      <if test="uploadBy != null" >
+        UPLOAD_BY,
+      </if>
+      <if test="uploadTime != null" >
+        UPLOAD_TIME,
+      </if>
+      CREATE_TIME,
+      UPDATE_TIME,
+      <if test="image != null" >
+        IMAGE,
+      </if>
+      <if test="video != null" >
+        VIDEO,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="vehLocalization != null" >
+        VEH_LOCALIZATION,
+      </if>
+      <if test="discardedBy != null" >
+        DISCARDED_BY,
+      </if>
+      <if test="discardedTime != null" >
+        DISCARDED_TIME,
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR,
+      </if> 
+      <if test="orgAuthorityCode != null" >
+        ORG_AUTHORITY_CODE,
+      </if> 
+      <if test="crossCode != null" >
+        CROSS_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="violationId != null" >
+        #{violationId,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleRegId != null" >
+        #{vehicleRegId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="snapNbr != null" >
+        #{snapNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionType != null" >
+        #{collectionType,jdbcType=CHAR},
+      </if>
+      <if test="collectionPolice != null" >
+        #{collectionPolice,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="vioSiteCode != null" >
+        #{vioSiteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="addressDesc != null" >
+        #{addressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="roadCode != null" >
+        #{roadCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionCode != null" >
+        #{roadSectionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        #{mileage,jdbcType=DECIMAL},
+      </if>
+      <if test="directionType != null" >
+        #{directionType,jdbcType=VARCHAR},
+      </if>
+      <if test="directionName != null" >
+        #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateNbr != null" >
+        #{plateNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateType != null" >
+        #{plateType,jdbcType=VARCHAR},
+      </if>
+      <if test="plateColor != null" >
+        #{plateColor,jdbcType=VARCHAR},
+      </if>
+      <if test="violationTime != null" >
+        #{violationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="violationType != null" >
+        #{violationType,jdbcType=VARCHAR},
+      </if>
+      <if test="violationCode != null" >
+        #{violationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="violationDesc != null" >
+        #{violationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="speed != null" >
+        #{speed,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLarge != null" >
+        #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="overSpeedPercent != null" >
+        #{overSpeedPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="entrySiteCode != null" >
+        #{entrySiteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="regionEntryTime != null" >
+        #{regionEntryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="regionDistance != null" >
+        #{regionDistance,jdbcType=DECIMAL},
+      </if>
+      <if test="redLightBeginTime != null" >
+        #{redLightBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redLightEndTime != null" >
+        #{redLightEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="speedingType != null" >
+        #{speedingType,jdbcType=CHAR},
+      </if>
+      <if test="specialVehType != null" >
+        #{specialVehType,jdbcType=CHAR},
+      </if>
+      <if test="discardedReason != null" >
+        #{discardedReason,jdbcType=CHAR},
+      </if>
+      <if test="discardedType != null" >
+        #{discardedType,jdbcType=CHAR},
+      </if>
+      <if test="localPunishFlag != null" >
+        #{localPunishFlag,jdbcType=CHAR},
+      </if>
+      <if test="exportFlag != null" >
+        #{exportFlag,jdbcType=CHAR},
+      </if>
+      <if test="exportTime != null" >
+        #{exportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockFlag != null" >
+        #{lockFlag,jdbcType=CHAR},
+      </if>
+      <if test="lockUser != null" >
+        #{lockUser,jdbcType=VARCHAR},
+      </if>
+      <if test="lockTime != null" >
+        #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="statusFlag != null" >
+        #{statusFlag,jdbcType=CHAR},
+      </if>
+      <if test="entryBy != null" >
+        #{entryBy,jdbcType=VARCHAR},
+      </if>
+      <if test="entryTime != null" >
+        #{entryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadFlag != null" >
+        #{uploadFlag,jdbcType=CHAR},
+      </if>
+      <if test="uploadBy != null" >
+        #{uploadBy,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      SYSDATE,
+      SYSDATE,
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="video != null" >
+        #{video,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="vehLocalization != null" >
+        #{vehLocalization,jdbcType=CHAR},
+      </if>
+      <if test="discardedBy != null" >
+        #{discardedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="discardedTime != null" >
+        #{discardedTime,jdbcType=TIMESTAMP},
+      </if>      
+      <if test="deivceNbr != null" >
+        #{deivceNbr,jdbcType=VARCHAR},
+      </if>      
+      <if test="orgAuthorityCode != null" >
+        #{orgAuthorityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="crossCode != null" >
+        #{crossCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.violation.mybatis.model.T_Vio_Violation" >
+    update T_VIO_VIOLATION
+    <set >
+      <if test="vehicleRegId != null" >
+        VEHICLE_REG_ID = #{vehicleRegId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="snapNbr != null" >
+        SNAP_NBR = #{snapNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionType != null" >
+        COLLECTION_TYPE = #{collectionType,jdbcType=CHAR},
+      </if>
+      <if test="collectionPolice != null" >
+        COLLECTION_POLICE = #{collectionPolice,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="vioSiteCode != null" >
+        VIO_SITE_CODE = #{vioSiteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="addressDesc != null" >
+        ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="roadCode != null" >
+        ROAD_CODE = #{roadCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionCode != null" >
+        ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null" >
+        MILEAGE = #{mileage,jdbcType=DECIMAL},
+      </if>
+      <if test="directionType != null" >
+        DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+      </if>
+      <if test="directionName != null" >
+        DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      </if>
+      <if test="laneNbr != null" >
+        LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateNbr != null" >
+        PLATE_NBR = #{plateNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="plateType != null" >
+        PLATE_TYPE = #{plateType,jdbcType=VARCHAR},
+      </if>
+      <if test="plateColor != null" >
+        PLATE_COLOR = #{plateColor,jdbcType=VARCHAR},
+      </if>
+      <if test="violationTime != null" > 
+      		VIOLATION_TIME = #{violationTime,jdbcType=TIMESTAMP}, 
+      </if>
+      <if test="violationType != null" >
+        VIOLATION_TYPE = #{violationType,jdbcType=VARCHAR},
+      </if>
+      <if test="violationCode != null" >
+        VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="violationDesc != null" >
+        VIOLATION_DESC = #{violationDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="speed != null" >
+        SPEED = #{speed,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLarge != null" >
+        LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      </if>
+      <if test="limitSmall != null" >
+        LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      </if>
+      <if test="limitLower != null" >
+        LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      </if>
+      <if test="overSpeedPercent != null" >
+        OVER_SPEED_PERCENT = #{overSpeedPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="entrySiteCode != null" >
+        ENTRY_SITE_CODE = #{entrySiteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="regionEntryTime != null" >
+        REGION_ENTRY_TIME = #{regionEntryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="regionDistance != null" >
+        REGION_DISTANCE = #{regionDistance,jdbcType=DECIMAL},
+      </if>
+      <if test="redLightBeginTime != null" >
+        RED_LIGHT_BEGIN_TIME = #{redLightBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redLightEndTime != null" >
+        RED_LIGHT_END_TIME = #{redLightEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="speedingType != null" >
+        SPEEDING_TYPE = #{speedingType,jdbcType=CHAR},
+      </if>
+      <if test="specialVehType != null" >
+        SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR},
+      </if>
+      <if test="discardedReason != null" >
+        DISCARDED_REASON = #{discardedReason,jdbcType=CHAR},
+      </if>
+      <if test="discardedType != null" >
+        DISCARDED_TYPE = #{discardedType,jdbcType=CHAR},
+      </if>
+      <if test="localPunishFlag != null" >
+        LOCAL_PUNISH_FLAG = #{localPunishFlag,jdbcType=CHAR},
+      </if>
+      <if test="exportFlag != null" >
+        EXPORT_FLAG = #{exportFlag,jdbcType=CHAR},
+      </if>
+      <if test="exportTime != null" >
+        EXPORT_TIME = #{exportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockFlag != null" >
+        LOCK_FLAG = #{lockFlag,jdbcType=CHAR},
+      </if>
+      <if test="lockUser != null" >
+        LOCK_USER = #{lockUser,jdbcType=VARCHAR},
+      </if>
+      <if test="lockTime != null" >
+        LOCK_TIME = #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="statusFlag != null" >
+        STATUS_FLAG = #{statusFlag,jdbcType=CHAR},
+      </if>
+      <if test="entryBy != null" >
+        ENTRY_BY = #{entryBy,jdbcType=VARCHAR},
+      </if>
+      <if test="entryTime != null" >
+        ENTRY_TIME = #{entryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadFlag != null" >
+        UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR},
+      </if>
+      <if test="uploadBy != null" >
+        UPLOAD_BY = #{uploadBy,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        UPLOAD_TIME = #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      UPDATE_TIME = SYSDATE,
+      <if test="image != null" >
+        IMAGE = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="video != null" >
+        VIDEO = #{video,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="vehLocalization != null" >
+        VEH_LOCALIZATION = #{vehLocalization,jdbcType=CHAR},
+      </if>
+      <if test="discardedBy != null" >
+        DISCARDED_BY = #{discardedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="discardedTime != null" >  
+      		DISCARDED_TIME = #{discardedTime,jdbcType=TIMESTAMP}, 
+      </if>
+      <if test="deviceNbr != null" >
+        DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgAuthorityCode != null" >
+        ORG_AUTHORITY_CODE = #{orgAuthorityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="crossCode != null" >
+        CROSS_CODE = #{crossCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VIOLATION_ID = #{violationId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.violation.mybatis.model.T_Vio_Violation" >
+    update T_VIO_VIOLATION
+    set VEHICLE_REG_ID = #{vehicleRegId,jdbcType=VARCHAR},
+      DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      SNAP_NBR = #{snapNbr,jdbcType=VARCHAR},
+      ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      COLLECTION_TYPE = #{collectionType,jdbcType=CHAR},
+      COLLECTION_POLICE = #{collectionPolice,jdbcType=VARCHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      VIO_SITE_CODE = #{vioSiteCode,jdbcType=VARCHAR},
+      ADDRESS_DESC = #{addressDesc,jdbcType=VARCHAR},
+      ROAD_CODE = #{roadCode,jdbcType=VARCHAR},
+      ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR},
+      MILEAGE = #{mileage,jdbcType=DECIMAL},
+      DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+      DIRECTION_NAME = #{directionName,jdbcType=VARCHAR},
+      LANE_NBR = #{laneNbr,jdbcType=VARCHAR},
+      PLATE_NBR = #{plateNbr,jdbcType=VARCHAR},
+      PLATE_TYPE = #{plateType,jdbcType=VARCHAR},
+      PLATE_COLOR = #{plateColor,jdbcType=VARCHAR},
+      VIOLATION_TIME = #{violationTime,jdbcType=TIMESTAMP},
+      VIOLATION_TYPE = #{violationType,jdbcType=VARCHAR},
+      VIOLATION_CODE = #{violationCode,jdbcType=VARCHAR},
+      VIOLATION_DESC = #{violationDesc,jdbcType=VARCHAR},
+      SPEED = #{speed,jdbcType=DECIMAL},
+      LIMIT_LARGE = #{limitLarge,jdbcType=DECIMAL},
+      LIMIT_SMALL = #{limitSmall,jdbcType=DECIMAL},
+      LIMIT_LOWER = #{limitLower,jdbcType=DECIMAL},
+      OVER_SPEED_PERCENT = #{overSpeedPercent,jdbcType=DECIMAL},
+      ENTRY_SITE_CODE = #{entrySiteCode,jdbcType=VARCHAR},
+      REGION_ENTRY_TIME = #{regionEntryTime,jdbcType=TIMESTAMP},
+      REGION_DISTANCE = #{regionDistance,jdbcType=DECIMAL},
+      RED_LIGHT_BEGIN_TIME = #{redLightBeginTime,jdbcType=TIMESTAMP},
+      RED_LIGHT_END_TIME = #{redLightEndTime,jdbcType=TIMESTAMP},
+      SPEEDING_TYPE = #{speedingType,jdbcType=CHAR},
+      SPECIAL_VEH_TYPE = #{specialVehType,jdbcType=CHAR},
+      DISCARDED_REASON = #{discardedReason,jdbcType=CHAR},
+      DISCARDED_TYPE = #{discardedType,jdbcType=CHAR},
+      LOCAL_PUNISH_FLAG = #{localPunishFlag,jdbcType=CHAR},
+      EXPORT_FLAG = #{exportFlag,jdbcType=CHAR},
+      EXPORT_TIME = #{exportTime,jdbcType=TIMESTAMP},
+      LOCK_FLAG = #{lockFlag,jdbcType=CHAR},
+      LOCK_USER = #{lockUser,jdbcType=VARCHAR},
+      LOCK_TIME = #{lockTime,jdbcType=TIMESTAMP},
+      STATUS_FLAG = #{statusFlag,jdbcType=CHAR},
+      ENTRY_BY = #{entryBy,jdbcType=VARCHAR},
+      ENTRY_TIME = #{entryTime,jdbcType=TIMESTAMP},
+      UPLOAD_FLAG = #{uploadFlag,jdbcType=CHAR},
+      UPLOAD_BY = #{uploadBy,jdbcType=VARCHAR},
+      UPLOAD_TIME = #{uploadTime,jdbcType=TIMESTAMP},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      IMAGE = #{image,jdbcType=VARCHAR},
+      VIDEO = #{video,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      VEH_LOCALIZATION = #{vehLocalization,jdbcType=CHAR},
+      DISCARDED_BY = #{discardedBy,jdbcType=VARCHAR},
+      DISCARDED_TIME = #{discardedTime,jdbcType=TIMESTAMP},
+      DEVICE_NBR = #{deviceNbr,jdbcType=VARCHAR},
+      ORG_AUTHORITY_CODE = #{orgAuthorityCode,jdbcType=VARCHAR},
+      CROSS_CODE = #{crossCode,jdbcType=VARCHAR}
+    where VIOLATION_ID = #{violationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

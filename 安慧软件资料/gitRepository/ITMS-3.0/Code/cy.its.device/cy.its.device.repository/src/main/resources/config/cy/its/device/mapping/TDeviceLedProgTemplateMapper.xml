@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.led.TDeviceLedProgTemplateMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.mybatis.model.TDeviceLedProgTemplate" >
+    <id column="PROG_TEMPLATE_ID" property="progTemplateId" jdbcType="VARCHAR" />
+    <result column="SPEC_ID" property="specId" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_NAME" property="templateName" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_DESC" property="templateDesc" jdbcType="VARCHAR" />
+    <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="PROGRAM_CONTENT" property="programContent" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PROG_TEMPLATE_ID, SPEC_ID, TEMPLATE_NAME, TEMPLATE_DESC, MESSAGE_TYPE, PROGRAM_CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_LED_PROG_TEMPLATE
+    where PROG_TEMPLATE_ID = #{progTemplateId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_LED_PROG_TEMPLATE
+    where PROG_TEMPLATE_ID = #{progTemplateId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.mybatis.model.TDeviceLedProgTemplate" >
+    insert into T_DEVICE_LED_PROG_TEMPLATE (PROG_TEMPLATE_ID, SPEC_ID, TEMPLATE_NAME, 
+      TEMPLATE_DESC, MESSAGE_TYPE, PROGRAM_CONTENT)
+    values (#{progTemplateId,jdbcType=VARCHAR}, #{specId,jdbcType=VARCHAR}, #{templateName,jdbcType=VARCHAR}, 
+      #{templateDesc,jdbcType=VARCHAR}, #{messageType,jdbcType=VARCHAR}, #{programContent,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.mybatis.model.TDeviceLedProgTemplate" >
+    insert into T_DEVICE_LED_PROG_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="progTemplateId != null" >
+        PROG_TEMPLATE_ID,
+      </if>
+      <if test="specId != null" >
+        SPEC_ID,
+      </if>
+      <if test="templateName != null" >
+        TEMPLATE_NAME,
+      </if>
+      <if test="templateDesc != null" >
+        TEMPLATE_DESC,
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE,
+      </if>
+      <if test="programContent != null" >
+        PROGRAM_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="progTemplateId != null" >
+        #{progTemplateId,jdbcType=VARCHAR},
+      </if>
+      <if test="specId != null" >
+        #{specId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateName != null" >
+        #{templateName,jdbcType=VARCHAR},
+      </if>
+      <if test="templateDesc != null" >
+        #{templateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="programContent != null" >
+        #{programContent,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.mybatis.model.TDeviceLedProgTemplate" >
+    update T_DEVICE_LED_PROG_TEMPLATE
+    <set >
+      <if test="specId != null" >
+        SPEC_ID = #{specId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateName != null" >
+        TEMPLATE_NAME = #{templateName,jdbcType=VARCHAR},
+      </if>
+      <if test="templateDesc != null" >
+        TEMPLATE_DESC = #{templateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="messageType != null" >
+        MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="programContent != null" >
+        PROGRAM_CONTENT = #{programContent,jdbcType=CLOB},
+      </if>
+    </set>
+    where PROG_TEMPLATE_ID = #{progTemplateId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.mybatis.model.TDeviceLedProgTemplate" >
+    update T_DEVICE_LED_PROG_TEMPLATE
+    set SPEC_ID = #{specId,jdbcType=VARCHAR},
+      TEMPLATE_NAME = #{templateName,jdbcType=VARCHAR},
+      TEMPLATE_DESC = #{templateDesc,jdbcType=VARCHAR},
+      MESSAGE_TYPE = #{messageType,jdbcType=VARCHAR},
+      PROGRAM_CONTENT = #{programContent,jdbcType=CLOB}
+    where PROG_TEMPLATE_ID = #{progTemplateId,jdbcType=VARCHAR}
+  </update>
+</mapper>

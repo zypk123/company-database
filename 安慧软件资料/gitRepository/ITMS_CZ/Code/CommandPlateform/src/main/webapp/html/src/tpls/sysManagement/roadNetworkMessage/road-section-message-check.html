@@ -1,0 +1,110 @@
+<!--路段信息详情页面-->
+<div  class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="roadSectionCheck">
+            <div id="rSectionCheck" class="table">
+                <div class="tr">
+                    <div class="th">
+                        路段编号：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.roadSectionCode"></div>
+                    <div class="th">
+                        路段名称：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.roadSectionName"></div>
+                    <div class="th">
+                        路段类型：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.roadSectionType" cy-filter="roadSectionType"></div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        行政区划：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.districtCode" cy-filter="$getDistrictName"></div>
+                    <div class="th">
+                        管理机构：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.orgId" cy-filter="$getOrgName"></div>
+                    <div class="th">
+                        所属道路：
+                    </div>
+                    <div class="td" cy-name="roadSectionCheck.roadId" cy-filter="$getRoadName"></div>
+                </div>
+
+                <div class="tr">
+                    <div class="th" style="width: 105px">
+                        双向或单向：
+                    </div>
+                    <div class="td"  cy-name="roadSectionCheck.isOneDirection" cy-filter="isOneDirection" style="width: 115px;"></div>
+                    <div class="th">
+                        起点名称：
+                    </div>
+                    <div class="td" cy-name="roadSectionCheck.roadBeginName"></div>
+                    <div class="th" >
+                        终点名称：
+                    </div> 
+                    <div class="td" cy-name="roadSectionCheck.roadEndName" ></div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="width: 95px;">
+                        起始里程：
+                    </div>
+                     <div class="td" cy-name="roadSectionCheck.beginMeterG" cy-filter="beginMeterG" style="width: 60px;"></div> 
+                     <div class="td" cy-name="roadSectionCheck.beginMeterM" cy-filter="beginMeterM" style="width: 65px;"></div>           
+                    <div class="th">
+                        结束里程：
+                    </div>
+                    <div class="td" cy-name="roadSectionCheck.endMeterG" cy-filter="endMeterG" style="width: 60px;"></div> 
+                    <div class="td" cy-name="roadSectionCheck.endMeterM" cy-filter="endMeterM" style="width: 50px;"></div>           
+               
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false,height:35" >
+        <div class="tr">
+            <div class="td" style="text-align: center">
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'"
+                cy-click="$closeSelf">关闭</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    InitPage(["roadSectionCheck"], function($scope) {
+        $scope.roadSectionType=function(value){
+            return $scope.$getCodeName("148",value);
+        };
+        $scope.isOneDirection=function(value){
+            if(value==0){
+                return "双向";
+            }else{
+                return "单向";
+            }
+        };
+        $scope.beginMeterG=function(value){
+            return value +" "+ "公里";
+        };
+        $scope.beginMeterM=function(value){
+            return "+" +" " +value +" "+ "米";
+        };
+        $scope.endMeterG=function(value){
+            return value +" "+"公里";
+        };
+        $scope.endMeterM=function(value){
+            return "+ "+" " +value +" "+ "米";
+        };
+    }); 
+</script>
+<style type="text/css">
+    #rSectionCheck .th {
+        text-align: right;
+        width: 90px;
+    }
+    #rSectionCheck .td{
+        text-align: left;
+        width: 130px;
+    }
+ </style>

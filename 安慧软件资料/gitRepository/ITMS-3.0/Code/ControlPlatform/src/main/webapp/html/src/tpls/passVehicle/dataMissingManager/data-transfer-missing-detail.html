@@ -1,0 +1,138 @@
+<div class="easyui-layout" id="data-transfer-missing-detail" style="height:100%">
+    <div data-options="region:'north',height:50">
+        <form cy-form="cyFrmCond" class="searchForm" method="post">
+        	<div class="table">
+        		<div class="tr">
+        			<div class="th" style="margin-left: 40px;">设备编号：</div>
+                        <div class="td">
+        				<span cy-name="cyFrmCond.device_sys_nbr" ></span>
+                        </div>
+        			
+                    <div class="th" style="margin-left: 50px;">点位：</div>
+                        <div class="td">
+			        	 <span cy-name="cyFrmCond.siteName"></span>
+                        </div>
+                 </div>
+        	</div>
+        </form>
+    </div>
+
+    <div data-options="region:'center'" id="tMDataGridDiv">
+        <table id="dataTransferMissingDataGrid" cy-datagrid="options" cy-querydata="cyFrmCond">
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage(['formData','resultData','saveData'], function ($scope) {
+        //获得本页面需要的数据字典
+		$scope.$getDefaultCode(["420"]);
+        /**
+		 * 页面加载完后一些初始化处理
+		 */
+		$scope.load = function() {
+        	$scope.cyFrmCond = $scope.formData;
+        	$scope.$updateDom("cyFrmCond");
+        	 if($scope.resultData && $scope.resultData !=null){
+        		$scope.$('#dataTransferMissingDataGrid').datagrid('loadData', $scope.resultData.result);
+        		$scope.$('#dataTransferMissingDataGrid').datagrid('selectRow', 0);
+        		$scope.$('#dataTransferMissingDataGrid').datagrid('scrollTo',0);
+        		$scope.$('#tMDataGridDiv').scrollTop(0);;
+        	}
+        	/*  else { 
+        		SearchAsync();
+        	} */
+        };
+        
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+		 $scope.options = {
+			columns:[[
+						{align : "center",title : "缺失日期",field : "data_day",width : 80},
+          				{align : "center",title : "应有时段总数",field : "theory_count",width : 80},
+        				{align : "center",title : "实际时段总数",field : "duration_count",width : 80},
+        				{align : "center",title : "缺失率",field : "lostRate",width : 60,formatter:numberFormat},
+        				{align : "center",title : "接入率",field : "accessRate",width : 60,formatter:numberFormat},
+        				{align : "center",title : "接入稽查布控系统",field : "isConnectTrackSys",width : 80,formatter:code2Name},
+        				//{align : "center",title : "缺失时段",field : "lostList",width : 180},
+        				{align : "center",title : "详情",field : "path",width : 60,formatter : lookPath}
+			]],
+			rownumbers:true,
+            singleSelect: true,
+            method: 'post',
+            fitColumns: true,
+            striped: true,
+            selectOnCheck: false,
+            pagination: false,
+            nowarp: false
+		};
+		 $scope.look = function(index){
+				var rowData = $scope.$("#dataTransferMissingDataGrid").datagrid("getData").rows[index];
+				$scope.$setParam("rowData",rowData);
+				$scope.$openDialog("lookPath",{
+					title : rowData.device_sys_nbr+"24小时数据缺失详情",
+					width : "850",
+					height : "650",
+					href : "tpls/passVehicle/dataMissingManager/data-transfer-missing-hour.html"
+				},true);
+			};
+        
+		 function lookPath(value, rowData, index){
+				var lookBtn = $("<a title='查看' class='button-look' cy-click='look(" + index + ")'></a>");
+				lookBtn.linkbutton({
+	            	plain:true,
+	                iconCls:"icon-look-solid"
+	            });
+				if(rowData.avgDelay == ''){//无延迟时间
+					lookBtn.linkbutton('disable').removeAttr('cy-click');
+	            }
+				return $("<span/>").append(lookBtn).html();
+			};
+        
+		 function SearchAsync() {
+				var params ={};
+				$.extend(params, $scope.formData);
+				params.pageNumber=1;
+				params.pageSize=500;
+				params.totalCount=0;
+				params.orderName ='day';
+				params.orderType ='asc';
+				//获取后台数据
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "/vehTrack/dataMissing/queryDataMissingByDevice",
+					params : params,
+					async:true,
+					success : function(data) {
+						var rows=  data.result.rows;
+						if ( rows && rows.length>0){
+							$scope.$('#dataTransferMissingDataGrid').datagrid('loadData', data.result);
+							$scope.saveData(data);
+						}else{
+							$.messager.alert("提示","无分析结果");
+						}
+					}, 
+					fail : function(){
+						$.messager.progress("close");
+						$.messager.alert("提示","服务器繁忙");
+					}
+				})
+	        };
+        
+		/*
+		*数字转成100.00%
+		*/
+		function numberFormat(value){
+			return (value * 100).toFixed(2) + '%';
+		};
+		/*
+		*code->name
+		*/
+		function code2Name(value){
+			if(!value){return}
+			return $scope.$getCodeName("420",value);
+		};
+    });
+
+</script>

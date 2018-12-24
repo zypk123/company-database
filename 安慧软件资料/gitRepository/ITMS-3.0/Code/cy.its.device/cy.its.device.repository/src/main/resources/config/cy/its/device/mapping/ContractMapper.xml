@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.ContractMapper">
+	<resultMap id="BaseResultMap" type="cy.its.device.domain.model.Contract">
+		<id column="CONTRACT_ID" property="contractId" jdbcType="VARCHAR" />
+		<result column="CONTRACTOR_ID" property="contractorId"
+			jdbcType="VARCHAR" />
+		<result column="CONTRACT_NBR" property="contractNbr" jdbcType="VARCHAR" />
+		<result column="CONTRACT_NAME" property="contractName"
+			jdbcType="VARCHAR" />
+		<result column="CONTRACT_TYPE" property="contractType"
+			jdbcType="CHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="BID_NBR" property="bidNbr" jdbcType="VARCHAR" />
+		<result column="CONTRACT_TIME" property="contractTime"
+			jdbcType="TIMESTAMP" />
+		<result column="BID_CONTACT_NAME" property="bidContactName"
+			jdbcType="VARCHAR" />
+		<result column="BID_CONTACT_TEL" property="bidContactTel"
+			jdbcType="VARCHAR" />
+		<result column="BEGIN_SERVICE_DATE" property="beginServiceDate"
+			jdbcType="TIMESTAMP" />
+		<result column="END_SERVICE_DATE" property="endServiceDate"
+			jdbcType="TIMESTAMP" />
+		<result column="SERVICE_PERSON" property="servicePerson"
+			jdbcType="VARCHAR" />
+		<result column="SERVICE_PERSON_TEL" property="servicePersonTel"
+			jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CONTRACT_ID, CONTRACTOR_ID, CONTRACT_NBR, CONTRACT_NAME,
+		CONTRACT_TYPE, ORG_ID,
+		BID_NBR,
+		CONTRACT_TIME, BID_CONTACT_NAME,
+		BID_CONTACT_TEL, BEGIN_SERVICE_DATE,
+		END_SERVICE_DATE,
+		SERVICE_PERSON,
+		SERVICE_PERSON_TEL, REMARK, CREATE_BY, CREATE_TIME
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_DEVICE_CONTRACT
+		where CONTRACT_ID =
+		#{contractId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_DEVICE_CONTRACT
+		where CONTRACT_ID = #{contractId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="cy.its.device.domain.model.Contract">
+		insert into T_DEVICE_CONTRACT
+		(CONTRACT_ID, CONTRACTOR_ID,
+		CONTRACT_NBR,
+		CONTRACT_NAME, CONTRACT_TYPE,
+		ORG_ID,
+		BID_NBR, CONTRACT_TIME, BID_CONTACT_NAME,
+		BID_CONTACT_TEL,
+		BEGIN_SERVICE_DATE, END_SERVICE_DATE,
+		SERVICE_PERSON,
+		SERVICE_PERSON_TEL, REMARK,
+		CREATE_BY, CREATE_TIME)
+		values
+		(#{contractId,jdbcType=VARCHAR}, #{contractorId,jdbcType=VARCHAR},
+		#{contractNbr,jdbcType=VARCHAR},
+		#{contractName,jdbcType=VARCHAR},
+		#{contractType,jdbcType=CHAR}, #{orgId,jdbcType=VARCHAR},
+		#{bidNbr,jdbcType=VARCHAR}, #{contractTime,jdbcType=TIMESTAMP},
+		#{bidContactName,jdbcType=VARCHAR},
+		#{bidContactTel,jdbcType=VARCHAR},
+		#{beginServiceDate,jdbcType=TIMESTAMP},
+		#{endServiceDate,jdbcType=TIMESTAMP},
+		#{servicePerson,jdbcType=VARCHAR},
+		#{servicePersonTel,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+		#{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.device.domain.model.Contract">
+		insert into T_DEVICE_CONTRACT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="contractId != null">
+				CONTRACT_ID,
+			</if>
+			<if test="contractorId != null">
+				CONTRACTOR_ID,
+			</if>
+			<if test="contractNbr != null">
+				CONTRACT_NBR,
+			</if>
+			<if test="contractName != null">
+				CONTRACT_NAME,
+			</if>
+			<if test="contractType != null">
+				CONTRACT_TYPE,
+			</if>
+			<if test="orgId != null">
+				ORG_ID,
+			</if>
+			<if test="bidNbr != null">
+				BID_NBR,
+			</if>
+			<if test="contractTime != null">
+				CONTRACT_TIME,
+			</if>
+			<if test="bidContactName != null">
+				BID_CONTACT_NAME,
+			</if>
+			<if test="bidContactTel != null">
+				BID_CONTACT_TEL,
+			</if>
+			<if test="beginServiceDate != null">
+				BEGIN_SERVICE_DATE,
+			</if>
+			<if test="endServiceDate != null">
+				END_SERVICE_DATE,
+			</if>
+			<if test="servicePerson != null">
+				SERVICE_PERSON,
+			</if>
+			<if test="servicePersonTel != null">
+				SERVICE_PERSON_TEL,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="createBy != null">
+				CREATE_BY,
+			</if>
+			CREATE_TIME,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="contractId != null">
+				#{contractId,jdbcType=VARCHAR},
+			</if>
+			<if test="contractorId != null">
+				#{contractorId,jdbcType=VARCHAR},
+			</if>
+			<if test="contractNbr != null">
+				#{contractNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="contractName != null">
+				#{contractName,jdbcType=VARCHAR},
+			</if>
+			<if test="contractType != null">
+				#{contractType,jdbcType=CHAR},
+			</if>
+			<if test="orgId != null">
+				#{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="bidNbr != null">
+				#{bidNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="contractTime != null">
+				#{contractTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="bidContactName != null">
+				#{bidContactName,jdbcType=VARCHAR},
+			</if>
+			<if test="bidContactTel != null">
+				#{bidContactTel,jdbcType=VARCHAR},
+			</if>
+			<if test="beginServiceDate != null">
+				#{beginServiceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endServiceDate != null">
+				#{endServiceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="servicePerson != null">
+				#{servicePerson,jdbcType=VARCHAR},
+			</if>
+			<if test="servicePersonTel != null">
+				#{servicePersonTel,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null">
+				#{createBy,jdbcType=VARCHAR},
+			</if>
+			SYSDATE,
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.Contract">
+		update T_DEVICE_CONTRACT
+		<set>
+			<if test="contractorId != null">
+				CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR},
+			</if>
+			<if test="contractNbr != null">
+				CONTRACT_NBR = #{contractNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="contractName != null">
+				CONTRACT_NAME = #{contractName,jdbcType=VARCHAR},
+			</if>
+			<if test="contractType != null">
+				CONTRACT_TYPE = #{contractType,jdbcType=CHAR},
+			</if>
+			<if test="orgId != null">
+				ORG_ID = #{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="bidNbr != null">
+				BID_NBR = #{bidNbr,jdbcType=VARCHAR},
+			</if>
+			<if test="contractTime != null">
+				CONTRACT_TIME = #{contractTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="bidContactName != null">
+				BID_CONTACT_NAME = #{bidContactName,jdbcType=VARCHAR},
+			</if>
+			<if test="bidContactTel != null">
+				BID_CONTACT_TEL = #{bidContactTel,jdbcType=VARCHAR},
+			</if>
+			<if test="beginServiceDate != null">
+				BEGIN_SERVICE_DATE =
+				#{beginServiceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endServiceDate != null">
+				END_SERVICE_DATE = #{endServiceDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="servicePerson != null">
+				SERVICE_PERSON = #{servicePerson,jdbcType=VARCHAR},
+			</if>
+			<if test="servicePersonTel != null">
+				SERVICE_PERSON_TEL =
+				#{servicePersonTel,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null">
+				CREATE_BY = #{createBy,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where CONTRACT_ID = #{contractId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.Contract">
+		update
+		T_DEVICE_CONTRACT
+		set CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR},
+		CONTRACT_NBR = #{contractNbr,jdbcType=VARCHAR},
+		CONTRACT_NAME =
+		#{contractName,jdbcType=VARCHAR},
+		CONTRACT_TYPE =
+		#{contractType,jdbcType=CHAR},
+		ORG_ID = #{orgId,jdbcType=VARCHAR},
+		BID_NBR = #{bidNbr,jdbcType=VARCHAR},
+		CONTRACT_TIME =
+		#{contractTime,jdbcType=TIMESTAMP},
+		BID_CONTACT_NAME =
+		#{bidContactName,jdbcType=VARCHAR},
+		BID_CONTACT_TEL =
+		#{bidContactTel,jdbcType=VARCHAR},
+		BEGIN_SERVICE_DATE =
+		#{beginServiceDate,jdbcType=TIMESTAMP},
+		END_SERVICE_DATE =
+		#{endServiceDate,jdbcType=TIMESTAMP},
+		SERVICE_PERSON =
+		#{servicePerson,jdbcType=VARCHAR},
+		SERVICE_PERSON_TEL =
+		#{servicePersonTel,jdbcType=VARCHAR},
+		REMARK =
+		#{remark,jdbcType=VARCHAR},
+		CREATE_BY = #{createBy,jdbcType=VARCHAR},
+		CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+		where CONTRACT_ID =
+		#{contractId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectContracts" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_DEVICE_CONTRACT U
+		<where>
+			<if test="contractType != null and contractType != '' ">
+				AND U.CONTRACT_TYPE = #{contractType,jdbcType=CHAR}
+			</if>
+			<if test="contractorId != null and contractorId != '' ">
+				AND U.CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+			</if>
+			<if test="contractTimeFrom != null and contractTimeFrom != '' ">
+				 <![CDATA[ AND U.CONTRACT_TIME >= #{contractTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="contractTimeTo != null and contractTimeTo != '' ">
+				 <![CDATA[ AND U.CONTRACT_TIME <= #{contractTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="orgId != null and orgId != '' ">
+				AND U.ORG_ID = #{orgId,jdbcType=VARCHAR}
+			</if>
+			<if test="contractNbr != null and contractNbr != '' ">
+				AND CONTRACT_NBR = #{contractNbr,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="countContracts" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT COUNT(1)
+		FROM T_DEVICE_CONTRACT U
+		<where>
+			<if test="contractType != null and contractType != '' ">
+				AND U.CONTRACT_TYPE = #{contractType,jdbcType=CHAR}
+			</if>
+			<if test="contractorId != null and contractorId != '' ">
+				AND U.CONTRACTOR_ID = #{contractorId,jdbcType=VARCHAR}
+			</if>
+			<if test="contractTimeFrom != null and contractTimeFrom != '' ">
+				 <![CDATA[ AND U.CONTRACT_TIME >= #{contractTimeFrom,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="contractTimeTo != null and contractTimeTo != '' ">
+				 <![CDATA[ AND U.CONTRACT_TIME <= #{contractTimeTo,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="orgId != null and orgId != '' ">
+				AND U.ORG_ID = #{orgId,jdbcType=VARCHAR}
+			</if>
+			<if test="contractNbr != null and contractNbr != '' ">
+				AND CONTRACT_NBR = #{contractNbr,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

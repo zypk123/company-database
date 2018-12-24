@@ -1,0 +1,133 @@
+<div class="easyui-layout" id="manualStateCurrent" >
+	<div data-options="region:'center',border:false">		
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+			cy-url="../html/src/data/trafficMonitor/trafficState/road-state-grid.json"></table>		  
+	</div>
+</div>
+
+<script type="text/javascript">
+    InitPage(["dataDic1"],function($scope){
+        $scope.load=function(){
+            //查询默认数据
+            $scope.$search("deptQueryDm");           
+        };        
+        $scope.optionsDm = {
+            columns: [
+                [
+                    {field:'NAME',title:'路段名称',align:'center', width:25},
+                    {field: 'FROADNAME',title: '起点',align: 'center',width: 20},
+                    {field: 'BROADNAME',title: '终点',align: 'center',width: 20},                                         
+                    {field: 'manual_state',title: '干预状态',align: 'center',formatter:options_roadState, width: 15},
+                    {field: 'cz',title: '操作',align: 'center',formatter: optionsDmCz,width: 20}
+                ]
+            ],onDblClickRow: function (rowIndex, rowData) {
+             	$scope.dataDic1.locationSite(rowData.wkt);
+             }
+        };
+        
+		function options_roadType(value,row,index){        	
+        	return getDictTextByValue(value,$scope.dataDic1.dicAll.roadType);
+        }
+		
+        function options_roadState(value,row,index){
+            return getDictTextColorByValue(value,$scope.dataDic1.dicAll.roadState);
+        }
+        function getDictTextByValue(value,data){
+            for(var i in data){
+                if(value==data[i].value){
+                    return data[i].text;
+                }
+            }
+        }
+        
+         function getDictTextColorByValue(value,data){
+         	var str=$("<span/>");
+            for(var i in data){
+                if(value==data[i].value){
+                	if(value==0){
+                		str.append(data[i].text);
+                	}
+                    else if(value==1){
+                    	str.append(data[i].text).addClass("green");
+                    }
+                    else if(value==2){
+                    	str.append(data[i].text).addClass("orange");
+                    }  
+                    else if(value==3){
+                    	str.append(data[i].text).addClass("red");
+                    }                    
+                }
+            }
+            return $("<span/>").append(str).html();
+        }
+        //操作栏信息三到四
+        function optionsDmCz(value, row, index) {
+          var button1 = $("<a class='button-edit'title='干预' cy-click='manualRoad(" + index + ")'></a>");//定位按钮
+            
+
+            button1.linkbutton({
+                iconCls: "icon-location"
+            });
+            
+            return $("<span/>").append(button1).append(" ").html();
+        }
+  		//弹出历史趋势图
+        $scope.manualRoad=function(index){
+        	//获取所有行数数据
+            var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+            //机构信息注入当前行数据
+            $scope.$setParam("newData", rowDatas[index]);
+        	$scope.$setParam("dicAll", $scope.dataDic1.dicAll);
+        	 
+            $scope.$openDialog("createDialog", {
+                title: "人工干预",
+                height: 400,
+                width: 550,
+                href: "tpls/trafficMonitor/trafficState/manual-state-current-edit.html"
+            }, true);
+        };
+
+
+    });
+    
+       
+</script>
+        <style>
+            #manualStateCurrent .th{
+                width: 60px;
+                text-align: center;
+            }
+            #manualStateCurrent .td{
+                width: 95px;
+                text-align: left;
+            }
+          
+            #manualStateCurrent .datagrid-row{
+            	height:31px;
+            	
+            }      
+          #manualStateCurrent .datagrid-cell{
+          	font-size: 12px;
+          }
+          #manualStateCurrent .red{
+          	color:white;
+          	background: red;
+          	border: solid 2px red;
+          }
+          #manualStateCurrent .orange{
+          	color:white;
+          	background: orange;
+          	border: solid 2px orange;
+          }
+          #manualStateCurrent .green{
+          	color:white;
+          	background: green;
+          	border: solid 2px green;
+          }
+          #manualStateCurrent .gray{
+          	color:white;
+          	background: gray;
+          	border: solid 2px gray;
+          }
+           
+        </style>

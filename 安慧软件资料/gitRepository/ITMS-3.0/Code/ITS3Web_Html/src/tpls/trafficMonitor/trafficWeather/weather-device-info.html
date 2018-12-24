@@ -1,0 +1,654 @@
+<div id="trafficWeatherInfo" class="easyui-layout"  >
+<div id="tabs" class="easyui-tabs" data-options="fit:true">
+    <div title="预警信息" data-options="fit:true" id="alarm">
+    </div>
+    <div title="气象信息" data-options="fit:true" id="info">
+    </div>
+</div>
+
+    <div class="table" id="deviceInfo">
+        <div  class="searchPanel" >
+            <div class="panel_title">基本信息：
+                </div>
+            <div class="tr">
+                <div class="th">
+                    设备名称：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.sbmc></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    所属机构：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.ssjg></span>
+                </div>
+                <div class="th" style="width: 60px">
+                    在线状态：
+                </div>
+                <div class="td" style="width: 40px">
+                    <span cy-name=newData.state></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    数据更新时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.gxsj></span>
+                </div>
+            </div>
+        </div>
+
+        <div  class="searchPanel" id="qxydata" style="display: none" >
+
+            <div class="panel_title">监测数据：
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    温度：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.wd></span>&nbsp;℃&nbsp;
+                </div>
+                <div class="th">
+                    相对湿度：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.xdsd></span>&nbsp;&nbsp;
+                </div>
+                <div class="th">
+                    气压：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.qy></span>&nbsp;Pa&nbsp;
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    风速：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.fs></span>&nbsp;m/s&nbsp;
+                </div>
+                <div class="th">
+                    风向：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.fx></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    降雨类型：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.jylx></span>&nbsp;&nbsp;
+                </div>
+                <div class="th">
+                    降雨量：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.qxyjcsj.jyl></span>&nbsp;mm&nbsp;
+                </div>
+            </div>
+
+        </div>
+        <div  class="searchPanel" id="njdydata" style="display: none">
+
+            <div class="panel_title">监测数据：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    一分钟平均值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.njdyjcsj.yfzpjz></span>&nbsp;m&nbsp;
+                </div>
+                <div class="th">
+                    十分钟平均值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.njdyjcsj.sfzpjz></span>&nbsp;m&nbsp;
+                </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="lgdata" style="display: none">
+
+            <div class="panel_title">监测数据：
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    路面状况：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.lgjcsj.lmzk></span>&nbsp;&nbsp;
+                </div>
+
+                <div class="th">
+                    路面温度：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.lgjcsj.lmwd></span>&nbsp;℃&nbsp;
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    水膜厚度：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.lgjcsj.smhd></span>&nbsp;mm&nbsp;
+                </div>
+
+                <div class="th">
+                    含盐量：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.lgjcsj.hyl></span>&nbsp;ppm&nbsp;
+                </div>
+
+            </div>
+            <div class="tr">
+                <div class="th">
+                    结冰点温度：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.lgjcsj.jbdwd></span>&nbsp;℃&nbsp;
+                </div>
+            </div>
+        </div>
+        <div class="tr">
+            <div class="th">
+            </div>
+            <div class="th">
+            </div>
+            <a  class="easyui-linkbutton button " >信息发布</a>
+            <a  class="easyui-linkbutton button "  cy-click="openDialogChart">气象值趋势</a>
+        </div>
+
+    </div>
+    <div class="table" id="alarmContent" style="display: none">
+        <div  class="searchPanel" id="njdAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">能见度预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    当前值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.njdyj.yfzpjz></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    预警阀值范围：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.njdyj.fzfw></span>
+                </div>
+                <div class="th">
+                    预警级别：
+                </div>
+                <div class="td">
+                    <span  cy-name="newData.alarms.njdyj.yjjb"  cy-filter="getTextByValue"></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.njdyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.njdyj.cxsj></span>
+                </div>
+            </div>
+            <div class="tr">
+                    <div class="th">
+                        是否有效：
+                    </div>
+                    <div class="td">
+                        <label ><input name="njd_check" type="radio" value="2" />有效</label>
+                        <label ><input name="njd_check" type="radio" value="1" />无效</label>
+                        <label ><input name="njd_check" type="radio" value="0" checked="checked"  />未确认</label>
+                    </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="lmwdAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">路面高温预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    当前值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmwdyj.lmwd></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    预警阀值范围：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmwdyj.fzfw></span>
+                </div>
+                <div class="th">
+                    预警级别：
+                </div>
+                <div class="td">
+                    <span cy-name="newData.alarms.lmwdyj.yjjb"  cy-filter="getTextByValue"></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmwdyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmwdyj.cxsj></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否有效：
+                </div>
+                <div class="td">
+                    <label ><input name="lmwd_check" type="radio" value="2" />有效</label>
+                    <label ><input name="lmwd_check" type="radio" value="1" />无效</label>
+                    <label ><input name="lmwd_check" type="radio" value="0" checked="checked"  />未确认</label>
+                </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="smhdAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">水膜厚度预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    当前值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.smhdyj.smhd></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    预警阀值范围：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.smhdyj.fzfw></span>
+                </div>
+                <div class="th">
+                    预警级别：
+                </div>
+                <div class="td">
+                    <span cy-name="newData.alarms.smhdyj.yjjb"  cy-filter="getTextByValue"></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.smhdyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.smhdyj.cxsj></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否有效：
+                </div>
+                <div class="td">
+                    <label ><input name="smhd_check" type="radio" value="2" />有效</label>
+                    <label ><input name="smhd_check" type="radio" value="1" />无效</label>
+                    <label ><input name="smhd_check" type="radio" value="0" checked="checked"  />未确认</label>
+                </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="flAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">大风预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    当前值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.flyj.fldj></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    预警阀值范围：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.flyj.fzfw></span>
+                </div>
+                <div class="th">
+                    预警级别：
+                </div>
+                <div class="td">
+                    <span cy-name="newData.alarms.flyj.yjjb"  cy-filter="getTextByValue"></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.flyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.flyj.cxsj></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否有效：
+                </div>
+                <div class="td">
+                    <label ><input name="fl_check" type="radio" value="2" />有效</label>
+                    <label ><input name="fl_check" type="radio" value="1" />无效</label>
+                    <label ><input name="fl_check" type="radio" value="0" checked="checked"  />未确认</label>
+                </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="byAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">暴雨预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    当前值：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.byyj.jsqd></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    预警阀值范围：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.byyj.fzfw></span>
+                </div>
+                <div class="th">
+                    预警级别：
+                </div>
+                <div class="td">
+                    <span cy-name="newData.alarms.byyj.yjjb" cy-filter="getTextByValue"></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.byyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name="newData.alarms.byyj.cxsj" ></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否有效：
+                </div>
+                <div class="td">
+                    <label ><input name="by_check" type="radio" value="2" />有效</label>
+                    <label ><input name="by_check" type="radio" value="1" />无效</label>
+                    <label ><input name="by_check" type="radio" value="0" checked="checked"  />未确认</label>
+                </div>
+            </div>
+        </div>
+        <div  class="searchPanel" id="lmzkAlarm" style="display: none" >
+            <div class="panel_title" style="color: red;">路面状况预警：
+            </div>
+            <div class="tr">
+                <div class="th">
+                    监测地点：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.azdd></span>
+                </div>
+                <div class="th">
+                    路面状况：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmzkyj.lmzk></span>
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    报警开始时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmzkyj.kssj></span>
+                </div>
+                <div class="th">
+                    已持续时间：
+                </div>
+                <div class="td">
+                    <span cy-name=newData.alarms.lmzkyj.cxsj></span>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    是否有效：
+                </div>
+                <div class="td">
+                    <label ><input name="lmzk_check" type="radio" value="2" />有效</label>
+                    <label ><input name="lmzk_check" type="radio" value="1" />无效</label>
+                    <label ><input name="lmzk_check" type="radio" value="0" checked="checked"  />未确认</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["newData","yjjbData","saveData"],function($scope){
+        var yjjbData;
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+        //页面登录时调用
+        $scope.load = function(){
+            initState();
+        }
+        //根据是否有数据确定div是否显示
+        function initState(){
+            var data=$scope.newData;
+
+            var deviceTab = $scope.$("#tabs").tabs("getTab","气象信息");
+            $scope.$("#tabs").tabs("update",{
+                tab:deviceTab,
+                options:{
+                    content:$scope.$("#deviceInfo")
+                }
+            })
+
+            if(data.qxyjcsj){
+                $scope.$("#qxydata").show();
+            }
+            if(data.njdyjcsj){
+                $scope.$("#njdydata").show();
+            }
+            if(data.lgjcsj){
+                $scope.$("#lgdata").show();
+            }
+           if(data.alarms){
+               if(data.alarms.njdyj){
+                   $scope.$("#njdAlarm").show();
+               }
+               if(data.alarms.lmwdyj){
+                   $scope.$("#lmwdAlarm").show();
+               }
+               if(data.alarms.smhdyj){
+                   $scope.$("#smhdAlarm").show();
+               }
+               if(data.alarms.flyj){
+                   $scope.$("#flAlarm").show();
+               }
+               if(data.alarms.byyj){
+                   $scope.$("#byAlarm").show();
+               }
+               if(data.alarms.lmzkyj){
+                   $scope.$("#lmzkAlarm").show();
+               }
+               $scope.$("#alarmContent").show();
+               var alarmTab = $scope.$("#tabs").tabs("getTab","预警信息");
+               $scope.$("#tabs").tabs("update",{
+                   tab:alarmTab,
+                   options:{
+                       content:$scope.$("#alarmContent")
+                   }
+               })
+           }
+            else{
+               $scope.$("#tabs").tabs("close",0);
+           }
+        }
+
+        //根据值显示数据字典中的标签,并字体颜色
+        $scope.getTextByValue=function(value){
+             if(value){
+                 var text;
+                 for(var i in $scope.yjjbData){
+                     if(value==$scope.yjjbData[i].value){
+                         text=$scope.yjjbData[i].text;
+                     }
+                 }
+                 var str="<span style='color:";
+                 switch (value){
+                     case "1":
+                         str+="red'>";
+                         break;
+                     case "2":
+                         str+="orange'>";
+                         break;
+                     case "3":
+                         str+="yellowgreen'>";
+                         break;
+                     case "4":
+                         str+="blue'>";
+                         break;
+                     default :
+                         str+="'>";
+                         break;
+                 }
+                 str+=text+"</span>";
+                 return str;
+             }
+        };
+
+        $scope.openDialogChart = function() {
+            $scope.$setParam("qxsbbm",$scope.newData.qxsbbm);
+            if($scope.newData.lxmc=="气象仪"){
+                $scope.$openDialog("createDialog", {
+                    title: "气象仪历史数据",
+                    height: 500,
+                    width: 800,
+                    href: "tpls/trafficMonitor/trafficWeather/qxy-history-chart.html"
+                }, true);
+            }
+            else if($scope.newData.lxmc=="路感"){
+                $scope.$openDialog("createDialog", {
+                    title: "路感历史数据",
+                    height: 500,
+                    width: 800,
+                    href: "tpls/trafficMonitor/trafficWeather/lg-history-chart.html"
+                }, true);
+            }
+            else if($scope.newData.lxmc=="能见度仪"){
+                $scope.$openDialog("createDialog", {
+                    title: "能见度仪历史数据",
+                    height: 500,
+                    width: 800,
+                    href: "tpls/trafficMonitor/trafficWeather/njdy-history-chart.html"
+                }, true);
+            }
+
+        };
+    });
+</script>
+
+<style type="text/css">
+    #trafficWeatherInfo .th{
+        width : 90px;
+        text-align: right;
+    }
+    #trafficWeatherInfo .td{
+        width : 130px;
+    }
+    #qxydata .td{
+        width : 50px;
+    }
+    #njdydata .th{
+        width:100px;
+    }
+    #njdydata .td{
+        width:80px;
+    }
+    #lgdata .td{
+        width:80px;
+    }
+
+    #trafficWeatherInfo span[cy-name]{
+        color:#0000ff;
+    }
+</style>

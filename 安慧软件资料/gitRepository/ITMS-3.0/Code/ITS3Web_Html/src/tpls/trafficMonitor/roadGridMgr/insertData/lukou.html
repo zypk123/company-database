@@ -1,0 +1,99 @@
+<div id="lukou" class="easyui-layout"  >
+    <form cy-form="newData">
+            <div class="table" >
+                <div class="tr">
+                    <div class="th">
+                        路口代码：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox" name="lkdm">
+                    </div>
+                    <div class="th">
+                        路口名称：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox"name="name" >
+                    </div>
+                    </div>
+
+
+                <div class="tr">
+                    <div class="th">
+                        路口类型：
+                    </div>
+                    <div class="td">
+                        <select  class="easyui-combobox"  style="width: 135px" name="lklx">
+                            <option value="0">--请选择--</option>
+                            <option value="1">三枝分叉口</option>
+                            <option value="2">四枝分叉口</option>
+                            <option value="3">多枝分叉口</option>
+                            <option value="4">环形交叉口</option>
+                            <option value="5">匝道口</option>
+
+                            </select>
+                    </div>
+                    <div class="th">
+                        行政区划：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox"name="xzqh" >
+                    </div>
+                </div>
+
+                <div class="tr">
+                    <div class="th">
+                        所属道路名称：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox" name="ssdlmc">
+                    </div>
+                    <div class="th">
+                        相交道路名称：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox" name="xjdlmc" >
+                    </div>
+                </div>
+
+                <div class="tr">
+                    <div class="th">
+                        管辖机构：
+                    </div>
+                    <div class="td">
+                        <input  class="easyui-textbox" name="gxjg">
+                    </div>
+                </div>
+
+                <div class="tr">
+                </div>
+
+
+                <div class="tr"style="text-align: center; margin-right: 50px">
+                        <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                        <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                </div>
+            </div>
+        </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+          $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #lukou .th{
+        width : 90px;
+        text-align: right;
+    }
+    #lukou .td{
+        width : 150px;
+    }
+
+</style>

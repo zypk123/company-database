@@ -1,0 +1,105 @@
+<div class="easyui-layout" id="regionCurrent" >
+	<table id="dmData" cy-datagrid="optionsDm" cy-querydata="deptQueryDm"
+	cy-url="trafficSituation/mapRoad/selectAllForGrid"></table>
+</div>
+
+<script type="text/javascript">
+	InitPage(["locationSite1", "childScopeList"], function($scope) {
+		//$scope.$getDefaultCode(["070"]);
+		$scope.load = function() {
+			//查询默认数据
+			$scope.$search("deptQueryDm");
+			$scope.childScopeList.refreshRegion = $scope.refreshRegion;
+		};
+		$scope.refreshRegion = function(rowData) {
+			var dataList = $scope.$('#dmData').datagrid("getRows");
+			for (var index in dataList) {
+				if (rowData.regionalId == dataList[index].regionalId) {
+					$.extend(dataList[index], rowData);
+					$scope.$('#dmData').datagrid('updateRow', {
+						index : index,
+						row : dataList[index]
+					});
+				}
+			}
+			//缓存数据
+			$scope.$eventProxy();
+		};
+
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'regionalName',
+				title : '区间名称',
+				align : 'left',
+				width : 50
+			}, {
+				field : 'directionName',
+				title : '方向',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'avgSpeed',
+				title : '平均速度',
+				align : 'center',
+				width : 20
+			}, {
+				field : 'cz',
+				title : '详情',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 15
+			}]],
+			onDblClickRow : function(rowIndex, rowData) {
+				if (rowData.wkt) {
+					$scope.locationSite1(rowData.wkt);
+				} else {
+					$.messager.alert("提示", "无法获取位置信息！");
+				}
+			},
+			pagination : false,
+			nowrap : false
+		};
+
+		//操作栏信息三到四
+		function optionsDmCz(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='showInfo(" + index + ")'></a>");
+			//定位按钮
+
+			button1.linkbutton({
+				iconCls : "icon-detail",
+				plain : true
+			});
+			return $("<span/>").append(button1).html();
+		}
+
+
+		$scope.showInfo = function(index) {
+			//获取所有行数数据
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows;
+			//机构信息注入当前行数据
+			$scope.$setParam("newData", rowDatas[index]);
+			$scope.$openDialog("showDialog", {
+				title : "区间详情",
+				height : 200,
+				width : 490,
+				href : "tpls/trafficMonitor/trafficFlow/region-flow-info.html"
+			});
+		};
+		// //方向direction的格式化
+		// function options_direction(value, row, index) {
+			// return $scope.$getCodeName("070", value);
+		// }
+
+	}); 
+</script>
+<style>
+	#regionCurrent .th {
+		width: 60px;
+		text-align: center;
+	}
+	#regionCurrent .td {
+		width: 100px;
+		text-align: left;
+	}
+
+</style>

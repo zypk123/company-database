@@ -1,0 +1,41 @@
+<div class="easyui-layout" id="count-ip-login-top10">
+	<div data-options="region:'north',border:false,height:41">
+		<span style="font-size: 18px;font-weight: bold;padding-top:2px;padding-left:5px">
+			本月IP登录次数排名
+		</span>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table cy-datagrid="options" cy-querydata="queryData" cy-url="sysCfg/userAction/countIpLoginCurrentMonthTop10"></table>
+	</div>
+</div>
+
+<script>
+	InitPage([],function($scope){
+		$scope.options = {
+			columns : [[
+				{field : 'index',title:'名次',width:10,align:'center',formatter:function(value,row,index){
+					return index + 1;
+				}},
+				{field : 'countInfo',title:'IP',align:'center',width:10},
+				{field : 'count',title:'次数',align:'center',width:10}
+			]],
+			pagination : false,
+			scrollbarSize : 0
+		};
+		
+		$scope.load = function(){
+			$scope.$search("queryData");
+		};
+	});
+	
+</script>
+
+<style>
+	#count-ip-login-top10 .datagrid-header,
+	#count-ip-login-top10 .datagrid-htable,
+	#count-ip-login-top10 .datagrid-header-row, 
+	#count-ip-login-top10 .datagrid-row{
+		height : 28px;
+	}
+	
+</style>

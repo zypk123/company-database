@@ -1,0 +1,81 @@
+<div class="easyui-layout">
+	<div data-options="region:'center',border:false">
+		<table id="roleGrid" cy-datagrid="options"></table>
+	</div>
+	<div data-options="region:'south',border:false,height:40">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" cy-click="chooseRole" data-options="iconCls:'icon-ok'">确定</a>
+			<a class="easyui-linkbutton" cy-click="$closeSelf" data-options="iconCls:'icon-cancel'">取消</a>
+		</div>
+	</div>
+</div>
+
+<script>
+	InitPage(["roleList","choose","initData"],function($scope){
+		$scope.$getDefaultCode(['119','018']);
+		
+		var checkList = [];
+		
+		
+		
+		//初始化datagrid
+		$scope.options = {
+        	pagination:false,
+            columns: [
+                [
+                    {field: 'roleId ', checkbox: true, width: 100},
+                    {field: 'roleName', title: '角色名称',  width: 100},
+                    {field: 'roleRemark', title: '备注', width: 100}
+                ]
+            ],
+            checkbox:true,
+            onCheck : function(index,row){
+            	checkEvent();
+            },
+            onCheckAll : function(){
+            	checkEvent();
+            },
+            onUncheck : function(){
+            	checkEvent();
+            },
+            onUncheckAll : function(){
+            	checkEvent();
+            },
+            onLoadSuccess : function(){
+            	//选择已选行
+            	if($scope.initData){
+            		var rows = $scope.$("#roleGrid").datagrid("getRows");
+            		var roleIds = $scope.initData.split(",");
+            		for(var index in roleIds){
+            			var item = roleIds[index];
+            			for(var i in rows){
+            				var row = rows[i];
+            				if(row.roleId == item){
+            					$scope.$("#roleGrid").datagrid("checkRow",i);
+            				}
+            			}
+            		}
+            	}
+            }
+        };
+        
+        var checkEvent = function(){
+        	checkList = $scope.$("#roleGrid").datagrid("getChecked");
+        };
+        
+        /**
+         * 加载完毕后方法 
+         */
+        $scope.load = function(){
+        	$scope.$("#roleGrid").datagrid("loadData",$scope.roleList);
+        };
+        
+        /**
+         * 确认选择 
+         */
+        $scope.chooseRole = function(){
+        	$scope.$excute($scope.choose,checkList);
+        };
+	});
+	
+</script>

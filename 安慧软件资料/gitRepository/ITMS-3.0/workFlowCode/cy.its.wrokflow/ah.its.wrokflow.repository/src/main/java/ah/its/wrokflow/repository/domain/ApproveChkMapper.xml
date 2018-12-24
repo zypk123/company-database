@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ah.its.wrokflow.repository.domain.ApproveChkMapper" >
+  <resultMap id="BaseResultMap" type="ah.its.wrokflow.repository.dao.ApproveChk" >
+    <id column="APPROVAL_ID" property="approvalId" jdbcType="VARCHAR" />
+    <result column="APPLY_ID" property="applyId" jdbcType="VARCHAR" />
+    <result column="APPLY_TYPE" property="applyType" jdbcType="VARCHAR" />
+    <result column="APPROVAL_USER" property="approvalUser" jdbcType="VARCHAR" />
+    <result column="APPROVAL_COMMENTS" property="approvalComments" jdbcType="VARCHAR" />
+    <result column="APPROVAL_RESULT" property="approvalResult" jdbcType="VARCHAR" />
+    <result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+    <result column="APPROVAL_TIME" property="approvalTime" jdbcType="TIMESTAMP" />
+    <result column="EXTENSION" property="extension" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    APPROVAL_ID, APPLY_ID, APPLY_TYPE, APPROVAL_USER, APPROVAL_COMMENTS, APPROVAL_RESULT, 
+    TASK_ID, APPROVAL_TIME, EXTENSION
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_WF_CHECK_RECORD
+    where APPROVAL_ID = #{approvalId,jdbcType=VARCHAR}
+  </select>
+   <select id="queryDataByApproveId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <!-- SELECT 
+	      A.FIRST_ approvalUser, 
+	      APPROVAL_COMMENTS approvalComments, 
+	      APPROVAL_RESULT approvalResult,
+	      APPROVAL_TIME  approvalTime 
+    FROM T_WF_CHECK_RECORD  T 
+    LEFT JOIN ACT_ID_USER  A  ON  T.APPROVAL_USER = A.ID_ 
+    where T.APPLY_ID = #{approvalId,jdbcType=VARCHAR} 
+    order  by approvalTime  desc  -->
+    
+    SELECT 
+        A.FIRST_ approvalUser, 
+        APPROVAL_COMMENTS approvalComments, 
+        APPROVAL_RESULT approvalResult,
+        APPROVAL_TIME  approvalTime,
+        e.name_ groupName
+    FROM T_WF_CHECK_RECORD  T 
+    LEFT JOIN ACT_ID_USER  A  ON  T.APPROVAL_USER = A.ID_ 
+    left join ACT_ID_MEMBERSHIP C ON C.USER_ID_= a.ID_  
+    LEFT JOIN  ACT_ID_GROUP  e ON e.ID_  = c.group_id_
+    where T.APPLY_ID = #{approvalId,jdbcType=VARCHAR} 
+    order  by approvalTime  desc 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_WF_CHECK_RECORD
+    where APPROVAL_ID = #{approvalId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="ah.its.wrokflow.repository.dao.ApproveChk" >
+    insert into T_WF_CHECK_RECORD (APPROVAL_ID, APPLY_ID, APPLY_TYPE, 
+      APPROVAL_USER, APPROVAL_COMMENTS, APPROVAL_RESULT, 
+      TASK_ID, APPROVAL_TIME, EXTENSION
+      )
+    values (#{approvalId,jdbcType=VARCHAR}, #{applyId,jdbcType=VARCHAR}, #{applyType,jdbcType=VARCHAR}, 
+      #{approvalUser,jdbcType=VARCHAR}, #{approvalComments,jdbcType=VARCHAR}, #{approvalResult,jdbcType=VARCHAR}, 
+      #{taskId,jdbcType=VARCHAR}, #{approvalTime,jdbcType=TIMESTAMP}, #{extension,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="ah.its.wrokflow.repository.dao.ApproveChk" >
+    insert into T_WF_CHECK_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="approvalId != null" >
+        APPROVAL_ID,
+      </if>
+      <if test="applyId != null" >
+        APPLY_ID,
+      </if>
+      <if test="applyType != null" >
+        APPLY_TYPE,
+      </if>
+      <if test="approvalUser != null" >
+        APPROVAL_USER,
+      </if>
+      <if test="approvalComments != null" >
+        APPROVAL_COMMENTS,
+      </if>
+      <if test="approvalResult != null" >
+        APPROVAL_RESULT,
+      </if>
+      <if test="taskId != null" >
+        TASK_ID,
+      </if>
+      <if test="approvalTime != null" >
+        APPROVAL_TIME,
+      </if>
+      <if test="extension != null" >
+        EXTENSION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="approvalId != null" >
+        #{approvalId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyId != null" >
+        #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyType != null" >
+        #{applyType,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalUser != null" >
+        #{approvalUser,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalComments != null" >
+        #{approvalComments,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalResult != null" >
+        #{approvalResult,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null" >
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalTime != null" >
+        #{approvalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extension != null" >
+        #{extension,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="ah.its.wrokflow.repository.dao.ApproveChk" >
+    update T_WF_CHECK_RECORD
+    <set >
+      <if test="applyId != null" >
+        APPLY_ID = #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyType != null" >
+        APPLY_TYPE = #{applyType,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalUser != null" >
+        APPROVAL_USER = #{approvalUser,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalComments != null" >
+        APPROVAL_COMMENTS = #{approvalComments,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalResult != null" >
+        APPROVAL_RESULT = #{approvalResult,jdbcType=VARCHAR},
+      </if>
+      <if test="taskId != null" >
+        TASK_ID = #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalTime != null" >
+        APPROVAL_TIME = #{approvalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="extension != null" >
+        EXTENSION = #{extension,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where APPROVAL_ID = #{approvalId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ah.its.wrokflow.repository.dao.ApproveChk" >
+    update T_WF_CHECK_RECORD
+    set APPLY_ID = #{applyId,jdbcType=VARCHAR},
+      APPLY_TYPE = #{applyType,jdbcType=VARCHAR},
+      APPROVAL_USER = #{approvalUser,jdbcType=VARCHAR},
+      APPROVAL_COMMENTS = #{approvalComments,jdbcType=VARCHAR},
+      APPROVAL_RESULT = #{approvalResult,jdbcType=VARCHAR},
+      TASK_ID = #{taskId,jdbcType=VARCHAR},
+      APPROVAL_TIME = #{approvalTime,jdbcType=TIMESTAMP},
+      EXTENSION = #{extension,jdbcType=VARCHAR}
+    where APPROVAL_ID = #{approvalId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,280 @@
+<!--图片预览页面-->
+<div id="viewImage" class="easyui-layout">
+	<div id="imageViewArea" data-options="region:'center',border:false,cls:'imageView'">
+    	
+    </div>
+    <div id="imageListArea" data-options="region:'south',border:false,height:50" style="border-top:solid 1px #cccccc">
+
+    </div>
+</div>
+<div>
+	<!-- 图片放大功能菜单-->
+    <div id="imageMenu" style="margin-left:-1000">
+        <div>圆形放大镜</div>
+        <div>大号</div>
+        <div>中号</div>
+        <div>小号</div>
+        <div>保存图片</div>
+    </div>
+</div>
+<script>
+	InitPage(["images"],function($scope){
+		var menu,currentHeight,currentWidth,currentImage;
+		if($scope.images && $scope.images.length > 0){
+			//将第一张图片展示在center区域中央
+			appendImage($scope.images[0]);
+			//展示图片列表
+			showImageList();
+			//初始化右键菜单
+			menu = $scope.$("#imageMenu").menu({
+			   	onClick: function (item) {
+			   		switch (item.text) {
+			   			case "圆形放大镜": changeRetinaType(this, item); break;
+			   			case "方形放大镜": changeRetinaType(this, item); break;
+			   			case "大号": changeSize(this, item, "l"); break;
+			   			case "中号": changeSize(this, item, "m"); break;
+			   			case "小号": changeSize(this, item, "s"); break;
+			   			case "保存图片": saveImage(this, item); break;
+			   		}
+			   	}
+		   });
+		}else{
+			var imageDiv = $("<span><img/><span>");
+			var image = imageDiv.find("img");
+			image.attr("src","themes/default/images/noPic.jpg").hide();
+			$scope.$("#imageViewArea").panel("body").html("").append(imageDiv);
+			image.bind("load",function(){
+				//图片
+				currentHeight = image.height();
+				currentWidth = image.width();
+				var maxWidth = $scope.$("#imageViewArea").width();
+				var maxHeight = $scope.$("#imageViewArea").height();
+				currentImage = image;
+				$(this).show();
+				fitSize(maxWidth,maxHeight);
+			});
+			$scope.$("#viewImage").layout("remove", "south");
+		}
+		//设置自定义大小事件
+		$scope.$("#imageViewArea").panel({
+			onResize : function(width,height){
+				fitSize(width,height);
+			}
+		});
+		//添加新的图片
+		function appendImage(src){
+			var imageDiv = $("<span><img/><span class='retina_square'></span><span>");
+			var image = imageDiv.find("img");
+			image.attr("src",src).hide();
+			$scope.$("#imageViewArea").panel("body").html("").append(imageDiv);
+			image.bind("load",function(){
+				var that = this;
+				//图片
+				currentHeight = image.height();
+				currentWidth = image.width();
+				var maxWidth = $scope.$("#imageViewArea").width();
+				var maxHeight = $scope.$("#imageViewArea").height();
+				currentImage = image;
+				fitSize(maxWidth,maxHeight);
+				$(this).show();
+				var retina = $(this).siblings("span");
+				//添加放大镜事件
+				$(that).parent().mousemove(function(e){
+					mousemove(that,e);
+				}).mouseenter(function(e){
+					retina.css({
+						backgroundImage : "url('" + $(that).attr("src") + "')"	
+					});
+					retina.stop(true,true).fadeIn('fast');
+					mousemove(that,e);
+				}).mouseleave(function(){
+					retina.stop(true,true).fadeOut('fast');
+				}).bind("contextmenu",function(e){
+					e.preventDefault();
+				    menu.menu('show', {
+						left: e.pageX,
+						top: e.pageY
+					}).data({
+						image : $(that),
+						retina : retina
+					});
+				}).dblclick(function(e){
+					var imageDiv = $("<span><img src='" + $(that).attr("src") + "'/><span>");
+					//双击打开大图预览
+					$scope.$openDialog("#fullScreenWindow",{
+						title :  "图片预览",
+						height : "98%",
+						width : "98%",
+						content : imageDiv
+					});
+				});
+			}).bind("selectstart",function(){//解决双击选中的视觉效果
+				return false;	
+			});
+		}
+		//自适应图片大小
+		function fitSize(maxWidth,maxHeight){
+			if(maxWidth < currentWidth || maxHeight < currentHeight){
+				//图片超出了范围才进行调整
+				if(currentHeight/maxHeight > currentWidth/maxWidth){
+					currentImage.width("").height(maxHeight);
+					$scope.$("#imageViewArea").width(maxWidth).height(maxHeight);
+				}else{
+					currentImage.height("").width(maxWidth);	
+					$scope.$("#imageViewArea").height(maxHeight).width(maxWidth);
+				}
+			}
+		}
+		//展示图片列表
+		function showImageList() {
+		    if ($scope.images.length > 1) {
+		        for (var index in $scope.images) {
+		            var imgList = $("<div class='imageList'><span><img  src=' " + $scope.images[index] + " '/></span></div>");
+		            $scope.$("#imageListArea").append(imgList);
+		            imgList.find("img").load(function () {
+		                var width = $(this).width();
+		                var height = $(this).height();
+		                if (width > height) {
+		                    $(this).width("100%");
+		                } else {
+		                    $(this).height("100%");
+		                }
+		            });
+		            imgList.click(function () {
+		                var src = $(this).find("img").attr("src");
+		                appendImage(src);
+		            });
+		        }
+		    } else {
+		        //不显示列表区
+		        $scope.$("#viewImage").layout("remove", "south");
+		    }
+		}
+
+		//切换放大镜类型
+		function changeRetinaType(menu,item){
+			var image = $(menu).data("image");
+			var retina = $(menu).data("retina");
+			if(retina.hasClass("retina_square")){
+				retina.removeClass("retina_square").addClass("retina_circle");
+				retina.attr("style","");
+				$(menu).menu("setText",{
+					target : item.target,
+					text : "方形放大镜"
+				});
+			}else{
+				retina.removeClass("retina_circle").addClass("retina_square");
+				retina.attr("style","");
+				$(menu).menu("setText",{
+					target : item.target,
+					text : "圆形放大镜"
+				});
+			}
+		}
+		//切换大小
+		function changeSize(menu,item,size){
+			var retina = $(menu).data("retina");
+			var retinaSize;
+			if(retina.hasClass("retina_circle")){
+				//圆形放大镜
+				switch(size){
+					case "l" : retinaSize={width:180,height:180,"border-radius":90};break;
+					case "m" : retinaSize={width:150,height:150,"border-radius":75};break;
+					case "s" : retinaSize={width:120,height:120,"border-radius":60};break;
+				}
+			}else{
+				//方形放大镜
+				switch(size){
+					case "l" : retinaSize={width:180,height:110,"border-radius":0};break;
+					case "m" : retinaSize={width:160,height:90,"border-radius":0};break;
+					case "s" : retinaSize={width:140,height:70,"border-radius":0};break;
+				}	
+			}
+			retina.css(retinaSize);
+		}
+		//保存图片
+		function saveImage(menu,item){
+			var image = $(menu).data("image");
+			oPop = window.open(image.attr("src"),"","width=1, height=1,");   
+			/*for( ;oPop.document.readyState != "complete" ; ){ 
+				if(oPop.document.readyState == "complete"){
+					break; 
+				}
+			}
+			oPop.document.execCommand("SaveAs"); 
+			oPop.close();   */
+		}
+
+		function mousemove(that,e){
+			//距离图片边距
+			var left = (e.pageX - $(that).offset().left);
+			var top = (e.pageY - $(that).offset().top);
+			//距离容器边距
+			var parent = $scope.$("#imageViewArea");
+			var positionTop = (e.pageY - parent.offset().top);
+			var positionLeft = (e.pageX -  parent.offset().left);
+			var retina = $(that).siblings("span");
+			if(left<0 || top<0 || left > currentWidth || top > currentHeight){
+				if(!retina.is(':animated')){
+					$(this).trigger('mouseleave');
+				}
+				return false;
+			}
+			var positionX = currentWidth/$(that).width()*left - retina.width()/2;
+			var positionY = currentHeight/$(that).height()*top - retina.height()/2;
+			retina.css({
+				left : positionLeft - retina.width()/2,
+				top	: positionTop - retina.height()/2,
+				backgroundPosition : positionX*-1 +'px '+positionY*-1+'px'
+			});
+			var retinaLeft = retina.offset().left;
+			var imageLeft = $(that).offset().left;
+			var retinaTop = retina.offset().top;
+			var imageTop = $(that).offset().top;
+			var imagePositionTop = imageTop - parent.offset().top;
+			var imagePositionLeft = imageLeft - parent.offset().left;
+			//控制不出左边线
+			if(retinaLeft < imageLeft){
+				retina.css("left",imagePositionLeft);
+			}
+			//控制不出右边线
+			if(retinaLeft + retina.width() > imageLeft + $(that).width()){
+				retina.css("left",$(that).width() - retina.width() + imagePositionLeft);
+			}
+			//控制不出上边线
+			if(retinaTop < imageTop){
+				retina.css("top",imagePositionTop);
+			}
+			//控制不出下边线
+			if(retinaTop + retina.height() > imageTop + $(that).height()){
+				retina.css("top", $(that).height() - retina.height() + imagePositionTop);
+			}	
+		}
+	});
+</script>
+<style>
+#viewImage #imageViewArea {
+	display:table-cell;
+	vertical-align:middle;
+	text-align:center;
+}
+#viewImage .imageView{
+	display:table
+}
+#imageListArea .imageList{
+	height:	49px;
+	width : 49px;
+	float:left;
+	margin:0 5px;
+	display:table;
+}
+#imageListArea .imageList span{
+	cursor:pointer;
+	display:table-cell;
+	height:100%;
+	width:100%;
+	vertical-align:middle;
+	text-align:center;
+}
+
+</style>

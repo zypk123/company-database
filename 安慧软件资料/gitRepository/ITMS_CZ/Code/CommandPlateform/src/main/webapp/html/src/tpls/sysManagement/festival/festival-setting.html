@@ -1,0 +1,286 @@
+<div class="easyui-layout">
+	<div data-options="region:'north'" style="height: 120px;">
+		<form cy-form="festivalForm">
+			<div class="searchPanel">
+				<div class="panel_title">
+					查询条件
+				</div>
+				<div id="festivalMessage" class="table">
+					<div class="tr">
+						<div class="th">
+							所属年份：
+						</div>
+						<div class="td">
+							<input class="easyui-combobox" id="year" name="year"
+							data-options="valueField:'value',textField:'text'"
+							style="width: 135px;" />
+						</div>
+						<div class="th">
+							节假日：
+						</div>
+						<div class="td">
+							<input name="festivalType" cy-code="020" class="easyui-combobox" />
+						</div>
+						<div class="td" style="width: 70px;">
+							<a class="easyui-linkbutton button-search"
+							data-options="iconCls:'icon-search'" cy-click="searchData"
+							style="width: 60px; float: right;">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="linkbutton_toolbar">
+			<a class="easyui-linkbutton button-main"
+			data-options="iconCls:'icon-add'" cy-click="addDm">添加</a><a
+			class="easyui-linkbutton " data-options="iconCls:'icon-remove'"
+			cy-click="deleteDm">删除</a>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<table id="dmData" cy-datagrid="optionsDm" cy-querydata="festivalForm"
+		cy-url="sysCfg/sysFestivalAction/selectAllFestivalList"></table>
+	</div>
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+		$scope.$getDefaultCode(['020']);
+		//鍒濆鍖栧姞杞芥暟鎹�
+		$scope.load = function() {
+			var yearData = [];
+			var currentYear = new Date().getFullYear();
+			for (var i = currentYear+1; i >= 2000; i--) {
+				yearData.push({
+					"value" : i,
+					"text" : i + "年"
+				});
+			}
+			$scope.$('#year').combobox('loadData', yearData);
+			$scope.$updateData("festivalForm");
+			$scope.$search("festivalForm");
+		};
+		$scope.searchData = function() {
+			$scope.$updateData("festivalForm");
+			$scope.$search("festivalForm");
+		},
+		//鍒楄〃灞曠ず
+		$scope.optionsDm = {
+			columns : [[{
+				field : 'festivalId',
+				checkbox : true,
+				align : 'center',
+				width : 50
+			}, {
+				field : 'year',
+				title : '所属年份',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'festivalType',
+				title : '节假日',
+				align : 'center',
+				formatter : festivalType,
+				width : 30
+			}, {
+				field : 'startDate',
+				title : '起始日期',
+				align : 'center',
+				width : 30
+			}, {
+				field : 'endDate',
+				title : '截止日期',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'remark',
+				title : '备注',
+				align : 'center',
+				width : 50
+			}, {
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : optionsDmCz,
+				width : 40
+			}]],
+			pagination : false
+			/*             //鍙屽嚮鏌ョ湅璇︽儏
+			 onDblClickRow : function(rowIndex, rowData) {
+			 $scope.$setParam("checkedData", rowData);
+			 $scope.$setParam("code", code);
+			 $scope.$openDialog("checked", {
+			 title : "浠ｇ爜淇℃伅璇︽儏",
+			 width : 550,
+			 height : 250,
+			 href : "tpls/sysManagement/systemCode/system-code-check.html"
+			 });
+			 }, */
+		};
+
+		function festivalType(value, row, index) {
+			var festivalType = $scope.$getCodeName("020", value);
+			return festivalType;
+		}
+
+		/* function formatter(value, rowData, index) {
+		if (value == null || value == '') {
+		return year = '--';
+		} else {
+		return new Date(value).format("yyyy") + "年";
+		}
+		} */
+
+		//鎿嶄綔鏍忎俊鎭�
+		function optionsDmCz(value, row, index) {
+
+			var menu;
+
+			if (row.editable == 0) {
+				menu = true;
+			} else {
+				menu = false;
+			}
+
+			//缂栬緫鎸夐挳
+			var button1 = $("<a id='a' class='button-edit' cy-click='editDm(" + index + ")'></a>");
+			//鍒犻櫎鎸夐挳
+			var button2 = $("<a class='button-remove' cy-click='removeDm(" + index + ")'></a>");
+			if (menu) {
+				button1.removeAttr("cy-click");
+			}
+
+			button1.linkbutton({
+				iconCls : "icon-edit-solid",
+				plain : true,
+				disabled : menu
+			});
+			button2.linkbutton({
+				iconCls : "icon-remove-solid",
+				plain : true
+			});
+			return $("<span/>").append(button1).append(" ").append(button2).append(" ").html();
+		}
+
+
+		$scope.addDm = function() {
+			$scope.$openDialog("addDialog", {
+				title : "节假日新增",
+				width : 500,
+				height : 240,
+				href : "tpls/sysManagement/festival/festival-info-input.html?type=add"
+			}, true);
+
+			$scope.$setParam("saveData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/sysFestivalAction/createFestival",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if (data == "success") {
+							$scope.$getDialog("addDialog").dialog("close");
+							$scope.$search("festivalForm");
+						} else if (data == "nbrError") {
+							$.messager.confirm("提示", "该节假日配置已在系统中存在！");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.confirm("提示", "添加失败！");
+					}
+				});
+			});
+		};
+
+		$scope.editDm = function(index) {
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows[index];
+			$scope.$setParam("codeData", rowDatas);
+			$scope.$setParam("editData", function(data) {
+				$scope.$ajaxRequest({
+					url : $scope.$restRoot + "sysCfg/sysFestivalAction/updateFestival",
+					params : data,
+					method : "post",
+					success : function(data) {
+						if (data == "success") {
+							$scope.$getDialog("editDialog").dialog("close");
+							$scope.$search("festivalForm");
+						} else if (data == "nbrError") {
+							$.messager.confirm("提示", "该节假日配置已在系统中存在！");
+						}
+					},
+					fail : function(errMsg) {
+						$.messager.alert("提示", "编辑失败！");
+					}
+				});
+			});
+			$scope.$openDialog("editDialog", {
+				title : "节假日修改",
+				width : 500,
+				height : 240,
+				href : "tpls/sysManagement/festival/festival-info-input.html?type=edit"
+			}, true);
+		};
+
+		$scope.removeDm = function(index) {
+			var rowDatas = $scope.$("#dmData").datagrid("getData").rows[index];
+			var festivalId = rowDatas.festivalId;
+			$.messager.confirm("提示", "你确定要删除吗?", function(r) {
+				if (r) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/sysFestivalAction/removeFestival",
+						params : {
+							festivalId : festivalId
+						},
+						memoth : "post",
+						success : function(data) {
+							if (data == "success") {
+								$scope.$search("festivalForm");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "删除失败！");
+						}
+					});
+				}
+			});
+		};
+
+		$scope.deleteDm = function() {
+			var rows = $scope.$("#dmData").datagrid("getChecked");
+			var ids = "";
+			for (var index in rows) {
+				ids += rows[index].festivalId + ",";
+			}
+			removeFestival(ids.substring(0, ids.length - 1));
+		};
+		//批量删除节日
+		var removeFestival = function(ids) {
+			if (ids == "") {
+				$.messager.alert("提示", "至少选择一条记录!");
+				return;
+			}
+			$.messager.confirm("提示", "确定删除?", function(r) {
+				if (r) {
+					$scope.$ajaxRequest({
+						url : $scope.$restRoot + "sysCfg/sysFestivalAction/deleteFestival",
+						params : {
+							ids : ids
+						},
+						success : function(data) {
+							if (data == "success") {
+								$scope.$search("festivalForm");
+							}
+						},
+						fail : function(errMsg) {
+							$.messager.alert("提示", "批量删除失败！");
+						}
+					});
+				}
+			});
+		};
+	}); 
+</script>
+<style type="text/css">
+	#festivalMessage .th {
+		text-align: right;
+		width: 100px;
+	}
+</style>

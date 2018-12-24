@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.RoadMapper">
+	<resultMap id="BaseResultMap" type="cy.its.road.domain.model.road.Road">
+		<id column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+		<result column="ROAD_CODE" property="roadCode" jdbcType="VARCHAR" />
+		<result column="ROAD_NAME" property="roadName" jdbcType="VARCHAR" />
+		<result column="ROAD_ALIAS_NAME" property="roadAliasName" jdbcType="VARCHAR" />		
+		<result column="ROAD_TYPE" property="roadType" jdbcType="VARCHAR" />
+		<result column="VIO_CONFIRM_MODEL" property="vioConfirmModel"
+			jdbcType="CHAR" />
+		<result column="DISTRICT_CODE_LIST" property="districtCodeList"
+			jdbcType="VARCHAR" />
+		<result column="DISTRICT_MILEAGE" property="districtMileage"
+			jdbcType="VARCHAR" />
+		<result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+		<result column="ROAD_ADMIN_GRADE" property="roadAdminGrade"
+			jdbcType="VARCHAR" />
+		<result column="IS_ONE_DIRECTION" property="isOneDirection"
+			jdbcType="CHAR" />
+		<result column="UP_DIRECTION" property="upDirection" jdbcType="VARCHAR"/>
+		<result column="DOWN_DIRECTION" property="downDirection"
+			jdbcType="VARCHAR" />
+		<result column="ROAD_STRUCTURE" property="roadStructure"
+			jdbcType="CHAR" />
+		<result column="ROAD_LANDSCAPE" property="roadLandscape"
+			jdbcType="CHAR" />
+		<result column="ROAD_LINEAR" property="roadLinear" jdbcType="CHAR" />
+		<result column="ROAD_ISOLATION" property="roadIsolation"
+			jdbcType="CHAR" />
+		<result column="CENTRAL_ISOLATION" property="centralIsolation"
+			jdbcType="CHAR" />
+		<result column="PROTECT_FACILITIES" property="protectFacilities"
+			jdbcType="CHAR" />
+		<result column="ROAD_BEGIN_MILEAGE" property="roadBeginMileage"
+			jdbcType="VARCHAR" />
+		<result column="ROAD_END_MILEAGE" property="roadEndMileage"
+			jdbcType="VARCHAR" />
+		<result column="ROAD_RECORD_STATUS" property="roadRecordStatus"
+			jdbcType="CHAR" />
+		<result column="ROAD_BEGIN_NAME" property="roadBeginName"
+			jdbcType="VARCHAR" />
+		<result column="ROAD_END_NAME" property="roadEndName" jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="ROAD_LENGTH" property="roadLength" jdbcType="DECIMAL" />
+		<result column="DIRECTION_TYPE" property="directionType" jdbcType="VARCHAR" />
+		<result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ROAD_ID, ROAD_CODE, ROAD_NAME,ROAD_ALIAS_NAME, ROAD_TYPE, VIO_CONFIRM_MODEL,
+		DISTRICT_CODE_LIST,
+		DISTRICT_MILEAGE, ORG_ID, ROAD_ADMIN_GRADE, IS_ONE_DIRECTION, UP_DIRECTION,
+		DOWN_DIRECTION,
+		ROAD_STRUCTURE, ROAD_LANDSCAPE, ROAD_LINEAR, ROAD_ISOLATION, CENTRAL_ISOLATION,
+		PROTECT_FACILITIES,
+		ROAD_BEGIN_MILEAGE, ROAD_END_MILEAGE, ROAD_RECORD_STATUS, ROAD_BEGIN_NAME, ROAD_END_NAME,
+		UPDATE_TIME,ROAD_LENGTH,DIRECTION_TYPE,ORG_PRIVILEGE_CODE
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_ROAD
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from T_SYS_ROAD
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</delete>
+	<delete id="removeByPrimaryKey" parameterType="java.util.Map">
+
+    	delete from T_SYS_ROAD where ROAD_ID in 
+
+    	<foreach item="id" collection="idList" open="(" separator="," close=")">
+              #{id}
+           </foreach>
+    </delete>
+	<insert id="insert" parameterType="cy.its.road.domain.model.road.Road">
+		insert into T_SYS_ROAD (ROAD_ID, ROAD_CODE, ROAD_NAME,ROAD_ALIAS_NAME,
+		ROAD_TYPE, VIO_CONFIRM_MODEL, DISTRICT_CODE_LIST,
+		DISTRICT_MILEAGE, ORG_ID, ROAD_ADMIN_GRADE,
+		IS_ONE_DIRECTION, UP_DIRECTION, DOWN_DIRECTION,
+		ROAD_STRUCTURE, ROAD_LANDSCAPE, ROAD_LINEAR,
+		ROAD_ISOLATION, CENTRAL_ISOLATION, PROTECT_FACILITIES,
+		ROAD_BEGIN_MILEAGE, ROAD_END_MILEAGE, ROAD_RECORD_STATUS,
+		ROAD_BEGIN_NAME, ROAD_END_NAME, UPDATE_TIME,ROAD_LENGTH,DIRECTION_TYPE,ORG_PRIVILEGE_CODE
+		)
+		values (#{roadId,jdbcType=VARCHAR}, #{roadCode,jdbcType=VARCHAR},
+		#{roadName,jdbcType=VARCHAR},#{roadAliasName,jdbcType=VARCHAR},
+		#{roadType,jdbcType=VARCHAR}, #{vioConfirmModel,jdbcType=CHAR},
+		#{districtCodeList,jdbcType=VARCHAR},
+		#{districtMileage,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR},
+		#{roadAdminGrade,jdbcType=VARCHAR},
+		#{isOneDirection,jdbcType=CHAR}, #{upDirection,jdbcType=VARCHAR}, #{downDirection,jdbcType=VARCHAR},
+		#{roadStructure,jdbcType=CHAR}, #{roadLandscape,jdbcType=CHAR},
+		#{roadLinear,jdbcType=CHAR},
+		#{roadIsolation,jdbcType=CHAR}, #{centralIsolation,jdbcType=CHAR},
+		#{protectFacilities,jdbcType=CHAR},
+		#{roadBeginMileage,jdbcType=VARCHAR},
+		#{roadEndMileage,jdbcType=VARCHAR}, #{roadRecordStatus,jdbcType=CHAR},
+		#{roadBeginName,jdbcType=VARCHAR}, #{roadEndName,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{roadLength,jdbcType=DECIMAL},#{directionType,jdbcType=VARCHAR},#{orgPrivilegeCode,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cy.its.road.domain.model.road.Road">
+		insert into T_SYS_ROAD
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roadId != null">
+				ROAD_ID,
+			</if>
+			<if test="roadCode != null">
+				ROAD_CODE,
+			</if>
+			<if test="roadName != null">
+				ROAD_NAME,
+			</if>
+			<if test="roadAliasName != null">
+				ROAD_ALIAS_NAME,
+			</if>
+			<if test="roadType != null">
+				ROAD_TYPE,
+			</if>
+			<if test="vioConfirmModel != null">
+				VIO_CONFIRM_MODEL,
+			</if>
+			<if test="districtCodeList != null">
+				DISTRICT_CODE_LIST,
+			</if>
+			<if test="districtMileage != null">
+				DISTRICT_MILEAGE,
+			</if>
+			<if test="orgId != null">
+				ORG_ID,
+			</if>
+			<if test="roadAdminGrade != null">
+				ROAD_ADMIN_GRADE,
+			</if>
+			<if test="isOneDirection != null">
+				IS_ONE_DIRECTION,
+			</if>
+			<if test="upDirection != null">
+				UP_DIRECTION,
+			</if>
+			<if test="downDirection != null">
+				DOWN_DIRECTION,
+			</if>
+			<if test="roadStructure != null">
+				ROAD_STRUCTURE,
+			</if>
+			<if test="roadLandscape != null">
+				ROAD_LANDSCAPE,
+			</if>
+			<if test="roadLinear != null">
+				ROAD_LINEAR,
+			</if>
+			<if test="roadIsolation != null">
+				ROAD_ISOLATION,
+			</if>
+			<if test="centralIsolation != null">
+				CENTRAL_ISOLATION,
+			</if>
+			<if test="protectFacilities != null">
+				PROTECT_FACILITIES,
+			</if>
+			<if test="roadBeginMileage != null">
+				ROAD_BEGIN_MILEAGE,
+			</if>
+			<if test="roadEndMileage != null">
+				ROAD_END_MILEAGE,
+			</if>
+			<if test="roadRecordStatus != null">
+				ROAD_RECORD_STATUS,
+			</if>
+			<if test="roadBeginName != null">
+				ROAD_BEGIN_NAME,
+			</if>
+			<if test="roadEndName != null">
+				ROAD_END_NAME,
+			</if>
+				ROAD_LENGTH,
+			<if test="directionType != null">
+				DIRECTION_TYPE,
+			</if>
+			<if test="orgPrivilegeCode != null">
+				ORG_PRIVILEGE_CODE,
+			</if>
+			UPDATE_TIME,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roadId != null">
+				#{roadId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadCode != null">
+				#{roadCode,jdbcType=VARCHAR},
+			</if>
+			<if test="roadName != null">
+				#{roadName,jdbcType=VARCHAR},
+			</if>			
+			<if test="roadAliasName != null">
+				#{roadAliasName,jdbcType=VARCHAR},
+			</if>
+			<if test="roadType != null">
+				#{roadType,jdbcType=VARCHAR},
+			</if>
+			<if test="vioConfirmModel != null">
+				#{vioConfirmModel,jdbcType=CHAR},
+			</if>
+			<if test="districtCodeList != null">
+				#{districtCodeList,jdbcType=VARCHAR},
+			</if>
+			<if test="districtMileage != null">
+				#{districtMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				#{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadAdminGrade != null">
+				#{roadAdminGrade,jdbcType=VARCHAR},
+			</if>
+			<if test="isOneDirection != null">
+				#{isOneDirection,jdbcType=CHAR},
+			</if>
+			<if test="upDirection != null">
+				#{upDirection,jdbcType=VARCHAR},
+			</if>
+			<if test="downDirection != null">
+				#{downDirection,jdbcType=VARCHAR},
+			</if>
+			<if test="roadStructure != null">
+				#{roadStructure,jdbcType=CHAR},
+			</if>
+			<if test="roadLandscape != null">
+				#{roadLandscape,jdbcType=CHAR},
+			</if>
+			<if test="roadLinear != null">
+				#{roadLinear,jdbcType=CHAR},
+			</if>
+			<if test="roadIsolation != null">
+				#{roadIsolation,jdbcType=CHAR},
+			</if>
+			<if test="centralIsolation != null">
+				#{centralIsolation,jdbcType=CHAR},
+			</if>
+			<if test="protectFacilities != null">
+				#{protectFacilities,jdbcType=CHAR},
+			</if>
+			<if test="roadBeginMileage != null">
+				#{roadBeginMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="roadEndMileage != null">
+				#{roadEndMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="roadRecordStatus != null">
+				#{roadRecordStatus,jdbcType=CHAR},
+			</if>
+			<if test="roadBeginName != null">
+				#{roadBeginName,jdbcType=VARCHAR},
+			</if>
+			<if test="roadEndName != null">
+				#{roadEndName,jdbcType=VARCHAR},
+			</if>
+				#{roadLength,jdbcType=DECIMAL},
+			<if test="directionType != null">
+				#{directionType,jdbcType=VARCHAR},
+			</if>
+			<if test="orgPrivilegeCode != null">
+				#{orgPrivilegeCode,jdbcType=VARCHAR},
+			</if>
+			SYSDATE,
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.road.Road">
+		update T_SYS_ROAD
+		<set>
+			<if test="roadCode != null">
+				ROAD_CODE = #{roadCode,jdbcType=VARCHAR},
+			</if>
+			<if test="roadName != null">
+				ROAD_NAME = #{roadName,jdbcType=VARCHAR},
+			</if>
+			<if test="roadAliasName != null">
+				ROAD_ALIAS_NAME = #{roadAliasName,jdbcType=VARCHAR},
+			</if>
+			<if test="roadType != null">
+				ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+			</if>
+			<if test="vioConfirmModel != null">
+				VIO_CONFIRM_MODEL = #{vioConfirmModel,jdbcType=CHAR},
+			</if>
+			<if test="districtCodeList != null">
+				DISTRICT_CODE_LIST = #{districtCodeList,jdbcType=VARCHAR},
+			</if>
+			<if test="districtMileage != null">
+				DISTRICT_MILEAGE = #{districtMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null">
+				ORG_ID = #{orgId,jdbcType=VARCHAR},
+			</if>
+			<if test="roadAdminGrade != null">
+				ROAD_ADMIN_GRADE = #{roadAdminGrade,jdbcType=VARCHAR},
+			</if>
+			<if test="isOneDirection != null">
+				IS_ONE_DIRECTION = #{isOneDirection,jdbcType=CHAR},
+			</if>
+			<if test="upDirection != null">
+				UP_DIRECTION = #{upDirection,jdbcType=VARCHAR},
+			</if>
+			<if test="downDirection != null">
+				DOWN_DIRECTION = #{downDirection,jdbcType=VARCHAR},
+			</if>
+			<if test="roadStructure != null">
+				ROAD_STRUCTURE = #{roadStructure,jdbcType=CHAR},
+			</if>
+			<if test="roadLandscape != null">
+				ROAD_LANDSCAPE = #{roadLandscape,jdbcType=CHAR},
+			</if>
+			<if test="roadLinear != null">
+				ROAD_LINEAR = #{roadLinear,jdbcType=CHAR},
+			</if>
+			<if test="roadIsolation != null">
+				ROAD_ISOLATION = #{roadIsolation,jdbcType=CHAR},
+			</if>
+			<if test="centralIsolation != null">
+				CENTRAL_ISOLATION = #{centralIsolation,jdbcType=CHAR},
+			</if>
+			<if test="protectFacilities != null">
+				PROTECT_FACILITIES = #{protectFacilities,jdbcType=CHAR},
+			</if>
+			<if test="roadBeginMileage != null">
+				ROAD_BEGIN_MILEAGE = #{roadBeginMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="roadEndMileage != null">
+				ROAD_END_MILEAGE = #{roadEndMileage,jdbcType=VARCHAR},
+			</if>
+			<if test="roadRecordStatus != null">
+				ROAD_RECORD_STATUS = #{roadRecordStatus,jdbcType=CHAR},
+			</if>
+			<if test="roadBeginName != null">
+				ROAD_BEGIN_NAME = #{roadBeginName,jdbcType=VARCHAR},
+			</if>
+			<if test="roadEndName != null">
+				ROAD_END_NAME = #{roadEndName,jdbcType=VARCHAR},
+			</if>
+				ROAD_LENGTH = #{roadLength,jdbcType=DECIMAL},
+			<if test="directionType != null">
+				DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+			</if>
+			<if test="orgPrivilegeCode != null">
+				ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME = SYSDATE,
+		</set>
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.road.Road">
+		update T_SYS_ROAD
+		set ROAD_CODE = #{roadCode,jdbcType=VARCHAR},
+		ROAD_NAME = #{roadName,jdbcType=VARCHAR},
+		ROAD_ALIAS_NAME = #{roadAliasName,jdbcType=VARCHAR},
+		ROAD_TYPE = #{roadType,jdbcType=VARCHAR},
+		VIO_CONFIRM_MODEL = #{vioConfirmModel,jdbcType=CHAR},
+		DISTRICT_CODE_LIST = #{districtCodeList,jdbcType=VARCHAR},
+		DISTRICT_MILEAGE = #{districtMileage,jdbcType=VARCHAR},
+		ORG_ID = #{orgId,jdbcType=VARCHAR},
+		ROAD_ADMIN_GRADE = #{roadAdminGrade,jdbcType=VARCHAR},
+		IS_ONE_DIRECTION = #{isOneDirection,jdbcType=CHAR},
+		UP_DIRECTION = #{upDirection,jdbcType=VARCHAR},
+		DOWN_DIRECTION = #{downDirection,jdbcType=VARCHAR},
+		ROAD_STRUCTURE = #{roadStructure,jdbcType=CHAR},
+		ROAD_LANDSCAPE = #{roadLandscape,jdbcType=CHAR},
+		ROAD_LINEAR = #{roadLinear,jdbcType=CHAR},
+		ROAD_ISOLATION = #{roadIsolation,jdbcType=CHAR},
+		CENTRAL_ISOLATION = #{centralIsolation,jdbcType=CHAR},
+		PROTECT_FACILITIES = #{protectFacilities,jdbcType=CHAR},
+		ROAD_BEGIN_MILEAGE = #{roadBeginMileage,jdbcType=VARCHAR},
+		ROAD_END_MILEAGE = #{roadEndMileage,jdbcType=VARCHAR},
+		ROAD_RECORD_STATUS = #{roadRecordStatus,jdbcType=CHAR},
+		ROAD_BEGIN_NAME = #{roadBeginName,jdbcType=VARCHAR},
+		ROAD_END_NAME = #{roadEndName,jdbcType=VARCHAR},
+		UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+		ROAD_LENGTH = #{roadLength,jdbcType=DECIMAL},
+		DIRECTION_TYPE = #{directionType,jdbcType=VARCHAR},
+		ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+		where ROAD_ID = #{roadId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectRoads" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		<!-- from (SELECT V.*, ROWNUM RN -->
+		FROM T_SYS_ROAD V
+		<where>			
+			<if test="roadCode != null and roadCode != '' ">
+				AND ROAD_CODE = #{roadCode,jdbcType=VARCHAR}
+			</if>
+			<if test="roadName != null and roadName != '' ">
+				AND (ROAD_NAME like '%' || #{roadName,jdbcType=VARCHAR} || '%' OR
+				     ROAD_ALIAS_NAME like '%' || #{roadName,jdbcType=VARCHAR} || '%')
+			</if>
+			<if test="roadType != null and roadType != '' ">
+				AND ROAD_TYPE = #{roadType,jdbcType=VARCHAR}
+			</if>
+			<if test="districtCode != null and districtCode != '' ">
+				AND DISTRICT_CODE_LIST like '%' || #{districtCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+				AND ',' || ORG_PRIVILEGE_CODE like '%' || #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+		
+		<!-- <where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where> -->
+	</select>
+	
+	<select id="selectAllRoads" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_ROAD 
+		order by update_time desc
+	</select>
+</mapper>

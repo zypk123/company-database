@@ -1,0 +1,349 @@
+<div id="deviceHomeDev" class="easyui-layout">
+
+	<div data-options="region:'north',border:false">
+		<div style="margin-bottom: 5px">
+			<a style="font-size: 15px;text-decoration: underline;letter-spacing: 5px;">设备概况</a>
+		</div>
+	</div>
+	<div data-options="region:'center',border:false">
+		<div class="easyui-panel" data-options="cls:'gridPanel',height:'100%',width:'99%',border:false">
+			<table id="deviceMainGrd" style="height:auto" data-options="border:false"></table>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false">
+		<div id="deviceUnnormalPie" class="pie">
+
+		</div>
+		<div id="deviceCertiPie" class="pie">
+
+		</div>
+		<div id="deviceBugPie" class="pie">
+
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+	InitPage([], function($scope) {
+
+		//定时刷新时间间隔，单位分钟
+		var intervalTime = 2;
+		$scope.load = function() {
+			//引入echarts需要的js
+			require.config({
+				paths : {
+					echarts : 'frameworks/echarts/js'
+				}
+			});
+			getDevGenalSituation();
+		};
+		var hasCerti = true;
+		var setTimeoutId = null;
+		function getDevGenalSituation() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituationForBigTeam",
+				params : {
+
+				},
+				success : function(result) {
+					//getParms(result.forGrdColumn, result.forGrdData);
+					initGrid(result);
+					hasCerti = result.hasCerti;
+					if (!hasCerti)//如果不含有检定率，则不显示检定率图
+					{
+						$scope.$('#deviceCertiPie').addClass('pieHide');
+					}
+					// //subscribeDevGenral();//不采用订阅方案
+					setTimeoutId = window.setTimeout(getDevGenalSituationIntervalTime, intervalTime * 60 * 1000);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function initGrid(result) {
+			var colums = [];
+			colums.push({
+				field : 'devTypeName',
+				title : '设备类型',
+				halign : 'center',
+				width : 100,
+				styler : function(value, row, index) {
+					if (row.isAllTotalRow == "1") {
+						return 'background-color:#ffffff;';
+					}
+				},
+				align : 'center'
+			});
+			colums.push({
+				field : 'devName',
+				title : '设备名称',
+				halign : 'center',
+				width : 150,
+				//formatter : getPercentFormat,
+				align : 'center'
+			});
+			colums.push({
+				field : 'onlineName',
+				title : '在线情况',
+				halign : 'center',
+				width : 100,
+				//formatter : getPercentFormat,
+				align : 'center'
+			});
+			if (result.hasCerti) {
+				colums.push({
+					field : 'certiName',
+					title : '检定情况',
+					halign : 'center',
+					width : 100,
+					//formatter : getPercentFormat,
+					align : 'center'
+				});
+			}
+			colums.push({
+				field : 'bugName',
+				title : '故障情况',
+				halign : 'center',
+				width : 100,
+				//formatter : getPercentFormat,
+				align : 'center'
+			});
+			$scope.$('#deviceMainGrd').datagrid({
+				data : result.forGrdData,
+				columns : [colums],
+				striped : true,
+				border : true,
+				pagination : false,
+				rowStyler : function(index, row) {
+					if (row.isTotalRow == "1") {
+						return 'background-color:#FFCC00;font-weight: bold';
+					}
+					if (row.isAllTotalRow == "1") {
+						return 'background-color:#99FF66;font-weight: bold';
+					}
+				},
+				onLoadSuccess : function(data) {
+					//debugger;
+					var devTypeGrp = result.devForTypeNum;
+					var merges = [];
+					var indexTemp = 0;
+					for (var type in devTypeGrp) {
+						merges.push({
+							index : indexTemp,
+							rowspan : devTypeGrp[type]
+						});
+						indexTemp += devTypeGrp[type];
+					}
+
+					for (var i = 0; i < merges.length; i++)
+
+						$('#deviceMainGrd').datagrid('mergeCells', {
+
+							index : merges[i].index,
+							field : 'devTypeName',
+							rowspan : merges[i].rowspan
+						});
+					showUnnormalDevice(result);
+					showCertiDevice(result);
+					showBugDevice(result);
+
+				}
+			});
+		}
+
+
+		$scope.close = function() {
+			window.clearTimeout(setTimeoutId);
+		};
+		$scope.leave = function() {
+			window.clearTimeout(setTimeoutId);
+		};
+		$scope.enter = function() {
+			getDevGenalSituationIntervalTime();
+		};
+
+		function getDevGenalSituationIntervalTime() {
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "device/deviceHome/getDevGenalSituationForBigTeamInterval",
+				params : {
+					"isNeetCerti" : hasCerti
+				},
+				success : function(result) {
+					$scope.$('#deviceMainGrd').datagrid("loadData", result.forGrdData);
+					showUnnormalDevice(result);
+					showCertiDevice(result);
+					showBugDevice(result);
+					setTimeoutId = window.setTimeout(getDevGenalSituationIntervalTime, intervalTime * 60 * 1000);
+				},
+				fail : function(errMsg) {
+					console.log(errMsg);
+				}
+			});
+		}
+
+		function showUnnormalDevice(data) {
+			var testData = [];
+			if (data) {
+				var online = data.onlineNumTotal;
+				var offline = data.offlineNumTotal;
+				if (online == 0 && offline == 0) {
+					showNoPieData("#deviceUnnormalPie", "在线设备：0个   离线设备：0个");
+					return;
+				}
+				testData.push({
+					value : online,
+					name : "在线"
+				});
+				testData.push({
+					value : offline,
+					name : "离线"
+				});
+			}
+			showPieData("#deviceUnnormalPie", "在线情况", testData);
+		}
+
+		function showBugDevice(data) {
+			var testData = [];
+			if (data) {
+				var online = data.onlineNumTotal;
+				var bug = data.bugNumTotal;
+				var nomarl = online - bug;
+				if (bug == 0 && nomarl == 0) {
+					showNoPieData("#deviceBugPie", "正常设备：0个   故障设备：0个");
+					return;
+				}
+				testData.push({
+					value : nomarl,
+					name : "正常"
+				});
+				testData.push({
+					value : bug,
+					name : "故障"
+				});
+			}
+			showPieData("#deviceBugPie", "故障情况", testData);
+		}
+
+		function showCertiDevice(data) {
+			if (!hasCerti)//如果不含有检定率，则不显示检定率图
+			{
+				return;
+			}
+			var testData = [];
+			if (data) {
+				var haveCerti = data.hasCertiNumTotal;
+				var noCerti = data.notCertiNumTotal;
+				if (haveCerti == 0 && noCerti == 0) {
+					showNoPieData("#deviceCertiPie", "无数据");
+					return;
+				}
+				testData.push({
+					value : haveCerti,
+					name : "已检定"
+				});
+				testData.push({
+					value : noCerti,
+					name : "未检定"
+				});
+			}
+			showPieData("#deviceCertiPie", "检定情况", testData);
+		}
+
+		function showPieData(domId, title, data) {
+			if (data.length != 0) {
+				createPie($scope.$(domId)[0], title, data);
+			} else {
+				showNoPieData(domId, "无数据");
+			}
+		}
+
+		/**
+		 *饼状图无数据时候显示内容
+		 */
+		function showNoPieData(domId, content) {
+			$scope.$(domId).addClass('pieText');
+			$scope.$(domId).text(content);
+		}
+
+		/**
+		 *创建pie
+		 */
+		function createPie(dom, name, data) {
+			require(['echarts', 'echarts/chart/line', // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+			'echarts/chart/bar', 'echarts/chart/pie'], function(ec) {
+				var pieObj = ec.init(dom, 'macarons');
+				//macarons
+				var optionPie = {
+					title : {
+						text : name,
+						padding : [15, 0, 0, 15]
+					},
+					tooltip : {
+						show : true
+					},
+					series : [{
+						name : name,
+						type : 'pie',
+						radius : ['0', '60%'],
+						itemStyle : {
+							normal : {
+								label : {
+									show : true,
+									formatter : '{b}：\n{c}个'
+								},
+								labelLine : {
+									show : true,
+									length : 5
+								}
+							},
+							emphasis : {
+								label : {
+									//show : true,
+									position : 'center',
+									textStyle : {
+										fontSize : '20',
+										fontWeight : 'bold'
+									}
+								}
+							}
+						},
+						data : data
+					}]
+				};
+				pieObj.setOption(optionPie);
+			});
+		}
+
+	});
+
+</script>
+<style>
+	#deviceHomeDev {
+		height: 100%;
+		width: 100%
+	}
+
+	#deviceHomeDev .pie {
+		width: 350px;
+		height: 260px;
+		float: left;
+		/*border: solid 1px silver;*/
+	}
+	#deviceHomeDev .pieHide {
+		display: none
+	}
+	#deviceHomeDev .pieText {
+		text-align: center;
+		color: red;
+		font-size: 15px;
+		vertical-align: middle;
+	}
+	#deviceHomeDev .gridPanel {
+		height: 100%;
+		width: 99%;
+		margin-left: 1%;
+	}
+
+</style>

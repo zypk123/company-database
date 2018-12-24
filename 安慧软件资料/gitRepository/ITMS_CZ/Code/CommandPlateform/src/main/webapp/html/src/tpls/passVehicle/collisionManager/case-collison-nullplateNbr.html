@@ -1,0 +1,215 @@
+<div id="case-collison-nullPlateNbr" style="width: 100%;">
+	<!-- 保存按钮 -->
+   <!--  <div style="padding: 8px">
+        <a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="savePhoto">保存</a>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="destroyTab4">关闭</a>
+    </div> 
+    -->
+    <div id="container" style="overflow-x:auto; overflow-y:hidden;height:305px;" class="cy-imageContent">
+            <div class="table" style="margin-top: 5px">
+                <!-- 实景图片区域 -->
+                <div class="tr">
+                    <div class="td" style="width: 100%;" id="photoTd">
+                        <div id="photoDiv" >
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="tr">
+                    <div class="td" style="width: 300%">
+                        <div id="photoDiv2">
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+    </div>
+    
+    <div id="container2" style="overflow-x:auto;height:300px; overflow-y: hidden;" class="cy-imageContent">
+            <div class="table" style="margin-top: 5px">
+                <div class="tr">
+                    <div class="td" style="width: 100%" id="photoTd2">
+                        <div id="photoDiv2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+    InitPage(['data','searchProgress'],function($scope) {
+    	var area1Count;
+    	var area2Count;
+    	
+        $scope.load = function() {
+        	refreshData($scope.data);
+		};
+		
+		
+		/**
+		 * 刷新数据
+		 */
+		var refreshData = function(params,callback) {
+			params.pageSize = 20;
+			params.pageNumber=1;
+			params.totalCount = 0;
+			area1Count = 0;
+			area2Count = 0;
+			$scope.searchProgress();
+			//获取后台数据
+			$scope.$ajaxRequest({
+				/* url : "../src/tpls/passVehicle/collisionManager/data.json", */
+				url : $scope.$restRoot +"/vehTrack/areaCollision/areaCollisionAnaly",
+				params : params,
+				success : function(data) {
+					//更新数据
+					updatePassData(data);
+					//滚动条滚动到顶部
+					$scope.$("#passInfoContent").scrollTop(0);
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+					$scope.$excute(callback,data);
+				},
+				fail : function(){
+					$.messager.progress("close");
+					$.messager.alert("提示","服务器繁忙");
+				}
+			});
+		};
+		
+		/**
+		 * 更新数据 
+		 */
+		var updatePassData = function(data){
+			
+			if(!data.result.rows || data.result.rows.length == 0){
+				//数据加载完毕，关闭进度条
+				$.messager.progress("close");
+				if(data.result.errMsgs){
+					$.messager.alert("提示",data.result.errMsgs);
+					return false;
+				}
+				$.messager.alert("提示","没有数据");
+				return false;
+			}
+			//更新数据
+			var allRows = data.result.rows;
+			var row;
+			var areaList1;
+			var areaList2;
+			var info1 = $("<div class='info' style='float: left'><span>案件1</span></div>");
+			var info2 = $("<div class='info' style='float: left'><span>案件2</span></div>");
+			 $scope.$("#photoDiv").append(info1);
+			 $scope.$("#photoDiv2").append(info2);
+			for(var i =0;i<allRows.length;i++){
+				 row = allRows[i];
+				 areaList1 = row.detailList[$scope.data.siteCode1]
+	      		 areaList2 = row.detailList[$scope.data.siteCode2]
+	      		 if(areaList1 !=null &&areaList1.length>0){
+					for(var k= 0;k<areaList1.length;k++){
+						createDbImg(areaList1[k].image_url_path,'area1');
+					}
+				}
+				if(areaList2 !=null&&areaList2.length>0){
+				 for(var j= 0;j<areaList2.length;j++){
+					createDbImg(areaList2[j].image_url_path,'area2');
+				}
+				}
+			}
+			//重新加载延迟图片
+			$scope.$parseLazyImage();
+		};
+		
+		//查看创建图片
+		function createDbImg(url,area){
+		    var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+		    var img = $('<img style="width: 270px;height: 250px" />') 
+            img.attr("cy-src", $scope.$servletRoot + "/PassImage?imageUrl=" + url);
+		    img.bind("click",function(){
+		    	$scope.lookPic(url);
+		    });
+            imgDiv.append(img);
+            var deleteButton = $("<a class='deleteButton' style='margin-top:-450px;'></a>").linkbutton({
+					iconCls : "icon-cancel-solid",
+					plain : true
+				});
+            deleteButton.click(function() {
+            	//把这个div删除
+				$(this).parent().remove();
+				var src = $(this).siblings("img").attr("src");
+            });
+            imgDiv.append(deleteButton);
+            
+            if("area1" == area){
+            	if(area1Count >2){
+	             var width1 = $scope.$("#photoTd").css("width");
+	             width1 =parseInt(width1)+280
+	             $scope.$("#photoTd").css("width",width1+"px");
+            	}
+           		 $scope.$("#photoDiv").append(imgDiv);
+           		area1Count++;
+            }else{
+            	if(area2Count >2){
+	             var width2 = $scope.$("#photoTd2").css("width");
+	             width2 =parseInt(width2)+280
+	             $scope.$("#photoTd2").css("width",width2+"px");
+            	}
+            	 $scope.$("#photoDiv2").append(imgDiv);
+            	 area2Count++;
+            }
+		};
+		
+		/**
+		 * 查看图片
+		 */
+		$scope.lookPic = function(url) {
+			$scope.$setParam("url", $scope.$servletRoot + "/PassImage?imageUrl="+url);
+	    	$scope.$openDialog("bigImage",{
+							title : "图片放大镜",
+							width : 600,
+							height : 550,
+							href : 'tpls/passVehicle/collisionManager/case-collison-nullPlateDetai.html'
+			}, true);
+		};
+    });
+</script>
+<style>
+    #case-collison-nullPlateNbr .imgDiv{
+        float: left;
+        border: dashed 1px silver;
+        margin: 5px;
+        height: 250px;
+        width: 270px
+    }
+    #case-collison-nullPlateNbr .info{
+        float: left;
+        border: dashed 1px silver;
+        margin: 5px;
+        height: 250px;
+        width: 50px;
+        text-align: center
+    }
+    #case-collison-nullPlateNbr .info span{
+        text-align: center;
+        margin-top: 120px;
+        display: block;
+    }
+    #case-collison-nullPlateNbr .tr{
+       height: 260px;
+    }
+    #case-collison-nullPlateNbr .th{
+        width : 80px;
+        text-align:right;
+    }
+    #case-collison-nullPlateNbr .td{
+        width : 208px;
+    }
+	#case-collison-nullPlateNbr .deleteButton{
+		margin-top:-450px;
+		position: relative;
+		margin-left : -35px;
+		margin-top: 5px;
+		z-index: 100000
+	}
+
+</style>

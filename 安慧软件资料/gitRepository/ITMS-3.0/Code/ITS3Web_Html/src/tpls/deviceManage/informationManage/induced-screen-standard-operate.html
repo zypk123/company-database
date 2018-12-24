@@ -1,0 +1,91 @@
+<div id="inducedScreenStandard" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData">
+            <div class="table">
+                <div class="tr">
+                    <div class="th">规格名称：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name="Spec_Name"/>
+                    </div>
+                    <div class="th">诱导屏类型：</div>
+                    <div class="td">
+                        <input id="Led_Type" class="easyui-combobox" name="Led_Type"/>
+                    </div>
+                    <div class="th">发光类型：</div>
+                    <div class="td">
+                        <input id="Light_Mode" class="easyui-combobox" name="Light_Mode"/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">颜色分类：</div>
+                    <div class="td">
+                        <input id="Color_Mode" class="easyui-combobox" name="Color_Mode"/>
+                    </div>
+                    <div class="th">外观形状：</div>
+                    <div class="td">
+                        <input id="shape" class="easyui-combobox" name="shape"/>
+                    </div>
+                    <div class="th">像素点高：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">像素点宽：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">屏宽：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                    <div class="th">屏高：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" name=""/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">备注：</div>
+                    <div class="td">
+                        <input class="easyui-textbox" data-options="multiline:true" name="REMARK" style="width:627px;height:90px"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false" style="text-align: center">
+        <a class="easyui-linkbutton button-save" iconCls="icon-save" cy-click="save">保存</a>
+        <a class="easyui-linkbutton button-close" iconCls="icon-close"  cy-click="closeSelf">取消</a>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     * closeSelf ：关闭弹出框的方法
+     * formData ：页面数据 ，Object格式，easyui中datagrid行数据
+     * dicts ：数据字典，object类型，key：code，value：字典项数组
+     */
+    InitPage(["closeSelf","formData","dicts"],function($scope){
+        $scope.$("#Led_Type").combobox("loadData",$scope.dicts["999"]);//诱导屏类型
+        $scope.$("#Light_Mode").combobox("loadData",$scope.dicts["998"]);//发光类型
+        $scope.$("#Color_Mode").combobox("loadData",$scope.dicts["997"]);//颜色分类
+        $scope.$("#shape").combobox("loadData",$scope.dicts["996"]);//外观形状
+        //保存
+        $scope.save = function(){
+            //刷新数据
+            $scope.$updateData("newData");
+            alert("保存成功！");
+        };
+    });
+</script>
+<style type="text/css">
+    #inducedScreenStandard .th{
+        width: 100px;
+        text-align: right;
+    }
+    #inducedScreenStandard .td{
+        width: 140px;
+    }
+    #inducedScreenStandard .td>input[class^='easyui-']{
+        width: 140px;
+    }
+</style>

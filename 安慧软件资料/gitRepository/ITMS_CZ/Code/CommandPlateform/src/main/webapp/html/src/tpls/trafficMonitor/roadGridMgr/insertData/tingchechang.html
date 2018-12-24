@@ -1,0 +1,109 @@
+<div id="tingchechang" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+                <div class="th">
+                    停车场代码：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="tccdm">
+                </div>
+                <div class="th">
+                    停车场名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="name" >
+                </div>
+            </div>
+
+
+            <div class="tr">
+                <div class="th">
+                    详细地址：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="xxdz" >
+                </div>
+                <div class="th">
+                    出入口数量：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="crksl" >
+                </div>
+
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                    总车位数：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="zcws" >
+                </div>
+                <div class="th">
+                    停车场分类：
+                </div>
+                <div class="td">
+                    <select  class="easyui-combobox" style="width: 135px" name="tcclx">
+                        <option value="0">--请选择--</option>
+                        <option value="1">露天停车场</option>
+                        <option value="2">非露天地上停车场</option>
+                        <option value="2">非露天地下停车场</option>
+                    </select>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    营业时间：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="yysj" >
+                </div>
+                <div class="th">
+                    管理单位：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="gldw" >
+                </div>
+            </div>
+            <div class="tr">
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="tel" >
+                </div>
+            </div>
+
+            <div class="tr">
+            </div>
+
+            <div class="tr"style="text-align: center; margin-right: 50px">
+                <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close'" cy-click="closeSelf">关闭</a>
+                <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","closeSelf","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            // $scope.$update("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        }
+    });
+</script>
+<style type="text/css">
+    #tingchechang .th{
+        width : 100px;
+        text-align: right;
+    }
+    #tingchechang .td{
+        width : 150px;
+    }
+
+</style>

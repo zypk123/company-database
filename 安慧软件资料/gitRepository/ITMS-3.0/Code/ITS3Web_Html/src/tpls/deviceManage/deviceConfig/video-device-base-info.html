@@ -1,0 +1,524 @@
+<div id="evidenceDeviceBaseInfo" class="easyui-layout" style="overflow:auto;">
+    <div data-options="region:'north',height:45,border:false">
+        <!--保存按钮-->
+        <div style="margin: 8px;">
+            <a class="easyui-linkbutton button-next" data-options="iconCls:'icon-next',plain:true" cy-click="saveAndNext">保存并下一步</a>
+            <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save',plain:true"  cy-click="saveOnly">保存</a>
+            <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close',plain:true"  cy-click="closeDialog">关闭</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:false">
+        <form method="post" cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">基本信息</div>
+                <div class="table">
+                    <div class="tr new-tr">
+                        <div class="th">视频编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="device_nbr"/>
+                        </div>
+                        <div class="th">视频名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="device_name"/>
+                        </div>
+                        <div class="th">视频类型：</div>
+                        <div class="td">
+                            <input  id="device_type" class="easyui-combobox" name="device_type" data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th">监控类型：</div>
+                        <div class="td">
+                            <input id="device_type_sub" class="easyui-combobox" name="device_type_sub" data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                        <div class="th">管辖机构：</div>
+                        <div class="td">
+                            <input id="org" class="easyui-combotree" name=""/>
+                        </div>
+                        <div class="th">建设归属：</div>
+                        <div class="td">
+                            <input id="ownership" class="easyui-combobox" name="" data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th">设备品牌：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备型号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">出厂序列号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th">设备IP：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="" cy-onkeyup="T1onkeyup" id="T1" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" cy-onkeyup="T2onkeyup" id="T2" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" cy-onkeyup="T3onkeyup" id="T3" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" id="T4" style="width: 40px"/>
+                        </div>
+                        <div class="th">端口：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">SIM卡号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">用户名：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">密码：</div>
+                        <div class="td">
+                            <input type="password" class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">通道号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th">软件版本：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">所属合同：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="contract"  data-options="valueField:'id',textField:'name'"/><a class="easyui-linkbutton button-save" cy-click="addContract">+</a>
+                        </div>
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th defaultShow">备案人：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th defaultShow">备案时间：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">安装信息</div>
+                <div class="table">
+                    <div class="tr new-tr">
+                        <div class="th">安装方式：</div>
+                        <div class="td">
+                            <input id="mountingType" class="easyui-combobox" name=""  data-options="valueField:'code',textField:'name'"/>
+                        </div>
+                        <div class="th">安装日期：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" name=""/>
+                        </div>
+                        <div class="th">所在点位：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="site"  data-options="valueField:'siteId',textField:'siteName'"/><a class="easyui-linkbutton button-save">+</a>
+                        </div>
+                    </div>
+                    <div class="tr new-tr">
+                        <div class="th">安装人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备经度：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备纬度：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">联网与接入</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">联网类型：</div>
+                        <div class="td">
+                            <input type="radio" name="networkType" style="width: 10px"/>公安网
+                            <input type="radio" name="networkType" style="width: 10px"/>专网
+                            <input type="radio" name="networkType" style="width: 10px"/>互联网
+                        </div>
+                        <div class="th">供电类型：</div>
+                        <div class="td">
+                            <input type="radio" name="powerType" style="width: 10px"/>农电
+                            <input type="radio" name="powerType" style="width: 10px"/>市电
+                            <input type="radio" name="powerType" style="width: 10px"/>太阳能
+                            <input type="radio" name="powerType" style="width: 10px"/>UPS
+                        </div>
+                        <div class="th">传输方式：</div>
+                        <div class="td">
+                            <input type="radio" name="translationMode" style="width: 10px"/>光钎
+                            <input type="radio" name="translationMode" style="width: 10px"/>3G
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">网络带宽：</div>
+                        <div class="td">
+                            <input class="easyui-textbox"/>
+                        </div>
+                        <div class="th">接入方式：</div>
+                        <div class="td" style="vertical-align: middle">
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>安全接入平台
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>双网卡
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>直接接入
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">服务器信息：</div>
+                        <div class="td" style="width: 110px;">
+                            <a class="easyui-linkbutton button-save" cy-click="addServer">增加服务器</a>
+                        </div>
+                        <div class="td">
+                            <div id="serverDiv" style="width: 600px;">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th"></div>
+                        <div class="td">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">功能与参数</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有云台控制
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有存储功能
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持事件检测
+                        </div>
+                    </div>
+                    <div class="tr new-tr new-th">
+                        <div class="th">视频分辨率：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">日常监控预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr new-tr new-th">
+                        <div class="th">告警录像预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">后台控制恢复预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    /**
+     *closeDialog ：关闭弹出框的方法
+     * tollgateTabs ：检定tab页可用参数
+     */
+    InitPage(["closeDialog","tollgateTabs"],function($scope){
+       $scope.load = function(){
+           //初始化页面
+           $scope.$ajaxRequest({
+               url: "data/deviceManage/deviceConfig/deviceConfigBaseInfo.json",
+               success: function (retData) {
+                   if (retData.Error != "") {
+                       alert("初始化页面报错,详细：" + retData.Error);
+                   }
+                   else {
+                       $scope.initCombobox(retData.Result);
+                   }
+               },
+               fail: function (errTxt) {
+                   alert(errTxt);
+               }
+           });
+           /**
+            * 初始化选择框，查询数据字典
+            * @param retData 字典中的数据
+            */
+           $scope.initCombobox = function(retData){
+               //设备类型
+               $scope.$('#device_type').combobox('loadData', retData.dicts["400"]);
+               //设备子类型
+               $scope.$('#device_type_sub').combobox('loadData', retData.dicts["401"]);
+               //管辖机构
+               $scope.$("#org").combotree("loadData", retData.orgTree);
+               //建设归属
+               $scope.$('#ownership').combobox('loadData', retData.dicts["419"]);
+               //所属合同
+               $scope.$('#contract').combobox("loadData", retData.contract);
+               //所在点位
+               $scope.$('#site').combobox('loadData', retData.site);
+               //安装方式
+               $scope.$('#mountingType').combobox('loadData', retData.dicts["404"]);
+           };
+           $scope.$(".defaultShow").hide();
+           $scope.$(".seperater").hide();
+           $scope.$("#laneDiv").hide();
+           $scope.$("#downContainer").hide();
+           $scope.$("#upContainer").hide();
+       };
+        /**
+         * 新增合同
+         */
+        $scope.addContract = function(){
+            //新建新增合同弹出框
+            $scope.$openDialog("addDialog",{
+                title : "新增合同信息",
+                width : 600,
+                height : 430,
+                href : "tpls/deviceManage/informationManage/contract-operate.html"
+            },true);
+            //关闭新增合同弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+        };
+        /**
+         *显示点位上行行方向车道
+         */
+        $scope.showAddUpLane = function(){
+            /*添加上行方向按钮显示，下行按钮不显示*/
+            /* $scope.$("#addUpLaneBtn").show();
+             $scope.$("#addDownLaneBtn").hide();*/
+            $scope.$('#upLaneDiv>div').remove();
+            //获取该点位上行车道数目，多少数目执行多少次creatLane函数
+            $scope.createLane("#upLaneDiv",1,"1");
+            $scope.createLane("#upLaneDiv",2,"2");
+            $scope.createLane("#upLaneDiv",3,"3");
+            /*上行车道div显示*/
+            $scope.$("#laneDiv").show();
+            $scope.$("#upContainer").show();
+            /*中间分割区和下行车道不显示*/
+            $scope.$(".seperater").hide();
+            $scope.$("#downContainer").hide();
+        };
+        /**
+         *显示点位下行行方向车道
+         */
+         $scope.showAddDownLane = function(){
+            /*添加下行方向按钮显示，上行按钮不显示*/
+            /* $scope.$("#addUpLaneBtn").hide();
+             $scope.$("#addDownLaneBtn").show();*/
+            //获取该点位下行车道数目，多少数目执行多少次creatLane函数
+            $scope.$('#downLaneDiv>div').remove();
+            $scope.createLane("#downLaneDiv",1,1);
+            $scope.createLane("#downLaneDiv",2,2);
+            $scope.createLane("#downLaneDiv",3,3);
+            /*下行车道div显示*/
+            $scope.$("#laneDiv").show();
+            $scope.$("#downContainer").show();
+            /*中间分割区和下行车道不显示*/
+            $scope.$(".seperater").hide();
+            $scope.$("#upContainer").hide();
+        };
+        /**
+         *显示点位双向车道
+         */
+        $scope.showAddAllLane = function(){
+            /* $scope.$("#addUpLaneBtn").show();
+             $scope.$("#addDownLaneBtn").show();*/
+            $scope.$('#upLaneDiv>div').remove();
+            $scope.$('#downLaneDiv>div').remove();
+            //获取该点位上行车道数目，多少数目执行多少次creatLane函数
+            $scope.createLane("#upLaneDiv",1,1);
+            $scope.createLane("#upLaneDiv",2,2);
+            $scope.createLane("#upLaneDiv",3,3);
+            //获取该点位下行车道数目，多少数目执行多少次creatLane函数
+            $scope.createLane("#downLaneDiv",1,1);
+            $scope.createLane("#downLaneDiv",2,2);
+            $scope.createLane("#downLaneDiv",3,3);
+
+            $scope.$("#laneDiv").show();
+            $scope.$("#downContainer").show();
+            $scope.$("#upContainer").show();
+            $scope.$(".seperater").show();
+        };
+        /**
+         *创建车道
+         * laneId ： 整数 车道下标
+         * laneCode ：整数 车道对应数值
+         */
+        $scope.createLane = function(container,laneId,laneCode){
+            var div = $('<div value="'+laneId+'">车道'+laneCode+'</div>');
+            div.click($scope.clickLane);
+            $scope.$(container).append(div);
+        };
+        /**
+         *点击车道选择/取消选中
+         */
+        $scope.clickLane = function(event){
+            $(event.currentTarget).toggleClass("selectedLane");
+        };
+        /**
+         * 新增服务器
+         */
+        $scope.addServer = function(){
+            var div=$('<div style="margin-bottom: 5px"></div>');
+            var spanServerType=$('<span>服务器类型：</span>');
+            var cmbSeverType=$('<input  style="width: 180px;"/>');
+            var spanServer=$('<span  style="margin-left: 20px;">所在服务器：</span>');
+            var cmbSever=$('<input  style="width: 180px;"/>');
+            // var deleteBtn=$('<img src="" style="margin-left: 20px;"/>');
+            var deleteBtn=$('<span class="icon-close" style="background-color: green;padding:3px 10px;margin-left: 10px;"></span>');
+            deleteBtn.click(function()
+            {
+                $(this).parent().remove();
+            });
+
+            // spanServerType.after(cmbSeverType);
+            div.append(spanServerType);
+            div.append(cmbSeverType);
+            div.append(spanServer);
+            div.append(cmbSever);
+            div.append(deleteBtn);
+            $scope.$("#serverDiv").append(div);
+            cmbSeverType.combobox({
+            //绑定服务器类型数据字典
+                valueField:'code',
+                textField:'name',
+                url:'data/deviceManage/deviceConfig/serverType.json'
+            });
+            cmbSever.combobox({
+                valueField:'code',
+                textField:'name'
+            });
+        };
+        /**
+         * ip地址联动
+         */
+        $scope.T1onkeyup = function (event) {
+            console.log($scope.$("#T1").textbox("getText").length);
+            if($scope.$("#T1").textbox("getText").length==3){
+                $scope.$("#T2").focus();
+            }
+        };
+        $scope.T2onkeyup = function (event) {
+            if($scope.$("#T2").value.length==3){
+                $scope.$("#T3").focus();
+            }
+        };
+
+        $scope.T3onkeyup = function (event) {
+            if($scope.$("#T3").value.length==3){
+                $scope.$("#T4").focus();
+            }
+        };
+        $scope.saveAndNext = function(){
+            //设备基本信息保存到数据库todo
+            $scope.$setParam("tollgateTabs",$scope.tollgateTabs);
+            //检定tab页可用
+            $scope.tollgateTabs.tabs('enableTab', 1);
+            $scope.tollgateTabs.tabs('select', 1);
+
+        };
+    });
+</script>
+<style type="text/css">
+    #evidenceDeviceBaseInfo .panel_title{
+        position: relative;
+        width: 60px;
+    }
+    #evidenceDeviceBaseInfo .th{
+         width: 90px;
+         text-align: right;
+     }
+    #evidenceDeviceBaseInfo .td>input[class^='easyui-']{
+        width:175px;
+    }
+    #evidenceDeviceBaseInfo .new-th .th{
+        width: 120px;
+        text-align: right;
+    }
+    #evidenceDeviceBaseInfo .new-th .td{
+        width: 180px;
+    }
+    #evidenceDeviceBaseInfo .new-th .td>input[class^='easyui-']{
+        width:150px;
+    }
+
+    #evidenceDeviceBaseInfo .searchPanel{
+        width: 860px;
+    }
+    #evidenceDeviceBaseInfo .selectedLane
+    {
+        background:orange;
+    }
+    #evidenceDeviceBaseInfo .containerDown
+    {
+        display:-moz-box;
+        display:-webkit-box;
+        display:box;
+        width: 100%;
+        -moz-box-align:center;
+        -webkit-box-align:center;
+        box-align:center;
+        -moz-box-pack:center;
+        -webkit-box-pack:center;
+        box-pack:center;
+        background: rgba(94, 94, 121, 0.93);
+    }
+    #evidenceDeviceBaseInfo .leftDown{
+        /*background: rgba(94, 94, 121, 0.93);*/
+        width: 150px;
+        text-align: center;
+        vertical-align: middle;
+        height: 100%;
+        font-size: 18px;
+        color: #ffffff;
+    }
+    #evidenceDeviceBaseInfo .centerDown{
+        /*background:rgba(94, 94, 121, 0.93);*/
+        -moz-box-flex:1;
+        -webkit-box-flex:1;
+        box-flex:1;
+    }
+    #evidenceDeviceBaseInfo .centerDown div{
+        border-bottom: dashed #ffffff 2px;
+        height: 30px;
+        text-align: center;
+        color: #ffffff;
+    }
+    #evidenceDeviceBaseInfo .rightDown{
+        /*background:rgba(94, 94, 121, 0.93);*/
+        width: 150px;
+        height: 100%;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 18px;
+        color: #ffffff;
+    }
+    #evidenceDeviceBaseInfo .centerDown div:nth-last-child(1){
+        border-bottom: 0px
+    }
+</style>

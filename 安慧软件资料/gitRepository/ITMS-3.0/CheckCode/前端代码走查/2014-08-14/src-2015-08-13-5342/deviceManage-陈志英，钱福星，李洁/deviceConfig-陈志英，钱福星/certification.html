@@ -1,0 +1,150 @@
+<div id="certificationDiv" style="width: 100%;">
+    <div style="padding: 8px">
+        <a class="easyui-linkbutton button-add"  cy-click="addCertification"
+           data-options="iconCls:'icon-add'">新增</a>
+        <a class="easyui-linkbutton button-next" data-options="iconCls:'icon-next',plain:true" cy-click="next"
+           >下一步</a>
+    </div>
+    <div id="container" style="position:absolute;overflow-y:auto;height:440px;width: 884px">
+        <!--<div class="recordDiv">
+            <div class="imgDiv">
+                <img src="themes/default/images/upload.png">
+            </div>
+            <div class="infoDiv">
+                <div><span>检定时间：</span><span style="color: #0000ff;">2015-08-05</span>
+                    <span style="margin-left: 20px;">有效期至：</span><span style="color: red;">2016-08-05</span>
+                </div>
+                <div>
+                    <span>证书编号：GB2018080512346789101112</span>
+                </div>
+                <div>
+                    <span>检定人员：陈志英</span>
+                    <span style="margin-left: 20px;">检定机构：无锡交通科研所</span>
+                </div>
+            </div>
+            <div class="btnDiv">
+                <a class="easyui-linkbutton button-edit" data-options="iconCls:'icon-edit'" >修改</a>&nbsp;&nbsp;
+                <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-clear'" >删除</a>
+            </div>
+        </div>-->
+
+
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["initData","tollgateTabs"],function($scope) {
+        $.extend($scope, {
+            //添加证书，弹出证书新增页面
+            addCertification:function(){
+                $scope.$setParam("mode","ADD");
+                $scope.$setParam("closeDialog",$scope.closeCertificationDetail);
+                $scope.$openDialog("certificationDetailDailog",{
+                    title : "XXX设备-新增检定证书",
+                    width : 900,
+                    height : 550,
+                    href : "tpls/deviceManage/deviceConfig/certification-baseinfo.html"
+                });
+            },
+            closeCertificationDetail: function () {//证书详细页面关闭按钮回调
+                var certificationDetailInfo = $scope.$getParam("certificationDetailInfo");
+                if (certificationDetailInfo != undefined) {
+                    if (certificationDetailInfo.mode == "ADD") {//如果是新增，则添加一行记录
+                        createNewRecord(certificationDetailInfo);
+                    }
+                    else {//修改保存，这更新原先的记录
+
+                    }
+                }
+                $scope.$getDialog("certificationDetailDailog").dialog("close");
+            },
+            //下一步按钮操作
+            next:function(){
+                //检定tab页可用
+                $scope.tollgateTabs.tabs('enableTab', 2);
+                $scope.tollgateTabs.tabs('select', 2);
+            }
+        });
+        /**
+         * 创建一条证书记录显示列表
+         * @param certificationDetailInfo
+         */
+      function createNewRecord(certificationDetailInfo)
+      {
+          //var div=$('<div><img style="width: 270px;height: 134px" src="'+certificationDetailInfo.fileUrl+'"/></div>');
+          var recordDiv=$('<div class="recordDiv"></div>');
+          //存放图片的div
+         var imgDiv=$('<div class="imgDiv"><img src="'+certificationDetailInfo.fileUrl+'"/></div>');
+          imgDiv.click(function(event){
+              alert("弹出详细页面");
+          });
+          //存放信息的div
+          var infoDiv=$('<div class="infoDiv">' +
+                             '<div><span>检定时间：</span><span style="color: #0000ff;">'+certificationDetailInfo.certificationDate+'</span>' +
+                                  '<span style="margin-left: 20px;">有效期至：</span><span style="color: red;">'+certificationDetailInfo.expireDate+'</span>' +
+                             '</div>' +
+                             '<div><span>证书编号：'+certificationDetailInfo.certificaitonNbr+'</span></div>' +
+                             '<div><span>检定人员：'+certificationDetailInfo.certificationPerson+'</span><span style="margin-left: 20px;">检定机构：'+certificationDetailInfo.certificationOrg+'</span>' +
+                             '</div>' +
+                        '</div>');
+          //存放按钮的div
+          var btnDiv=$('<div class="btnDiv"></div>');
+          var editBtn=$('<a class="button-edit" >修改</a>');
+          editBtn.linkbutton({
+              iconCls:"icon-edit"
+          });
+          editBtn.click(function(event){
+              //certificationDetailInfo.certificaitonNbr
+              alert("弹出详细页面");
+          });
+          var deleteBtn=$('<a style="margin-left: 8px" class="button-remove" >删除</a>');
+          deleteBtn.linkbutton({
+              iconCls:"icon-remove"
+          });
+          deleteBtn.click(function(event){
+              //把这个div删除
+              var temobj=$(this).parent().parent()
+              temobj.remove();
+              //删除这条记录todo
+
+          });
+          btnDiv.append(editBtn);
+          btnDiv.append(deleteBtn);
+          recordDiv.append(imgDiv);
+          recordDiv.append(infoDiv);
+          recordDiv.append(btnDiv);
+          $scope.$("#container").append(recordDiv);
+      }
+
+    });
+</script>
+<style>
+#certificationDiv .recordDiv{
+    width: 97%;
+    margin-left:8px;
+    margin-top: 5px;
+    border: solid 1px silver;
+    height: 134px
+}
+#certificationDiv .imgDiv{
+    float: left
+}
+
+#certificationDiv .imgDiv img{
+    height: 134px;
+    width: 270px;
+    cursor: hand;
+}
+#certificationDiv .infoDiv{
+    float: left;margin-left: 15px;margin-top:10px;
+}
+#certificationDiv .infoDiv div{
+    height: 30px
+}
+#certificationDiv .infoDiv span{
+    font-size: 14px
+}
+#certificationDiv .btnDiv {
+    float: left;
+    margin-top: 98px
+}
+</style>

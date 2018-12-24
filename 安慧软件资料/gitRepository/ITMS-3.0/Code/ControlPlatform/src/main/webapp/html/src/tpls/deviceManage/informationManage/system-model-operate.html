@@ -1,0 +1,40 @@
+<div id="sysModelOperate" class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData" id="form">
+            <div class="table" style="margin-top:50px;">
+                <div class="tr">
+                    <div class="th">型号名称：</div>
+                    <div class="td">
+                    	<input type="hidden" name="deviceSysModelId"/>
+                        <input class="easyui-textbox" name="deviceSysModelName" style="width: 220px;" data-options="required:true"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'south',border:false">
+    	<div class="linkbutton_toolbar" style="text-align: center">
+    		<a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="save">保存</a>
+        	<a class="easyui-linkbutton button-cancel" data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">取消</a>
+    	</div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["saveData","formData"],function($scope){
+    	$scope.save = function(){
+    		if ($scope.$("#form").form("validate")) {
+	    	   //更新获取数据
+	    	   $scope.$updateData("formData");
+    		   trimObject($scope.formData);//对对象中的每个元素进行trim操作
+	    	   //执行保存方法
+	    	   $scope.saveData($scope.formData);
+    	   }
+    	};
+    });
+</script>
+<style type="text/css">
+    #sysModelOperate .th{
+         width: 120px;
+         text-align: right;
+     }
+</style>

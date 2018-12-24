@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.DeviceAlarmMapper" >
+  <!-- 查找报警信息 -->
+  <sql id="Base_Column_List" >
+    a.alarm_Id as alarmId,
+	a.alarm_type as alarmType,
+	a.alarm_sub_type as alarmSubType,
+	a.alarm_device_id as alarmDeviceId,
+	a.start_time as startTime,
+	a.end_time as endTime,
+	a.collect_way as collectWay,
+	a.alarm_disc as alarmDisc,
+	a.org_privilege_code as orgPrivilegeCode,
+	a.create_time as createTime,
+	s.is_accept as isAccept,
+	s.accept_time as acceptTime,
+	s.accpet_person as accpetPerson,
+	s.is_handle as isHandle,
+	s.is_validity as isValidity,
+	s.handle_person as handlePerson,
+	u1.name as acceptPersonName,
+	u2.name as handlePersonName
+  </sql>
+  <sql id="Base_Column_List_Handle" >
+  	handle_id as handleId,
+  	alarm_id as alarmId,
+  	is_validity as isValidity,
+  	handle_disc as handleDisc,
+  	handle_time as handleTime,
+  	handle_person as handlePerson
+  </sql>
+  <select id="findDeviceAlarm" resultType="cy.its.device.domain.model.DeviceAlarm" parameterType="Map">
+  		select 
+  			<include refid="Base_Column_List"></include>,
+			sy.device_name as alarmDeviceName
+  		from T_DEVICE_ALARM a
+		left join t_device_alarm_status s on s.alarm_id = a.alarm_id
+		left join t_sys_user u1 on u1.user_id = s.accpet_person
+		left join t_sys_user u2 on u2.user_id = s.handle_person
+		left join t_device_sys sy on sy.device_id = a.alarm_device_id
+		<where>
+			<if test="alarmType != null and alarmType != '' ">
+				and a.alarm_type = #{alarmType}
+			</if>
+			<if test="startDateTime != null and startDateTime != ''">
+				and a.start_time &gt;= to_date(#{startDateTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endDateTime != null and endDateTime != ''">
+				and a.start_time &lt;= to_date(#{endDateTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+				and a.org_privilege_code like #{orgPrivilegeCode} || '%'
+			</if>
+		</where>
+  </select>
+  <select id="findServerStatusAlarm" resultType="cy.its.device.domain.model.DeviceAlarm" parameterType="Map">
+  		select 
+  			<include refid="Base_Column_List"></include>,
+  			sy.server_ip as alarmDeviceName
+  		from T_DEVICE_ALARM a
+		left join t_device_alarm_status s on s.alarm_id = a.alarm_id
+		left join t_sys_user u1 on u1.user_id = s.accpet_person
+		left join t_sys_user u2 on u2.user_id = s.handle_person
+		left join t_device_server sy on sy.server_id = a.alarm_device_id
+		<where>
+			<if test="alarmType != null and alarmType != '' ">
+				and a.alarm_type = #{alarmType}
+			</if>
+			<if test="startDateTime != null and startDateTime != ''">
+				and a.start_time &gt;= to_date(#{startDateTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endDateTime != null and endDateTime != ''">
+				and a.start_time &lt;= to_date(#{endDateTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+				and a.org_privilege_code like #{orgPrivilegeCode} || '%'
+			</if>
+		</where>
+  </select>
+  <!-- 根据ID查找报警信息 -->
+  <select id="findAlarmById" resultType="cy.its.device.domain.model.DeviceAlarm" parameterType="String">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from T_DEVICE_ALARM a
+	left join t_device_alarm_status s on s.alarm_id = a.alarm_id
+	where a.alarm_id = #{alarmId}
+  </select>
+  <!-- 根据id查找报警信息 -->
+  <select id="findDeviceAlarmStatusByAlarmId" resultType="cy.its.device.domain.model.DeviceAlarm" parameterType="String">
+  		select 
+  		<include refid="Base_Column_List"></include>
+		from T_DEVICE_ALARM a
+		left join t_device_alarm_status s on s.alarm_id = a.alarm_id
+		left join t_sys_user u1 on u1.user_id = s.accpet_person
+		left join t_sys_user u2 on u2.user_id = s.handle_person
+		left join t_device_sys sy on sy.device_id = a.alarm_device_id
+		where a.alarm_id = #{alarmId}
+  </select>
+  <!-- 更新报警状态为已签收 -->
+  <update id="updateAlarmStatusToSign" parameterType="Map">
+  	update t_device_alarm_status 
+  		set is_accept = '1',
+  			accept_time = #{acceptDate},
+  			accept_person = #{userId}
+  	where alarm_id = #{alarmId}
+  </update>
+  <!-- 新增报警已签收状态 -->
+  <insert id="saveAlarmStatus" parameterType="Map">
+  	insert into t_device_alarm_status (alarm_id,is_accpet,accept_time,accept_person)
+  	values(#{alarmId},'1',#{accpetDate},#{userId})
+  </insert>
+  <!-- 更新处理状态 -->
+  <update id="updateAlarmStatusToHandle" parameterType="Map">
+    update t_device_alarm_status set 
+    	is_handle = '1',
+    	is_validity = #{isValidity},
+    	handle_time = #{handleTime},
+    	handle_person = ${handlePerson}
+  	where alarm_id = #{alarmId}
+  </update>
+  <!-- 保存处理信息 -->
+  <insert id="saveAlarmHandle" parameterType="Map">
+  	insert into t_device_alarm_handle (handle_id,alarm_id,is_validity,handle_disc,handle_time,handle_person)
+  	values(#{handleId},#{alarmId},#{isValidity},#{handleDisc},#{handleTime},#{handlePerson})
+  </insert>
+  <!-- 根据报警ID查找处理列表 -->
+  <select id="findHandleByAlarmId" resultType="cy.its.device.domain.model.DeviceAlarmHandle" parameterType="String">
+  	select
+  	<include refid="Base_Column_List_Handle"></include>
+  	from t_device_alarm_handle
+  	where alarm_id = #{alarmId}
+  </select>
+</mapper>

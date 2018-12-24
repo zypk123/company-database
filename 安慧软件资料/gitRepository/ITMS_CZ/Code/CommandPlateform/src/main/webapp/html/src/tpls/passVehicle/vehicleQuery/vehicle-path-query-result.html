@@ -1,0 +1,529 @@
+<div  class="easyui-layout" id="vehicle-path-query-result">
+	<div data-options="region:'north',height:85,border:false">
+		<div class="table">
+			<div class="tr">
+				<div class="td" style="width:170px;">
+					<div class="tr" cy-name="vehInfo.plateNbr" cy-filter="plateColorFilter"></div>
+					<div class="tr veh-detial" cy-name="vehInfo.vehicleType" cy-filter="codeName('001')"></div>
+				</div>
+			</div>
+		</div>
+		<div id="back">
+			<a class="button easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="backToSearch" >返回</a>
+		</div>
+	</div>
+	<div data-options="region:'west',width:70,border:false" id="axis">
+		&nbsp;
+	</div>
+	<div data-options="region:'center',border:false" id="scrollContent">
+		<div cy-foreach="passInfoList" id="passInfoList">
+			<div class="pass-info" cy-mouseenter="showImage" cy-mouseleave="hideImage" cy-dblclick='showPassDetail' cy-click="locationPoint">
+				<div class="passtime" cy-item="passTime" cy-filter="getPassTime"></div>
+				<div class="direction" cy-item="roadCode" cy-filter="getRoadAndDirection"></div>
+				<div class="position" cy-item="siteName"></div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',height:130,width:70,border:false" title="功能区" id="funcMenu">
+		<!-- <div class="table">
+		<div class="tr">
+		<div class="th" style="margin-left: 30px;">
+		轨迹播放:
+		</div>
+		<div class="td">
+		<img><img>
+		</div>
+		<div class="tr">
+		<div class="th" style="margin-left: 30px;">
+		<input type="checkbox" id="hotMap">车辆活动热点图
+		</div>
+		</div>
+		<div class="tr">
+		<div class="th" style="margin-left: 30px;">
+		<a class="button easyui-linkbutton" data-options="iconCls:'icon-search'" cy-click="showVehActive" >车辆活动时段规律</a>
+		</div>
+		</div>
+		</div>
+		</div> -->
+		<div id="functionDiv">
+			<div>
+				<span>轨迹播放:</span>
+				<a id="playBtn" class="easyui-linkbutton" data-options="iconCls:'icon-play'" cy-click="changePlayState" >播放</a>
+				<a id="stopBtn" class="easyui-linkbutton" data-options="iconCls:'icon-stop'" cy-click="stop" >停止</a>
+			</div>
+			<!-- <div>
+				<input type="checkbox" id="hotMap">
+				车辆活动热点图
+			</div> -->
+			<div>
+				<a class="button easyui-linkbutton" data-options="iconCls:'icon-search'" cy-click="showVehActive" >车辆活动时段规律</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+<script>
+	/**
+	 * seachData : 查询条件
+	 * back ： 返回方法
+	 * imageView : 图片展示DIV元素对象
+	 */
+	InitPage(["searchData", "back", "imageView", "drawVehTrack", "translateObj"], function($scope) {
+
+		$scope.translateObj.resetPlayState = function() {
+			//恢复播放键
+			$scope.$("#playBtn").linkbutton({
+					text:"播放",
+					iconCls:'icon-play'
+			});
+		};
+		$scope.changePlayState=function()
+		{
+			var op = $scope.$("#playBtn").linkbutton("options");
+			if(op.text=="播放"){
+				if($scope.translateObj.playPointLst.length<2)
+				{
+					$.messager.alert("提示", "少于2条记录无法播放！");
+					return;
+				}
+				//将按钮变成暂停状态，以便可以随时暂且
+				$scope.$("#playBtn").linkbutton({
+					text:"暂停",
+					iconCls:'icon-pause'
+				});
+				//播放地图动画
+				$scope.translateObj.play();			
+			}
+			else
+			{
+				//将按钮变成播放状态，以便可以继续播放
+				$scope.$("#playBtn").linkbutton({
+					text:"播放",
+					iconCls:'icon-play'
+				});	
+				//暂停地图动画
+				$scope.translateObj.pause();							
+			}
+		};
+		$scope.stop=function()
+		{
+			$scope.translateObj.stop();
+			//恢复播放键
+			$scope.$("#playBtn").linkbutton({
+					text:"播放",
+					iconCls:'icon-play'
+			});
+		};
+		
+		$scope.load = function() {
+			//查询数据
+			$scope.searchPassInfo();
+			//定义滚动事件
+			$scope.$("#scrollContent").scrollTop(0);
+			//初始滚动到顶部
+			$scope.$("#scrollContent").scroll(function() {
+				$scope.$(".pass-info").each(function() {
+					//元素位置
+					var itemPosition = $(this).offset().top - $scope.$("#passInfoList").offset().top;
+					//元素高度
+					var height = $(this).outerHeight();
+					//滚动距离
+					var scrollTop = $scope.$("#scrollContent").scrollTop();
+					//滚动距离  > 元素位置 && 滚动距离 -元素位置 <元素高度    表示该元素在顶部附近
+					if (scrollTop > itemPosition && scrollTop - itemPosition < height) {
+						var passTime = $(this).data("itemData").passTime;
+						var itemDate = passTime.substring(5, 7) + "月" + passTime.substring(8, 10) + "日";
+						var itemTime = passTime.substring(11, 13) + ":00";
+						//时间轴选择该树
+						$scope.axis.expandDate(itemDate);
+						$scope.axis.chooseTime(itemDate, itemTime);
+					}
+				});
+			});
+		};
+
+		/**
+		 * 展示图片
+		 */
+		$scope.showImage = function(evt) {
+			$scope.imageShowTimeout = setTimeout(function() {
+				var target = evt.currentTarget;
+				var passData = $(target).data("itemData");
+				var imageUrl = $scope.$servletRoot + "PassImage?imageUrl=" + passData.imageUrlPath;
+				$scope.imageView.children("img").attr("src", imageUrl);
+				var positionTop = $(target).position().top + $scope.$("#scrollContent").panel("options").top + 27;
+				var positionLeft = $(target).position().left + $scope.$("#scrollContent").panel("options").left + $(target).width() + 20;
+				//判断高度是否超过可视范围
+				var maxTop = $scope.imageView.parent().height() - $scope.imageView.height();
+				if (positionTop > maxTop) {
+					positionTop = maxTop;
+				}
+				$scope.imageView.css({
+					left : positionLeft,
+					top : positionTop
+				}).show();
+			}, 500);
+
+		};
+
+		/**
+		 *  在地图中显示位置
+		 */
+		$scope.locationPoint = function(){
+			var passInfo = $scope.passInfoList[$(this).data("index")];
+			$scope.translateObj.location(passInfo.siteLon,passInfo.siteLat);
+		};
+		/**
+		 * 显示过车详情
+		 */
+		$scope.showPassDetail = function(evt) {
+			var target = evt.currentTarget;
+			//"currentData", "index", "searchData", "oncheck"四个参数
+			//当前数据
+			$scope.$setParam("currentData", {
+				result : {
+					rows : $scope.passInfoList
+				}
+			});
+			//当前下标
+			$scope.$setParam("index", $(target).data("index"));
+			//查询方法
+			$scope.$setParam("searchData", function(operate, callback) {
+				$.messager.alert("提示", "没有更多数据!");
+				$scope.$excute(callback, null);
+			});
+			//选择后执行方法
+			$scope.$setParam("oncheck", function() {
+
+			});
+			
+			//页面flag
+			$scope.$setParam("htmlId","vehiclePathResult");
+			
+			//打开详情窗口
+			$scope.$openDialog("vehDetail", {
+				width : 1100,
+				height : 610,
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html",
+				title : "过车详情",
+				onClose : function() {
+					//停止自动播放
+					$scope.$getDialog("vehDetail").data("winScope").stop();
+				}
+			});
+		};
+
+		/**
+		 *  隐藏图片
+		 */
+		$scope.hideImage = function() {
+			clearTimeout($scope.imageShowTimeout);
+			$scope.imageView.children("img").removeAttr("src");
+			$scope.imageView.hide();
+		};
+		/**
+		 * 查找数据
+		 */
+		$scope.searchPassInfo = function() {
+			//进度条
+			searchProgress();
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/vehTrack/pass/findPath",
+				params : $scope.searchData,
+				success : function(data) {
+					//反序操作
+					if ( data instanceof Array && data.length > 0) {
+						//提取时间信息
+						var passTimeInfo = pickUpDateListAndTimes(data);
+						//初始化时间轴
+						initAxis(passTimeInfo);
+						//初始化变化窗口事件
+						initResize();
+						//初始化数据
+						$scope.vehInfo = data[0];
+						$scope.passInfoList = data;
+						$scope.$updateDom("vehInfo");
+						$scope.$updateDom("passInfoList");
+						//关闭进度条
+						$.messager.progress("close");
+						//地图上绘制轨迹
+						$scope.drawVehTrack(data);
+					} else {
+						$.messager.alert("提示", "没有数据");
+						//关闭进度条
+						$.messager.progress("close");
+						//返回查找界面，带回查询参数
+						$scope.back($scope.searchData);
+					}
+				}
+			});
+		};
+		/**
+		 * 显示查询进度条
+		 */
+		var searchProgress = function() {
+			$.messager.progress({
+				title : false,
+				msg : "正在查询，请稍后...",
+				interval : 1000,
+				text : "查询中..."
+			});
+		};
+		/**
+		 * 格式化过车时间
+		 */
+		$scope.getPassTime = function(value) {
+			return value.substring(11, 19);
+		};
+
+		/**
+		 * 获得道路名称和方向名称
+		 */
+		$scope.getRoadAndDirection = function(value, itemData) {
+			var roadName = $scope.$getRoadName(value);
+			var directionName = itemData.directionName;
+			return roadName + " " + directionName;
+		};
+		/**
+		 * 号牌颜色过滤器
+		 */
+		$scope.plateColorFilter = function(value) {
+			var colorCode = $scope.vehInfo.plateColor;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			}
+			return '<div class="plate ' + className + '">' + value + '</div>';
+		};
+
+		/**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+		/**
+		 * 提取时间轴相关信息
+		 */
+		var pickUpDateListAndTimes = function(passInfoList) {
+			var returnObject = {};
+			returnObject.dateList = [];
+			// //抽取日期范围
+			// var dateBegin = getDate(passInfoList[0].passTime);
+			// var dateEnd = getDate(passInfoList[passInfoList.length - 1].passTime);
+			// while (dateBegin <= dateEnd) {
+			// var dateString = dateBegin.format("MM月dd日");
+			// returnObject.dateList.push(dateString);
+			// dateBegin.setDate(dateBegin.getDate() + 1);
+			// }
+			//抽取时间
+			returnObject.timeList = {};
+			for (var index = 0; index < passInfoList.length; index++) {
+				var passTime = passInfoList[index].passTime;
+				var month = passTime.substring(5, 7);
+				var day = passTime.substring(8, 10);
+				var time = passTime.substring(11, 13);
+				var dateString = month + "月" + day + "日";
+				var timeString = time + ":00";
+				if (!returnObject.timeList[dateString]) {
+					returnObject.timeList[dateString] = [];
+					returnObject.dateList.push(dateString);
+				}
+				if (!inArray(returnObject.timeList[dateString], timeString)) {
+					returnObject.timeList[dateString].push(timeString);
+				}
+			}
+			return returnObject;
+		};
+
+		/**
+		 * 判断元素是否在数组中
+		 */
+		function inArray(array, item) {
+			for (var index in array) {
+				if (item == array[index]) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * 根据日期字符串获取日期
+		 */
+		var getDate = function(dateTimeStr) {
+			var year = parseInt(dateTimeStr.substring(0, 4));
+			var month = parseInt(dateTimeStr.substring(5, 7));
+			var day = parseInt(dateTimeStr.substring(8, 10));
+			var date = new Date();
+			date.setYear(year);
+			date.setMonth(month - 1);
+			date.setDate(day);
+			return date;
+		};
+
+		/**
+		 * 初始化时间轴
+		 */
+		var initAxis = function(passTimeInfo) {
+			$scope.axis = new Axis({
+				dom : $scope.$("#axis").get(0),
+				item : passTimeInfo.dateList,
+				times : passTimeInfo.timeList,
+				onSelect : function(date, time) {
+					$scope.$(".pass-info:visible").each(function() {
+						var passTime = $(this).data("itemData").passTime;
+						var itemDate = passTime.substring(5, 7) + "月" + passTime.substring(8, 10) + "日";
+						var itemTime = passTime.substring(11, 13) + ":00";
+						if (itemDate == date && itemTime == time) {
+							//滚动到该位置
+							var itemPosition = $(this).offset().top - $scope.$("#passInfoList").offset().top;
+							$scope.$("#scrollContent").scrollTop(itemPosition);
+							return false;
+						}
+					});
+				}
+			});
+		};
+
+		/**
+		 * 初始化resize事件
+		 */
+		var initResize = function() {
+			$scope.$("#axis").panel({
+				onResize : function() {
+					$scope.axis.fitSize();
+				}
+			});
+		};
+
+		/**
+		 * 打开过程详情窗口
+		 */
+		$scope.showDetail = function() {
+			$scope.$openDialog("vehDetail", {
+				width : 1100,
+				height : 600,
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html",
+				title : "过车详情"
+			});
+		};
+
+		/**
+		 * 返回方法
+		 */
+		$scope.backToSearch = function() {
+			//返回超找界面，带回查询参数
+			$scope.back($scope.searchData);
+		};
+
+		/**
+		 * 查看车辆活动规律
+		 */
+		$scope.showVehActive = function() {
+			//过车查询
+			$scope.$goto("070311", {
+				searchData : $scope.searchData,
+				initFlag : true
+			});
+		};
+	});
+
+</script>
+
+<style>
+	#vehicle-path-query-result .plate {
+		text-align: center;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		font-size: 20px;
+		margin: 10px 20px;
+		border-radius: 5px;
+	}
+
+	#vehicle-path-query-result .veh-detial {
+		margin-left: 20px;
+		color: #24628A;
+		font-size: 14px;
+	}
+	#vehicle-path-query-result .plate-blue {
+		background-color: blue;
+		color: #FFFFFF;
+	}
+	#vehicle-path-query-result .plate-yellow {
+		background-color: yellow;
+		color: #000000;
+	}
+	
+	#vehicle-path-query-result .plate-black {
+		background-color: black;
+		color: #FFFFFF;
+	}
+
+	#vehicle-path-query-result .plate-white {
+		background-color: #FFFFFF;
+		color: red;
+	}
+	#vehicle-path-query-result .pass-info {
+		width: 240px;
+		margin-left: 3%;
+		padding-bottom: 10px;
+		padding-top: 2px;
+		padding-left: 5px;
+		padding-right: 5px;
+		margin-bottom: 5px;
+		background-color: #B5F9D0;
+		cursor: pointer;
+	}
+	#vehicle-path-query-result .pass-info .passtime {
+		font-size: 20px;
+		color: #3868A9;
+		padding-left: 10px;
+		margin: 5px 0 0 0;
+	}
+	#vehicle-path-query-result .pass-info .direction {
+		margin: 0;
+		margin-top: 10px;
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/direction.png) no-repeat 10px 0px;
+	}
+	#vehicle-path-query-result .pass-info .position {
+		color: #3868A9;
+		margin-top: 10px;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/position.png) no-repeat 10px 0px;
+	}
+	#vehicle-path-query-result #back {
+		position: absolute;
+		top: 5px;
+		right: 10px;
+		width: 65px;
+		height: 30px;
+	}
+	#vehicle-path-query-result img {
+		cursor: pointer;
+	}
+	#vehicle-path-query-result #functionDiv > div {
+		height: 30px;
+		line-height: 30px;
+		margin-left: 20px;
+	}
+</style>

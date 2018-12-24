@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysAreaMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.traffic.SysArea" >
+    <id column="AREA_ID" property="areaId" jdbcType="VARCHAR" />
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+    <result column="AREA_TYPE" property="areaType" jdbcType="VARCHAR" />
+    <result column="SITE_CODE_LIST" property="siteCodeList" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    AREA_ID, AREA_NAME, AREA_TYPE, SITE_CODE_LIST, ORG_ID, ORG_PRIVILEGE_CODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_AREA
+    where AREA_ID = #{areaId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAreaList" resultMap="BaseResultMap" parameterType="cy.its.syscfg.domain.model.traffic.SysArea" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_AREA
+    where AREA_TYPE = #{areaType,jdbcType=VARCHAR}
+    AND ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_AREA
+    where AREA_ID = #{areaId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.traffic.SysArea" >
+    insert into T_SYS_AREA (AREA_ID, AREA_NAME, AREA_TYPE, 
+      SITE_CODE_LIST, ORG_ID, ORG_PRIVILEGE_CODE
+      )
+    values (#{areaId,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR}, #{areaType,jdbcType=VARCHAR}, 
+      #{siteCodeList,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{orgPrivilegeCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.traffic.SysArea" >
+    insert into T_SYS_AREA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="areaId != null" >
+        AREA_ID,
+      </if>
+      <if test="areaName != null" >
+        AREA_NAME,
+      </if>
+      <if test="areaType != null" >
+        AREA_TYPE,
+      </if>
+      <if test="siteCodeList != null" >
+        SITE_CODE_LIST,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="areaId != null" >
+        #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null" >
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaType != null" >
+        #{areaType,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCodeList != null" >
+        #{siteCodeList,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.traffic.SysArea" >
+    update T_SYS_AREA
+    <set >
+      <if test="areaName != null" >
+        AREA_NAME = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaType != null" >
+        AREA_TYPE = #{areaType,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCodeList != null" >
+        SITE_CODE_LIST = #{siteCodeList,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null" >
+        ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where AREA_ID = #{areaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.traffic.SysArea" >
+    update T_SYS_AREA
+    set AREA_NAME = #{areaName,jdbcType=VARCHAR},
+      AREA_TYPE = #{areaType,jdbcType=VARCHAR},
+      SITE_CODE_LIST = #{siteCodeList,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+    where AREA_ID = #{areaId,jdbcType=VARCHAR}
+  </update>
+</mapper>

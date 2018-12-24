@@ -1,0 +1,161 @@
+<div id="device-vehcile-monitor" class="easyui-layout">
+	<div id="imageArea" data-options="region:'east',border:false,width:300" style="border-left: solid 1px #ddd;">
+		&nbsp;
+	</div>
+	<div data-options="region:'center',border:false">
+		<table id="passList" cy-datagrid="options"></table>
+	</div>
+</div>
+<script>
+	
+	InitPage(["deviceSysNbr"],function($scope){
+		//获得默认的数据字典
+		$scope.$getDefaultCode(["004"]);
+		
+		$scope.load = function(){
+			//开启订阅信息
+			$scope.subsribe = new Subsribe({
+				type : SubsribeType.deviceVehicleMonitor,
+				onMessage : handleMessage,
+				param : {
+					deviceSysNbr : $scope.deviceSysNbr
+				}
+			});
+		};
+		
+		/**
+		 * 处理订阅消息 
+		 */
+		var handleMessage = function(data){
+			if(data.deviceSysNbr != $scope.deviceSysNbr){
+				return;
+			}
+			//格式化时间
+			data.passTime = formatDate(data.passTime);
+			//列表中添加数据
+			$scope.$("#passList").datagrid("insertRow", {
+				row : data,
+				index : 0
+			});
+			//判断列表中数据是否超出最大范围（默认50）
+			if ($scope.$("#passList").datagrid("getRows").length > 50) {
+				//删除最后一行
+				$scope.$("#passList").datagrid("deleteRow", 50);
+			}
+			//更换图片
+			if(data.imageUrlPath && data.imageUrlPath.indexOf("http")>=0){
+				$scope.$setParam("images",[data.imageUrlPath]);
+			}else{
+				$scope.$setParam("images",[$scope.$servletRoot + "/PassImage?imageUrl=" + data.imageUrlPath]);
+			}
+			$scope.$("#imageArea").panel("refresh","tpls/public/image-view.html");
+		};
+		
+		//设置datagrid参数
+		$scope.options = {
+			columns : [[{
+				field : "plateNbr",
+				title : "号牌号码",
+				width : 150,
+				formatter : formatColor
+			},{
+				field : "vehicleShape",
+				title : "车辆形状",
+				width : 100,
+				formatter : getCodeName("004")
+			},{
+				field : "directionName",
+				title : "方向",
+				width : 100
+			},{
+				field : "passTime",
+				title : "时间",
+				width : 225
+			},{
+				field : "speed",
+				title : "车速",
+				width : 75
+			}]],
+			pagination : false,
+			scrollbarSize : 0
+		};
+		
+		/**
+		 * 获得系统代码名称
+		 */
+		function getCodeName(type) {
+			return function(value) {
+				return $scope.$getCodeName(type, value);
+			};
+		}
+
+		/**
+		 * 格式化日期
+		 */
+		function formatDate(time) {
+			var date = new Date(time);
+			return date.format("yyyy-MM-dd hh:mm:ss");
+		}
+
+		/**
+		 * 好牌颜色
+		 */
+		function formatColor(value, data) {
+			var span = $("<span></span>").text(value);
+			var colorCode = data.plateColor;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			}
+			span.css("padding", "2px 5px");
+			return span.addClass(className).get(0).outerHTML;
+		}
+	});
+	
+</script>
+<style>
+	#device-vehcile-monitor .plate-blue {
+		border-radius: 5px;
+		background-color: blue;
+		color: #FFF;
+	}
+	#device-vehcile-monitor .plate-yellow {
+		border-radius: 5px;
+		background-color: yellow;
+		color: #000;
+	}
+	#device-vehcile-monitor .plate-black {
+		border-radius: 5px;
+		background-color: black;
+		color: #FFF;
+	}
+	#device-vehcile-monitor .plate-white {
+		border-radius: 5px;
+		background-color: white;
+		color: red;
+	}
+	#device-vehcile-monitor .plate-other {
+		border-radius: 5px;
+		background-color: #888888;
+		color: #FFF;
+	}
+	#device-vehcile-monitor .image{
+		height : 100%; 
+		float : left;
+		margin-left : 5px;
+	}
+</style>

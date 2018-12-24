@@ -1,0 +1,648 @@
+<div class="easyui-layout" id="highRateSpaceManage">
+	<div data-options="region:'north',border:false,height:120" style="border-bottom:solid 1px #ddd">
+		<form cy-form="formData" id ="searchForm" >
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">管理单位：</div>
+						<div class="td" style="width: 180px;">
+							<input id="orgCodes" class="cy-org-radio" iscode=true name="orgCodes" style="width: 180px;" />
+						</div>
+						<div class="th">
+							道路：
+						</div>
+						<div class="td" style="width:180px;">
+							<input class="cy-road-checkbox"  name="roadCodes" iscode=true style="width:180px;" id="roadCodes" filter="getRoadByOrg"/>
+						</div>
+						<div class="th">违法类型:</div>
+						<div class="td">
+							<input class="easyui-combobox" name="violationTypes"
+								id="violationTypes" style="width: 135px"
+								data-options="valueField:'value',multiple:true,textField:'text',panelHeight:'auto',required:true"
+								cy-code="011" /> 
+						</div>
+						<div class="th">号牌类型:</div>
+						<div class="td">
+							<input class="easyui-combobox" name="plateType"
+								id="plateType" style="width: 135px"
+								data-options="valueField:'value',textField:'text',panelHeight:'auto'"
+								cy-code="002" /> 
+						</div>
+						
+					</div>
+					<div class="tr">
+					<div class="th">违法时间：</div>
+						<div class="td" style="width: 200px;">
+							<input name="startDateTime" data-options="prompt:'开始时间不能大于结束时间',validType:['maxDate[\'end\']','date'],required:true" 
+                                   class="easyui-datetimebox" style="width: 150px;" id="start"/> 至 
+                            <input name="endDateTime" data-options="prompt:'结束时间不能小于开始时间',validType:['minDate[\'start\']','date'],required:true"
+                                class="easyui-datetimebox" style="width: 150px;" id="end"/>
+						</div>
+						<div class="th" style="margin-left: 150px;">
+							<a class="easyui-linkbutton"
+								data-options="iconCls:'icon-search'" cy-click="search"
+								style="width: 70px; margin-left: 50px">分析</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'south',border:false" style="display: none">
+		<table cy-datagrid="options" cy-querydata="formData" cy-url="/vehTrack/spaceTime/getDistribution" id="datagrid"></table>
+	</div>
+	<div data-options="region:'center',border:false" >
+	 <div class="easyui-layout" >
+		<div id="p" data-options="region:'west'"  style="width:50%;padding:10px">
+		<div class="easyui-layout" style="width:50%;padding:10px">
+		<div data-options="region:'center',border:false">
+		<div id="container"  style="height:90%;padding:20px,width:95%;">
+		 </div>
+		</div>
+					<div data-options="region:'south',border:false,height:30">
+						<div style="display: none; text-align: center" id="spaceTimeDiv">
+							<input type="radio" name="spaceTime" value="time"
+								checked="checked" cy-click="radioClick('time')" /> 违法时间分析 <input
+								type="radio" name="spaceTime" value="space"
+								cy-click="radioClick('space')" /> 违法空间分析 <a
+								class="easyui-linkbutton" data-options="iconCls:'icon-left'"
+								cy-click="selectPre">上一页</a> <a class="easyui-linkbutton"
+								data-options="iconCls:'icon-right'" cy-click="selectNext">下一页</a>
+						</div>
+					</div>
+				</div>
+		</div>
+		<div data-options="region:'center'" >
+		<div id="container1" style="height:95%;padding:20px,width:95%;">
+		</div>
+	</div>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+		$scope.$getDefaultCode(["010","011","206"]);
+		//记录数据字典
+		var dicts;
+		//记录机构树
+		var district;
+		//违法类型数组
+		var forceTypes;
+		//违法类型名称
+    	var forceNames; 
+		//违法类型字符串
+    	var violationTypes ;
+    	// 道路code
+    	var roadCode;
+    	//道路名称
+    	var roadName;
+    	//总页数
+    	var totalPageNumber;
+		
+		/**
+		 * 初始化加载方法
+		 */
+		$scope.load = function(){
+			//关闭左侧菜单栏
+			$scope.$topLayout.layout("collapse", "west");
+			
+			initData()
+			//初始化查询
+			//$scope.$search("formData");
+		};
+		
+		$scope.formData = {
+				startDateTime:new Date().format("yyyy-MM-dd 00:00:00"),
+				endDateTime:new Date().format("yyyy-MM-dd hh:mm:ss")
+		};
+		//选择上一条
+		$scope.selectPre = function() {
+			var currentPage = $scope.$("#datagrid").datagrid(
+			"getPager").pagination("options").pageNumber;
+			if( currentPage > 1 && currentPage <= totalPageNumber){
+			 	$scope.searchProgress();
+			 	$scope.$updateData("formData")
+			 	 $scope.formData.isPagination= "true";
+			 	 $scope.formData.statBy = 'road';
+			 	 $scope.formData.violationTypes = violationTypes;
+				$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage - 1);
+			}else{
+				$.messager.alert('提示','已到第一条!',"warning");
+			}
+		};
+		//选择下一条
+		$scope.selectNext = function() {
+			var currentPage = $scope.$("#datagrid").datagrid(
+			"getPager").pagination("options").pageNumber;
+			if( currentPage < totalPageNumber){
+			 	$scope.searchProgress();
+			 	$scope.$updateData("formData")
+			 	 $scope.formData.isPagination= "true";
+			 	 $scope.formData.statBy = 'road';
+			 	 $scope.formData.violationTypes = violationTypes;
+				$scope.$("#datagrid").datagrid("getPager").pagination('select', currentPage + 1);
+			}else{
+				$.messager.alert('提示','已到最后一条!',"warning");
+			}
+		};
+
+		/**
+		 * 定义格式化方法集
+		 * @type {Object}
+		 */
+		var formatters = {
+			//号牌颜色
+			plateColor : function(value){
+				return getNameFromDicts("005",value);
+			},
+			//车身颜色
+			vehColor : function(value){
+				return getNameFromDicts("006",value);
+			},
+			//号牌类型
+			plateType : function(value){
+				return getNameFromDicts("002",value);
+			},
+			//操作栏
+			operater : function(value,row,index){
+				var removeButton = $('<a class="button-remove" title="撤销布控" cy-click="removeControl(\'' + row.id + '\')"></a>');
+				removeButton.linkbutton({
+					iconCls : "icon-undo",
+					plain : true
+				});
+				return $("<span></span>").append(removeButton).html();
+			}
+		};
+		//datagrid参数
+		$scope.options = {
+			columns:[[
+				{field:"id",checkbox:true},
+				{title:"道路名称",field:"road_code",width:100,formatter:$scope.$getRoadName},
+				{title:"违法次数",field:"vioCount",width:100},
+				{title:"违法密度",field:"vioDensity",width:100},
+			]],
+			pageSize:10,
+            pageList:[10],
+			onLoadSuccess:function(data){
+				$.messager.progress("close");
+				var rows = $scope.$('#datagrid').datagrid('getRows');
+				initData();
+				//if (rows.length > 0){
+					showAllChart(rows,'');
+				//}
+			}
+		};
+		/**
+		 * 查询数据
+		 * @return {[type]} [description]
+		 */
+		$scope.search = function(){
+			 if(!$scope.$("#searchForm").form("validate")){
+					return;
+				}
+			 $scope.searchProgress();
+			 forceTypes = $scope.$("#violationTypes").combobox("getValues");
+         	 forceNames = $scope.$("#violationTypes").combobox("getText"); 
+         	 
+			 $scope.formData.statBy = 'road';
+			 $scope.$updateData("formData")
+			 violationTypes = arrayToString(forceTypes);
+			 $scope.formData.violationTypes = violationTypes;
+			 $scope.formData.isPagination= "true";
+			 $scope.formData.pageNumber= 1;
+			 $scope.$search("formData", "", function(data) {
+				 $.messager.progress("close");
+				if (data && data != null && data.rows.length > 0) {
+					$scope.$("#datagrid").datagrid("getPager")
+					.pagination('refresh',{total: data.total,
+						pageNumber: 1
+							});
+					//页面总页数
+               		if (data.total%10==0){
+               		totalPageNumber = data.total/10;
+               		}else {
+               			totalPageNumber = Math.ceil(data.total/10);
+               			if (data.total < 10){
+               				totalPageNumber = 1;
+               			}
+               		}
+				} else {
+					//当图没有加载出啦的时候
+					$scope.$("#spaceTimeDiv").css("display","none");
+					//$scope.$("#pageDiv").css("display","none");
+					$.messager.alert("提示","查无数据",'info');
+				};
+					});
+		};
+		
+			/*
+		    *当radio点击的时候，增加查询事件
+		    */
+		    $scope.radioClick =function(value){
+		    	searchAnsy(roadCode,value);
+		    };
+
+		/**
+		 *联动
+		 */
+		//机构和道路的联动
+		$scope.getRoadByOrg = function(id, text, attribute) {
+			var orgId = $scope.$("#orgCodes").textbox("getValue");
+			var privCode = $scope.$getOrgPrivCode(orgId);
+			if (!orgId || orgId == '') {
+				return true;
+			}
+			if (attribute.nodeType == "road") {
+				var orgPrivCodes = attribute.orgPrivCode.split(",");
+				for (var i in orgPrivCodes) {
+					if (orgPrivCodes[i].startWith(privCode)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				return true;
+			}
+		};
+		
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param code  数据字典code
+		 * @param value 需要获取的value值
+		 * @return 对应字典项的text值
+		 */
+		var getNameFromDicts =  function(code,value){
+			if(!value){
+				return "";
+			}
+			var items= dicts[code];
+			for(var index in items){
+				var item = items[index];
+				if(item.value == value){
+					return item.text;
+				}
+			}
+		};
+		
+
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param value 机构ID
+		 * @param children 机构数对象，或children数据
+		 * @return 对应字典项的text值
+		 */
+		var getDistrictNameById = function(value,children){
+			if(!value){
+				return "";
+			}
+			for(var index=0; index<children.length; index++){
+				var item = children[index];
+				if(item.id == value){
+					return item.text;
+				}else if(item.children && item.children.length > 0){
+					return getDistrictNameById(value,item.children);//递归查找所有子节点
+				}
+			}
+		};
+		
+		/**
+		 * 将数组转换成逗号隔开字符串
+		 * Added by wangyunqi on 20160316
+		 * */
+		 function arrayToString (arrayObj) {
+			var result = "";
+			
+			if (arrayObj == null || arrayObj.length == 0) {
+				return result;
+			}
+			
+			for(var i = 0; i < arrayObj.length; i++) {
+				result += arrayObj[i] + ",";
+			}
+			return result.substring(0, result.length -1);
+			
+		};
+		
+		 //定义echarts入口
+        function initData(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar',
+                        'echarts/chart/pie'
+                    ]
+            );
+        };
+			/**
+		    *显示所有道路的柱状图
+		    */
+		    function showAllChart(allRows) {
+				
+		        var myChart = require('echarts').init($scope.$("#container").get(0));
+		        var myChart2 = require('echarts').init($scope.$("#container1").get(0));
+		        if (allRows.length == 0){
+		        	$scope.$("#spaceTimeDiv").css("display","none");
+					//$scope.$("#pageDiv").css("display","none");
+					//$.messager.alert("提示","查无数据",'info');
+					var option = {};
+		        	myChart.setOption(option);
+		        	myChart2.setOption(option);
+		        	return ;
+		        }
+				//当图加载出啦的时候
+				$scope.$("#spaceTimeDiv").show();
+				$scope.$("#highRateSpaceManage").layout("resize");
+				//$scope.$("#pageDiv").css("display","block");
+				//道路code
+				var roadCodesArray = [];
+		    	// 违法次数数据
+				var vioCountList = [];
+				//违法密度数据
+				var vioDensityList = [];
+				var yData = [];
+				var seriesData= [];
+				var row;
+				 for (var i =0;i<allRows.length;i++){	
+		    		row= allRows[i];
+		    		roadCodesArray.push(row.road_code);
+		    		yData.push($scope.$getRoadName(row.road_code));
+		    		vioCountList.push(row.vioCount);
+		    		if(row.vioDensity && row.vioDensity !=null){
+		    		 vioDensityList.push(row.vioDensity)
+		    		}else{
+		    			vioDensityList.push(0)
+		    		}
+				}
+				
+				
+				var	vioCountSerie = {
+			            name:'违法次数',
+			            type:'bar',
+			            stack: '总量',
+			            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+			            data:vioCountList
+			        }
+				var	vioDensitySerie = {
+			            name:'密度',
+			            type:'bar',
+			            stack: '密度',
+			            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+			            data:vioDensityList
+			        }
+					seriesData.push(vioCountSerie);
+					seriesData.push(vioDensitySerie);
+				
+		    	// 基于准备好的dom，初始化echarts实例
+	        		var option = {
+	        			    tooltip : {
+	        			        trigger: 'axis'
+	        			    },
+	        			    toolbox: {
+	        			        show : false,
+	        			        feature : {
+	        			            mark : {show: false},
+	        			            dataView : {show: true, readOnly: false},
+	        			            magicType: {show: true, type: ['line', 'bar']},
+	        			            restore : {show: true},
+	        			            saveAsImage : {show: true}
+	        			        }
+	        			    },
+	        			    calculable : false,
+	        			    legend: {
+	        			        data:['违法次数','密度']
+	        			    },
+	        			    xAxis : [
+	        			        {
+	        			            type : 'category',
+	        			            data : yData,
+	        			            axisLabel:{
+	 		                           interval:0,
+	 		                           rotate:30,
+	 		                           margin:2,
+	 		                       }
+	        			        }
+	        			    ],
+	        			    yAxis : [
+	        			        {
+	        			            type : 'value',
+	        			            name : '违法次数',
+	        			            axisLabel : {
+	        			                formatter: '{value} '
+	        			            }
+	        			        },
+	        			        {
+	        			            type : 'value',
+	        			            name : '密度',
+	        			            axisLabel : {
+	        			                formatter: '{value} 次/公里'
+	        			            }
+	        			        }
+	        			    ],
+	        			    series : [
+
+	        			        {
+	        			            name:'违法次数',
+	        			            type:'bar',
+	        			            data:vioCountList
+	        			        },
+	        			      
+	        			        {
+	        			            name:'密度',
+	        			            type:'bar',
+	        			            yAxisIndex: 1,
+	        			            data:vioDensityList
+	        			        }
+	        			    ]
+	        			};
+						// 使用刚指定的配置项和数据显示图表。
+						myChart.setOption(option);
+						//初始化
+						roadName = $scope.$getRoadName(roadCodesArray[0]);
+						roadCode = roadCodesArray[0];
+						roadName = $scope.$getRoadName(roadCode);
+						searchAnsy(roadCode);
+						myChart.on('click', function (param) {
+						roadCode = roadCodesArray[param.dataIndex];
+						roadName = param.name;
+		                searchAnsy(roadCode)
+		            });
+		    };
+		    
+		    /**
+			    *显示所有道路点位的柱状图
+			    */
+		    function showRoadSiteChart(data,spaceTime){
+				// 基于准备好的dom，初始化echarts实例
+		        var myChart = require('echarts').init($scope.$("#container1").get(0));
+		    	var xAxis = [];
+		    	var text;
+				var row;
+				var rows = data.result.rows;
+				var xName;
+				if ("space" == spaceTime){
+					text = roadName+'各点位违法分布'
+					xName = "点位";
+				}else {
+					text = roadName+'24小时违法分布'
+					xName = "小时";
+				}
+				for (var i =0;i<rows.length;i++){	
+		    		row= rows[i];
+		    		if ("space" == spaceTime){
+			    		if(row.site_name){
+			    		xAxis.push(row.site_name);
+			    		}else {
+			    		xAxis.push(row.vio_site_code);
+			    		}
+		    		}else {
+				    	xAxis.push(row.dateStr.substr(0,2));
+		    		}
+				}
+				var mapData;
+				var series = [];
+				var legendData = [];
+				for (var i= 0;i<forceTypes.length;i++){
+					//后台分析得数据中如果含有违法类型，就从map中取值，否者为0
+					if (data.outMap[forceTypes[i]]){
+						mapData = data.outMap[forceTypes[i]];
+					}
+					var Data ={ name: forceNames.split(",")[i],
+							type : 'bar',
+							stack : '违法次数',
+				            data: mapData}
+					series.push(Data);
+					legendData.push(forceNames.split(",")[i]);
+					}
+		    	
+		    	var option = {
+		    		    tooltip : {
+		    		        trigger: 'axis',
+		    		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		    		            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+		    		        }
+		    		    },
+		    		    title:{
+		    		        text : text,
+		    		        y:'top',
+		    		        x:'left'
+		    		      },
+		    		    legend: {
+		    		   	 	x:'right',
+		    		        data:legendData //违法类型名称
+		    		    },
+		    		    grid: { // 控制图的大小，调整下面这些值就可以，
+		    	             x: 60,
+		    	             x2: 20,
+		    	             y2: 100,// y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+		    	         },
+		    		    toolbox: {
+		    		        show : false,
+		    		        orient: 'vertical',
+		    		        x: 'right',
+		    		        y: 'center',
+		    		        feature : {
+		    		            mark : {show: false},
+		    		            dataView : {show: true, readOnly: false},
+		    		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+		    		            restore : {show: true},
+		    		            saveAsImage : {show: true}
+		    		        }
+		    		    },
+		    		    calculable : false,
+		    		    xAxis : [
+		    		        {
+		    		        	 axisLabel:{
+		                           interval:0,
+		                           rotate:30,
+		                           margin:2,
+		                       },
+		    		            type : 'category',
+		    		            name:xName,
+		    		            data : xAxis
+		    		        }
+		    		    ],
+		    		    yAxis : [
+		    		        {
+		    		            type : 'value',
+		    		            	name : '违法次数',
+	        			            axisLabel : {
+	        			                formatter: '{value} '
+	        			            }
+		    		        }
+		    		    ],
+		    		    series : series
+		    		        
+		    		};
+				    	// 使用刚指定的配置项和数据显示图表。
+						myChart.setOption(option);
+						$scope.$("#container1").css("display","block");
+		    }
+		    
+		    /*
+		    *查询
+		    */
+		    function searchAnsy(roadCode){
+		    	var spaceTime=$scope.$("input[name='spaceTime']:checked").val()
+		    	var url;
+		    	$scope.$updateData("formData");
+		    	$scope.formData.violationTypes = violationTypes;
+		    	$scope.formData.isPagination= "false";
+		    	//空间分布
+		    	if ('space' == spaceTime){
+			    	$scope.formData.statBy = 'site';
+			    	url = $scope.$restRoot + "/vehTrack/spaceTime/getDistribution";
+		    	}else {
+		    		//时间分布
+		    		$scope.formData.statBy = 'hourd';
+		    		url = $scope.$restRoot + "/vehTrack/spaceTime/getVioTrendStat";
+		    	}
+		    	$scope.formData.roadCodes = roadCode;
+				//获取后台数据
+				$scope.$ajaxRequest({
+				url : url,
+				params : $scope.formData,
+				success : function(data) {
+					if (data && data.result.rows && data.result.rows.length>0){
+						var rows = data.result.rows;
+						showRoadSiteChart(data,spaceTime);
+					}
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+				},
+				fail : function() {
+					$.messager.progress("close");
+					$.messager.alert("提示", "服务器繁忙","info");
+				}
+				});
+		    	
+		    };
+		    /**
+			 * 显示查询进度条
+			 */
+			$scope.searchProgress = function() {
+				$.messager.progress({
+					title : false,
+					msg : "正在查询，请稍后...",
+					interval : 1000,
+					text : "查询中..."
+				});
+			};
+		
+	});
+</script>
+<style>
+	#highRateSpaceManage .th{
+		width: 80px;
+		text-align: right;
+	}
+	#highRateSpaceManage .td{
+		width: 120px;
+	}
+</style>

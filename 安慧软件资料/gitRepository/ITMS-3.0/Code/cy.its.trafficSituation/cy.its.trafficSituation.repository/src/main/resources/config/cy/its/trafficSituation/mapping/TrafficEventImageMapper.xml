@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficEventImageMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficEventImage" >
+    <id column="EVENT_IMAGE_ID" property="eventImageId" jdbcType="VARCHAR" />
+    <result column="ALARM_EVENT_ID" property="alarmEventId" jdbcType="VARCHAR" />
+    <result column="IMAGE_URL" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="RECORD_ID" property="recordId" jdbcType="VARCHAR" />
+    <result column="VIDEO_CODE" property="videoCode" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EVENT_IMAGE_ID, ALARM_EVENT_ID, IMAGE_URL, RECORD_ID, VIDEO_CODE, START_TIME, END_TIME, 
+    REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_EVENT_IMAGE
+    where EVENT_IMAGE_ID = #{eventImageId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByAlarmId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_EVENT_IMAGE
+    where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_EVENT_IMAGE
+    where EVENT_IMAGE_ID = #{eventImageId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficEventImage" >
+    insert into T_TRAFFIC_EVENT_IMAGE (EVENT_IMAGE_ID, ALARM_EVENT_ID, IMAGE_URL, 
+      RECORD_ID, VIDEO_CODE, START_TIME, 
+      END_TIME, REMARK)
+    values (#{eventImageId,jdbcType=VARCHAR}, #{alarmEventId,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{recordId,jdbcType=VARCHAR}, #{videoCode,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficEventImage" >
+    insert into T_TRAFFIC_EVENT_IMAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="eventImageId != null" >
+        EVENT_IMAGE_ID,
+      </if>
+      <if test="alarmEventId != null" >
+        ALARM_EVENT_ID,
+      </if>
+      <if test="imageUrl != null" >
+        IMAGE_URL,
+      </if>
+      <if test="recordId != null" >
+        RECORD_ID,
+      </if>
+      <if test="videoCode != null" >
+        VIDEO_CODE,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="eventImageId != null" >
+        #{eventImageId,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmEventId != null" >
+        #{alarmEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null" >
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="recordId != null" >
+        #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoCode != null" >
+        #{videoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficEventImage" >
+    update T_TRAFFIC_EVENT_IMAGE
+    <set >
+      <if test="alarmEventId != null" >
+        ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null" >
+        IMAGE_URL = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="recordId != null" >
+        RECORD_ID = #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="videoCode != null" >
+        VIDEO_CODE = #{videoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where EVENT_IMAGE_ID = #{eventImageId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficEventImage" >
+    update T_TRAFFIC_EVENT_IMAGE
+    set ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR},
+      IMAGE_URL = #{imageUrl,jdbcType=VARCHAR},
+      RECORD_ID = #{recordId,jdbcType=VARCHAR},
+      VIDEO_CODE = #{videoCode,jdbcType=VARCHAR},
+      START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where EVENT_IMAGE_ID = #{eventImageId,jdbcType=VARCHAR}
+  </update>
+</mapper>

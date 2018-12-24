@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficEventProcessMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficEventProcess" >
+    <id column="EVENT_PROCESS_ID" property="eventProcessId" jdbcType="VARCHAR" />
+    <result column="ALARM_EVENT_ID" property="alarmEventId" jdbcType="VARCHAR" />
+    <result column="MANUAL_REPORT_TRA_ID" property="manualReportTraId" jdbcType="VARCHAR" />
+    <result column="DEAL_METHOD" property="dealMethod" jdbcType="VARCHAR" />
+    <result column="DEAL_PERSON" property="dealPerson" jdbcType="VARCHAR" />
+    <result column="DEAL_TIME" property="dealTime" jdbcType="TIMESTAMP" />
+    <result column="DEAL_PERSON_PHONE" property="dealPersonPhone" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EVENT_PROCESS_ID, ALARM_EVENT_ID, MANUAL_REPORT_TRA_ID, DEAL_METHOD, DEAL_PERSON, 
+    DEAL_TIME, DEAL_PERSON_PHONE, REMARK
+  </sql>
+  <select id="selectByEventId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_EVENT_PROCESS
+    where ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_EVENT_PROCESS
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_EVENT_PROCESS
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficEventProcess" >
+    insert into T_TRAFFIC_EVENT_PROCESS (EVENT_PROCESS_ID, ALARM_EVENT_ID, MANUAL_REPORT_TRA_ID, 
+      DEAL_METHOD, DEAL_PERSON, DEAL_TIME, 
+      DEAL_PERSON_PHONE, REMARK)
+    values (#{eventProcessId,jdbcType=VARCHAR}, #{alarmEventId,jdbcType=VARCHAR}, #{manualReportTraId,jdbcType=VARCHAR}, 
+      #{dealMethod,jdbcType=VARCHAR}, #{dealPerson,jdbcType=VARCHAR}, #{dealTime,jdbcType=TIMESTAMP}, 
+      #{dealPersonPhone,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficEventProcess" >
+    insert into T_TRAFFIC_EVENT_PROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="eventProcessId != null" >
+        EVENT_PROCESS_ID,
+      </if>
+      <if test="alarmEventId != null" >
+        ALARM_EVENT_ID,
+      </if>
+      <if test="manualReportTraId != null" >
+        MANUAL_REPORT_TRA_ID,
+      </if>
+      <if test="dealMethod != null" >
+        DEAL_METHOD,
+      </if>
+      <if test="dealPerson != null" >
+        DEAL_PERSON,
+      </if>
+      <if test="dealTime != null" >
+        DEAL_TIME,
+      </if>
+      <if test="dealPersonPhone != null" >
+        DEAL_PERSON_PHONE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="eventProcessId != null" >
+        #{eventProcessId,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmEventId != null" >
+        #{alarmEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="manualReportTraId != null" >
+        #{manualReportTraId,jdbcType=VARCHAR},
+      </if>
+      <if test="dealMethod != null" >
+        #{dealMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="dealPerson != null" >
+        #{dealPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dealTime != null" >
+        #{dealTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dealPersonPhone != null" >
+        #{dealPersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficEventProcess" >
+    update T_TRAFFIC_EVENT_PROCESS
+    <set >
+      <if test="alarmEventId != null" >
+        ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR},
+      </if>
+      <if test="manualReportTraId != null" >
+        MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR},
+      </if>
+      <if test="dealMethod != null" >
+        DEAL_METHOD = #{dealMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="dealPerson != null" >
+        DEAL_PERSON = #{dealPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dealTime != null" >
+        DEAL_TIME = #{dealTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dealPersonPhone != null" >
+        DEAL_PERSON_PHONE = #{dealPersonPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficEventProcess" >
+    update T_TRAFFIC_EVENT_PROCESS
+    set ALARM_EVENT_ID = #{alarmEventId,jdbcType=VARCHAR},
+      MANUAL_REPORT_TRA_ID = #{manualReportTraId,jdbcType=VARCHAR},
+      DEAL_METHOD = #{dealMethod,jdbcType=VARCHAR},
+      DEAL_PERSON = #{dealPerson,jdbcType=VARCHAR},
+      DEAL_TIME = #{dealTime,jdbcType=TIMESTAMP},
+      DEAL_PERSON_PHONE = #{dealPersonPhone,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=CHAR}
+  </update>
+</mapper>

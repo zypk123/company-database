@@ -1,0 +1,294 @@
+<div id="devicePhotoFrm" style="width: 100%;">
+	<!-- 保存按钮 -->
+    <div style="padding: 8px">
+        <a class="easyui-linkbutton button-save button-main" data-options="iconCls:'icon-save'" cy-click="savePhoto">保存</a>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="destroyTab4">关闭</a>
+    </div>
+    <div id="container" style="position:absolute;overflow-y:auto;height:440px;width: 884px">
+    	<form method="post" cy-form="formData">
+            <div class="table" style="margin-top: 5px">
+            	<div class="tr">
+                    <div class="td" style="width: 100%">
+                        <div style="color: red;font-size: 14px">
+                            	最多只能上传5张实景图片
+                        </div>
+                    </div>
+                </div>
+                <!-- 实景图片区域 -->
+                <div class="tr">
+                    <div class="td" style="width: 100%">
+                        <div id="photoDiv">
+                        </div>
+                        <div id="upPhotoTemDiv" class='imgDiv'>
+                            <img id="upPhoto" src="themes/default/images/upload.png" style="margin: 70px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</form>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["destroyTab4","deviceId3"],function($scope) {
+        var deviceId = $scope.deviceId3;//获取添加设备时设备ID
+        var photoIdStr = ""; //图片Id字符串
+        $scope.load = function() {
+			//初始化文件上传组件
+			$scope.uploader = initUpload();
+			$scope.uploader.init();
+			$scope.imageFiles = {};	//保存/cosUploadServlet的File对象
+			$scope.imageUrls = {};//保存文件URL
+            $scope.imageServerUrls =[];//图片在服务端的URL地址
+            showDbImg(deviceId);
+		};
+               
+        /**
+		 * 初始化文件上传
+		 * @return {[type]} [description]
+		 */
+		function initUpload() {
+			return new plupload.Uploader({
+				runtimes : 'html5',
+				browse_button : $scope.$("#upPhoto")[0], // you can pass in id...
+				container : $scope.$("#upPhotoTemDiv")[0], // ... or DOM Element itself
+				url : 'cosUploadServlet',
+				filters : {
+					max_file_size : '10mb',
+					prevent_duplicates : true, //不允许选取重复文件
+					mime_types : [{
+						title : "照片文件",
+						extensions : "jpg,png,jpeg,bmp,gif"
+					}]
+				},
+				init : {
+					PostInit : function() {
+
+					},
+					/**
+					 *添加文件
+					 */
+					FilesAdded: function(up, files) {
+						if (this.files.length + $scope.imageServerUrls.length > 5) {
+							for (var i = 0; i < files.length; i++) {
+								//删除本次选择的图片
+								this.removeFile(files[i]);
+							}
+							$.messager.alert("提示","最多只能上传5张实景图片！");
+							return false;
+						}
+						if (this.files.length + $scope.imageServerUrls.length == 5) {
+							$scope.$("#upPhotoTemDiv").hide();
+						}
+                        for(var index=0; index<files.length; index++){
+                            var file = files[index];
+                            //请按照文件名的形式，存储文件信息到页面变量中
+                            parseImageFile(file);
+                        }
+                    },
+					Error : function(up, err) {
+						$.messager.alert("错误提示",err.message);
+					},
+					//当队列中的某一个文件上传完成后触发
+					FileUploaded : function(up, file, responseObject) {
+						var urlObject = $.parseJSON(responseObject.response)[0];
+						$scope.imageServerUrls.push(urlObject.url);
+					},
+					StateChanged : function(up) {
+						if (up.files.length === (up.total.uploaded + up.total.failed))//文件上传完毕
+						{	
+						    var failedNum="";	
+						    if(up.total.failed!=0)	
+						    {
+						        failedNum=up.total.failed+"张图片上传失败！";
+						    }				      	    
+                            $scope.save();
+						}
+					}
+				}
+			});
+		}
+
+		/**
+		 * 获得图片文件的路径
+		 * @return {[type]} [description]
+		 */
+		function parseImageFile(file) {
+			var name = file.name;
+			$scope.imageFiles[name] = file;
+			var reader = new FileReader();
+			reader.readAsDataURL(file.getSource().getSource());
+			reader.onload = function(e) {
+				$scope.imageUrls[name] = this.result;
+				var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+				var img = $("<img style='width: 270px;height: 270px'/>");
+				img.attr("src", this.result);
+				imgDiv.append(img);
+				var deleteButton = $("<a class='deleteButton'></a>").linkbutton({
+					iconCls : "icon-cancel-solid",
+					plain : true
+				});
+				deleteButton.click(function() {
+					//把这个div删除
+					$(this).parent().remove();
+					//把文件队列中文件删除
+					$scope.uploader.removeFile(file);
+					if ($scope.imageServerUrls.length < 5) {
+						$scope.$("#upPhotoTemDiv").show();
+					}
+				});
+				imgDiv.append(deleteButton);
+				$scope.$("#photoDiv").append(imgDiv);
+			};
+		}
+		//加载数据库中的图片
+		function showDbImg(deviceId){
+		    $scope.$ajaxRequest({
+		    	url: $scope.$restRoot+'device/photoInfoManage/queryPhotoByDeviceId',
+		    	params: {deviceId: deviceId},
+		    	method: 'post',
+		    	success: function(data){
+		    		//$scope.imageUploaded = data;
+		    		if(data.length > 0){
+						for (var i = 0; i < data.length; i++) {
+							$scope.imageServerUrls.push(data[i].photo);
+							if(i == 0){
+								photoIdStr = photoIdStr + data[i].photoId;
+							}else{
+								photoIdStr = photoIdStr + "," + data[i].photoId;
+							}
+							createDbImg(data[i].photo);
+						}
+					}else{
+						return false;
+					}
+		    		if($scope.imageServerUrls.length == 5){
+		    			$scope.$("#upPhotoTemDiv").hide();
+		    		}
+		    	},
+		    	fail: function(errMsg){
+		    		$.messager.alert("提示","加载图片失败！");
+		    	}
+		    });
+		}
+		//查看创建图片
+		function createDbImg(url){
+		    var imgDiv = $("<div class='imgDiv' style='float: left'></div>");
+            var img = $("<img style='width: 270px;height: 270px'/>");
+            img.attr("src", "http://"+url);
+            imgDiv.append(img);
+            var deleteButton = $("<a class='deleteButton'></a>").linkbutton({
+					iconCls : "icon-cancel-solid",
+					plain : true
+				});
+            deleteButton.click(function() {
+            	//把这个div删除
+				$(this).parent().remove();
+				var src = $(this).siblings("img").attr("src");
+                //把imageServerUrl中该URL删除
+                if($scope.imageServerUrls.length != 0){
+	    			for(var i = 0; i < $scope.imageServerUrls.length; i++){
+		    			if(src == "http://"+$scope.imageServerUrls[i]){
+		    				$scope.imageServerUrls.splice(i,1);
+		    				if ($scope.imageServerUrls.length < 5) {
+								$scope.$("#upPhotoTemDiv").show();
+							}
+		    			}
+		    		}
+	    		}
+            });
+            imgDiv.append(deleteButton);
+            $scope.$("#photoDiv").append(imgDiv);
+		}
+		
+		function deletePhoto(){
+			$scope.$ajaxRequest({
+		    	url: $scope.$restRoot+'device/photoInfoManage/deletePhotoes',
+		    	params: {photoIdStr: photoIdStr},
+		    	method: 'post',
+		    	success: function(data){
+				},
+		    	fail: function(errMsg){
+		    		$.messager.alert("提示","删除图片失败！");
+		    	}
+		    });
+		}
+		
+		$scope.savePhoto = function(){
+       		//没有需要上传的照片
+	    	if($.isEmptyObject($scope.imageFiles) && $scope.imageServerUrls.length == 0){
+		        if(photoIdStr != ""){
+	    			deletePhoto();//删除数据库原先的图片
+	    			$.messager.confirm("提示","保存成功，是否关闭窗口？",function(flag){
+                        if(flag){
+                            //关闭窗体
+                            $scope.destroyTab4();
+                        }
+                    });
+	    		}else{
+	    			$.messager.alert("提示","请选择需要上传的图片！");
+	    		}
+		    }else if($.isEmptyObject($scope.imageFiles) && $scope.imageServerUrls.length != 0){
+		    	deletePhoto();//删除数据库原先的图片
+		    	$scope.save();
+		    }else{
+		    	deletePhoto();//删除数据库原先的图片
+		    	$scope.uploader.start();//上传图片
+		    }
+        };
+
+        $scope.save = function(){
+            //获取form中的数据
+            var formData = $scope.formData;
+            $scope.formData.deviceId = deviceId;
+            //添加图片
+            var photo = "";
+            for(var i = 0; i < $scope.imageServerUrls.length; i++){
+            	if(i == 0){
+            		photo = photo + $scope.imageServerUrls[i];
+            	}else{
+            		photo = photo + "," + $scope.imageServerUrls[i];
+            	}
+            }
+            $scope.formData.photo = photo;
+            //发起ajax请求添加图片信息
+        	$scope.$ajaxRequest({
+                url : $scope.$restRoot+"device/photoInfoManage/addPhotoInfo",
+                params : formData,
+                success : function(data){
+                    $.messager.confirm("提示","上传成功，是否关闭窗口？",function(flag){
+                        if(flag){
+                            //关闭窗体
+                            $scope.destroyTab4();
+                        }
+                    });
+                },
+                fail : function(errMsg){
+                    $.messager.alert("提示","添加实景图片失败！");
+                }
+            });
+        };
+    });
+</script>
+<style>
+    #devicePhotoFrm .imgDiv{
+        float: left;
+        border: dashed 1px silver;
+        margin: 5px;
+        height: 270px;
+        width: 270px
+    }
+    #devicePhotoFrm .th{
+        width : 80px;
+        text-align:right;
+    }
+    #devicePhotoFrm .td{
+        width : 208px;
+    }
+	#devicePhotoFrm .deleteButton{
+		position: absolute;
+		margin-left : -35px;
+		margin-top: 5px;
+		z-index: 100000;
+	}
+
+</style>

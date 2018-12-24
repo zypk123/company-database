@@ -1,0 +1,439 @@
+<div class="easyui-layout" data-options="fit:true,border:false" id="vehicle-passInfo-list">
+	<div data-options="region:'north',border:false">
+		<div class="linkbutton_toolbar" style="font-size: 14px;height: 30px;line-height:30px">
+			<!-- <span class="checkbox checkAll" id="checkAll" cy-click="checkAll"></span>
+			<span style="font-size:14px;">全选 &nbsp;&nbsp;</span>
+			<auth resourceCode="01020202">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-export'" cy-click="export">勾选导出</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-export'">全部导出</a>
+			</auth> -->
+			<span id="buttonArea" style="margin-left: 20px;display: none;"> <a class="button-main easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="backToSearch" >返回</a> <a class="easyui-linkbutton" data-options="iconCls:'icon-list',group:'model',toggle:true,selected:true">列表模式</a> <a class="easyui-linkbutton" cy-click="changeToImageModel" data-options="iconCls:'icon-picture',group:'model',toggle:true">大图模式</a> </span>
+		</div>
+	</div>
+	<div id="passInfoContent" class="cy-imageContent" data-options="region:'center',border:false" cy-foreach="passInfoList" >
+		<div class="pass-info">
+			<div class="table">
+				<div class="tr">
+					<div class="td" style="height:114px;line-height:114px;width:10px;text-align: center;">
+						<!-- <span class="checkbox" cy-click="checkOption"></span> -->
+					</div>
+					<!-- <div class="td" style="padding:1px;height:118px;width:160px;cursor: pointer;" cy-item="imageUrlPath" cy-filter="imageHtmlFormatter" >
+
+					</div> -->
+					<div class="td" style="width:40%">
+						<span cy-item="plateNbr" cy-filter="plateColorFilter" style="cursor: pointer;" cy-click='viewPassInfo'></span>
+						<p class="car" title="车辆特征">
+							<span cy-item="vehicleShape" cy-filter="codeName('004')"></span>
+							<span cy-item="vehicleColor" cy-filter="convertColor"></span>
+						</p>
+						<p class="time" title="抓拍时间" cy-item="passTime"></p>
+					</div>
+					<div class="td" style="width:58%">
+						<p class="place" title="机构信息" cy-item="orgCode" cy-filter="$getOrgName"></p>
+						<p class="direction" title="方向" cy-item="roadCode" cy-filter="getRoadAndDirection"></p>
+						<p class="position" title="地点" cy-item="siteName"></p>
+					</div>
+					<!-- <div class="td" style="height:110px;line-height: 110px; width:60px;">
+						<a class="easyui-linkbutton button" data-options="iconCls:'icon-video'">查看视频</a>
+					</div> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'south',border:false,height:30">
+		<div  id="pagination" style="border-top: solid 1px #ddd" >
+			&nbsp;
+		</div>
+	</div>
+</div>
+<script>
+	/**
+	 * searchData : 查询参数
+	 * searchProgress ：显示进度条方法
+	 * changeViewModule ： 切换显示模式
+	 * passData : 过车数据
+	 */
+	InitPage(["searchData", "searchProgress", "changeViewModel", "passData", "searchSlideUp", "searchBack"], function($scope) {
+
+		var currentData;
+
+		$scope.load = function() {
+			//初始化分页
+			$scope.$("#pagination").pagination({
+				pageNumber : $scope.searchData.pageNumber ? $scope.searchData.pageNumber : 1,
+				pageSize : $scope.searchData.pageSize ? $scope.searchData.pageSize : 50,
+				total : $scope.passData ? $scope.passData.result.total : 1,
+				pageList : [20, 50, 100],
+				onSelectPage : function() {
+					$scope.searchProgress();
+					refreshData($scope.searchData);
+				}
+			});
+			if (!$scope.passData || $scope.passData.result.rows.length == 0) {
+				//没有初始数据，是查询操作，开始查询数据
+				refreshData($scope.searchData);
+			} else {
+				//有初始数据，是切换模式操作，直接展示数据
+				currentData = $scope.passData;
+				updatePassData($scope.passData);
+			}
+		};
+
+		/**
+		 * 导出
+		 */
+		$scope.export = function() {
+			if ($scope.$hasAuth("01020202")) {
+				console.log(123);
+			}
+		};
+		/**
+		 * 获得代码名称
+		 */
+		$scope.codeName = function(codeType) {
+			return function(value) {
+				return $scope.$getCodeName(codeType, value);
+			};
+		};
+
+		$scope.convertColor = function(value) {
+			if ($scope.$getCodeName("006", value) != "") {
+				return $scope.$getCodeName("006", value) + "色";
+			}
+			return "";
+		};
+		/**
+		 * 号牌颜色过滤器
+		 */
+		$scope.plateColorFilter = function(value, data) {
+			var colorCode = data.plateColor;
+			var className;
+			switch(colorCode) {
+			case "0" :
+				className = "plate-white";
+				break;
+			case "1" :
+				className = "plate-yellow";
+				break;
+			case "2" :
+				className = "plate-blue";
+				break;
+			case "3" :
+				className = "plate-black";
+				break;
+			case "4" :
+				className = "plate-other";
+				break;
+			}
+			return '<div class="plate ' + className + '">' + value + '</div>';
+		};
+
+		/**
+		 * 获得道路名称和方向名称
+		 */
+		$scope.getRoadAndDirection = function(value, data) {
+			var roadName = $scope.$getRoadName(value);
+			var directionName = data.directionName;
+			return roadName + " " + directionName;
+		};
+
+		/**
+		 * 全选方法
+		 */
+		$scope.checkAll = function(e) {
+			var target = e.currentTarget;
+			if ($(target).attr("checked")) {
+				$scope.$(".checkbox:visible").not("#checkAll").each(function() {
+					if ($(this).attr("checked")) {
+						$(this).click();
+					}
+				});
+			} else {
+				$scope.$(".checkbox:visible").not("#checkAll").each(function() {
+					if (!$(this).attr("checked")) {
+						$(this).click();
+					}
+				});
+			}
+		};
+
+		/**
+		 * 点击checkbox
+		 */
+		$scope.checkOption = function(e) {
+			var target = e.currentTarget;
+			if ($(target).attr("checked")) {
+				$(target).removeClass("checked");
+				$(target).attr("checked", false);
+				updateCheckAllState();
+			} else {
+				$(target).addClass("checked");
+				$(target).attr("checked", true);
+				updateCheckAllState();
+			}
+		};
+
+		/**
+		 * 图片html格式化
+		 */
+		$scope.imageHtmlFormatter = function(value) {
+			var image = $("<img height='100%' cy-click='viewPassInfo'/>");
+			image.attr("cy-src", $scope.$servletRoot + "/PassImage?imageUrl=" + value);
+			return image[0].outerHTML;
+		};
+
+		/**
+		 * 更改全选按钮状态
+		 */
+		var updateCheckAllState = function() {
+			var checkedNum = $scope.$(".checkbox[checked=checked]:visible").not("#checkAll").length;
+			var allNum = $scope.$(".checkbox:visible").not("#checkAll").length;
+			if (checkedNum == allNum) {
+				$scope.$("#checkAll").attr("checked", true).addClass("checked");
+			} else {
+				$scope.$("#checkAll").attr("checked", false).removeClass("checked");
+			}
+		};
+
+		/**
+		 * 刷新数据
+		 */
+		var refreshData = function(params, callback) {
+			//获取分页信息
+			params.pageSize = $scope.$("#pagination").pagination("options").pageSize;
+			params.pageNumber = $scope.$("#pagination").pagination("options").pageNumber;
+			params.totalCount = $scope.$("#pagination").pagination("options").total;
+			if(params.totalCount == 1){
+				params.totalCount = 0;
+			}
+			params.orderType = "desc";
+			//获取后台数据
+			$scope.$ajaxRequest({
+				url : $scope.$restRoot + "/vehTrack/pass/findPassInfo",
+				params : params,
+				success : function(data) {
+					//更新数据
+					currentData = data;
+					updatePassData(data);
+					//滚动条滚动到顶部
+					$scope.$("#passInfoContent").scrollTop(0);
+					//数据加载完毕，关闭进度条
+					$.messager.progress("close");
+					//执行自定义回调函数
+					$scope.$excute(callback, data);
+				},
+				fail : function() {
+					$.messager.progress("close");
+					$.messager.alert("提示", "服务器繁忙");
+				}
+			});
+		};
+
+		/**
+		 * 更新数据
+		 */
+		var updatePassData = function(data) {
+			if (!data.result.rows || data.result.rows.length == 0) {
+				$scope.searchBack();
+				$.messager.alert("提示", "没有数据");
+				return;
+			}
+			$scope.searchSlideUp();
+			$scope.$("#buttonArea").show();
+			//更新数据
+			$scope.passInfoList = data.result.rows;
+			$scope.$updateDom("passInfoList");
+			//更改分页信息
+			$scope.$("#pagination").pagination("refresh", {
+				total : data.result.total
+			});
+		};
+
+		/**
+		 * 打开车辆详细界面
+		 */
+		$scope.viewPassInfo = function(e) {
+			var content = $(e.currentTarget).parents(".pass-info:eq(0)");
+			var itemData = content.data("itemData");
+			var index = content.data("index");
+			//当前页面所有数据
+			$scope.$setParam("currentData", currentData);
+			//当前查看数据index
+			$scope.$setParam("index", index);
+			//关闭详情窗口
+			$scope.$setParam("closeDialog", $scope.closeDialog);
+			//查询参数
+			$scope.$setParam("queryData", $scope.searchData);
+			//查询方法
+			$scope.$setParam("searchData", function(type, callback) {
+				var currentPage = $scope.$("#pagination").pagination("options").pageNumber;
+				var pageSize = $scope.$("#pagination").pagination("options").pageSize;
+				var total = $scope.$("#pagination").pagination("options").total;
+				//type类型：next或者prev  上一页或者下一页
+				if (type == "prev") {
+					//查找前一页
+					if (currentPage == 1) {
+						//已经是第一页
+						$.messager.alert("提示", "前面没有更多的数据!");
+						$scope.$excute(callback, undefined);
+					} else {
+						//查询数据
+						$scope.searchProgress();
+						//返回上一页
+						$scope.$("#pagination").pagination("options").pageNumber = currentPage - 1;
+						refreshData($scope.searchData, callback);
+					}
+				} else {
+					//查找后一页
+					if (currentPage == Math.ceil(total / pageSize)) {
+						//已经是最后一页
+						$.messager.alert("提示", "前面没有更多的数据!");
+						$scope.$excute(callback, undefined);
+					} else {
+						//查询数据
+						$scope.searchProgress();
+						//跳到下一页
+						$scope.$("#pagination").pagination("options").pageNumber = currentPage + 1;
+						refreshData($scope.searchData, callback);
+					}
+				}
+			});
+			//选中方法
+			$scope.$setParam("oncheck", function(index) {
+
+			});
+			//打开详情窗口
+			$scope.$openDialog("vehDetail", {
+				width : 1100,
+				height : 610,
+				href : "tpls/passVehicle/vehicleQuery/vehicle-pass-detail.html",
+				title : "过车详情",
+				onClose : function() {
+					//停止自动播放
+					$scope.$getDialog("vehDetail").data("winScope").stop();
+				}
+			});
+		};
+
+		/**
+		 * 切换到大图模式
+		 */
+		$scope.changeToImageModel = function() {
+			//关闭详情窗口
+			$scope.$setParam("closeDialog", $scope.closeDialog);
+			//查询参数
+			$scope.$setParam("queryData", $scope.searchData);
+			$scope.$setParam("searchBack", $scope.searchBack);
+			$scope.changeViewModel("image", currentData);
+		};
+		$scope.backToSearch = function() {
+			$scope.searchBack();
+		};
+		/**
+		 *关闭窗口 
+		 */
+		$scope.closeDialog = function(){
+			$scope.$getDialog("vehDetail").dialog("close");
+		}
+	});
+
+</script>
+<style>
+	#vehicle-passInfo-list .pass-info {
+		width: 48%;
+		margin-left: 1%;
+		margin-top: 5px;
+		height: 120px;
+		border: solid 1px #B5DDF6;
+		background-color: #efefef;
+		float: left;
+	}
+	#vehicle-passInfo-list .pass-info .table, #vehicle-query-all .pass-info .tr {
+		height: 100%;
+	}
+	#vehicle-passInfo-list .pass-info .td {
+		text-align: center;
+	}
+	#vehicle-passInfo-list .plate-blue {
+		background-color: blue;
+		color: #FFFFFF;
+	}
+	#vehicle-passInfo-list .plate-yellow {
+		background-color: yellow;
+		color: #00000;
+	}
+	#vehicle-passInfo-list .plate-black {
+		background-color: black;
+		color: #FFFFFF;
+	}
+	#vehicle-passInfo-list .plate-white {
+		background-color: white;
+		color: red;
+	}
+	#vehicle-passInfo-list .plate-other {
+		background-color: #888888;
+		color: #FFFFFF;
+	}
+	#vehicle-passInfo-list .plate {
+		text-align: center;
+		width: 120px;
+		height: 28px;
+		line-height: 28px;
+		font-size: 20px;
+		margin: 10px 20px;
+		border-radius: 5px;
+	}
+	#vehicle-passInfo-list p {
+		margin: 0;
+		height: 30px;
+		line-height: 30px;
+		font-size: 14px;
+		width: 120px;
+		text-align: left;
+	}
+	#vehicle-passInfo-list .time {
+		color: #FF0000;
+		font-size: 16px;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/time.png) no-repeat 10px 8px;
+	}
+	#vehicle-passInfo-list .car {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/car.png) no-repeat 10px 8px;
+	}
+	#vehicle-passInfo-list .car span {
+		font-size: 14px;
+	}
+	#vehicle-passInfo-list .place {
+		margin-top: 15px;
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/place.png) no-repeat 10px 8px;
+	}
+	#vehicle-passInfo-list .direction {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/direction.png) no-repeat 10px 8px;
+	}
+	#vehicle-passInfo-list .position {
+		color: #3868A9;
+		padding-left: 35px;
+		background: url(themes/default/images/icon/position.png) no-repeat 10px 8px;
+	}
+	#vehicle-passInfo-list .pass-img {
+		width: 70px;
+		margin-top: 20px;
+	}
+	#vehicle-passInfo-list .checkbox {
+		padding: 8px 16px;
+		background: url(themes/default/images/checkbox-unchecked.png) no-repeat;
+		cursor: pointer;
+	}
+	#vehicle-passInfo-list .checkbox.checked {
+		background: url(themes/default/images/checkbox-checked.png) no-repeat;
+	}
+	#vehicle-passInfo-list .checkAll {
+		margin-left: 6px;
+	}
+</style>

@@ -1,0 +1,72 @@
+<div id="chaoxian" class="easyui-layout"  >
+    <form cy-form="newData">
+        <div class="table" >
+            <div class="tr">
+            	<div class="th">
+                    检查站名称：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox"name="checkpointName" >
+                </div>
+                <div class="th">
+                    管理机构：
+                </div>
+                <div class="td">
+                    <input  class="cy-org-radio" name="manageOrg">
+                </div>
+                
+            </div>
+            <div class="tr">
+                
+                <div class="th">
+                    检查站地址：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="address" >
+                </div>
+            </div>
+
+            <div class="tr">
+                <div class="th">
+                   负责人：
+                </div>
+                <div class="td">
+                    <input  class="easyui-textbox" name="headerName" >
+                </div>
+                <div class="th">
+                    联系电话：
+                </div>
+                <div class="td">
+                    <input  class="easyui-numberbox" name="headerPhone" >
+                </div>
+            </div>
+            <div class="tr"style="text-align: center; margin-right: 50px">
+            	<a class="easyui-linkbutton " data-options="iconCls:'icon-save'" cy-click="save" >保存</a>
+                <a class="easyui-linkbutton " data-options="iconCls:'icon-cancel'" cy-click="$destroySelf">关闭</a>
+                
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    InitPage(["newData","saveData"],function($scope){
+        $scope.save = function(){
+            //从form取数据
+            $scope.$updateData("newData");
+            //调用父页面方法
+            $scope.saveData($scope.newData);
+        };
+    });
+</script>
+<style type="text/css">
+    #chaoxian .th{
+        width : 100px;
+        text-align: right;
+    }
+    #chaoxian .td{
+        width : 150px;
+    }
+
+</style>

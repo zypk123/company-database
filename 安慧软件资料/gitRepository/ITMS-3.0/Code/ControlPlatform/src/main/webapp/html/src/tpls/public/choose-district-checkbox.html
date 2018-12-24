@@ -1,0 +1,331 @@
+<div class="easyui-layout" id="choose-district-checkbox">
+	<div data-options="region:'center',border:false">
+		<div class="easyui-layout" id="innerLayout">
+			<div data-options="region:'north',height:40,border:false" style="line-height: 30px;">
+				<div class="linkbutton_toolbar" >
+					<input id="search" data-options="prompt:'请输入关键字'" style="width:250px;height:26px"/>
+					<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-back'" cy-click="back" style="float:right;margin-right:5px;margin-top:3px; display: none;">返回</a>
+				</div>
+			</div>
+			<div data-options="region:'center',border:false">
+				<div id="tree"></div>
+			</div>
+			<div data-options="region:'east',border:false,width:'100%',closed:true" style="border-top: solid 1px #ddd">
+				<table id="searchGrid" cy-datagrid="options">
+
+				</table>
+				&nbsp;
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'east',width:'50%',border:false">
+		<div class="searchPanel" style="height:390px;margin-bottom: 0px;">
+			<div class=panel_title>
+				已选列表
+			</div>
+			<div id="checkedDiv" style="height:400px;overflow-y: auto;overflow-x:hidden"></div>
+		</div>
+	</div>
+	<div data-options="region:'south',height: 40,border:false">
+		<div class="linkbutton_toolbar" style="text-align: center;">
+			<a class="easyui-linkbutton button-main" data-options="iconCls:'icon-ok'" cy-click="chooseOrg">确定</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" cy-click="$closeSelf">取消</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-clear'" cy-click="clearChecked">清空</a>
+		</div>
+	</div>
+</div>
+<script>
+    InitPage(["choose","filter"], function($scope) {
+        /**
+         * 已选数组
+         */
+        var checkList = [];
+
+        //初始化方法
+        $scope.load = function() {
+            //初始化树
+            initTree();
+            //设置查找方法
+            initSearch();
+        };
+
+        /**
+         * 初始化树
+         */
+        var initTree = function() {
+            $scope.$("#tree").tree({
+                data : $scope.$district,
+                checkbox : true,
+                onLoadSuccess : function() {
+                    var root = $(this).tree("getRoots")[0];
+                	//执行过滤器操作
+                	var needToRemove = [];
+                	doFilter(root,needToRemove);
+                	for(var index in needToRemove){
+                		//删除过滤掉的节点
+                		$scope.$("#tree").tree("remove",$scope.$("#"+needToRemove[index].domId)[0]);
+                	}
+                    //收起全部节点
+                    $(this).tree("collapseAll");
+                    //展开根节点
+                    $(this).tree("expand", root.target);
+                },
+                onCheck : function(node) {
+                    //清空历史
+                    checkList = [];
+                    //获得所有选择的节点
+                    var checked = $scope.$("#tree").tree("getChecked");
+                    //去除所有已选父节点下的所有子节点，避免重复
+                    for (var index = 0; index < checked.length; index++) {
+                        var children = $scope.$("#tree").tree("getChildren", checked[index].target);
+                        for (var i in children) {
+                            checked.splice(checked.indexOf(children[i]), 1);
+                        }
+                        checkList.push(checked[index]);
+                    }
+                    //在已选列表中展示选择的节点
+                    $scope.$("#checkedDiv").html("");
+                    addNewCheckedList();
+                }
+            });
+        };
+		/**
+		 * 执行过滤器操作 
+		 */
+		function doFilter(node,needToDelete){
+			if(!$scope.filter || typeof $scope.filter != "function"){
+				return;
+			}
+			var result = $scope.filter(node.id,node.text,node.attribute);
+			if(!result && typeof result == "boolean"){
+				//标记需要删除的节点
+				needToDelete.push(node);
+			}else{
+				//下级节点做过滤
+				if(node.children && node.children.length > 0){
+					for(var index in node.children){
+						doFilter(node.children[index],needToDelete);
+					}
+				}
+			}
+		}
+        /**
+         * 重置已选列表
+         */
+        var addNewCheckedList = function() {
+            var table = $("<div class='table'></div>");
+            for (var index in checkList) {
+                var tr = $("<div class='tr'></div>");
+                var th = $("<div class='th'></div>");
+                var td = $("<div class='td'></div>");
+                var closeButton = $("<a></a>").linkbutton({
+                    iconCls : 'icon-cancel-solid',
+                    plain : true
+                }).click({
+                    removeEl : tr
+                }, function(e) {
+                    //取消该元素的选中状态
+                    var node = e.data.removeEl.data("node");
+                    $scope.$("#tree").tree("uncheck", node.target);
+                });
+                tr.data("node", checkList[index]);
+                th.text(checkList[index].text);
+                td.append(closeButton);
+                if (index % 2 == 0) {
+                    tr.css("backgroundColor", "#efefef");
+                } else {
+                    tr.css("backgroundColor", "#e5e5e5");
+                }
+                table.append(tr.append(th).append(td));
+            }
+            $scope.$("#checkedDiv").append(table);
+        };
+
+        /**
+         * 初始化查找
+         */
+        var initSearch = function() {
+            $scope.$("#search").searchbox({
+                searcher : function() {
+
+                    var searchIndex = $(this).searchbox("getValue").trim();
+                    if (searchIndex == "") {
+                        return;
+                    }
+                    //显示查询结果
+                    showGrid();
+                    var searchResult = [];
+                    getSearchData(searchResult, $rootScope.$district[0], searchIndex);
+                    //获得超找结果
+                    $scope.$("#searchGrid").datagrid("loadData", searchResult);
+                }
+            });
+        };
+
+        /**
+         * 获得查找结果数据
+         */
+        var getSearchData = function(result, tree, searchIndex) {
+            if (tree.text.indexOf(searchIndex) >= 0) {
+                var node = $scope.$("#tree").tree("find", tree.id);
+                var parent = $scope.$("#tree").tree("getParent", node.target);
+                result.push({
+                    id : tree.id,
+                    name : tree.text,
+                    parentName : parent ? parent.text : ""
+                });
+            }
+            if (tree.children && tree.children.length > 0) {
+                for (var index in tree.children) {
+                    getSearchData(result, tree.children[index], searchIndex);
+                }
+            }
+        };
+
+        /**
+         * 显示查询结果
+         */
+        var showGrid = function() {
+            $scope.$("#innerLayout").layout("panel", "east").panel("open");
+            $scope.$("#innerLayout").layout("resize");
+            $scope.$("#back").show();
+        };
+
+        /**
+         * 点击确定按钮
+         */
+        $scope.chooseOrg = function() {
+            var names = "";
+            var ids = "";
+            var codes = "";
+            for (var index in checkList) {
+                names += checkList[index].text + ",";
+                ids += checkList[index].id + ",";
+                codes += checkList[index].attribute.code + ",";
+            }
+            names = names.substring(0, names.length - 1);
+            ids = ids.substring(0, ids.length - 1);
+            codes = codes.substring(0, codes.length - 1);
+            $scope.$excute($scope.choose, ids, codes, names);
+            $scope.$closeSelf();
+        };
+
+        /**
+         * 格式化内容，增加title
+         */
+        var initTitle = function(value) {
+
+            return value && value != '' ? '<span title="' + value + '">' + value + "</span>" : "";
+        };
+
+        /**
+         * 查找结果列表参数
+         */
+        $scope.options = {
+            columns : [[{
+                field : 'id',
+                checkbox : true
+            }, {
+                field : 'name',
+                title : '行政区划名称',
+                width : 60,
+                formatter : initTitle
+            }, {
+                field : 'parentName',
+                title : '所属行政区划',
+                width : 40,
+                formatter : initTitle
+            }]],
+            pagination : false,
+            onLoadSuccess : function() {
+                var data = $scope.$("#searchGrid").datagrid("getData").rows;
+                for (var index in data) {
+                    if (isInCheckList(data[index])) {
+                        $scope.$("#searchGrid").datagrid("checkRow", index);
+                    }
+                }
+                /**
+                 * 判断该行数据是否已选中
+                 */
+                function isInCheckList(data) {
+                    for (var index in checkList) {
+                        var item = checkList[index];
+                        if (item.id == data.id) {
+                            return true;
+                        }
+                    }
+                }
+
+            },
+            onCheck : function(rowIndex, rowData) {
+                //获取对应的树节点
+                var node = $scope.$("#tree").tree("find", rowData.id);
+                //展开父节点
+                $scope.$("#tree").tree("expandTo", node.target);
+                //选中节点
+                $scope.$("#tree").tree("check", node.target);
+            },
+            onUncheck : function(rowIndex, rowData) {
+                //获取对应的树节点
+                var node = $scope.$("#tree").tree("find", rowData.id);
+                //选中节点
+                $scope.$("#tree").tree("uncheck", node.target);
+            },
+            onCheckAll : function(rows) {
+                for (var index in rows) {
+                    var row = rows[index];
+                    //获取对应的树节点
+                    var node = $scope.$("#tree").tree("find", row.id);
+                    //展开父节点
+                    $scope.$("#tree").tree("expandTo", node.target);
+                    //选中节点
+                    $scope.$("#tree").tree("check", node.target);
+                }
+            },
+            onUncheckAll : function(rows) {
+                for (var index in rows) {
+                    var row = rows[index];
+                    //获取对应的树节点
+                    var node = $scope.$("#tree").tree("find", row.id);
+                    //选中节点
+                    $scope.$("#tree").tree("uncheck", node.target);
+                }
+            }
+        };
+        /**
+         * 返回树
+         */
+        $scope.back = function() {
+            $scope.$("#innerLayout").layout("panel", "east").panel("close");
+            $scope.$("#innerLayout").layout("resize");
+            $scope.$("#back").hide();
+        };
+
+        /**
+         * 清除全部选中节点
+         */
+        $scope.clearChecked = function() {
+            var root = $scope.$("#tree").tree("getRoots")[0];
+            //取消选中状态
+            $scope.$("#tree").tree("uncheck", root.target);
+            //展开根节点
+            $scope.$("#tree").tree("collapseAll", root.target);
+            $scope.$("#tree").tree("expand", root.target);
+            //返回
+            $scope.back();
+        };
+    }); 
+</script>
+<style>
+    #choose-district-checkbox .th {
+        width: 70%;
+        padding: 0 12px;
+        height: 30px;
+        line-height: 30px;
+    }
+    #choose-district-checkbox .td {
+        padding: 0 12px;
+        height: 30px;
+        line-height: 30px;
+    }
+</style>

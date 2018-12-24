@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.device.mybatis.client.EventDetectionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.device.domain.model.EventDetection" >
+    <id column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
+    <result column="EVENT_DETECTION_LIST" property="eventDetectionList" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DEVICE_ID, EVENT_DETECTION_LIST
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_DEVICE_EVENT_DETECTION
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_DEVICE_EVENT_DETECTION
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.device.domain.model.EventDetection" >
+    insert into T_DEVICE_EVENT_DETECTION (DEVICE_ID, EVENT_DETECTION_LIST)
+    values (#{deviceId,jdbcType=VARCHAR}, #{eventDetectionList,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.device.domain.model.EventDetection" >
+    insert into T_DEVICE_EVENT_DETECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
+      <if test="eventDetectionList != null" >
+        EVENT_DETECTION_LIST,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDetectionList != null" >
+        #{eventDetectionList,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.device.domain.model.EventDetection" >
+    update T_DEVICE_EVENT_DETECTION
+    <set >
+      <if test="eventDetectionList != null" >
+        EVENT_DETECTION_LIST = #{eventDetectionList,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.device.domain.model.EventDetection" >
+    update T_DEVICE_EVENT_DETECTION
+    set EVENT_DETECTION_LIST = #{eventDetectionList,jdbcType=VARCHAR}
+    where DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

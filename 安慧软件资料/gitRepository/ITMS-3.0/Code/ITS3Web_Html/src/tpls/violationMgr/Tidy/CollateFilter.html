@@ -1,0 +1,424 @@
+
+<div id="CollateFilter" style="height: 100%;">
+    <div class="easyui-layout" id="queryView" style="height: 100%;width: 100%">
+        <div style="width: 49%" id="filterStatisticChart">
+
+        </div>
+        <div style="width: 49%" id="unFilterStatisticChart"></div>
+    </div>
+
+    <div class="easyui-layout" id="detailView" style="height:100%;width: 100%;display: none">
+
+        <div data-options="region:'north'">
+            <form id="frmCond" class="searchForm" method="post">
+                <div class="searchPanel">
+                    <div class="panel_title">查询条件</div>
+                    <div class="table">
+                        <div class="tr" style="text-align: center">
+                            <div class="th">违法时间:</div>
+                            <div class="td">
+                                <input class="easyui-datebox" type="text" name="VioTimeFrom"/>
+                            </div>
+                            <div class="th">到</div>
+                            <div class="td">
+                                <input class="easyui-datebox" type="text" name="VioTimeTo"/>
+                            </div>
+
+                            <div class="th" style="width: 50px">速度:</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="SpeedFrom" style="width: 50px;margin: 2px"/>
+                            </div>
+                            <div class="th">到</div>
+                            <div class="td">
+                                <input class="easyui-textbox" type="text" name="SpeedTo" style="width: 50px;margin: 2px"/>
+                            </div>
+                            <div class="td">
+                                每页显示：
+                                <input type="radio" name="recordPerPage" value="1" cy-click=""/>单张
+                                <input type="radio" name="recordPerPage" value="2" cy-click=""/>两张
+                                <input type="radio" name="recordPerPage" value="4" cy-click=""/>四张
+                            </div>
+
+                            <div class="td" >
+
+                                <a class="easyui-linkbutton button" data-options="iconCls:'icon-down'" id="searchSlideDown"
+                                   cy-click="searchSlideDown">更多</a>
+
+                                <a href="#" class="easyui-linkbutton button" style="width: 80px;text-align: right;margin: 2px"
+                                   cy-click="SearchAsync()" iconCls="icon-search">查询</a>
+                            </div>
+                        </div>
+                        <div class="tr hide" style="display:none">
+                            <div class="td">
+                                <input class="" type="checkbox"/>军警车
+                                <input class="" type="checkbox"/>号牌未识别
+                            </div>
+                            <div class="th">
+                                违法类型：
+                            </div>
+                            <div class="td">
+                                <input class="" type="checkbox"/>全选
+                                <input class="" type="checkbox"/>闯红灯
+                                <input class="" type="checkbox"/>超速
+                                <input class="" type="checkbox"/>违章停车
+                            </div>
+
+                            <div class="td" style="text-align: right;width: 180px">
+                                <a class="easyui-linkbutton button" data-options="iconCls:'icon-up'" id="searchSlideUp"
+                                   cy-click="searchSlideUp">收起</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-left: 20px;font-weight: bold;font-size: 15">
+                    待分捡数据<span class="noteNumber">1126</span>条，已筛选有效数据<span class="noteNumber">135</span>条，无效数据<span class="noteNumber">665</span>条。
+                </div>
+            </form>
+        </div>
+
+        <div data-options="region:'center'">
+            <div class="easyui-panel picture" id="imageArea0" data-options="style:{float:'left'}" style="width:49%;height: 100%" />
+
+            <div class="easyui-panel picture" id="imageArea1" data-options="style:{float:'left'}" style="width:49%;height: 100%" />
+        </div>
+
+        <div data-options="region:'south'">
+            <form cy-form="VioDetail">
+                <!--违法信息-->
+                <div class="portlet" style="text-align: center">
+                    <div class="portlet-body"  style="width:100%;margin-left:auto;margin-right: auto">
+                        <div class="row tr" style="display: none">
+                            <input name="VIOLATION_ID" type="text"/>
+                        </div>
+                        <div class="row tr" style="margin-bottom: 2px;height: 40px;float: right">
+                            <a href="#" class="easyui-linkbutton button" data-options="iconCls:'icon-inport'" style="width: 80px;margin-right: 10px">有效</a>
+                            <a href="#" id="btnDiscardLowSpeed" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px">车速不足</a>
+                            <a href="#" id="btnDiscardNoPlate" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px">无号牌</a>
+                            <a href="#" id="btnDiscardVaguPicture" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px">图片模糊</a>
+                            <a href="#" id="btnDiscardL" class="easyui-linkbutton button-drop"
+                               data-options="iconCls:'icon-drop'" style="width: 100px">遮挡号牌</a>
+                            <a href="#" class="easyui-linkbutton button"
+                               data-options="iconCls:'icon-inport'" style="width: 100px">已筛选导出</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope){
+        $scope.plateTypeFormat = function (value, rowData, rowIndex) {
+            return $scope.code2Name($scope.SysCodeDic.PlateType, value);
+        };
+        $scope.orgFormat= function (value, rowData, rowIndex) {
+            return $scope.code2Name($scope.SysCodeDic.Org, value);
+        };
+        $scope.violationTypeFormat=function(value, rowData, rowIndex) {
+            return $scope.code2Name($scope.SysCodeDic.ViolationType, value);
+        };
+        $scope.RoadFormat= function (value, rowData, rowIndex) {
+            return $scope.code2Name($scope.SysCodeDic.Road, value);
+        };
+        $scope.roadCodeFormat= function (value) {
+            return $scope.code2Name($scope.SysCodeDic.Road, value);
+        };
+        $scope.issueOrgFormat= function (value) {
+            return $scope.code2Name($scope.SysCodeDic.VehicleIssueOrg, value);
+        };
+        $scope.fmtVEHICLE_CHARACTER= function (value) {
+            return $scope.code2Name($scope.SysCodeDic.VehicleCharacter, value);
+        };
+        $scope.fmtVEHICLE_TYPE= function (value) {
+            return $scope.code2Name($scope.SysCodeDic.VehicleType, value);
+        };
+        $scope.selectView= function (menuId) {
+            $scope.$(".divView .easyui-layout").hide();
+            $scope.$("#" + menuId).show().layout("resize");
+        };
+
+        //初始化控件
+        $scope.initControl=function(){
+            $scope.$("#btnDiscard").menubutton({
+                menu : $scope.$("#mbtnDiscard")
+            });
+
+            $scope.$("#btnDiscardBatch").menubutton({
+                menu : $scope.$("#mbtnDiscardBatch")
+            });
+
+            $scope.$("#btnExport").menubutton({
+                menu : $scope.$("#mbtnExport")
+            });
+        };
+        //初始化数据
+        $scope.initControlData=function(){
+            //系统代码
+            var dataRoot="data/violationMgr/sysCode.json";
+            $.getJSON(dataRoot,function(data){
+                $scope.SysCodeDic=data;
+//                    console.log("get Sys Code");
+//                    console.log($scope.SysCodeDic.VehicleType);
+                $scope.InitPageSysCode();
+            });
+            //机构
+            var dataRoot="data/violationMgr/org.json";
+            $.getJSON(dataRoot,function(data){
+                $scope.SysCodeDic.Org=data;
+                $('#cmbOrgQ').combobox('loadData', $scope.SysCodeDic.Org);
+                $('#cmbOrg').combobox('loadData', $scope.SysCodeDic.Org);
+            });
+            //违法代码
+            var dataRoot="data/violationMgr/vioAction.json";
+            $.getJSON(dataRoot,function(data){
+                $scope.SysCodeDic.VioAction=data;
+                $('#cmbVioAction').combobox('loadData', $scope.SysCodeDic.VioAction);
+            });
+            //道路
+            var dataRoot="data/violationMgr/road.json";
+            $.getJSON(dataRoot,function(data){
+                $scope.SysCodeDic.Road=data;
+            });
+            //设备
+            var dataRoot="data/violationMgr/device.json";
+            $.getJSON(dataRoot,function(data){
+                $scope.SysCodeDic.Device=data;
+                $('#cmbDeviceQ').combobox('loadData', $scope.SysCodeDic.Device);
+            });
+
+
+            //加载图片
+            $scope.$setParam("images",["data/violationMgr/img/overSpeed_0.jpg"]);
+            $scope.$("#imageArea0").panel("refresh","tpls/public/image-view.html");
+
+            $scope.timeout =setTimeout(function() {
+                $scope.$setParam("images", ["data/violationMgr/img/overSpeed_1.jpg"]);
+                $scope.$("#imageArea1").panel("refresh", "tpls/public/image-view.html");
+            },200);
+        };
+
+        $scope.initEcharts=function(){
+            require.config({
+                paths: {
+                    echarts: 'frameworks/echarts/js'
+                }
+            });
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                        'echarts/chart/bar'
+                    ],
+                    function (ec) {
+                        var filterChart = ec.init($scope.$("#filterStatisticChart").get(0));
+                        $scope.$ajaxRequest({
+                            url : "data/violationMgr/echarts/filterStatistic.json",
+                            success : function(data) {
+                                //上行折线图的配置
+                                var option={
+                                    title : {
+                                        text: '待筛选数据直方图' //subtext: '纯属虚构'
+                                    },
+                                    tooltip : {
+                                        trigger: 'axis'
+                                    },
+                                    legend: {
+                                        data:['超速','闯红灯','大车占道','违章停车','未系安全带','占用应急车道']
+                                    },
+                                    toolbox: {
+                                        show : true,
+                                        feature : {
+                                            mark : {show: true},
+                                            dataView : {show: true, readOnly: false},
+                                            magicType : {show: true, type: ['line', 'bar']},
+                                            restore : {show: true},
+                                            saveAsImage : {show: true}
+                                        }
+                                    },
+                                    calculable : true,
+                                    xAxis : [
+                                        {
+                                            type : 'category',
+                                            boundaryGap : false,
+                                            data : ['09-07','09-06','09-05','近7天','近15天']
+                                        }
+                                    ],
+                                    yAxis : [
+                                        {
+                                            type : 'value'
+                                        }
+                                    ],
+                                    series : [
+                                        {
+                                            name:'超速',
+                                            type:'bar',
+                                            data:[1114,1102,1130,4502,9056]
+                                        },
+                                        {
+                                            name:'闯红灯',
+                                            type:'bar',
+                                            data:[114,110,113,450,905]
+                                        },
+                                        {
+                                            name:'大车占道',
+                                            type:'bar',
+                                            data:[1114,1102,1130,4502,9056]
+                                        },
+                                        {
+                                            name:'违章停车',
+                                            type:'bar',
+                                            data:[1114,1102,1130,4502,9056]
+                                        },
+                                        {
+                                            name:'占用应急车道',
+                                            type:'bar',
+                                            data:[1114,1102,1130,4502,9056]
+                                        }
+                                    ]
+                                };
+                                myChart.setOption(option);
+                            }
+                        });
+
+                        var unfilterChart=ec.init($scope.$("#dd").get(0));
+                        $.getJSON("data/violationMgr/echarts/unfilterStatistic.json",function(data){
+
+                        });
+                    }
+            );
+        };
+        $.extend($scope,{
+            load : function(){
+                $scope.initEcharts();
+                console.log('1');
+                $scope.initControl();
+                $scope.initControlData();
+            },
+            /**
+             * 收起剩余搜索项
+             * @return {[type]} [description]
+             */
+            searchSlideUp: function () {
+                $scope.$(".hide").hide();
+                $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                    height: 120
+                });
+                $scope.$("#queryView").layout("resize");
+                $scope.$("#searchSlideUp").hide();
+                $scope.$("#searchSlideDown").show().after($scope.$("#searchButton")).after(" ");
+            },
+            /**
+             * 展开剩余搜索项
+             * @return {[type]} [description]
+             */
+            searchSlideDown: function () {
+                $scope.$(".hide").slideDown("fast");
+                $scope.$("#queryView").layout("panel", "north").panel("resize", {
+                    height: 160
+                });
+                $scope.$("#queryView").layout("resize");
+                $scope.$("#searchSlideDown").hide();
+                $scope.$("#searchSlideUp").show().after($scope.$("#searchButton")).after(" ");
+            },
+            enter : function(){
+                console.log("enter");
+            },
+            leave : function(){
+                console.log("leave");
+            },
+            close : function(){
+                console.log("close");
+            },
+            formData :  {
+                username : "admin1231312",
+                password : "123456",
+                combo : 4,
+                code : 1234
+            },
+
+            VioDetail:{},
+            saveToLocal: function () {
+                //todo
+            },
+
+            SearchAsync: function () {
+                var dataRoot="data/violationMgr/violation.json";
+                $scope.$search("formData");
+            },
+            SaveAsync: function () {
+                //todo
+            },
+            //页面系统代码
+            SysCodeDic: {
+                PlateType:null,
+                PlateColor:null,
+                ViolationType:null,
+                EnforcementCategory:null,
+                Org: null,
+                Road: null,
+                Device: null,
+                User:null,
+                VioAction:null,
+                District:null,
+                VehicleType:null,
+                VehicleCharacter:null,
+                VehicleIssueOrg:null
+            },
+            InitPageSysCode: function () {
+                $('#cmbPlateTypeQ').combobox('loadData',$scope.SysCodeDic.PlateType);
+                $('#cmbPlateType').combobox('loadData', $scope.SysCodeDic.PlateType);
+                $('#cmbViolationTypeQ').combobox('loadData', $scope.SysCodeDic.ViolationType);
+                $('#cmbEnforcementCategoryQ').combobox('loadData', $scope.SysCodeDic.EnforcementCategory);
+                $('#cmbDistrict').combobox('loadData', $scope.SysCodeDic.District);
+                $('#cmbVehicleIssueOrg').combobox('loadData', $scope.SysCodeDic.VehicleIssueOrg);
+                $('#cmbVehicleType').combobox('loadData', $scope.SysCodeDic.VehicleType);
+                $('#cmbVehicleCharacter').combobox('loadData', $scope.SysCodeDic.VehicleCharacter);
+                $('#cmbPlateColor').combobox('loadData', $scope.SysCodeDic.PlateColor);
+                //详细
+
+            },
+            //将grid列表中的代码转换为名字显示
+            code2Name: function (codes, value) {
+                if (codes == null) return value + '无法转换';
+                //var codes = speedTidy.sysCodeDic[codeType];
+                for (var i = 0; i < codes.length; i++) {
+                    if (codes[i].ID == value) {
+                        return codes[i].NAME;
+                        break;
+                    }
+                }
+            },
+            DiscardAsync:function(discardType){
+                alert("Discard,type"+discardType);
+            }
+        });
+    });
+
+</script>
+
+<link rel="stylesheet" href="views/Violation/assets/css/gridCell.css"/>
+<link rel="stylesheet" href="views/Violation/assets/css/portlet.css"/>
+<link rel="stylesheet" href="views/Violation/assets/css/form.css"/>
+<style>
+    #detailView .picture{
+        float:left;
+    }
+    .portlet .th
+    {
+        color: #09f;
+    }
+
+    .noteNumber
+    {
+        color: #09f;
+        text-decoration: underline;
+        /*cursor: pointer;*/
+    }
+
+</style>

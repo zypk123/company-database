@@ -1,0 +1,350 @@
+<div class="easyui-layout">
+    <div id="dvTop" class="cs-north" data-options="
+        region:'north',
+        border:true,
+        collapsible:true,
+        minHeight:0">
+        <div class="cs-north-bg">            
+            <table border="0">
+                <tr>
+                    <td style="vertical-align:middle;">
+                        <table border="0">
+                            <tr>
+                                <td class="cs-north-img" align="right" rowspan="2">
+                                    <img src="themes/default/images/ghlogo.png" />
+                                </td>
+                                <td class="cs-north-text" align="left" colspan="1">
+                                    智能交通设备管控平台
+                                </td>
+                            </tr>   
+                            <tr>
+                                <td class="cs-north-text2" align="center">
+                                    —— 安徽 合肥交警支队 ——
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="vertical-align:middle;" align="right" >
+                        <div id="dvMenus"/>
+                    </td>
+                    <td style="width:120px;">
+                       <div class="currentUser">
+                           当前用户：<span>管理员</span>
+                       </div>
+                   </td>
+                   <td align="right" valign="bottom" style="width: 70px">
+                       <div class="exit">
+                          <a title="退出" href="#" cy-click="logout">&nbsp;</a>
+                      </div>
+                  </td>
+              </tr>
+          </table>
+      </div>
+    </div>
+    <div data-options="region:'west',split:true,title:'menu'" style="width: 200px;" title="测试">
+        <div id="accdion" class="easyui-accordion" data-options="fit:true,border:false,style:{margin:0}"></div> <!--height="50px" border="false"-->
+    </div>
+    <div data-options="region:'center'">
+        <div id="tabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true,tools:'#tab-tools'">
+            <div title="Home">
+                <div class="cs-home-remark">
+                    <h1>测试示例</h1>
+                    <br>
+                    <div id="error">sss</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div data-options="region:'south',border:true" class="cs-south">
+        安徽超远信息
+    </div>
+</div>
+<div id="mm" class="easyui-menu cs-tab-menu">
+    <div id="mm-tabupdate">刷新</div>
+    <div class="menu-sep"></div>
+    <div id="mm-tabclose">关闭</div>
+    <div id="mm-tabcloseother">关闭其他</div>
+    <div id="mm-tabcloseall">关闭全部</div>
+</div>
+<div id="tab-tools" style="padding:3px;width:80px;">
+    <a class="hideTop" id="ACollapse" href="javascript:void(0)" cy-click="collapse()">
+        隐藏顶部
+    </a>
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //缓存页面布局对象
+        $rootScope.$topLayout = $scope.$(".easyui-layout")
+        //加载菜单
+        renderMenu();
+
+        //收缩顶部事件
+        $scope.IsCollapsed = false;
+        $scope.collapse = function(){
+            if ($scope.IsCollapsed) {
+                $scope.IsCollapsed = false;
+                $scope.$(".easyui-layout").layout('expand', 'north');
+                $scope.$("#ACollapse").text("隐藏顶部");
+                $scope.$("#ACollapse").removeClass("showTop").addClass("hideTop");
+            } else {
+                $scope.IsCollapsed = true;
+                $scope.$(".easyui-layout").layout('collapse', 'north');
+                $scope.$("#ACollapse").text("显示顶部");
+                $scope.$("#ACollapse").removeClass("hideTop").addClass("showTop");
+            }
+        }
+
+        //登出
+        $scope.logout = function(){
+            sessionStorage.removeItem("logInfo");
+            window.location.reload();
+        }
+
+        /**
+         * 加载菜单
+         * @return {[type]}       [description]
+         */
+        function renderMenu() {
+            var fm, dvMenus = $scope.$("#dvMenus");
+            $.each($scope.menus, function (i, firstMenuObj) {
+                var fm = $('<a title="' + firstMenuObj.Title + '" href="javascript:void(0);" index="' + i + '" mouseoverimage ="' + firstMenuObj.MouseOverImage + '" mouseoutimage="' + firstMenuObj.MouseOutImage
+                    + '" style="margin-right: 20px; vertical-align: middle;"><img src="' + firstMenuObj.MouseOutImage + '" style="border:none;vertical-align:middle;" /></a>')
+                .click(function(){
+                    openMenu(this);
+                }).mouseenter(function(){
+                    mouseover(this);
+                }).mouseleave(function(){
+                    mouseout(this);
+                }).appendTo(dvMenus);
+                if (i == 0) { fm.click(); }
+            });
+        }
+
+        /**
+         * 创建菜单
+         * @param  {[type]} classMenus [description]
+         * @return {[type]}            [description]
+         */
+        function renderClassMenu(menus) {
+            var ulParent;
+            $.each(menus, function (i, classMenuObj) {
+                // 创建二级菜单
+                ulParent = $('<ul style="list-style: none; margin:0; padding: 0;"/>').
+                    appendTo($('<div title="' + classMenuObj.Title + '"/>'));
+                // 创建三级菜单
+                $.each(classMenuObj.SecondMenus, function (n, secMenuObj) {
+                    //ulParent.append($('<li class="cs-navi-tab" src="' + secMenuObj.TargetUrl + '" title=""><img src="'
+                    //                  + secMenuObj.LogoImage + '" />' + secMenuObj.Title + '</li>'));
+
+                    ulParent.append($('<li class="cs-navi-tab" src="' + secMenuObj.TargetUrl + '" title="">&nbsp;&nbsp;' + secMenuObj.Title + '</li>'));
+                });
+
+                // 添加菜单到容器
+                $scope.$("#accdion").accordion('add', {
+                    title: '<img src="' + classMenuObj.LogoImage + '" style="vertical-align:middle;"/><span style="vertical-align:middle;margin-left:5px;">' + classMenuObj.Title + '</span>',
+                    content: ulParent.parent(),
+                    selected: false
+                    //headerCls: 'menuHeader'
+                });
+            });
+        }
+
+        var openIndex = -1,openTag;
+        /**
+         * 打开菜单
+         * @param {[type]} target [description]
+         * @param {[type]} index  [description]
+         */
+        function openMenu(target) {
+            if (openIndex > -1) {
+                openTag.children("img").attr("src", $(target).attr("mouseoutimage"));//.onmouseout();
+            }
+            openIndex = $(target).attr("index");
+            openTag = $(target);
+
+            openTag.children("img").attr("src", $(target).attr("mouseoverimage"));//.onmouseout();
+
+            for (var i = $scope.$('#accdion').accordion('panels').length - 1; i >= 0; i--) {
+                $scope.$('#accdion').accordion('remove', i);
+            }
+
+            $scope.$('.easyui-layout').layout('panel', 'west').panel("setTitle",
+                '<span style="vertical-align:middle;margin-left:5px;font-size:10pt;">' + $(target).attr("title") + '</span>'
+                ); 
+            renderClassMenu($scope.menus[openIndex].ClassMenus);
+
+            $('.cs-navi-tab').click(function () {
+                var $this = $(this);
+                var href = $this.attr('src');
+                var title = $.trim($this.text());
+                addTab(title, href);//, $this.children("img").attr("src")
+            });
+        }
+
+        function mouseover(target) {
+            $(target).children("img").attr("src", $(target).attr("mouseoverimage"));
+        }
+
+        function mouseout(target) {
+            if ($(target).attr("index") == openIndex) { return; }
+            $(target).children("img").attr("src", $(target).attr("mouseoutimage"));
+        }
+
+
+        //标签初始化
+        tabInit();
+        //初始化tab页签
+        function tabInit() {
+            //初始化tabs事件,并存入全局变量中
+            $rootScope.$tabs = $scope.$('#tabs').tabs({
+                //为选项卡绑定右键
+                onContextMenu: function (e, title, index) {
+                    e.preventDefault();
+                    if (index == 0) return;
+                    $('#mm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                    var subtitle = $scope.$("#tabs").tabs("getTab", index).panel("options").title;
+                    $('#mm').data("currtab", subtitle);
+                    $scope.$('#tabs').tabs('select', index);
+                },
+                //选中事件
+                onSelect : function(title,index){
+                    var selectTab = $(this).tabs("getTab",index);
+                    var scopeObject = selectTab.data("scopeObject");
+                    if(scopeObject != undefined){
+                        $scope.$excute(scopeObject.enter);
+                    }
+                },
+                //离开选项卡
+                onUnselect : function(title,index){
+                    var selectTab = $(this).tabs("getTab",index);
+                    var scopeObject = selectTab.data("scopeObject");
+                    if(scopeObject != undefined){
+                        $scope.$excute(scopeObject.leave);
+                    }
+                },
+                //关闭选项卡
+                onBeforeClose : function(title,index){
+                    var selectTab = $(this).tabs("getTab",index);
+                    var scopeObject = selectTab.data("scopeObject");
+                    if(scopeObject != undefined){
+                        $scope.$excute(scopeObject.close);
+                         //执行销毁方法
+                        scopeObject.$destroy();
+                    }
+                }
+            });
+            
+            tabCloseEven();
+        }
+
+        /**
+         * 添加新的页签
+         * @param {[type]} title 页签标题
+         * @param {[type]} url  页签链接
+         */
+        function addTab(title, url) {    //,imgSrc
+            if ($scope.$('#tabs').tabs('exists', title)) {
+                $scope.$('#tabs').tabs('select', title);//选中并刷新
+            } else {
+                //获取url中的参数
+                $scope.$setParam("$params",new URL("http://" + url).searchParams);
+                $scope.$setParam("$url",url);
+                $scope.$('#tabs').tabs('add', {
+                    title: title,
+                    href: url,
+                    closable: true
+                });
+            }
+        }
+
+        //绑定右键菜单事件
+        function tabCloseEven() {
+            //刷新
+            $('#mm-tabupdate').click(function () {
+                var currTab = $scope.$('#tabs').tabs('getSelected');
+                var scopeObject = currTab.data("scopeObject");
+                currTab.removeData("scopeObject");
+                if(scopeObject != undefined){
+                    $scope.$excute(scopeObject.close);
+                     //先执行销毁方法，再执行close方法
+                    scopeObject.$destroy();
+                }
+                $scope.$setParam("$params",new URL("http://" + currTab.panel("options").href).searchParams);
+                currTab.panel('refresh');
+            })
+            //关闭当前
+            $('#mm-tabclose').click(function () {
+                var currtab_title = $('#mm').data("currtab");
+                $scope.$('#tabs').tabs('close', currtab_title);
+            })
+            //全部关闭
+            $('#mm-tabcloseall').click(function () {
+                $scope.$('.tabs-inner span').each(function (i, n) {
+                    var t = $(n).text();
+                    if (t != 'Home') {
+                        $scope.$('#tabs').tabs('close', t);
+                    }
+                });
+            });
+            //关闭除当前之外的TAB
+            $('#mm-tabcloseother').click(function () {
+                var prevall = $scope.$('.tabs-selected').prevAll();
+                var nextall = $scope.$('.tabs-selected').nextAll();
+                if (prevall.length > 0) {
+                    prevall.each(function (i, n) {
+                        var t = $scope.$('a:eq(0) span', $(n)).text();
+                        if (t != 'Home') {
+                            $scope.$('#tabs').tabs('close', t);
+                        }
+                    });
+                }
+                if (nextall.length > 0) {
+                    nextall.each(function (i, n) {
+                        var t = $scope.$('a:eq(0) span', $(n)).text();
+                        if (t != 'Home') {
+                            $scope.$('#tabs').tabs('close', t);
+                        }
+                    });
+                }
+                return false;
+            });
+            //关闭当前右侧的TAB
+            $('#mm-tabcloseright').click(function () {
+                var nextall = $scope.$('.tabs-selected').nextAll();
+                if (nextall.length == 0) {
+                    //msgShow('系统提示','后边没有啦~~','error');
+                    alert('后边没有啦~~');
+                    return false;
+                }
+                nextall.each(function (i, n) {
+                    var t = $scope.$('a:eq(0) span', $(n)).text();
+                    $scope.$('#tabs').tabs('close', t);
+                });
+                return false;
+            });
+            //关闭当前左侧的TAB
+            $('#mm-tabcloseleft').click(function () {
+                var prevall = $scope.$('.tabs-selected').prevAll();
+                if (prevall.length == 0) {
+                    alert('到头了，前边没有啦~~');
+                    return false;
+                }
+                prevall.each(function (i, n) {
+                    var t = $scope.$('a:eq(0) span', $(n)).text();
+                    $('#tabs').tabs('close', t);
+                });
+                return false;
+            });
+            //退出
+            $("#mm-exit").click(function () {
+                $scope.$('#mm').menu('hide');
+            })
+        }
+    });
+
+</script>

@@ -1,0 +1,155 @@
+<div id="trafficEventInfo" class="easyui-layout"  >
+    <div data-options="region:'center',border:false" >
+        <div class="table">
+            <div  class="searchPanel" style="height:380px">
+                <div class="panel_title">现场图片：
+                </div>
+                <img src="frameworks/Openlayers/img/pic.jpg" style="width: 325px;height: 380px;"/>
+                <br>
+
+            </div>
+            <div class="tr">
+                <div class="td"style="width: 342px; text-align: right">
+                    <a  class="easyui-linkbutton button " >视频录像</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div data-options="region:'east',border:false" style="width: 240px">
+        <div class="table" id="eventInfo">
+            <div  class="searchPanel" >
+                <div class="panel_title">事件信息：
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        设备名称：
+                    </div>
+                    <div class="td" >
+                    <span cy-name=newData.device_name></span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        所属机构：
+                    </div>
+                    <div class="td">
+                        <span cy-name=newData.ssjg></span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" >
+                        发生地点：
+                    </div>
+                    <div class="td" >
+                        <span cy-name=newData.site_code></span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" >
+                        事件类型：
+                    </div>
+                    <div class="td" >
+                        <span cy-name="newData.event_type" cy-filter="getTextByValue" style="color: orangered;"></span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        发生时间：
+                    </div>
+                    <div class="td">
+                        <span cy-name=newData.event_time></span>
+                    </div>
+                </div>
+            </div>
+            <div  class="searchPanel" >
+                <div class="panel_title">事件处理：
+                </div>
+                <div class="tr">
+                    <div class="th">
+                        事件确认：
+                    </div>
+                    <div class="td">
+                        <label ><input name="event_check" type="radio" value="2" />有效</label>
+                        <label ><input name="event_check" type="radio" value="1" />无效</label>
+                        <label ><input name="event_check" type="radio" value="0" checked="checked"  />未确认</label>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="height:45px; ">
+                        事件描述：
+                    </div>
+                    <div class="td">
+                        <textarea  cy-name="newData.event_desc" style="height:45px; "/>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="th" style="height:45px;">
+                        处理方法：
+                    </div>
+                    <div class="td" >
+                        <textarea cy-name="newData.remark" style="height:45px; "/>
+                    </div>
+                </div>
+                <br>
+
+            </div>
+            <div class="tr">
+                <div class="th">
+                    <a  class="easyui-linkbutton button " >提交</a>
+                    <a  class="easyui-linkbutton button " >取消</a>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["newData","eventTypeDic","saveData"],function($scope){
+
+        //页面登录时调用
+        $scope.load = function(){
+          //console.log($scope.eventTypeDic);
+        }
+        //根据值显示数据字典中的标签
+        $scope.getTextByValue=function(value){
+            if(value){
+                var text;
+                for(var i in $scope.eventTypeDic){
+                    if(value==$scope.eventTypeDic[i].value){
+                        text=$scope.eventTypeDic[i].text;
+                    }
+                }
+                return text;
+            }
+        };
+        $scope.openDialogChart = function() {
+            $scope.$setParam("qxsbbm",$scope.newData.qxsbbm);
+            if($scope.newData.lxmc=="气象仪"){
+                $scope.$openDialog("createDialog", {
+                    title: "气象仪历史数据",
+                    height: 500,
+                    width: 800,
+                    href: "tpls/trafficMonitor/trafficWeather/qxy-history-chart.html"
+                }, true);
+            }
+        };
+    });
+</script>
+
+<style type="text/css">
+    #trafficEventInfo .th{
+        width : 65px;
+        text-align: right;
+    }
+    #trafficEventInfo .td{
+        width :160px;
+    }
+
+    #trafficEventInfo span[cy-name]{
+        color:#0000ff;
+    }
+</style>

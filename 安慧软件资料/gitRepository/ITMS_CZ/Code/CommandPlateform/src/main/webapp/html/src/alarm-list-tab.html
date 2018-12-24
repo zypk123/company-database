@@ -1,0 +1,56 @@
+<div class="easyui-tabs" id="alarm-list-tab" data-options="fit:true,border:false">
+	
+</div>
+<script>
+	InitPage([],function($scope){
+		//添加设备类报警tab页
+		if(hasAlarmPermission(SubsribeType.deviceFault.messageKey)){
+			$scope.$("#alarm-list-tab").tabs("add",{
+				title: '设备故障报警',
+				selected: true,
+				href : "tpls/deviceManage/deviceAlarm/deviceAlarm-list.html"
+			});
+		}
+		//添加服务器状态类报警tab页
+		if(hasAlarmPermission(SubsribeType.deviceFault.messageKey)){
+			$scope.$("#alarm-list-tab").tabs("add",{
+				title: '服务器状态预警',
+				selected: false,
+				href : "tpls/deviceManage/deviceAlarm/serverStatusAlarm-list.html"
+			});		
+		}
+		//添加交通事件预警
+		if(hasAlarmPermission(SubsribeType.trafficEvent.messageKey)){
+			$scope.$("#alarm-list-tab").tabs("add",{
+				title : "交通事件预警",
+				selected : false,
+				href : "tpls/trafficMonitor/trafficEvent/traffic-event-list.html"
+			});
+		}
+		//添加气象预警
+		if(hasAlarmPermission(SubsribeType.waterThicknessAlarm.messageKey) ||
+			hasAlarmPermission(SubsribeType.roadCondtionAlarm.messageKey) ||
+			hasAlarmPermission(SubsribeType.temperatureAlarm.messageKey) ||
+			hasAlarmPermission(SubsribeType.windAlarm.messageKey) ||
+			hasAlarmPermission(SubsribeType.visibilityAlarm.messageKey) ){
+			$scope.$("#alarm-list-tab").tabs("add",{
+				title : "气象预警",
+				selected : false,
+				href : "tpls/trafficMonitor/trafficEvent/weather-event-list.html"
+			});
+		}
+		
+		function hasAlarmPermission(key){
+			var permissionList = $scope.UserInfo.subsribePermission;
+			if($scope.UserInfo.loginName != "ADMIN"){
+				for(var index in permissionList){
+					if(permissionList[index] == key){
+						return true;
+					}
+				}
+				return false;
+			}
+			return true;
+		}
+	});
+</script>

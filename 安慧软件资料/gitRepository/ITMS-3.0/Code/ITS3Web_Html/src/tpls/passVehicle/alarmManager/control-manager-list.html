@@ -1,0 +1,207 @@
+<div class="easyui-layout" id="control-manager-list">
+	<div data-options="region:'north',border:false,height:125" style="border-bottom:solid 1px #ddd">
+		<form cy-form="formData">
+			<div class="searchPanel">
+				<div class="panel_title">查询条件</div>
+				<div class="table">
+					<div class="tr">
+						<div class="th">号牌号码：</div>
+						<div class="td">
+							<input type="text" class="cy-vehNumberbox" name="plateNumber">
+						</div>
+						<div class="th">号牌颜色：</div>
+						<div class="td">
+							<input type="text" class="easyui-combobox" name="plateColor" id="plateColor">
+						</div>
+						<div class="th">号牌类型：</div>
+						<div class="td">
+							<input type="text" class="easyui-combobox" name="plateType" id="plateType">
+						</div>
+						<div class="th">报警类型：</div>
+						<div class="td">
+							<input type="text" class="easyui-combobox" name="alarmType" id="alarmType">
+						</div>
+					</div>
+					<div class="tr">
+						<div class="th">签收结果：</div>
+						<div class="td">
+							<select class="easyui-combobox" name="signResult" style="width:116px;" data-options="value:''">
+								<option value="0">未签收</option>
+								<option value="1">已签收</option>
+							</select>
+						</div>
+						<div class="th">反馈状态：</div>
+						<div class="td">
+							<select class="easyui-combobox" name="feedbackState" style="width:116px;" data-options="value:''">
+								<option value="0">未反馈</option>
+								<option value="1">已反馈</option>
+							</select>
+						</div>
+						<div class="th">报警时间：</div>
+						<div class="td" style="width:330px;">
+							<input type="text" class="easyui-datetimebox" name="alarmBegin" style="width:149px;">
+							至
+							<input type="text" class="easyui-datetimebox" name="alarmEnd" style="width:149px;">
+						</div>
+						<div class="th">
+							<a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="search">查询</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div data-options="region:'center',border:false">
+		<table cy-datagrid="options" cy-querydata="formData" cy-url="data/passvehicle/alarmData.json"></table>
+	</div>
+	<div id="signMenu">
+		<div data-options="iconCls:'icon-ok'" cy-click="sign(1)">有效</div>
+		<div data-options="iconCls:'icon-no'" cy-click="sign(0)">无效</div>
+	</div>
+</div>
+<script>
+	InitPage([],function($scope){
+
+		//存储数据字典
+		var dicts;
+		//记录菜单
+		var menu;
+		//初始化方法
+		$scope.load = function(){
+			//初始化数据
+			initData();
+			//初始化签收菜单
+			menu = $scope.$("#signMenu").menu().menu("hide");
+		}
+
+		/**
+		 * 初始化数据字典
+		 * @return {[type]} [description]
+		 */
+		var initData = function(){
+			$scope.$ajaxRequest({
+				url: "data/passvehicle/dict.json",
+				success: function(data){
+					dicts = data.dicts;
+					//初始化选项
+					$scope.$("#plateColor").combobox("loadData",dicts["005"]);//号牌颜色
+					$scope.$("#plateType").combobox("loadData",dicts["002"]);//号牌类型
+					$scope.$("#alarmType").combobox("loadData",dicts["013"]);//报警类型
+				}
+			});
+		};
+		/**
+		 * 数据格式转化方法集
+		 * @type {Object}
+		 */
+		var formatters = {
+			plateColor : function(value){
+				return getNameFromDicts("005",value);
+			},
+			plateType : function(value){
+				return getNameFromDicts("002",value);
+			},
+			alarmType : function(value){
+				return getNameFromDicts("013",value);
+			},
+			direction : function(value){
+				return value=="0"?"上行":"下行";
+			},
+			signState : function(value){
+				return value=="0"?"未签收":"已签收";
+			},
+			operater : function(value,row,index){
+				var signButton = $('<a class="button-edit" title="签收" cy-click="signMenu(\'' + row.id + '\')"></a>');
+				var feedbackButton = $('<a class="button" title="反馈" cy-click="feedback(\'' + row.id + '\')"></a>');
+				signButton.linkbutton({
+					iconCls : "icon-edit"
+				});
+				feedbackButton.linkbutton({
+					iconCls : "icon-export"
+				});
+				return $("<span></span>").append(signButton).append(" ").append(feedbackButton).html();
+			}
+		};
+
+		/**
+		 * 从数据字典中找到对应显示值
+		 * @param code  数据字典code
+		 * @param value 需要获取的value值
+		 * @return 对应字典项的text值
+		 */
+		var getNameFromDicts =  function(code,value){
+			if(!value){
+				return "";
+			}
+			var items= dicts[code];
+			for(var index in items){
+				var item = items[index];
+				if(item.value == value){
+					return item.text;
+				}
+			}
+		};
+		/**
+		 * 表格参数
+		 * @type {Object}
+		 */
+		$scope.options = {
+			columns : [[
+				{checkbox:true, field:"id"},
+				{title:"号牌号码",field:"plateNumber",width:100},
+				{title:"号牌颜色",field:"plateColor",width:100,formatter:formatters.plateColor},
+				{title:"号牌类型",field:"plateType",width:100,formatter:formatters.plateType},
+				{title:"报警类型",field:"alarmType",width:100,formatter:formatters.alarmType},
+				{title:"报警开始时间",field:"alarmBegin",width:100},
+				{title:"报警结束时间",field:"alarmEnd",width:100},
+				{title:"报警地点",field:"alarmPlace",width:100},
+				{title:"方向",field:"direction",width:100,formatter:formatters.direction},
+				{title:"签收状态",field:"signState",width:100,formatter:formatters.signState},
+				{title:"操作",field:"operater",width:100,formatter:formatters.operater}
+			]]
+		};
+		/**
+		 * 弹出签收菜单
+		 * @return {[type]} [description]
+		 */
+		$scope.signMenu = function(id){
+			return function(event){
+				menu.data("id",id).menu("show",{
+					left : event.pageX,
+					top : event.pageY
+				})
+			}
+		};
+
+		$scope.sign = function(flag){
+			var id = menu.data("id");
+			if(flag == 0){
+				//无效操作
+				console.log(0);
+			}else{
+				//有效操作
+				console.log(1);
+			}
+		};
+		/**
+		 * 查询操作
+		 * @return {[type]} [description]
+		 */
+		$scope.search = function(){
+			$scope.$search("formData");
+		};
+
+	});
+</script>
+<style>
+	#control-manager-list .th{
+		width: 80px;
+		text-align: right;
+	}
+	#control-manager-list .td{
+		width: 120px;
+	}
+	#control-manager-list form input{
+		width: 110px;
+	}
+</style>

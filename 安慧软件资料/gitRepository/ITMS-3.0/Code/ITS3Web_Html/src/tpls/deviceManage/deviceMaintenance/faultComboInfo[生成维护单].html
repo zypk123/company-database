@@ -1,0 +1,110 @@
+<div id="alarmDetail" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form method="post" cy-form="formData" id="fxaultInfoFrom">
+            <div class="table">
+                <div class="tr">
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        维护单编号:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        1255233
+                    </div>
+                    <div class="th" style="text-align: right;padding-left: 5px">
+                        创建时间:
+                    </div>
+                    <div class="td" style="padding-left: 5px">
+                        2015年05月28号 00时00分00秒
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div data-options="region:'center',border:false">
+        <table cy-datagrid="options" id="dgv" cy-querydata="formData" cy-url="data/deviceManage/dataFault.json">
+        </table>
+    </div>
+    <div region="south" border="false" style="text-align: center; padding: 5px 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton button-enable "
+           data-options="iconCls:'icon-save',plain:true" cy-click="ok">生成维护单</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton button-close"
+           data-options="iconCls:'icon-close',plain:true" cy-click="close_maintenance">关闭</a>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    InitPage(["paramData","close_maintenance"], function ($scope) {
+        //给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+        /*        $scope.$ajaxRequest({
+         url: "data/deviceManage/dataFault.json",
+         params: { OrgCode: $scope.UserInfo.OrgCode },
+         success: function (retData) {
+         $scope.$('#faultTable').datagrid({
+         data: retData
+         });
+         },
+         fail: function (errTxt) {
+         alert(errTxt);
+         }
+         });*/
+        $.extend($scope, {
+            formData: {
+                /*                username: "admin1231312",
+                 password: "123456",
+                 combo: 4,
+                 code: 1234*/
+            },
+            options: {
+                columns: [
+                    [//注意，此处是二维数组
+                        {field: 'id', checkbox: true},
+                        {title: "设备名称", field: "DEVICE_NAME", width: 10},
+                        {title: "发生时间", field: "START_TIME", width: 10},
+                        {title: "故障类型", field: "FAULT_TYPE", width: 10},
+                        {title: "故障描述", field: "REMARK", width: 10},
+                        {title: "安装地点", field: "SITE_CODE", width: 10},
+                        {title: "删除", field: "编辑", width: 10,
+                            formatter: function (value, row, index) {
+                                return  "<a href = '#'class='easyui-linkbutton button-delete' onclick = 'edit_row(this)' > 删除 </a >";
+                            }
+                        }
+                    ]
+                ],
+                pagination: true
+            },
+            changeData: function (value) {
+                return value = value + 1;
+            },
+            searchData: function () {
+                $scope.$search("formData", {
+
+                }, function (data) {
+
+                });
+            },
+            load : function(){
+                $scope.searchData();
+            }
+        });
+        //确定
+        $scope.ok = function () {
+            var checkedRows = $scope.$('#dgv').datagrid('getChecked');
+            if($.isEmptyObject(checkedRows))
+            {
+                console.log("您未选中任何记录");
+            }
+            else {
+                //后台删除
+                for (var i = 0; i < checkedRows.length; i++) {
+                    console.log(checkedRows[i].DEVICE_ID);
+                }
+                //刷新列表
+                $scope.searchData();
+            }
+            //关闭窗口
+            $scope.close_maintenance();
+        }
+        function fmt(value) {
+            return 123;
+        }
+    });
+</script>

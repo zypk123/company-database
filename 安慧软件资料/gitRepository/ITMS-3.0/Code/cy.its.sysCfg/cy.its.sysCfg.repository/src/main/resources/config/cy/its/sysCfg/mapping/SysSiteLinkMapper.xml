@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.SysSiteLinkMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.domain.model.home.SysSiteLink" >
+    <id column="LINK_ID" property="linkId" jdbcType="VARCHAR" />
+    <result column="LINK_NAME" property="linkName" jdbcType="VARCHAR" />
+    <result column="LINK_ICON" property="linkIcon" jdbcType="VARCHAR" />
+    <result column="LINK_URL" property="linkUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LINK_ID, LINK_NAME, LINK_ICON, LINK_URL
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SITE_LINK
+    where LINK_ID = #{linkId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_SITE_LINK
+    where LINK_ID = #{linkId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.domain.model.home.SysSiteLink" >
+    insert into T_SYS_SITE_LINK (LINK_ID, LINK_NAME, LINK_ICON, 
+      LINK_URL)
+    values (#{linkId,jdbcType=VARCHAR}, #{linkName,jdbcType=VARCHAR}, #{linkIcon,jdbcType=VARCHAR}, 
+      #{linkUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.domain.model.home.SysSiteLink" >
+    insert into T_SYS_SITE_LINK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="linkId != null" >
+        LINK_ID,
+      </if>
+      <if test="linkName != null" >
+        LINK_NAME,
+      </if>
+      <if test="linkIcon != null" >
+        LINK_ICON,
+      </if>
+      <if test="linkUrl != null" >
+        LINK_URL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="linkId != null" >
+        #{linkId,jdbcType=VARCHAR},
+      </if>
+      <if test="linkName != null" >
+        #{linkName,jdbcType=VARCHAR},
+      </if>
+      <if test="linkIcon != null" >
+        #{linkIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="linkUrl != null" >
+        #{linkUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.domain.model.home.SysSiteLink" >
+    update T_SYS_SITE_LINK
+    <set >
+      <if test="linkName != null" >
+        LINK_NAME = #{linkName,jdbcType=VARCHAR},
+      </if>
+      <if test="linkIcon != null" >
+        LINK_ICON = #{linkIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="linkUrl != null" >
+        LINK_URL = #{linkUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LINK_ID = #{linkId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.domain.model.home.SysSiteLink" >
+    update T_SYS_SITE_LINK
+    set LINK_NAME = #{linkName,jdbcType=VARCHAR},
+      LINK_ICON = #{linkIcon,jdbcType=VARCHAR},
+      LINK_URL = #{linkUrl,jdbcType=VARCHAR}
+    where LINK_ID = #{linkId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_SITE_LINK
+  </select>
+
+</mapper>

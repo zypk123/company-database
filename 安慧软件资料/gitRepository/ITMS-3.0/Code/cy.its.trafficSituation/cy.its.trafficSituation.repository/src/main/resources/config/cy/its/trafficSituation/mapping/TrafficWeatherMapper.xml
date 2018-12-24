@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.trafficSituation.mybatis.client.TrafficWeatherMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.trafficSituation.domain.model.TrafficWeather" >
+    <id column="METEOROLOGIC_DATA_ID" property="meteorologicDataId" jdbcType="VARCHAR" />
+    <result column="DEVICE_SYS_NBR" property="deviceSysNbr" jdbcType="VARCHAR" />
+    <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="SITE_CODE" property="siteCode" jdbcType="VARCHAR" />
+    <result column="WEATHER_TEMPERATURE" property="weatherTemperature" jdbcType="DECIMAL" />
+    <result column="RELATIVE_HUMIDITY" property="relativeHumidity" jdbcType="DECIMAL" />
+    <result column="AIR_PRESSURE" property="airPressure" jdbcType="DECIMAL" />
+    <result column="WIND_SPEED" property="windSpeed" jdbcType="DECIMAL" />
+    <result column="WIND_DIRECTION" property="windDirection" jdbcType="DECIMAL" />
+    <result column="WATER_FILM_HEIGHT" property="waterFilmHeight" jdbcType="DECIMAL" />
+    <result column="WATER_TYPE" property="waterType" jdbcType="VARCHAR" />
+    <result column="RAIN_STRONG" property="rainStrong" jdbcType="DECIMAL" />
+    <result column="RECORD_TIME" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   
+  
+  <sql id="Base_Column_List" >
+    METEOROLOGIC_DATA_ID, DEVICE_SYS_NBR, ORG_CODE, SITE_CODE, WEATHER_TEMPERATURE, 
+    RELATIVE_HUMIDITY, AIR_PRESSURE, WIND_SPEED, WIND_DIRECTION, WATER_FILM_HEIGHT, WATER_TYPE, 
+    RAIN_STRONG, RECORD_TIME,ORG_PRIVILEGE_CODE
+  </sql>
+  
+  <select id="selectWeathers" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   	<include refid="Base_Column_List" />
+    from T_TRAFFIC_WEATHER 
+    <where> 
+			1=1
+			<if test="startTime!=null and startTime != ''" >
+				<![CDATA[AND RECORD_TIME >= #{startTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime!=null and endTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>
+			<if test="orgPrivilegeCode!=null and orgPrivilegeCode != ''" >
+				AND ORG_PRIVILEGE_CODE like #{orgPrivilegeCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>
+	</where>
+	order by RECORD_TIME desc,site_code     
+  </select>
+  
+  <select id="select2HourWeathers" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select 
+   	<include refid="Base_Column_List" />
+    from T_TRAFFIC_WEATHER 
+    <where> 			
+			<if test="deviceSysNbr!=null and deviceSysNbr != ''" >
+				AND DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+			</if>			
+			<if test="recordTime!=null and recordTime != ''" >
+				<![CDATA[AND RECORD_TIME <= #{recordTime,jdbcType=TIMESTAMP}]]>
+				<![CDATA[AND RECORD_TIME >= #{recordTime,jdbcType=TIMESTAMP}-1/12]]>
+			</if>
+	</where>
+	order by RECORD_TIME     
+  </select>
+  
+   <select id="getLastWeatherByNBR" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from(
+	    select 
+	    METEOROLOGIC_DATA_ID, DEVICE_SYS_NBR, ORG_CODE, SITE_CODE, WEATHER_TEMPERATURE, 
+	    RELATIVE_HUMIDITY, AIR_PRESSURE, WIND_SPEED, WIND_DIRECTION, WATER_FILM_HEIGHT, WATER_TYPE, 
+	    RAIN_STRONG, RECORD_TIME,rownum 
+	    from T_TRAFFIC_WEATHER
+	    where DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR}
+	    order by RECORD_TIME desc
+	    )
+	 where rownum=1
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_TRAFFIC_WEATHER
+    where METEOROLOGIC_DATA_ID = #{meteorologicDataId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_TRAFFIC_WEATHER
+    where METEOROLOGIC_DATA_ID = #{meteorologicDataId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.trafficSituation.domain.model.TrafficWeather" >
+    insert into T_TRAFFIC_WEATHER (METEOROLOGIC_DATA_ID,
+      DEVICE_SYS_NBR, ORG_CODE, SITE_CODE, 
+      WEATHER_TEMPERATURE, RELATIVE_HUMIDITY, AIR_PRESSURE, 
+      WIND_SPEED, WIND_DIRECTION, WATER_FILM_HEIGHT, 
+      WATER_TYPE, RAIN_STRONG, RECORD_TIME
+      )
+    values (#{meteorologicDataId,jdbcType=VARCHAR},
+      #{deviceSysNbr,jdbcType=VARCHAR}, #{orgCode,jdbcType=VARCHAR}, #{siteCode,jdbcType=VARCHAR}, 
+      #{weatherTemperature,jdbcType=DECIMAL}, #{relativeHumidity,jdbcType=DECIMAL}, #{airPressure,jdbcType=DECIMAL}, 
+      #{windSpeed,jdbcType=DECIMAL}, #{windDirection,jdbcType=DECIMAL}, #{waterFilmHeight,jdbcType=DECIMAL}, 
+      #{waterType,jdbcType=VARCHAR}, #{rainStrong,jdbcType=DECIMAL}, #{recordTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.trafficSituation.domain.model.TrafficWeather" >
+    insert into T_TRAFFIC_WEATHER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="meteorologicDataId != null" >
+        METEOROLOGIC_DATA_ID,
+      </if>
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR,
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE,
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE,
+      </if>
+      <if test="weatherTemperature != null" >
+        WEATHER_TEMPERATURE,
+      </if>
+      <if test="relativeHumidity != null" >
+        RELATIVE_HUMIDITY,
+      </if>
+      <if test="airPressure != null" >
+        AIR_PRESSURE,
+      </if>
+      <if test="windSpeed != null" >
+        WIND_SPEED,
+      </if>
+      <if test="windDirection != null" >
+        WIND_DIRECTION,
+      </if>
+      <if test="waterFilmHeight != null" >
+        WATER_FILM_HEIGHT,
+      </if>
+      <if test="waterType != null" >
+        WATER_TYPE,
+      </if>
+      <if test="rainStrong != null" >
+        RAIN_STRONG,
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="meteorologicDataId != null" >
+        #{meteorologicDataId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSysNbr != null" >
+        #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="weatherTemperature != null" >
+        #{weatherTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="relativeHumidity != null" >
+        #{relativeHumidity,jdbcType=DECIMAL},
+      </if>
+      <if test="airPressure != null" >
+        #{airPressure,jdbcType=DECIMAL},
+      </if>
+      <if test="windSpeed != null" >
+        #{windSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="windDirection != null" >
+        #{windDirection,jdbcType=DECIMAL},
+      </if>
+      <if test="waterFilmHeight != null" >
+        #{waterFilmHeight,jdbcType=DECIMAL},
+      </if>
+      <if test="waterType != null" >
+        #{waterType,jdbcType=VARCHAR},
+      </if>
+      <if test="rainStrong != null" >
+        #{rainStrong,jdbcType=DECIMAL},
+      </if>
+      <if test="recordTime != null" >
+        #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.trafficSituation.domain.model.TrafficWeather" >
+    update T_TRAFFIC_WEATHER
+    <set >
+      <if test="deviceSysNbr != null" >
+        DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      </if>
+      <if test="orgCode != null" >
+        ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCode != null" >
+        SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      </if>
+      <if test="weatherTemperature != null" >
+        WEATHER_TEMPERATURE = #{weatherTemperature,jdbcType=DECIMAL},
+      </if>
+      <if test="relativeHumidity != null" >
+        RELATIVE_HUMIDITY = #{relativeHumidity,jdbcType=DECIMAL},
+      </if>
+      <if test="airPressure != null" >
+        AIR_PRESSURE = #{airPressure,jdbcType=DECIMAL},
+      </if>
+      <if test="windSpeed != null" >
+        WIND_SPEED = #{windSpeed,jdbcType=DECIMAL},
+      </if>
+      <if test="windDirection != null" >
+        WIND_DIRECTION = #{windDirection,jdbcType=DECIMAL},
+      </if>
+      <if test="waterFilmHeight != null" >
+        WATER_FILM_HEIGHT = #{waterFilmHeight,jdbcType=DECIMAL},
+      </if>
+      <if test="waterType != null" >
+        WATER_TYPE = #{waterType,jdbcType=VARCHAR},
+      </if>
+      <if test="rainStrong != null" >
+        RAIN_STRONG = #{rainStrong,jdbcType=DECIMAL},
+      </if>
+      <if test="recordTime != null" >
+        RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where METEOROLOGIC_DATA_ID = #{meteorologicDataId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.trafficSituation.domain.model.TrafficWeather" >
+    update T_TRAFFIC_WEATHER
+    set 
+      DEVICE_SYS_NBR = #{deviceSysNbr,jdbcType=VARCHAR},
+      ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+      SITE_CODE = #{siteCode,jdbcType=VARCHAR},
+      WEATHER_TEMPERATURE = #{weatherTemperature,jdbcType=DECIMAL},
+      RELATIVE_HUMIDITY = #{relativeHumidity,jdbcType=DECIMAL},
+      AIR_PRESSURE = #{airPressure,jdbcType=DECIMAL},
+      WIND_SPEED = #{windSpeed,jdbcType=DECIMAL},
+      WIND_DIRECTION = #{windDirection,jdbcType=DECIMAL},
+      WATER_FILM_HEIGHT = #{waterFilmHeight,jdbcType=DECIMAL},
+      WATER_TYPE = #{waterType,jdbcType=VARCHAR},
+      RAIN_STRONG = #{rainStrong,jdbcType=DECIMAL},
+      RECORD_TIME = #{recordTime,jdbcType=TIMESTAMP}
+    where METEOROLOGIC_DATA_ID = #{meteorologicDataId,jdbcType=VARCHAR}
+  </update>
+</mapper>

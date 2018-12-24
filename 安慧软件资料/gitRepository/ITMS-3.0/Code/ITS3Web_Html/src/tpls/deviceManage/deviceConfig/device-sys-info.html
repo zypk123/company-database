@@ -1,0 +1,737 @@
+<div id="deviceSysInfo" class="easyui-layout" style="overflow:auto;">
+    <div data-options="region:'north',height:45,border:false">
+        <!--保存按钮-->
+        <div style="margin: 8px;">
+            <a class="easyui-linkbutton button-next" data-options="iconCls:'icon-next',plain:true" cy-click="saveAndNext">保存并下一步</a>
+            <a class="easyui-linkbutton button-save" data-options="iconCls:'icon-save',plain:true"  cy-click="saveOnly">保存</a>
+            <a class="easyui-linkbutton button-close" data-options="iconCls:'icon-close',plain:true"  cy-click="destroyTab1">关闭</a>
+        </div>
+    </div>
+    <div data-options="region:'center',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">基本信息</div>
+                <!--除LED和限速牌以外其他设备基本信息的DIV-->
+                <div class="table public">
+                    <div class="tr">
+                        <div class="th">设备编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备子类型：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">所属机构：</div>
+                        <div class="td">
+                            <input class="easyui-combotree" name="" />
+                        </div>
+                        <div class="th">建设归属：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name="" />
+                        </div>
+                        <div class="th">设备品牌：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备型号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">出厂序列号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">软件版本：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备IP：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" style="width: 40px" id="ipFirstSeg" >.
+                            <input class="easyui-textbox" style="width: 40px" id="ipSecondSeg">.
+                            <input class="easyui-textbox" style="width: 40px" id="ipThirdSeg" >.
+                            <input class="easyui-textbox" style="width: 40px" id="ipFourthSeg">
+                        </div>
+                        <div class="th">端口号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">SIM卡号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="np" style="display: none">
+                            <div class="th">用户名：</div>
+                            <div class="td">
+                                <input class="easyui-textbox" name=""/>
+                            </div>
+                            <div class="th">密码：</div>
+                            <div class="td">
+                                <input type="password" class="easyui-textbox" name=""/>
+                            </div>
+                        </div>
+                        <div class="th">所属合同：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name=""/><a class="easyui-linkbutton button-save" cy-click="addContract">+</a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th defaultShow">备案人：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th defaultShow">备案时间：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+                <!--限速牌和LED基本信息DIV-->
+                <div class="table speed">
+                    <div class="tr">
+                        <div class="th">设备编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="device_nbr"/>
+                        </div>
+                        <div class="th">设备名称：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="device_name"/>
+                        </div>
+                        <div class="th">设备品牌：</div>
+                        <div class="td">
+                            <input  id="device_type" class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备型号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">出厂序列号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">软件版本：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备IP：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name="" cy-onkeyup="T1onkeyup" id="T1" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" cy-onkeyup="T2onkeyup" id="T2" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" cy-onkeyup="T3onkeyup" id="T3" style="width: 40px"/>.
+                            <input class="easyui-textbox" name="" id="T4" style="width: 40px"/>
+                        </div>
+                        <div class="th">端口号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">所属合同：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" id="contract"  data-options="valueField:'id',textField:'name'"/><a class="easyui-linkbutton button-save" cy-click="addContract">+</a>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th defaultShow">备案人：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th defaultShow">备案时间：</div>
+                        <div class="td defaultShow">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">安装信息</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">所在点位：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"/><a class="easyui-linkbutton button-save">+</a>
+                        </div>
+                    </div>
+                    <div class="tr direction">
+                        <div class="th">监控方向：</div>
+                        <div class="td" style="width: 180px;" id="direction">
+                            <input type="radio" name="direction" value="1" cy-click="showAddUpName"/>上行
+                            <input type="radio" name="direction" value="2" cy-click="showAddDownName"/>下行
+                            <input type="radio" name="direction" value="3" cy-click="showAddAllName"/>双向
+                        </div>
+                        <div class="upDirection">
+                            <div class="th">上行方向名称：</div>
+                            <div class="td">
+                                <input class="easyui-textbox" name=""/>
+                            </div>
+                        </div>
+                        <div class="downDirection">
+                            <div class="th">下行方向名称：</div>
+                            <div class="td">
+                                <input class="easyui-textbox" name=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">安装方式：</div>
+                        <div class="td">
+                            <input id="mountingType" class="easyui-combobox" name=""/>
+                        </div>
+                        <div class="th">安装日期：</div>
+                        <div class="td">
+                            <input class="easyui-datebox" name=""/>
+                        </div>
+                        <div class="th">安装人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">设备经度：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">设备纬度：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="searchPanel">
+                <div class="panel_title">联网与接入</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">联网类型：</div>
+                        <div class="td">
+                            <input type="radio" name="networkType" style="width: 10px"/>公安网
+                            <input type="radio" name="networkType" style="width: 10px"/>专网
+                            <input type="radio" name="networkType" style="width: 10px"/>互联网
+                        </div>
+                        <div class="th">供电类型：</div>
+                        <div class="td">
+                            <input type="radio" name="powerType" style="width: 10px"/>农电
+                            <input type="radio" name="powerType" style="width: 10px"/>市电
+                            <input type="radio" name="powerType" style="width: 10px"/>太阳能
+                            <input type="radio" name="powerType" style="width: 10px"/>UPS
+                        </div>
+                        <div class="th">传输方式：</div>
+                        <div class="td">
+                            <input type="radio" name="translationMode" style="width: 10px"/>光钎
+                            <input type="radio" name="translationMode" style="width: 10px"/>3G
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">网络带宽：</div>
+                        <div class="td">
+                            <input class="easyui-textbox"/>
+                        </div>
+                        <div class="th">接入方式：</div>
+                        <div class="td" style="vertical-align: middle">
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>安全接入平台
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>双网卡
+                            <input type="radio" name="sateConntectMeans" style="width: 10px"/>直接接入
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">接入平台：</div>
+                        <div class="td" style="width: 110px;">
+                            <input class="easyui-combobox" name=""/><a class="easyui-linkbutton button-save" cy-click="addPlatform">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           <!-- 卡口功能参数-->
+            <div class="searchPanel tollgate">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table" style="margin-top: 5px;">
+                    <div class="tr">
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有特征图片
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox"  style="width: 10px"/>具备拦截条件
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox"  style="width: 10px"/>具有测速功能
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox" style="width: 10px"/>支持视频输出
+                        </div>
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox" style="width: 10px"/>支持事件检测
+                        </div>
+                        <div class="td" style="width: 140px">
+                            <input type="checkbox" style="width: 10px"/>支持不系安全带检测
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="td" style="width: 130px">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持禁行判定
+                        </div>
+                        <div class="td" style="width: 120px">
+                            <input type="checkbox"  style="width: 10px"/>接入缉查布控系统
+                        </div>
+                        <div class="th" style="width: 150px">在缉查布控系统中编号：</div>
+                        <div class="td" style="width: 150px">
+                            <input class="easyui-textbox"/>
+                        </div>
+                        <div class="th" style="width: 150px">大车图片抓拍张数：</div>
+                        <div class="td" style="width: 140px">
+                            <input class="easyui-textbox" style="width: 128px"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">抓拍模式：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"/>
+                        </div>
+                        <div class="th">检测方式：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">上行关联视频：</div>
+                        <div class="td">
+                            <input class="easyui-textbox"/>
+                        </div>
+                        <div class="th">下行关联视频：</div>
+                        <div class="td">
+                            <input class="easyui-textbox"/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">高速公路标识：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"/>
+                        </div>
+                        <div class="th">服务区标识：</div>
+                        <div class="td">
+                            <input class="easyui-combobox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--电警功能参数-->
+            <div class="searchPanel dj" style="display: none">
+                <div class="panel_title">功能与参数</div>
+            </div>
+            <!--视频功能参数-->
+            <div class="searchPanel video">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有云台控制
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有存储功能
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持事件检测
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">视频分辨率：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">日常监控预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">告警录像预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">后台控制恢复预置位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--测速功能参数-->
+            <div class="searchPanel speed_measurement">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持绿灯抓拍模式
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持事件检测
+                        </div>
+                        <div class="th">采集单位：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+
+                        <div class="th">采集人：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">检测方式：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">在综合平台中编号：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">违法行为类型列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">关联限速牌编号列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">关联视频编号列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--气象功能参数-->
+            <div class="searchPanel weather">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持路面状况采集
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持能见度采集
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持气象参数采集
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">关联视频列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">关联限速牌列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th">关联LED列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th">关联测速设备列表：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--流量检测功能参数-->
+            <div class="searchPanel traffic">
+                <div class="panel_title">功能与参数</div>
+
+            </div>
+            <!--事件监测功能参数-->
+            <div class="searchPanel event">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率标识
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">具有测速功能
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">支持事件检测
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--LED屏功能参数-->
+            <div class="searchPanel LED">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率
+                        </div>
+                        <div class="th">LED屏规格：</div>
+                        <div class="td">
+                            <input class="easyui-combobox" name=""/><a class="easyui-linkbutton button-save" cy-click="addInducedScreen">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--可变限速牌功能参数-->
+            <div class="searchPanel speed_board">
+                <div class="panel_title">功能与参数</div>
+                <div class="table new-table">
+                    <div class="tr">
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计检定率
+                        </div>
+                        <div class="td">
+                            <input type="checkbox" style="width: 10px;margin-left: 20px">统计在线率
+                        </div>
+                    </div>
+                    <div class="tr">
+                        <div class="th" style="width:90px;">外圈直径：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                        <div class="th" style="width:90px;">字符点阵：</div>
+                        <div class="td">
+                            <input class="easyui-textbox" name=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage(["destroyTab1","deviceType","deviceSysConfigTabs","closeDialog"],function($scope){
+        $scope.load = function(){
+            $scope.$(".defaultShow").hide();//新增隐藏备案人，备案时间
+            $scope.$(".seperater").hide();
+            $scope.$("#laneDiv").hide();
+            $scope.$("#downContainer").hide();
+            $scope.$("#upContainer").hide();
+            //将功能系数DIV隐藏
+            $scope.$(".tollgate").hide();
+            $scope.$(".speed_measurement").hide();
+            $scope.$(".video").hide();
+            $scope.$(".weather").hide();
+            $scope.$(".traffic").hide();
+            $scope.$(".event").hide();
+            $scope.$(".LED").hide();
+            $scope.$(".speed_board").hide();
+            //将基本信息DIV隐藏
+            $scope.$(".public").hide();
+            $scope.$(".speed").hide();
+            //方向名称DIV的隐藏
+            $scope.$(".upDirection").hide();
+            $scope.$(".downDirection").hide();
+            //获取传递的设备类型
+            var whichType = $scope.deviceType;
+            if(whichType == "01"){
+                //显示卡口功能参数
+                $scope.$(".tollgate").show();
+                $scope.$(".public").show();
+            }else if(whichType == "02"){
+                //显示电警功能参数
+                $scope.$(".speed_measurement").show();
+                $scope.$(".public").show();
+            }else if(whichType == "03"){
+                //显示视频功能参数
+                $scope.$(".video").show();
+                $scope.$(".public").show();
+                $scope.$(".np").attr("style","display:false");//显示用户名和密码输入框
+                $scope.$(".direction-tr").hide();//隐藏监控车道
+                $scope.$(".load-tr").hide();//隐藏监控方向
+            }else if(whichType == "04"){
+                //显示测速功能参数
+                $scope.$(".speed_measurement").show();
+                $scope.$(".public").show();
+            }else if(whichType == "05"){
+                //显示气象功能参数
+                $scope.$(".weather").show();
+                $scope.$(".public").show();
+                $scope.$(".direction-tr").hide();//隐藏监控车道
+                $scope.$(".load-tr").hide();//隐藏监控方向
+            }else if(whichType == "06"){
+                //显示流量检测功能参数
+                $scope.$(".traffic").show();
+                $scope.$(".public").show();
+            }else if(whichType == "08"){
+                $scope.$(".event").show();
+                $scope.$(".public").show();
+            }else if(whichType == "10"){
+                //显示LED功能参数
+                $scope.$(".LED").show();
+                //显示LED基本信息
+                $scope.$(".speed").show();
+                $scope.$(".load-tr").hide();//隐藏监控车道
+            }else if(whichType == "11"){
+                //显示限速牌功能参数
+                $scope.$(".speed_board").show();
+                //显示限速牌基本信息
+                $scope.$(".speed").show();
+                $scope.$(".load-tr").hide();//隐藏监控车道
+            }
+        };
+
+        //显示上行方向名称输入框
+        $scope.showAddUpName = function(){
+            $scope.$(".upDirection").show();
+            $scope.$(".downDirection").hide();
+        };
+        //显示下行方向名称输入框
+        $scope.showAddDownName = function(){
+            $scope.$(".upDirection").hide();
+            $scope.$(".downDirection").show();
+        };
+        //显示双向名称输入框
+        $scope.showAddAllName = function(){
+            $scope.$(".upDirection").show();
+            $scope.$(".downDirection").show();
+        };
+        /**
+         * ip地址联动
+         * event 事件参数
+         */
+        $scope.T1onkeyup = function (event) {
+            console.log($scope.$("#T1").textbox("getText").length);
+            if($scope.$("#T1").textbox("getText").length==3){
+                $scope.$("#T2").focus();
+            }
+        };
+        $scope.T2onkeyup = function (event) {
+            if($scope.$("#T2").value.length==3){
+                $scope.$("#T3").focus();
+            }
+        };
+
+        $scope.T3onkeyup = function (event) {
+            if($scope.$("#T3").value.length==3){
+                $scope.$("#T4").focus();
+            }
+        };
+        /**
+         * 新增合同
+         */
+        $scope.addContract = function(){
+            //新建新增合同弹出框
+            $scope.$openDialog("addDialog",{
+                title : "新增合同信息",
+                width : 600,
+                height : 480,
+                href : "tpls/deviceManage/informationManage/contract-operate.html"
+            },true);
+            //关闭新增合同弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addDialog").dialog("close");
+            });
+        };
+        /**
+         * 新增接入平台
+         */
+        $scope.addPlatform = function(){
+            $scope.$openDialog("platFormDialog",{
+                title : "新增接入平台",
+                width : 900,
+                height : 550,
+                href : "tpls/deviceManage/informationManage/platform-manage-list.html"
+            },true);
+        };
+        /**
+         * 新增LED规格
+         */
+        $scope.addInducedScreen = function(){
+            $scope.$openDialog("addInducedScreenDialog",{
+                title : "新增LED屏",
+                width : 800,
+                height :300,
+                href : "tpls/deviceManage/informationManage/induced-screen-standard-operate.html"
+            },true);
+            //关闭添加弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("addInducedScreenDialog").dialog("close");
+            });
+        };
+        /**
+         * 保存操作
+         */
+        $scope.saveOnly = function(){
+            //设备基本信息保存到数据库todo
+
+            //关闭窗体
+            $scope.closeDialog();
+        }
+        /**
+         *保存并下一步
+         */
+        $scope.saveAndNext = function(){
+            //设备基本信息保存到数据库todo
+            $scope.$setParam("deviceSysConfigTabs",$scope.deviceSysConfigTabs);
+            //检定tab页可用
+            $scope.deviceSysConfigTabs.tabs('enableTab', 1);
+            $scope.deviceSysConfigTabs.tabs('select', 1);
+        };
+    });
+</script>
+<style type="text/css">
+    #deviceSysInfo .td{
+        height:auto;
+    }
+    #deviceSysInfo .th{
+        width: 90px;
+        text-align: right;
+    }
+    #deviceSysInfo .new-table .th{
+        width: 120px;
+        text-align: right;
+    }
+    #deviceSysInfo .td>input[class^='easyui-']{
+        width: 174px;
+    }
+    #deviceSysInfo .panel_title{
+        position: relative;
+        width: 60px;
+    }
+
+</style>

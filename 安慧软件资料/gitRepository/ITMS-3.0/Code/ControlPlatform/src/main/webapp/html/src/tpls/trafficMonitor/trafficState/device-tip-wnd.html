@@ -1,0 +1,206 @@
+<div id="deviceMoniterTipWnd" class="easyui-layout" style="width: 100%;height: 100%">
+    <div data-options="region:'center',border:false">
+        <div class="rowDiv">
+            <div style="height:140px;width:232px;float: left">
+                <img id="photoImg" src="themes/default/images/defaultDevPic.png" style="height:135px;width:225px;">
+            </div>
+            <div style="float: left;width: 200px">
+                <div  class="rowDiv">
+                    <span>设备名称：</span><span id="devName">沪昆高速K100+50M卡口</span>
+                </div>
+                <div  class="rowDiv">
+                    <span>所属机构：</span><span id="orgName">昆明市交警支队一大队</span>
+                </div>
+                <div  class="rowDiv">
+                    <span>安装点位：</span><span id="siteName">沪昆高速K100+50M</span>
+                </div>
+                <!-- <div id="directionDiv"  class="rowDiv">
+                    <span>监控方向：</span><span id="directionName1">昆明方向</span>
+                    
+                </div> -->
+            </div>
+        </div>
+        <!-- <div class="rowDiv">
+            <div style="font-size: 14px;font-weight: bold">设备工作情况</div>
+            <div style="width:100%;height: 1px;background: silver"></div>
+        </div>
+        <div class="rowDiv" id="devStatusDiv">
+            <div class="rowDiv">
+                <div>设备状态：</div>
+                <div style="width:162px;" id="devStatus">-</div>
+                <div >最近心跳时间：</div>
+                <div id="heartTime">-</div>
+            </div>
+            <div class="rowDiv">
+                <div >最近校时时间：</div>
+                <div style="width:135px;" id="calibrationTime">-</div>
+                <div >最近上传数据时间：</div>
+                <div id="upDataTime">-</div>
+            </div>
+            <div class="rowDiv">
+                <div >今日累计抓拍：</div>
+                <div style="width:135px;" id="snapTotal">-</div>
+                <div >数据积压率：</div>
+                <div id="backLog">-</div>
+            </div>
+            <div class="rowDiv">
+                <div>检定证书过期时间：</div>
+                <div style="width:145px;" id="certificationDate">-</div>               
+            </div>
+        </div>
+    </div> -->
+    
+    <div data-options="region:'south',border:false" style="height:36px;">
+        <div style="width:100%;height: 1px;background: silver"></div>
+        <div style="text-align: right;margin-top: 4px">
+       <span id="devType_01" class="spanNoVisble">
+            <a class="easyui-linkbutton">过车监控</a>
+            <a class="easyui-linkbutton">过车查询</a>
+            <a class="easyui-linkbutton">流量查看</a>
+       </span>   
+        <span id="devType_02"  class="spanNoVisble">
+            <a class="easyui-linkbutton">过车查询</a>
+            <a class="easyui-linkbutton">违法查询</a>
+            <a class="easyui-linkbutton">流量查看</a>
+       </span>        
+       <span id="devType_05" class="spanNoVisble">
+            <a class="easyui-linkbutton">气象查询</a>
+       </span> 
+       <span id="devType_06" class="spanNoVisble">
+            <a class="easyui-linkbutton">限速发布</a>
+       </span> 
+       <span id="devType_07" class="spanNoVisble">
+            <a class="easyui-linkbutton">信息发布</a>
+       </span>  
+       <span id="devType_08" class="spanNoVisble">
+            <a class="easyui-linkbutton">事件查询</a>
+       </span> 
+       <span id="devType_09" class="spanNoVisble">
+            <a class="easyui-linkbutton">流量查询</a>
+       </span>  
+       <span id="devType_quzheng" class="spanNoVisble">
+            <a class="easyui-linkbutton">违法查询</a>
+       </span> 
+       <a class="easyui-linkbutton" class="spanNoVisble" cy-click="openVideo">视频查看</a>
+       </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+   InitPage(["devTipInfo"], function($scope) {
+       $scope.load = function() {
+           $("#deviceMoniterTipWnd span a").each(function(){
+               $(this).click(function() {
+               
+                alert('该功能还没开放，敬请期待！');  
+               });               
+           });
+           
+           var devTipInfo=$scope.devTipInfo;
+           var devType=devTipInfo.deviceType;
+           if(devType=="04"||devType=="11"||devType=="12"||devType=="13")//违法取证设备
+           {
+               devType="quzheng";
+           }
+           $scope.$("#devType_"+devType).removeClass('spanNoVisble');
+           //$scope.$("#photoImg").attr("src","http://"+devTipInfo.devImgUrl);
+           $scope.$("#devName").text(devTipInfo.deviceName);
+           $scope.$("#orgName").text(devTipInfo.orgName);
+           $scope.$("#siteName").text(devTipInfo.siteName);
+           // //监控断面有可能有多个
+           // if(devTipInfo.directionName!="")
+           // {
+               // var directionNameArry=devTipInfo.directionName.split(',');
+               // $scope.$("#directionName1").text(directionNameArry[0]);
+               // if(directionNameArry.length>1)
+               // {
+                   // for(var i=1;i<directionNameArry.length;i++)
+                   // {
+                       // var directionNameDiv=$('<div style="margin-left: 65px"></div>');
+                       // directionNameDiv.text(directionNameArry[i]);
+                       // $scope.$("#directionDiv").append(directionNameDiv);
+                   // }
+               // }
+           // }
+           //
+           // if(devTipInfo.deviceStatus!="")
+           // {     
+               // var statusName="-";
+               // if(devTipInfo.deviceStatus=="1")
+               // {
+                   // statusName="正常";
+               // } 
+               // else if(devTipInfo.deviceStatus=="2")
+               // {
+                   // statusName="离线";
+               // } 
+               // else if(devTipInfo.deviceStatus=="3")
+               // {
+                   // statusName="故障";
+               // } 
+               // else if(devTipInfo.deviceStatus=="4")
+               // {
+                   // statusName="异常";
+               // }           
+              // $scope.$("#devStatus").text(statusName);                          
+           // }
+           // if(devTipInfo.latestHeartTime!="")
+           // {               
+              // $scope.$("#heartTime").text(devTipInfo.latestHeartTime);
+           // }
+           // if(devTipInfo.latestCalibrationTime!="")
+           // {               
+              // $scope.$("#calibrationTime").text(devTipInfo.latestCalibrationTime);
+           // }
+           // if(devTipInfo.latestUpDataTime!="")
+           // {               
+              // $scope.$("#upDataTime").text(devTipInfo.latestUpDataTime);
+           // }
+           // if(devTipInfo.snapTotal!="")
+           // {               
+              // $scope.$("#snapTotal").text(devTipInfo.snapTotal);
+           // }
+           // if(devTipInfo.snapBackLogPercent!="")
+           // {               
+              // $scope.$("#backLog").text(devTipInfo.snapBackLogPercent);
+           // }
+           // if(devTipInfo.certificationExpireTime!="")
+           // {               
+              // $scope.$("#certificationDate").text(devTipInfo.certificationExpireTime);              
+           // }
+           
+       };
+   		$scope.openVideo=function(){
+   				$scope.$setParam("deviceSysNbr","44020000001320000002");//$scope.devTipInfo.deviceSysNbr);
+               	$scope.$openDialog("addDialog",{
+               		title:"选择视频",
+               		width:500,
+               		height:500,
+               		href:"tpls/Video/popPreView.html"
+               	},true);
+   		};
+   });
+</script>
+<style>
+
+    #deviceMoniterTipWnd .spanNoVisble
+    {
+        display:none;
+    }
+   #deviceMoniterTipWnd span
+   {
+      font-size: 13px;
+      
+   }
+   #deviceMoniterTipWnd .rowDiv{
+       float: left;
+       width:100%;
+   }
+    #devStatusDiv .rowDiv div{
+       float: left;
+       font-size: 13px;
+   }
+   #devStatusDiv .rowDiv div:nth-child(1){
+       margin-left: 5px;
+   }
+</style>

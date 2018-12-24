@@ -1,0 +1,182 @@
+<div id="trafficEvent" class="easyui-layout" >
+
+    <div data-options="region:'center',split:true" >
+        <div id="map"style="height:100%;width:100%" >
+        </div>
+        <div id="win1">
+            <img id="changtongFlow" width="30" height="20" cy-click="showHistory"alt="" src="frameworks/OpenLayers/img/sslk_06.png">
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope) {
+        //初始化cyMap容器
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        //wkt字符串转换器
+        var wkt_c = new OpenLayers.Format.WKT();
+        //中心点坐标
+        var centerPoint=new OpenLayers.LonLat(105.70045,28.58540);
+        //事件图层
+        var eventLayer;
+        //事件类型字典
+        var eventTypeDic;
+        var dealStateDic;
+        $scope.load=function(){
+            moveToCenterPoint();
+            initData();
+            readData();
+            readDict();
+        };
+         //地图平移至中心点
+        function moveToCenterPoint() {
+            centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            cyMap.map.panTo(centerPoint);
+        }
+        //初始化地图相关
+        function initData(){
+            //定义feature的监听事件over out click
+            var layerListeners= {
+                featureover: function (e) {
+                    var htmlStr=fieldInfo(e);
+                    var popup = new OpenLayers.Popup.FramedCloud("info",
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            null,htmlStr,null,null, null);//new OpenLayers.Size(160,150)
+                    popup.setBackgroundColor("ghostwhite");
+                    popup.setOpacity(5);
+                    popup.setBorder("1px solid gray");
+                    e.feature.popup = popup;
+                    cyMap.map.addPopup(popup);
+                },
+                featureout: function (e) { e.feature.popup.hide(); },
+                featureclick:function(e){
+                    e.feature.popup.hide();
+                    openDialog(e);
+                }
+            };
+            // create a styleMap for eventLayer with a custom default symbolizer
+            var styleMap_event = new OpenLayers.StyleMap({pointRadius: 10,fillColor:"red"});
+            // create a lookup table for eventLayer with different symbolizers for
+            // 1-行人，2-抛洒物，3-烟雾,4-逆行，5-违停，6-停车,7-拥堵，
+            var lookup_event = {
+                "1": {externalGraphic: "frameworks/Openlayers/img/marker-green.png"},
+                "2": {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                "3": {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                "4": {externalGraphic: "frameworks/Openlayers/img/marker-blue.png"},
+                "5": {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                "6": {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                "7": {externalGraphic: "frameworks/Openlayers/img/marker-gold.png"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to
+            // the "type" property of the features, for the "default" intent
+            styleMap_event.addUniqueValueRules("default", "event_type", lookup_event);
+            //设置断面图层的option
+            eventLayer=new OpenLayers.Layer.Vector("event",{styleMap: styleMap_event,eventListeners: layerListeners});
+            //添加断面、区间图层到map容器中
+            cyMap.map.addLayers([eventLayer]);
+        }
+        //读取事件数据载入地图
+        function readData(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/trafficEvent/traffic-event.json",
+                params :{},
+                success :function(data){
+                    for(var index in data){
+                        var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        eventLayer.addFeatures(feature);
+                    }
+                },
+                fail : function(){}
+            });
+        }
+
+        /**
+         * 获取popup显示信息
+         * @param obj 鼠标点击事件
+         * @returns {string}div字符串
+         */
+        function fieldInfo(obj){
+            var str= "<div style='font-size:1em'> ";
+            str+=obj.feature.attributes.site_code;
+            str+="<br>发生事件：&nbsp;&nbsp;"+ getTextByValue(obj.feature.attributes.event_type);
+            return str;
+        }
+        //读取事件类型数据字典
+        function readDict(){
+            var str;
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/dict.json",
+                params :{},
+                success :function(data){
+                    eventTypeDic=data.eventType;
+                    dealStateDic=data.dealState;
+                },
+                fail : function(){}
+            });
+        }
+        //根据数据字典转换事件类型
+        function getTextByValue(value){
+            if(value){
+                for(var i in eventTypeDic){
+                    if(value==eventTypeDic[i].value){
+                        return eventTypeDic[i].text;
+                    }
+                }
+            }
+        }
+        //打开事件详细信息对话框
+        function openDialog(obj){
+            $scope.$setParam("newData",obj.feature.attributes);
+           $scope.$setParam("eventTypeDic",eventTypeDic);
+            $scope.$openDialog("infoDialog", {
+                title: "事件监测信息",
+                height: 500,
+                width: 600,
+                href: "tpls/trafficMonitor/trafficEvent/traffic-event-info.html"
+            }, true);
+        }
+        //打开历史事件对话框
+        $scope.showHistory=function(){
+            $scope.$setParam("dataDic",{
+                "eventTypeDic":eventTypeDic,
+                "dealStateDic":dealStateDic
+            });
+            $scope.$openDialog("hisDialog", {
+                title: "事件监测历史信息",
+                height: 500,
+                width: 700,
+                resizable:true,
+                collapsible:true,
+                modal:false,
+                href: "tpls/trafficMonitor/trafficEvent/traffic-event-history.html"
+            }, false);
+        };
+
+    });
+</script>
+
+<style>
+    #win1{
+        width:30px;
+        height:20px;
+        position:absolute;
+        right:10px;
+        top:8px;
+        z-index: 100000;
+        background: #FFFFFF;
+        border: 2px solid red;
+    }
+    #win2{
+        width: 165px;
+        height:100px;
+        position:absolute;
+        right:10px;
+        top:40px;
+        z-index: 100000;
+        background-color: #FFFFFF;
+        border: 2px solid dodgerblue;
+    }
+</style>

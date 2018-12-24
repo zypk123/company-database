@@ -1,0 +1,75 @@
+<div ng-controller="HomePageController">
+    <div class="container-fluid" style="height: 30%">
+        <div class="row" style="margin-top: 28px">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><a href="#" ng-click="goApprovePage()">部门未签收</a></h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group" style="font-size: 12px;height:88%;overflow-y:hidden;">
+                                <li class="list-group-item" ng-repeat="info in unAproveInfo" style="height: 35px;">
+                                    <div style="float: left;cursor:pointer;" title="{{info.queryValue2}}">{{info.queryValue2 | limitTo:20}}</div>
+                                    <div style="float: right;color:959595">{{info.queryValue3}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">系统公告<a href="#" ng-click="editNotice()" style="font-size: 13;float: right;">编辑</a></h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group" style="font-size: 12px;height: 88%;overflow-y:hidden;">
+                                <li class="list-group-item" ng-repeat="info in showInfo" style="height: 35px;">
+                                    <div style="float: left;cursor:pointer;" title="{{info.messageContent}}">{{info.messageTitle}}：{{info.messageContent | limitTo:20}}</div>
+                                    <div style="float: right;color:959595">{{info.messageTime | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" style="height: 30%">
+        <div class="row">
+            <br>
+            <br>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><a href="#" style="cursor:*" ng-click="goSignPage()">未审批任务</a></h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group" style="font-size: 12px;height: 88%;overflow-y:hidden;">
+                                <li class="list-group-item" ng-repeat="info in unSingInfo" style="height: 35px;">
+                                    <div style="float: left;cursor:pointer;" title="{{info.queryValue2}}">{{info.queryValue2 | limitTo:20}}</div>
+                                    <div style="float: right;color:959595">{{info.queryValue3}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">消息通知</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group" style="font-size: 12px;height: 88%;overflow-y:hidden;">
+                                <li class="list-group-item" ng-repeat="info in sysInfo" style="height: 35px;">
+                                    <div style="float: left;cursor:pointer;" title="{{info.queryValue2}}：{{info.queryValue3}}">{{info.queryValue2}}：{{info.queryValue3 | limitTo:18}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

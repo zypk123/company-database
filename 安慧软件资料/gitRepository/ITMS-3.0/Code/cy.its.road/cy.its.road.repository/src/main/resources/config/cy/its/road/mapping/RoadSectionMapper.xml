@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.road.mybatis.client.RoadSectionMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.road.domain.model.road.RoadSection" >
+    <id column="ROAD_SECTION_ID" property="roadSectionId" jdbcType="VARCHAR" />
+    <result column="ROAD_ID" property="roadId" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_CODE" property="roadSectionCode" jdbcType="VARCHAR" />
+    <result column="DISTRICT_CODE" property="districtCode" jdbcType="VARCHAR" />
+    <result column="ORG_ID" property="orgId" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_NAME" property="roadSectionName" jdbcType="VARCHAR" />
+    <result column="ROAD_SECTION_TYPE" property="roadSectionType" jdbcType="VARCHAR" />
+    <result column="IS_ONE_DIRECTION" property="isOneDirection" jdbcType="CHAR" />
+    <result column="ROAD_STRUCTURE" property="roadStructure" jdbcType="VARCHAR" />
+    <result column="ROAD_LINEAR" property="roadLinear" jdbcType="VARCHAR" />
+    <result column="ROAD_LANDSCAPE" property="roadLandscape" jdbcType="VARCHAR" />
+    <result column="CENTRAL_ISOLATION" property="centralIsolation" jdbcType="VARCHAR" />
+    <result column="ROAD_ISOLATION" property="roadIsolation" jdbcType="VARCHAR" />
+    <result column="PROTECT_FACILITIES" property="protectFacilities" jdbcType="VARCHAR" />
+    <result column="ROAD_BEGIN_NAME" property="roadBeginName" jdbcType="VARCHAR" />
+    <result column="ROAD_END_NAME" property="roadEndName" jdbcType="VARCHAR" />
+    <result column="BEGIN_METER" property="beginMeter" jdbcType="VARCHAR" />
+    <result column="END_METER" property="endMeter" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="ORG_PRIVILEGE_CODE" property="orgPrivilegeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROAD_SECTION_ID, ROAD_ID, ROAD_SECTION_CODE, DISTRICT_CODE, ORG_ID, ROAD_SECTION_NAME, 
+    ROAD_SECTION_TYPE, IS_ONE_DIRECTION,ROAD_STRUCTURE, ROAD_BEGIN_NAME,ROAD_END_NAME,
+    ROAD_LINEAR, ROAD_LANDSCAPE, CENTRAL_ISOLATION, ROAD_ISOLATION, PROTECT_FACILITIES, 
+    BEGIN_METER, END_METER, UPDATE_TIME,ORG_PRIVILEGE_CODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_ROAD_SECTION
+    where ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_ROAD_SECTION
+    where ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="removeByPrimaryKey" parameterType="java.util.Map">
+
+    	delete from T_SYS_ROAD_SECTION where ROAD_SECTION_ID in 
+
+    	<foreach item="id" collection="idList" open="(" separator="," close=")">
+              #{id}
+           </foreach>
+    </delete>
+  <insert id="insert" parameterType="cy.its.road.domain.model.road.RoadSection" >
+    insert into T_SYS_ROAD_SECTION (ROAD_SECTION_ID, ROAD_ID, ROAD_SECTION_CODE, 
+      DISTRICT_CODE, ORG_ID, ROAD_SECTION_NAME, 
+      ROAD_SECTION_TYPE, IS_ONE_DIRECTION,ROAD_STRUCTURE, ROAD_LINEAR, 
+      ROAD_LANDSCAPE, CENTRAL_ISOLATION, ROAD_ISOLATION, ROAD_BEGIN_NAME,ROAD_END_NAME,
+      PROTECT_FACILITIES, BEGIN_METER, END_METER, ORG_PRIVILEGE_CODE,
+      UPDATE_TIME)
+    values (#{roadSectionId,jdbcType=VARCHAR}, #{roadId,jdbcType=VARCHAR}, #{roadSectionCode,jdbcType=VARCHAR}, 
+      #{districtCode,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{roadSectionName,jdbcType=VARCHAR}, 
+      #{roadSectionType,jdbcType=VARCHAR}, #{isOneDirection,jdbcType=CHAR}, 
+      #{roadStructure,jdbcType=VARCHAR}, #{roadLinear,jdbcType=VARCHAR}, 
+      #{roadLandscape,jdbcType=VARCHAR}, #{centralIsolation,jdbcType=VARCHAR}, #{roadIsolation,jdbcType=VARCHAR},
+      #{roadBeginName,jdbcType=VARCHAR}, #{roadEndName,jdbcType=VARCHAR},
+      #{protectFacilities,jdbcType=VARCHAR}, #{beginMeter,jdbcType=VARCHAR}, #{endMeter,jdbcType=VARCHAR}, 
+      #{orgPrivilegeCode,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.road.domain.model.road.RoadSection" >
+    insert into T_SYS_ROAD_SECTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadSectionId != null" >
+        ROAD_SECTION_ID,
+      </if>
+      <if test="roadId != null" >
+        ROAD_ID,
+      </if>
+      <if test="roadSectionCode != null" >
+        ROAD_SECTION_CODE,
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE,
+      </if>
+      <if test="orgId != null" >
+        ORG_ID,
+      </if>
+      <if test="roadSectionName != null" >
+        ROAD_SECTION_NAME,
+      </if>
+      <if test="roadSectionType != null" >
+        ROAD_SECTION_TYPE,
+      </if>
+      <if test="isOneDirection != null" >
+        IS_ONE_DIRECTION,
+      </if>
+     <if test="roadStructure != null" >
+        ROAD_STRUCTURE,
+      </if>
+      <if test="roadLinear != null" >
+        ROAD_LINEAR,
+      </if>
+      <if test="roadLandscape != null" >
+        ROAD_LANDSCAPE,
+      </if>
+      <if test="centralIsolation != null" >
+        CENTRAL_ISOLATION,
+      </if>
+      <if test="roadIsolation != null" >
+        ROAD_ISOLATION,
+      </if>
+      <if test="roadBeginName != null">
+      	ROAD_BEGIN_NAME,
+      </if>
+      <if test="roadEndName != null">
+      	ROAD_END_NAME,
+      </if>
+      <if test="protectFacilities != null" >
+        PROTECT_FACILITIES,
+      </if>
+      <if test="beginMeter != null" >
+        BEGIN_METER,
+      </if>
+      <if test="endMeter != null" >
+        END_METER,
+      </if>
+      <if test="orgPrivilegeCode != null">
+		ORG_PRIVILEGE_CODE,
+	  </if>
+      UPDATE_TIME,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadSectionId != null" >
+        #{roadSectionId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadId != null" >
+        #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionCode != null" >
+        #{roadSectionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionName != null" >
+        #{roadSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionType != null" >
+        #{roadSectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="isOneDirection != null" >
+        #{isOneDirection,jdbcType=CHAR},
+      </if>
+      <if test="roadStructure != null" >
+        #{roadStructure,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLinear != null" >
+        #{roadLinear,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLandscape != null" >
+        #{roadLandscape,jdbcType=VARCHAR},
+      </if>
+      <if test="centralIsolation != null" >
+        #{centralIsolation,jdbcType=VARCHAR},
+      </if>
+      <if test="roadIsolation != null" >
+        #{roadIsolation,jdbcType=VARCHAR},
+      </if>
+       <if test="roadBeginName != null">
+      	#{roadBeginName,jdbcType=VARCHAR},
+      </if>
+      <if test="roadEndName != null">
+      	#{roadEndName,jdbcType=VARCHAR},
+      </if>
+      <if test="protectFacilities != null" >
+        #{protectFacilities,jdbcType=VARCHAR},
+      </if>
+      <if test="beginMeter != null" >
+        #{beginMeter,jdbcType=VARCHAR},
+      </if>
+      <if test="endMeter != null" >
+        #{endMeter,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null">
+		#{orgPrivilegeCode,jdbcType=VARCHAR},
+	  </if>
+      SYSDATE,
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.road.domain.model.road.RoadSection" >
+    update T_SYS_ROAD_SECTION
+    <set >
+      <if test="roadId != null" >
+        ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionCode != null" >
+        ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null" >
+        ORG_ID = #{orgId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionName != null" >
+        ROAD_SECTION_NAME = #{roadSectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="roadSectionType != null" >
+        ROAD_SECTION_TYPE = #{roadSectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="isOneDirection != null" >
+        IS_ONE_DIRECTION = #{isOneDirection,jdbcType=CHAR},
+      </if>
+      <if test="roadStructure != null" >
+        ROAD_STRUCTURE = #{roadStructure,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLinear != null" >
+        ROAD_LINEAR = #{roadLinear,jdbcType=VARCHAR},
+      </if>
+      <if test="roadLandscape != null" >
+        ROAD_LANDSCAPE = #{roadLandscape,jdbcType=VARCHAR},
+      </if>
+      <if test="centralIsolation != null" >
+        CENTRAL_ISOLATION = #{centralIsolation,jdbcType=VARCHAR},
+      </if>
+      <if test="roadIsolation != null" >
+        ROAD_ISOLATION = #{roadIsolation,jdbcType=VARCHAR},
+      </if>
+       <if test="roadBeginName != null">
+      	ROAD_BEGIN_NAME = #{roadBeginName,jdbcType=VARCHAR},
+      </if>
+      <if test="roadEndName != null">
+      	ROAD_END_NAME = #{roadEndName,jdbcType=VARCHAR},
+      </if>
+      <if test="protectFacilities != null" >
+        PROTECT_FACILITIES = #{protectFacilities,jdbcType=VARCHAR},
+      </if>
+      <if test="beginMeter != null" >
+        BEGIN_METER = #{beginMeter,jdbcType=VARCHAR},
+      </if>
+      <if test="endMeter != null" >
+        END_METER = #{endMeter,jdbcType=VARCHAR},
+      </if>
+      <if test="orgPrivilegeCode != null">
+		ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR},
+	 </if>
+      UPDATE_TIME = SYSDATE,
+    </set>
+    where ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.road.domain.model.road.RoadSection" >
+    update T_SYS_ROAD_SECTION
+    set ROAD_ID = #{roadId,jdbcType=VARCHAR},
+      ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR},
+      DISTRICT_CODE = #{districtCode,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=VARCHAR},
+      ROAD_SECTION_NAME = #{roadSectionName,jdbcType=VARCHAR},
+      ROAD_SECTION_TYPE = #{roadSectionType,jdbcType=VARCHAR},
+      IS_ONE_DIRECTION = #{isOneDirection,jdbcType=CHAR},
+      ROAD_STRUCTURE = #{roadStructure,jdbcType=VARCHAR},
+      ROAD_LINEAR = #{roadLinear,jdbcType=VARCHAR},
+      ROAD_LANDSCAPE = #{roadLandscape,jdbcType=VARCHAR},
+      CENTRAL_ISOLATION = #{centralIsolation,jdbcType=VARCHAR},
+      ROAD_ISOLATION = #{roadIsolation,jdbcType=VARCHAR},
+      ROAD_BEGIN_NAME = #{roadBeginName,jdbcType=VARCHAR},
+      ROAD_END_NAME = #{roadEndName,jdbcType=VARCHAR},
+      PROTECT_FACILITIES = #{protectFacilities,jdbcType=VARCHAR},
+      BEGIN_METER = #{beginMeter,jdbcType=VARCHAR},
+      END_METER = #{endMeter,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      ORG_PRIVILEGE_CODE = #{orgPrivilegeCode,jdbcType=VARCHAR}
+    where ROAD_SECTION_ID = #{roadSectionId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectRoadSections" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		<!-- FROM 
+		 ( select M.*, ROWNUM RN
+		    from ( SELECT V.* -->
+					FROM T_SYS_ROAD_SECTION V
+					<where>
+						<if test="roadSectionCode != null and roadSectionCode != ''">
+							AND ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR}
+						</if>
+						<if test="roadSectionName != null and roadSectionName != ''">
+							AND ROAD_SECTION_NAME LIKE '%' || #{roadSectionName,jdbcType=VARCHAR} || '%'
+						</if>
+						<if test="roadId != null and roadId != ''">
+						    AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+						</if>
+						<if test="roadSectionType != null and roadSectionType != ''">
+							AND ROAD_SECTION_TYPE = #{roadSectionType,jdbcType=VARCHAR}
+						</if>
+						<if test="orgPrivilegeCode != null and orgPrivilegeCode != ''">
+							AND ',' || ORG_PRIVILEGE_CODE like ',' || #{orgPrivilegeCode,jdbcType=VARCHAR} || '%'
+						</if>
+					</where>
+					<!-- ORDER BY V.UPDATE_TIME DESC
+					) M 
+					) N
+		<where>
+			<if test="from != null and from != '' ">
+		       <![CDATA[  AND  N.RN >=  #{from,jdbcType=INTEGER} ]]>
+			</if>
+			<if test="to != null and to != '' ">
+			   <![CDATA[  AND  N.RN <= #{to, jdbcType=INTEGER} ]]>
+			</if>
+		</where> -->
+	</select>
+  
+  <select id="countRoadSections" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1)
+		FROM T_SYS_ROAD_SECTION
+		<where>
+			<if test="roadSectionCode != null and roadSectionCode != ''">
+				AND ROAD_SECTION_CODE = #{roadSectionCode,jdbcType=VARCHAR}
+			</if>
+			<if test="roadSectionName != null and roadSectionName != ''">
+				AND ROAD_SECTION_NAME LIKE '%' || #{roadSectionName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="roadId != null and roadId != ''">
+			    AND ROAD_ID = #{roadId,jdbcType=VARCHAR}
+			</if>
+			<if test="roadSectionType != null and roadSectionType != ''">
+				AND ROAD_SECTION_TYPE = #{roadSectionType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

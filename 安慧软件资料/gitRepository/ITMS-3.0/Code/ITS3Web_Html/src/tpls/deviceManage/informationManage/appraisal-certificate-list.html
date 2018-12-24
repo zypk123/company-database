@@ -1,0 +1,203 @@
+<div id="appraisalCertificate" class="easyui-layout">
+    <div data-options="region:'north',border:false">
+        <form cy-form="formData">
+            <div class="searchPanel">
+                <div class="panel_title">查询条件</div>
+                <div class="table">
+                    <div class="tr">
+                        <div class="th">所属机构：</div>
+                        <div class="td">
+                            <input id="CERTIFICATED_ORG" class="easyui-combotree" name="CERTIFICATED_ORG"/>
+                        </div>
+                        <div class="th">设备名称：</div>
+                        <div class="td">
+                            <input id="DEVICE_NAME" class="easyui-textbox" name="DEVICE_NAME"/>
+                        </div>
+                        <div class="th">过期时间：</div>
+                        <div class="td">
+                            <select class="easyui-combobox" name="EXPIRE_DATE">
+                                <option>全部</option>
+                                <option>已过期</option>
+                                <option>即将过期</option>
+                            </select>
+                        </div>
+                        <div class="td">
+                            <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'" cy-click="searchData">查询</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="linkbutton_toolbar">
+            <a class="easyui-linkbutton button-remove" data-options="iconCls:'icon-remove'" cy-click="removeSomeData">批量删除</a>
+            <span class="remark" style="color: red">
+                备注：有效期止红色表示已过期，橙色表示即将过期。
+            </span>
+        </div>
+    </div>
+    <div data-options="region:'center',border:true">
+        <table id="certificateInfo"  cy-datagrid="options" cy-querydata="queryData" cy-url="data/deviceManage/informationManage/certificateData.json"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([],function($scope){
+        //保存所属机构,easyui树类型（数组）
+        var orgTree;
+        $scope.load = function(){
+            //查询数据字典
+            $scope.$ajaxRequest({
+                url : "data/deviceManage/informationManage/dict.json",
+                success : function(data){
+                    //保存所属机构树
+                    orgTree = data.orgTree;
+                    $scope.$("#CERTIFICATED_ORG").combotree("loadData",orgTree);
+                },
+                fail : function(errTxt){
+                    $.messager.alert(errTxt);
+                }
+            });
+        };
+        /**
+         * datagrid配置
+         * @type  easyui的datagrid中的参数对象
+         */
+        $scope.options = {
+            columns : [[
+                {field : "DEVICE_ID",checkbox : true},
+                {field : "DEVICE_NAME",title : "设备名称",width : 150},
+                {field : "CERTIFICATION_NBR",title : "检定证书编号",width : 100},
+                {field : "CERTIFICATED_ORG",title : "检定机构",width : 100},
+                {field : "CERTIFICATED_PERSON",title : "检定人员",width : 100},
+                {field : "CERTIFICATED_DATE",title : "检定日期",width : 150},
+                {field : "WEBSITE",title : "质检网址",width : 150},
+                {field : "EXPIRE_DATE",title : "有效期止",width : 150,formatter : fmt},
+                {field : "OPERATER",title : "操作",width : 100,formatter : operate}
+            ]]
+        };
+        /**
+         *添加操作按钮
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html按钮样式标签
+         */
+        function operate(value,row,index){
+            var button1 = $("<a title='编辑' class='button-edit' cy-click='editData(" + index + ")'></a>");
+            var button2 = $("<a title='删除' class='button-remove' cy-click='removeData(" + index + ")'></a>");
+            button1.linkbutton({
+                iconCls:"icon-edit"
+            });
+            button2.linkbutton({
+                iconCls:"icon-remove"
+            });
+            return  $("<span/>").append(button1).append(" ").append(button2).html();
+        }
+        /**
+         *判断整数有效期是否过期
+         * @param value 有效期止这列中的值
+         * @param row 整形 行
+         * @param index 整形 行下标
+         * @returns  html样式标签及该行有效期止这列中的值
+         */
+        function fmt(value,row,index){
+            var format;
+            if(value){
+                format = value.replace(/-/g,"/");
+            }
+            var nowDate = new Date().getTime(); //获取当前时间
+            var values = new Date(format + " 23:59:59").getTime();
+            if(values < nowDate){
+                //过期
+                return "<span style='color:red'>" + value + "</span>";
+            }else{
+                //即将过期时间期限设置为2天，计算过期时间和当前时间的时间间隔
+                var almost = new Date(format).getTime() - 30*24*60*60*1000;
+                //console.log(almost - nowDate);
+                if(almost <= nowDate) {
+                    //即将过期
+                    return "<span style='color:orange'>" + value + "</span>";
+                }else{
+                    //未过期
+                    return value;
+                }
+            }
+        }
+
+        //条件查询
+        $scope.searchData = function(){
+            $scope.$search("queryData");
+        };
+
+        /**
+         *编辑检定证书
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.editData = function(index){
+            //获取行数据
+           var rowData = $scope.$("#certificateInfo").datagrid("getData").rows[index];
+            //传递获取的行数据
+            $scope.$setParam("formData",rowData);
+            //编辑弹出框
+            $scope.$openDialog("editDialog",{
+                title : "编辑检定证书",
+                width : 900,
+                height : 550,
+                href : "tpls/deviceManage/informationManage/certificate-operate.html"
+            },true);
+//            //关闭弹出框
+            $scope.$setParam("closeSelf",function(){
+                $scope.$getDialog("editDialog").dialog("close");
+            });
+            //保存
+            function saveData(data){
+                $.ajax({
+                    url : "",
+                    data : data,
+                    dataType : "json",
+                    success : function(data){
+                        $scope.search("queryData");
+                    }
+                });
+            }
+        };
+        /**
+         *删除检定证书
+         * @param index  整数类型 编辑行下标
+         */
+        $scope.removeData = function(index){
+            $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                if(flag){
+                    $.messager.alert("提示",index+"删除成功！");
+                }
+            });
+        };
+        //批量删除
+        $scope.removeSomeData = function(){
+            var rows = $('#certificateInfo').datagrid('getChecked');
+            if(rows.length == 0){
+                $.messager.alert("提示","请选择需要删除的信息！");
+                return false;
+            }else{
+                $.messager.confirm("提示","是否确认删除信息？",function(flag){
+                    if(flag){
+                        $.messager.alert("提示","删除成功！");
+                    }
+                });
+            }
+        }
+    });
+</script>
+<style type="text/css">
+    #appraisalCertificate .th{
+        width: 80px;
+        text-align: right;
+    }
+    #appraisalCertificate .easyui-combobox{
+        width: 120px;
+    }
+    #appraisalCertificate .button-search{
+        margin-left: 10px;
+    }
+    #appraisalCertificate .remark{
+       float: right;
+    }
+</style>

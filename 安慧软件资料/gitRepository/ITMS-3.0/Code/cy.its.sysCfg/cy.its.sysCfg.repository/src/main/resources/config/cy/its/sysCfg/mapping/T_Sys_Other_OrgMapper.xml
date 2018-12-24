@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cy.its.syscfg.mybatis.client.T_Sys_Other_OrgMapper" >
+  <resultMap id="BaseResultMap" type="cy.its.syscfg.mybatis.model.T_Sys_Other_Org" >
+    <id column="OTHER_ORG_ID" property="otherOrgId" jdbcType="VARCHAR" />
+    <result column="OTHER_ORG_NAME" property="otherOrgName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    OTHER_ORG_ID, OTHER_ORG_NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_OTHER_ORG
+    where OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_OTHER_ORG
+    where OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Other_Org" >
+    insert into T_SYS_OTHER_ORG (OTHER_ORG_ID, OTHER_ORG_NAME)
+    values (#{otherOrgId,jdbcType=VARCHAR}, #{otherOrgName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Other_Org" >
+    insert into T_SYS_OTHER_ORG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="otherOrgId != null" >
+        OTHER_ORG_ID,
+      </if>
+      <if test="otherOrgName != null" >
+        OTHER_ORG_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="otherOrgId != null" >
+        #{otherOrgId,jdbcType=VARCHAR},
+      </if>
+      <if test="otherOrgName != null" >
+        #{otherOrgName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Other_Org" >
+    update T_SYS_OTHER_ORG
+    <set >
+      <if test="otherOrgName != null" >
+        OTHER_ORG_NAME = #{otherOrgName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cy.its.syscfg.mybatis.model.T_Sys_Other_Org" >
+    update T_SYS_OTHER_ORG
+    set OTHER_ORG_NAME = #{otherOrgName,jdbcType=VARCHAR}
+    where OTHER_ORG_ID = #{otherOrgId,jdbcType=VARCHAR}
+  </update>
+</mapper>

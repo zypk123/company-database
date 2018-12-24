@@ -1,0 +1,277 @@
+<div id="deviceMoniter" class="easyui-layout" style="width: 100%;height: 100%">
+    <!--左边列表区 -->
+    <div data-options="region:'west',border:false, title:'导航区域'" style="width: 206px">
+        <div id="navAccord" class="easyui-accordion" style="width:206px;height:100%;">
+            <div selected="true">
+                <header class="accord-header">点位导航</header>
+                <!--<ul id="orgTree"></ul>-->
+                    <div data-options="region:'north',border:false" style="margin-bottom: 8px">
+                            <input id="searchSite" class="easyui-textbox" data-options="
+                            prompt:'请输入点位名称关键字',height:30" style="width: 99%">
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <ul id="siteTree"></ul>
+
+                        <div id="searchReuslt">
+                            <div style="color: blue">共4项结果：</div>
+                            <div id="searchReusltDlst"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <header class="accord-header">图层控制</header>
+                <ul id="layerTree" data-options="checkbox:true"></ul>
+            </div>
+            <div>
+                <header class="accord-header">信息查询</header>
+                <div class="easyui-layout">
+                    <div data-options="region:'north',border:false" style="margin-bottom: 8px;height: 70px">
+                        <div style="margin-top: 2px;">
+                            查询的图层：<input class="easyui-combobox" name="cmbLayer" style="width: 110px"
+                                               data-options="valueField:'id',textField:'text'"/>
+
+                        <div style="text-align: center;margin-top: 5px;word-spacing: 5px">
+                            <img src="" style="width: 35px;height: 35px">
+                            <img src="" style="width: 35px;height: 35px">
+                            <img src="" style="width: 35px;height: 35px">
+                            <img src="" style="width: 35px;height: 35px">
+                        </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <div style="color: blue">共4项结果：</div>
+                        <div id="sptailSearchReusltDlst"></div>
+                    </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--中间地图区域-->
+    <div data-options="region:'center',border:true">
+        <div style="position: absolute;margin-top: 1px;margin-left: 460px; width: 100%;z-index:100000">
+            <div id="normalCount" class="statustotal normal-backcolor"></div>
+            <div id="errorCount" class="statustotal error-backcolor"></div>
+            <div id="offlineCount" class="statustotal offline-backcolor"></div>
+            <div id="matainceCount" class="statustotal mataince-backcolor"></div>
+        </div>
+        <div style="width:100%; height:100%;" id="map"></div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope) {
+        $scope.cyMap = null;//地图对象
+        $scope.normalCountUp = null;//
+        $scope.errorCountUp = null;//
+        $scope.offlineCountUp = null;//
+        $scope.matainceCountUp = null;//
+
+        /**
+         * 页面加载完后一些初始化处理
+         */
+        $scope.load=function()
+        {
+            //关闭左侧菜单栏
+            $scope.$topLayout.layout("collapse","west");
+            //隐藏点位搜索结果div
+            $scope.$('#searchReuslt').hide();
+            //加载地图
+            cyMap=new CYMap($scope.$("#map")[0]);
+            //初始化机构点位树
+            $scope.initOrgTree();
+            //初始化搜素框
+            $scope.initSearchTextbox();
+            //加载图层树
+            $scope.$("#layerTree").tree({
+                url:'data/deviceManage/deviceMoniter/layerTree.json'
+            });
+            //初始化状态计数对象tip功能
+            $scope.initAllStatusTip();
+            //初始化并启用状态值计数
+            $scope.initStatusCountUp();
+
+        };
+        $.extend($scope, {
+            /**
+             * 初始化状态计数对象tip功能
+             */
+            initAllStatusTip:function() {
+                $scope.setStatusCountTip('#normalCount','正常设备');
+                $scope.setStatusCountTip('#errorCount','故障设备');
+                $scope.setStatusCountTip('#offlineCount','离线设备');
+                $scope.setStatusCountTip('#matainceCount','维护中设备');
+            },
+            /**
+             * 设置dom对象的tip
+             * @param tipdomId 设置tip的dom对象id
+             * @param tipmsg 提示消息
+             */
+            setStatusCountTip:function(tipdomId,tipmsg){
+                $(tipdomId).tooltip({
+                    position: 'bottom',
+                    onShow:function(e){
+                        // var cont = $(e.currentTarget).text();
+                        var cont = $(e.currentTarget).find('.odometer-digit-inner').text();//由于翻滚数字插件不知为啥总是多了一个隐藏span，所以这里去除下
+                        $(this).tooltip('update',tipmsg+cont+'个');
+                    }
+                });
+            },
+            /**
+             * 初始化并启用状态值计数
+             */
+            initStatusCountUp:function(){
+               /* normalCountUp = new CountUp($scope.$("#normalCount")[0], 0, 80,0,3);
+                normalCountUp.start();
+
+                errorCountUp = new CountUp($scope.$("#errorCount")[0], 0, 10,0,3);
+                errorCountUp.start();
+
+                offlineCountUp = new CountUp($scope.$("#offlineCount")[0], 0, 5,0,3);
+                offlineCountUp.start();
+
+                matainceCountUp = new CountUp($scope.$("#matainceCount")[0], 0, 5,0,3);
+                matainceCountUp.start();*/
+
+                $scope.initDigtalRoll("#normalCount",80);
+                $scope.initDigtalRoll("#errorCount",10);
+                $scope.initDigtalRoll("#offlineCount",5);
+                $scope.initDigtalRoll("#matainceCount",5);
+            },
+            initDigtalRoll:function(domId,digtal)
+            {
+                var el = $scope.$(domId)[0];
+                var od = new Odometer({
+                    auto: false,
+                    el: el,
+                    duration: 500,//Change how long the javascript expects the CSS animation to take
+                    format: 'd',
+                    theme: 'car'
+                });
+               $(el).html(digtal);
+            },
+            /**
+             * 更新状态数值
+             * @param countUp 计数对象
+             * @param updateNum 更新数值
+             */
+            updateStatusCountUp:function(countUp,updateNum){
+                countUp.update(updateNum);
+            },
+            /**
+             * 获取指定panel的高度
+             */
+            getPanelHeight: function (whichPanel) {
+                var pp = $scope.$('#navAccord').accordion('getPanel',whichPanel);
+                var ppContentHeight = pp.panel("options").height;
+                return ppContentHeight;
+            },
+            /**
+             * 初始化机构点位树
+             */
+            initOrgTree: function () {
+                //加载机构点位树
+                $scope.$("#siteTree").tree({
+                    url: 'data/deviceManage/deviceMoniter/deviceMoniterSiteTree.json'
+                });
+            },
+            /**
+             * 初始化搜索框
+             */
+            initSearchTextbox: function () {
+                //点位搜索框初始化搜索按钮和清除按钮
+                $('#searchSite').textbox({
+                    icons: [
+                        {
+                            iconCls: 'icon-search',//查询按钮
+                            iconWidth: 34,
+                            handler: function (e) {
+
+                                $($scope.$("#normalCount")[0]).html(60);
+
+                                var searchText = $scope.$(e.data.target).textbox('getText');
+                                $scope.$('#searchReuslt').show();
+                                $scope.$('#siteTree').hide();
+                                //console.log("你搜索的内容是："+searchText);
+
+                                /*//点击查询按钮后，设置显示结果div的高度，以便滚动条只对查询结果滚动
+                                var ppContentHeight = $scope.getPanelHeight(0) - 90;
+                                $scope.$("#searchReusltDlst").css({"height": ppContentHeight});*/
+
+                                //加载搜索结果列表
+                                $scope.$("#searchReusltDlst").datalist({
+                                    url: 'data/deviceManage/deviceMoniter/searchReusltDlst.json',
+                                    border: false,
+                                    textField: "siteName",
+                                    valueField: "siteId",
+                                    rowStyler: function (index, row) {
+                                        return 'cursor: pointer;';
+                                    },
+                                    onClickRow: function (index, row) {//点击定位该点位
+                                        var lon = row.longitude;
+                                        alert("定位到该点位：" + lon);
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            iconCls: 'icon-lock',//返回取消按钮
+                            iconWidth: 34,
+                            handler: function (e) {
+                                $scope.$(e.data.target).textbox('clear');
+                                $scope.$('#siteTree').show();
+                                $scope.$('#searchReuslt').hide();
+
+                            }
+                        }
+                    ]
+                });
+            }
+
+            
+        });
+
+    });
+</script>
+<style>
+
+    #deviceMoniter .accord-header {
+        text-align: center;
+        background-color: #EAF1FB;
+        font-size: 14px;
+    }
+    #deviceMoniter .icon-kakou {
+        background: url('themes/default/images/bianji.png') no-repeat center center;
+    }
+
+    #deviceMoniter .icon-search {
+        margin-right: 5px;
+        background: url('themes/default/images/bianji.png') no-repeat center center;
+    }
+    #deviceMoniter .statustotal{
+        float: left;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    /*正常背景色*/
+    #deviceMoniter .normal-backcolor{
+        background-color: green;
+    }
+    /*故障背景色*/
+    #deviceMoniter .error-backcolor{
+        background-color: #ffcb19;
+    }
+    /*掉线背景色*/
+    #deviceMoniter .offline-backcolor{
+        background-color: darkgrey;
+    }
+    /*维护背景色*/
+    #deviceMoniter .mataince-backcolor{
+        background-color: slateblue;
+    }
+    #deviceMoniter .odometer-value
+    {
+        font-size: 18px;
+    }
+</style>

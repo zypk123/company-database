@@ -1,0 +1,145 @@
+<div class="easyui-layout" id="equipment-log">
+    <div data-options="region:'center',border:false" style="border-left: solid 1px #ddd;">
+        <div class="easyui-layout">
+            <div data-options="region:'north',border:false" style="height: 120px;">
+                <div class="searchPanel">
+                    <div class="panel_title">
+                        查询条件
+                    </div>
+                    <form cy-form="formQueryEquipment" id="form" >
+                        <div class="table">
+                            <div class="tr">
+                                <div class="th">
+                                    使用部门：
+                                </div>
+                                <div class="td">
+                                    <input  name="orgName" class="cy-org-radio">
+                                </div>
+
+                                <div class="th">
+                                    装备类型：
+                                </div>
+                                <div class="td">
+                                    <select  name="equipmentType " class="easyui-combobox" style="width:120px">
+                                        <option>请选择</option>
+                                        <option>手枪</option>
+                                        <option>警棍</option>
+                                        <option>对讲机</option>
+                                    </select>
+                                </div>
+
+                                <div class="th" style="width: 70px;">
+                                    装备编号：
+                                </div>
+                                <div class="td">
+                                    <input  name="equipmentNBR" class="easyui-textbox">
+                                </div>
+                            </div>
+
+                            <div class="tr">
+                                <div class="th">
+                                    领用日期：
+                                </div>
+                                <div class="td" style="width:320px">
+                                    <input  name="getStartTime" class="easyui-datetimebox">
+                                    至
+                                    <input  name="getEndTime" class="easyui-datetimebox">
+                                </div>
+                                <div class="th">
+                                    <a class="easyui-linkbutton button-search" data-options="iconCls:'icon-search'"
+                                    cy-click="searchData">查询</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div data-options="region:'center',border:false" style="border-top: solid 1px #ddd;">
+                <table id="yhData" cy-datagrid="optionsEquipment" cy-querydata="formQueryEquipment"
+                cy-url="sysCfg/userAction/selectUser"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    InitPage([], function($scope) {
+        /**
+         * 查找装备领用登记记录
+         */
+        $scope.searchData = function() {
+            if ($scope.$("#form").form("validate")) {
+                trimObject($scope.formQueryEquipment);
+                $scope.$updateData("formQueryEquipment");
+                //获得当前第几页页数
+                var count = $scope.$("#yhData").datagrid("getPager").pagination("options").pageNumber;
+                if (count > 1) {
+                    //刷新,跳转到第一页
+                    $scope.$("#yhData").datagrid("getPager").pagination("select", 1);
+                } else {
+                    $scope.$search(" ");
+                }
+            }
+        };
+
+        /*
+         * 为装备领用信息登记表绑定头字段
+         * 对于数据库中暂时没有的字段先自行命名
+         */
+        $scope.optionsEquipment = {
+            columns : [[{
+                field : 'EQUIPMENT_USE_NBR',
+                title : '装备领用流水号',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'EQUIPMENT_NBR',
+                title : '装备编号',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'EQUIPMENT_TYPE',
+                title : '装备类型',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'ORG_NAME',
+                title : '管理部门',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'EQUIPMENT_USE_PERSON',
+                title : '使用人员',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'USE_ORG',
+                title : '使用部门',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'RECIPIENT_DATE',
+                title : '领用/配发日期',
+                align : 'center',
+                width : 20
+            }, {
+                field : 'RETURN_DATE',
+                title : '归还日期',
+                align : 'center',
+                width : 20
+            }]]
+        };
+    }); 
+</script>
+<style type="text/css">
+    #equipment-log .td input{
+        width:120px;
+    }
+    #equipment-log .th {
+        width: 80px;
+        text-align: right;
+    }
+    #equipment-log .td {
+        width: 130px;
+    }
+</style>

@@ -1,0 +1,754 @@
+<div id="sectionFlow" class="easyui-layout" style="width:600px;height:400px;">
+    <div data-options="region:'center'" >
+        <div id="map" style="width:100%;height: 100%;">
+        </div>
+        <div id="win1">
+            <td >
+                <img id="changtongFlow" width="30" height="20" cy-click="addSpeedRegion"alt="" src="frameworks/OpenLayers/img/sslk_03.png">
+            </td>
+            <td>
+                <img id="huanxingFlow" width="30" height="20" cy-click="addSpeedRegion" alt="" src="frameworks/OpenLayers/img/sslk_05.png">
+            </td>
+            <td>
+                <img id="yongduFlow" width="30" height="20" cy-click="addSpeedRegion" alt="" src="frameworks/OpenLayers/img/sslk_07.png">
+            </td>
+            <td>
+                <img id="allFeature" width="30" height="20" cy-click="addSpeedRegion" alt="" src="frameworks/OpenLayers/img/sslk_04.png">
+            </td>
+            <td>
+                <img id="layerControl" width="30" height="20" cy-click="addSpeedRegion" alt="" src="frameworks/OpenLayers/img/sslk_06.png">
+            </td>
+        </div>
+
+        <div id="win2" style="display: none" >
+            <label >&nbsp;&nbsp;&nbsp;&nbsp;<input name="layerAll" type="checkbox" value="" cy-change="selectAll" />&nbsp;&nbsp;全&nbsp;&nbsp;选&nbsp;&nbsp;&nbsp;</label>
+            <br>
+            <label >&nbsp;&nbsp;&nbsp;&nbsp;<input name="layer" type="checkbox" value="11" cy-change="addLayer" />&nbsp;&nbsp;视&nbsp;&nbsp;频&nbsp;&nbsp;&nbsp;</label>
+            <img align="bottom" src="frameworks/Openlayers/img/shipin.gif" style="width: 12px; height: 12px;">
+            <br>
+            <label>&nbsp;&nbsp;&nbsp;&nbsp;<input name="layer" type="checkbox" value="12" cy-change="addLayer"/>&nbsp;&nbsp;诱导屏&nbsp;&nbsp;</label>
+            <img align="bottom" src="frameworks/Openlayers/img/led.png" style="width: 12px; height: 12px;">
+            <br>
+            <label>&nbsp;&nbsp;&nbsp;&nbsp;<input name="layer" type="checkbox" value="13" cy-change="addLayer"/>&nbsp;&nbsp;单&nbsp;&nbsp;兵&nbsp;&nbsp;&nbsp; </label>
+            <img align="bottom" src="frameworks/Openlayers/img/police.png" style="width: 12px; height: 12px;">
+            <br>
+            <label>&nbsp;&nbsp;&nbsp;&nbsp;<input name="layer" type="checkbox" value="14"cy-change="addLayer" />&nbsp;&nbsp;警&nbsp;&nbsp;车&nbsp;&nbsp;&nbsp; </label>
+            <img align="bottom" src="frameworks/Openlayers/img/PoliceCar.png" style="width: 12px; height: 12px;">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    InitPage([],function($scope) {
+
+        var cyMap = new CYMap($scope.$("#map")[0]);
+        var wkt_c = new OpenLayers.Format.WKT();
+        //平移至中心点位置
+        var centerPoint = new OpenLayers.LonLat(105.70045, 28.58540);
+        var sectionFlowLayer, regionFlowLayer;
+        //畅通feature
+        var changtong = [];
+        //缓行feature
+        var huanxing = [];
+        //拥堵feature
+        var yongdu = [];
+        //全部的feature
+        var allFeature = [];
+
+        //断面预警
+        var sectionAlarmLayer;
+        //区间预警
+        var regionAlarmLayer;
+
+        var weatherAlarmLayer;
+
+        var shipinLayer;
+        var youdaopingLayer;
+        var danbingLayer;
+        var jingcheLayer;
+        var layerData;
+        var isvisible=false;
+
+        //预警级别数据字典
+        var yjjbData;
+
+        //页面登录时调用
+        $scope.load = function () {
+            initData();
+            initLayerData();
+            moveToCenterPoint();
+            readSection();
+            readRegion();
+            readSectionAlarm();
+            readRegionAlarm();
+            readWeatherAlarm();
+        };
+        /**
+         * 地图平移至中心点
+         */
+        function moveToCenterPoint() {
+            centerPoint.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+            cyMap.map.panTo(centerPoint);
+        }
+        //离开页面的时候关闭dialog，隐藏win1
+        $scope.leave = function () {
+            if( $scope.$getDialog("flow")){
+                $scope.$getDialog("flow").dialog("close");
+            }
+        }
+        //进入页面的时候显示win1
+        $scope.enter = function () {
+            if( $scope.$getDialog("flow")){
+                if(isvisible){
+                    $scope.$getDialog("flow").dialog("open");
+                }
+                else{
+                    $scope.$getDialog("flow").dialog("close");
+                }
+            }
+        }
+
+        //初始化地图及相关图层和样式
+        function initData() {
+            //注册地图监听事件
+            var layerListeners = {
+                featureover: function (e) {
+                    //console.log(cyMap.map);
+                    clearTimeout($scope.timeout);
+                    $scope.timeout = setTimeout(function(){
+                        var htmlStr = fieldInfo(e);
+                        var popup = new OpenLayers.Popup.FramedCloud("info",
+                                e.feature.geometry.getBounds().getCenterLonLat(),
+                                null, htmlStr, null, true, null);
+
+                        if (e.object.name == "sectionAlarm" || e.object.name == "regionAlarm") {
+                            popup.setBackgroundColor("pink");
+                        } else {
+                            popup.setBackgroundColor("ghostwhite");
+                        }
+                        popup.setOpacity(5);
+                        popup.setBorder("1px solid gray");
+                        e.feature.popup = popup;
+                        cyMap.map.addPopup(popup);
+                    },500)
+                },
+                featureout: function (e) {
+                    clearTimeout($scope.timeout);
+                    if(e.feature.popup && e.feature.popup != null){
+                         e.feature.popup.hide();
+                    }
+                },
+                featureclick: function (e) {
+                    e.feature.popup.hide();
+                    $scope.openDialog(e);
+                }
+            };
+
+            // create a styleMap for Layer with a custom default symbolizer
+            var styleMap_state = new OpenLayers.StyleMap({pointRadius: 8, strokeWidth: 3.5, fillOpacity: 1});
+            // create a lookup table for Layer with different symbolizers for  1-畅通 ，2-缓行，3-拥堵
+            var lookup_state = {
+                1: {fillColor: "green", strokeColor: "green"},
+                2: {fillColor: "orange", strokeColor: "orange"},
+                3: {fillColor: "red", strokeColor: "red"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to the "type" property of the features, for the "default" intent
+            styleMap_state.addUniqueValueRules("default", "state", lookup_state);
+            sectionFlowLayer = new OpenLayers.Layer.Vector("section", {styleMap: styleMap_state, eventListeners: layerListeners});
+            regionFlowLayer = new OpenLayers.Layer.Vector("region", {styleMap: styleMap_state, eventListeners: layerListeners});
+            cyMap.map.addLayers([regionFlowLayer, sectionFlowLayer]);
+
+            // create a styleMap for sectionAlarmLayer with a custom default symbolizer
+            var styleMap_section = new OpenLayers.StyleMap({pointRadius: 10, fillColor: "red"});
+            // create a lookup table for sectionAlarmLayer with different symbolizers for 0-无预警, 1-流量突变预警 ，2-车速差预警，3-断流预警，4-混合预警
+            var lookup_section = {
+                // 0: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                1: {externalGraphic: "frameworks/Openlayers/img/marker-green.png"},
+                2: {externalGraphic: "frameworks/Openlayers/img/marker-gold.png"},
+                3: {externalGraphic: "frameworks/Openlayers/img/marker-blue.png"},
+                4: {externalGraphic: "frameworks/Openlayers/img/marker.png"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to the "type" property of the features, for the "default" intent
+            styleMap_section.addUniqueValueRules("default", "type", lookup_section);
+            //设置断面报警图层的option
+            sectionAlarmLayer = new OpenLayers.Layer.Vector("sectionAlarm", {styleMap: styleMap_section, eventListeners: layerListeners});
+
+            // create a styleMap for regionAlarmLayer with a custom default symbolizer
+            var styleMap_region = new OpenLayers.StyleMap({pointRadius: 10, strokeWidth: 3 });
+            // create a lookup table for regionAlarmLayer with different symbolizers for
+            // 0-无预警, 1-区间旅行时间超长预警 ，2-区间饱和预警，3-白天大型车辆占比超标预警，4-混合预警
+            var lookup_region = {
+                // 0: {strokeColor:"gray"},
+                1: {strokeColor: "yellow"},
+                2: {strokeColor: "pink"},
+                3: {strokeColor: "gold"},
+                4: {strokeColor: "hotpink"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to the "type" property of the features, for the "default" intent
+            styleMap_region.addUniqueValueRules("default", "type", lookup_region);
+            //设置区间报警图层的option
+            regionAlarmLayer = new OpenLayers.Layer.Vector("regionAlarm", {styleMap: styleMap_region, eventListeners: layerListeners});
+            //添加断面、区间报警图层到map容器中
+            cyMap.map.addLayers([regionAlarmLayer, sectionAlarmLayer]);
+
+            // create a styleMap for sectionLayer with a custom default symbolizer
+            var styleMap_weather = new OpenLayers.StyleMap({
+                pointRadius: 10,
+                fillColor:"red"
+            });
+            // create a lookup table for weatherLayer with different symbolizers for
+            // 1-气象仪在线无预警，2-气象仪在线有预警，3-气象仪离线
+            // 4-能见度仪在线无预警，5-能见度仪在线有预警，6-能见度仪离线
+            // 7-路感在线无预警，8-路感在线有预警，9-路感离线
+            var lookup_weather = {
+                1: {externalGraphic: "frameworks/Openlayers/img/marker-green.png"},
+                2: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                3: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                4: {externalGraphic: "frameworks/Openlayers/img/marker-blue.png"},
+                5: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                6: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"},
+                7: {externalGraphic: "frameworks/Openlayers/img/marker-gold.png"},
+                8: {externalGraphic: "frameworks/Openlayers/img/marker.png"},
+                9: {externalGraphic: "frameworks/Openlayers/img/marker-gray.png"}
+            };
+            // add rules from the above lookup table, with the keyes mapped to
+            // the "type" property of the features, for the "default" intent
+            styleMap_weather.addUniqueValueRules("default", "type", lookup_weather);
+            //设置断面图层的option
+            weatherAlarmLayer=new OpenLayers.Layer.Vector("weatherAlarm",{styleMap: styleMap_weather,eventListeners: layerListeners});
+            //添加断面、区间图层到map容器中
+            cyMap.map.addLayers([weatherAlarmLayer]);
+
+            var styleMap_sp = new OpenLayers.StyleMap({pointRadius: 10,graphicWidth: 15,graphicHeight: 15,
+                externalGraphic: "frameworks/Openlayers/img/shipin.gif"});
+            shipinLayer=new OpenLayers.Layer.Vector("shipinLayer",{styleMap: styleMap_sp,eventListeners: layerListeners});
+            var styleMap_led = new OpenLayers.StyleMap({pointRadius: 10,graphicWidth: 15,graphicHeight: 15,
+                externalGraphic: "frameworks/Openlayers/img/led.png"});
+            youdaopingLayer=new OpenLayers.Layer.Vector("youdaopingLayer",{styleMap: styleMap_led,eventListeners: layerListeners});
+            var styleMap_db = new OpenLayers.StyleMap({pointRadius: 10,graphicWidth: 15,graphicHeight: 15,
+                externalGraphic: "frameworks/Openlayers/img/police.png"});
+            danbingLayer=new OpenLayers.Layer.Vector("danbingLayer",{styleMap: styleMap_db,eventListeners: layerListeners});
+            var styleMap_jc = new OpenLayers.StyleMap({pointRadius: 10,graphicWidth: 15,graphicHeight: 15,
+                externalGraphic: "frameworks/Openlayers/img/PoliceCar.png"});
+            jingcheLayer=new OpenLayers.Layer.Vector("jingcheLayer",{styleMap: styleMap_jc,eventListeners: layerListeners});
+            cyMap.map.addLayers([shipinLayer, youdaopingLayer,danbingLayer,jingcheLayer]);
+        }
+
+        function initLayerData()
+        {
+            layerData={
+                "11" : {
+                    label : "视频",
+                    layer : shipinLayer,
+                    value:"11",
+                    url:"data/trafficMonitor/trafficState/resourceData/shipin.json",
+                    height: 200,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/insertData/lukou.html"
+                },
+                "12":{
+                    label:"诱导屏",
+                    layer:youdaopingLayer,
+                    value:"12",
+                    url:"data/trafficMonitor/trafficState/resourceData/youdaoping.json",
+                    height: 165,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/insertData/zadao.html"
+                },
+                "13":{
+                    label:"单兵",
+                    layer:danbingLayer,
+                    value:"13",
+                    url:"data/trafficMonitor/trafficState/resourceData/danbing.json",
+                    height: 260,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/insertData/churukou.html"
+                },
+                "14":{
+                    label:"警车",
+                    layer:jingcheLayer,
+                    value:"14",
+                    url:"data/trafficMonitor/trafficState/resourceData/jingche.json",
+                    height: 130,
+                    width: 530,
+                    href: "tpls/trafficMonitor/roadGridMgr/insertData/lijiao.html"
+                }};
+        }
+
+        $scope.addLayer=function(event){
+            var target = event.currentTarget;
+            if(target.checked){
+                $scope.$ajaxRequest({
+                    url : layerData[target.value].url,
+                    params :{},
+                    success :function(data){
+                        if(layerData[target.value].layer.features.length>0){
+                            layerData[target.value].layer.removeAllFeatures();
+                        }
+                        for(var index in data){
+                            var geometry=wkt_c.read(data[index].wkt).geometry.clone();
+                            geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                            var feature = new OpenLayers.Feature.Vector(geometry);
+                            feature.attributes = data[index];
+                            layerData[target.value].layer.addFeatures(feature);
+                        }
+                    },
+                    fail : function(){}
+                });
+            }
+            else {
+                if(layerData[target.value].layer!=null){
+                    layerData[target.value].layer.removeAllFeatures();
+                }
+            }
+            var subs = $scope.$("input[name='layer']");
+            $scope.$("input[name='layerAll']").prop("checked" , subs.length == subs.filter(":checked").length ? true :false);
+
+        };
+        //全选复选框触发的事件
+        $scope.selectAll=function(event){
+            var target = event.currentTarget;
+           var target = event.currentTarget;
+            if(target.checked){
+                $scope.$("input[name='layer']").each(function(){
+                    this.checked=true;
+                    $(this).change();//触发change事件
+                });
+            }
+            else{
+                $scope.$("input[name='layer']").each(function(){
+                    this.checked=false;
+                    $(this).change();
+                });
+            }
+        };
+        /**
+         * 读取断面实时数据，加载到地图上
+         */
+        function readSection() {
+            $scope.$ajaxRequest({
+                url: "data/trafficMonitor/trafficState/sectionFlow.json",
+                params: {},
+                success: function (data) {
+                    for (var index in data) {
+                        var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        sectionFlowLayer.addFeatures(feature);
+                    }
+                },
+                fail: function () {
+                }
+            });
+        }
+        /**
+         * 读取区间实时数据，加载到地图上
+         */
+        function readRegion() {
+            $scope.$ajaxRequest({
+                url: "data/trafficMonitor/trafficState/regionFlow.json",
+                params: {},
+                success: function (data) {
+                    for (var index in data) {
+                        var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        regionFlowLayer.addFeatures(feature);
+                        allFeature.push(feature);
+                        var state = data[index].state;
+                        if (state == 3) {
+                            yongdu.push(feature);
+                        }
+                        else if (state == 2) {
+                            huanxing.push(feature);
+                        }
+                        else if (state == 1) {
+                            changtong.push(feature);
+                        }
+                    }
+                },
+                fail: function () {
+                }
+            });
+        }
+        /**
+         * 读取断面预警数据，加载到地图上
+         */
+        function readSectionAlarm() {
+            $scope.$ajaxRequest({
+                url: "data/trafficMonitor/trafficFlowAlarm/section-alarm.json",
+                params: {},
+                success: function (data) {
+                    for (var index in data) {
+                        var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        sectionAlarmLayer.addFeatures(feature);
+                    }
+                },
+                fail: function () {
+                }
+            });
+        }
+        /**
+         * 读取区间预警数据，加载到地图上
+         */
+        function readRegionAlarm() {
+            $scope.$ajaxRequest({
+                url: "data/trafficMonitor/trafficFlowAlarm/region-alarm-bak.json",
+                params: {},
+                success: function (data) {
+                    for (var index in data) {
+                        var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        regionAlarmLayer.addFeatures(feature);
+                    }
+                },
+                fail: function () {
+                }
+            });
+        }
+
+        /**
+         * 读取气象预警数据，加载到地图上
+         */
+        function readWeatherAlarm() {
+            $scope.$ajaxRequest({
+                url: "data/trafficMonitor/trafficWeather/weather-data.json",
+                params: {},
+                success: function (data) {
+                    for (var index in data) {
+                        var geometry = wkt_c.read(data[index].wkt).geometry.clone();
+                        geometry.transform(cyMap.map.displayProjection, cyMap.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(geometry);
+                        feature.attributes = data[index];
+                        if(data[index].alarms){
+                            weatherAlarmLayer.addFeatures(feature);
+                        }
+                    }
+                },
+                fail: function () {
+                }
+            });
+        }
+
+        function readDict(){
+            $scope.$ajaxRequest({
+                url : "data/trafficMonitor/dict.json",
+                params :{},
+                success :function(data){
+                    yjjbData=data.yjjb;
+                },
+                fail : function(){}
+            });
+        }
+
+
+
+
+        //用于popup显示信息
+        function fieldInfo(obj) {
+            var name = obj.object.name;
+            var str = "<div style='font-size:1em'> ";
+            if (name == "section") {
+
+                str += obj.feature.attributes['dwwz'] + "：";
+                str += "<br>&nbsp;&nbsp;" + obj.feature.attributes['fx'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;" + obj.feature.attributes['speed'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;" + obj.feature.attributes['ctsj'];
+                str += "<br>&nbsp;&nbsp;" + obj.feature.attributes['fxx'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;" + obj.feature.attributes['speedx'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车头时距：&nbsp;&nbsp;" + obj.feature.attributes['ctsjx'];
+            }
+            else if (name == "region") {
+                str += obj.feature.attributes['qjmc'] + "：";
+                str += "<br>&nbsp;&nbsp;" + obj.feature.attributes['fx'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平均速度：&nbsp;&nbsp;" + obj.feature.attributes['speed'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当前车辆：&nbsp;&nbsp;" + obj.feature.attributes['dqcl'];
+                str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重点车辆：&nbsp;&nbsp;" + obj.feature.attributes['zdcl'];
+            }
+            else if (name == "sectionAlarm") {
+                str += obj.feature.attributes.dwwz;
+                //断面无预警信息
+                if (!obj.feature.attributes.fx) {
+                    str += "<br>无预警信息";
+                }
+                else {
+                    //断面上行预警
+                    if (obj.feature.attributes.fx.up) {
+                        str += "<br>上行";
+                        if (obj.feature.attributes.fx.up.lltb) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.up.lltb.alarmType;
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：" + obj.feature.attributes.fx.up.lltb.yjjb;
+                        }
+                        if (obj.feature.attributes.fx.up.dmcsc) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.up.dmcsc.alarmType;
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;" + obj.feature.attributes.fx.up.dmcsc.yjjb;
+                        }
+                        if (obj.feature.attributes.fx.up.lmdl) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.up.lmdl.alarmType;
+                        }
+                    }
+                    //断面下行预警
+                    if (obj.feature.attributes.fx.down) {
+                        str += "<br>下行";
+                        if (obj.feature.attributes.fx.down.lltb) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.down.lltb.alarmType;
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：" + obj.feature.attributes.fx.down.lltb.yjjb;
+                        }
+                        if (obj.feature.attributes.fx.down.dmcsc) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.down.dmcsc.alarmType;
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：&nbsp;&nbsp;" + obj.feature.attributes.fx.down.dmcsc.yjjb;
+                        }
+                        if (obj.feature.attributes.fx.down.lmdl) {
+                            str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.fx.down.lmdl.alarmType;
+                        }
+                    }
+                }
+            }
+            else if (obj.object.name == "regionAlarm") {
+                str += obj.feature.attributes.qjmc + "<br>" + obj.feature.attributes.fx;
+                if (!obj.feature.attributes.alarms) {
+                    str += "<br>无预警信息";
+                } else {
+                    if (obj.feature.attributes.alarms.qjlxsjcc) {
+                        str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.alarms.qjlxsjcc.alarmType;
+                    }
+                    if (obj.feature.attributes.alarms.qjbh) {
+                        str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.alarms.qjbh.alarmType;
+                    }
+                    if (obj.feature.attributes.alarms.dczb) {
+                        str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + obj.feature.attributes.alarms.dczb.alarmType;
+                        str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预警级别：" + obj.feature.attributes.alarms.dczb.yjjb;
+                    }
+                }
+            }
+            else if (obj.object.name == "shipinLayer") {
+                str += "设备名称：" +obj.feature.attributes.name + "<br>" ;
+                str += "位置：" + obj.feature.attributes.spwz + "<br>" ;
+                str += "所属机构：" + obj.feature.attributes.ssjg;
+            }
+            else if (obj.object.name == "youdaopingLayer") {
+                str += "设备名称：" +obj.feature.attributes.name + "<br>" ;
+                str += "位置：" +obj.feature.attributes.wz + "<br>" ;
+                str += "所属机构：" + obj.feature.attributes.ssjg;
+            }
+            else if (obj.object.name == "danbingLayer") {
+                str += "警员姓名：" + obj.feature.attributes.name + "<br>" ;
+                str += "所属机构：" + obj.feature.attributes.ssjg + "<br>" ;
+                str += "电话：" + obj.feature.attributes.tel;
+            }
+            else if (obj.object.name == "jingcheLayer") {
+                str += "车牌号：" + obj.feature.attributes.name + "<br>" ;
+                str += "所属机构：" + obj.feature.attributes.ssjg + "<br>" ;
+                str += "电话：" + obj.feature.attributes.tel;
+            }
+            else if(obj.object.name=="weatherAlarm"){
+                if(obj.feature.attributes.alarms.flyj){
+                    str += "大风预警" ;
+                }
+                else if(obj.feature.attributes.alarms.byyj){
+                    str += "暴雨预警" ;
+                }
+                else if(obj.feature.attributes.alarms.njdyj){
+                    str += "能见度预警" ;
+                }
+                else if(obj.feature.attributes.alarms.lmwdyj){
+                    str += "路面温度预警" ;
+                }
+                else if(obj.feature.attributes.alarms.smhdyj){
+                    str += "水膜厚度预警" ;
+                }
+                else if(obj.feature.attributes.alarms.lmzkyj){
+                    str += "路面状况预警" ;
+                }
+            }
+            return str;
+        }
+
+        //打开新的openDialog
+        $scope.openDialog = function (obj) {
+            $scope.$setParam("newData", obj.feature.attributes);
+            $scope.$setParam("closeSelf", function () {
+                $scope.$getDialog("createDialog").dialog("close");
+            });
+            //气象预警中使用的数据字典
+            $scope.$setParam("yjjbData",yjjbData);
+
+            if (obj.object.name == "section") {
+                $scope.$openDialog("createDialog", {
+                    title: "断面信息",
+                    height: 400,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficState/section-flow-info.html"
+                }, true);
+            }
+            else if (obj.object.name == "region") {
+                $scope.$openDialog("createDialog", {
+                    title: "区间信息",
+                    height: 310,
+                    width: 400,
+                    href: "tpls/trafficMonitor/trafficState/region-flow-info.html"
+                }, true);
+            }
+            else if (obj.object.name == "sectionAlarm") {
+                $scope.$openDialog("createDialog", {
+                    title: obj.feature.attributes.dwwz + "&nbsp;&nbsp;流量预警",
+                    height: 420,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficFlow/section-alarm-info.html"
+                }, true);
+            }
+            else if (obj.object.name == "regionAlarm") {
+                $scope.$openDialog("createDialog", {
+                    title: obj.feature.attributes.qjmc + "&nbsp;&nbsp;流量预警",
+                    height: 510,
+                    width: 470,
+                    href: "tpls/trafficMonitor/trafficFlow/region-alarm-info.html"
+                }, true);
+            }
+            else if (obj.object.name=="weatherAlarm"){
+                $scope.$openDialog("createDialog", {
+                    title: obj.feature.attributes.sbmc + "&nbsp;&nbsp;气象预警",
+                    height: 420,
+                    width: 490,
+                    href: "tpls/trafficMonitor/trafficWeather/weather-device-info.html"
+                }, true);
+            }
+        };
+
+        /**
+         * 点击不同状态流量图标平移地图并弹出dialog窗口
+         * @param event
+         */
+        $scope.addSpeedRegion = function (event) {
+            if (event.currentTarget.id == "changtongFlow") {
+                if($scope.$getDialog("flow") && $scope.$getDialog("flow").is(":visible")){
+                    if($scope.$getDialog("flow").dialog("options").title=="速度区间（畅通）"){
+                        $scope.$getDialog("flow").dialog("close");
+                    }else{
+                    openFlowTable(changtong, "速度区间（畅通）");
+                    }
+                }
+                else{
+                    openFlowTable(changtong, "速度区间（畅通）");
+                }
+            }
+            else if (event.currentTarget.id == "huanxingFlow") {
+                if($scope.$getDialog("flow") && $scope.$getDialog("flow").is(":visible")){
+                    if($scope.$getDialog("flow").dialog("options").title=="速度区间（缓行）"){
+                        $scope.$getDialog("flow").dialog("close");
+                    }else{
+                    openFlowTable(huanxing, "速度区间（缓行）");
+                    }
+                }
+                else{
+                    openFlowTable(huanxing, "速度区间（缓行）");
+                }
+            }
+            else if (event.currentTarget.id == "yongduFlow") {
+                if($scope.$getDialog("flow") && $scope.$getDialog("flow").is(":visible")){
+                    if($scope.$getDialog("flow").dialog("options").title=="速度区间（拥堵）"){
+                        $scope.$getDialog("flow").dialog("close");
+                    }else{
+                        openFlowTable(yongdu, "速度区间（拥堵）");
+                    }
+                }
+                else{
+                    openFlowTable(yongdu, "速度区间（拥堵）");
+                }
+            }
+            else if (event.currentTarget.id == "allFeature") {
+                if ($scope.$getDialog("flow")) {
+                    $scope.$getDialog("flow").dialog("close");
+                    isvisible=false;
+                }
+                moveToMap(allFeature);
+            }
+            else if (event.currentTarget.id == "layerControl") {
+                if ($scope.$getDialog("flow")) {
+                    $scope.$getDialog("flow").dialog("close");
+                    isvisible=false;
+                }
+                var win = $scope.$("#win2");
+                if (win.is(":visible")) {
+                    win.hide();
+                }else {
+                    win.show();
+                }
+
+            }
+        };
+
+        /**
+         * 平移并弹出属性框
+         * @param features图元
+         */
+        function openFlowTable(features, str) {
+            moveToMap(features);
+            $scope.$setParam("featureData", features);
+            $scope.$openDialog("flow", {
+                title: str,
+                width: 205,
+                height: 186,
+                href: "tpls/trafficMonitor/trafficState/region-flow-calculate.html",
+                modal: false,
+                draggable: false
+            }, true);
+
+            var width = $scope.$("#win1").width();
+            var left = $scope.$("#win1").offset().left;
+            var top = $scope.$("#win1").offset().top;
+            $scope.$getDialog("flow").dialog("move", {
+                left: left + width - 200,
+                top: top+30
+            });
+            if($scope.$("#win2")){
+                $scope.$("#win2").hide();
+            }
+            isvisible=true;
+        }
+
+
+
+        /*
+        * 平移地图至要素
+        * */
+        function moveToMap(features){
+            regionFlowLayer.removeAllFeatures();
+            regionFlowLayer.addFeatures(features);
+            cyMap.map.zoomToExtent(regionFlowLayer.getDataExtent(),false);
+        }
+
+
+    });
+
+</script>
+
+  <style>
+      #win1{
+          width:165px;
+          height:20px;
+          position:absolute;
+          right:10px;
+          top:8px;
+          z-index: 100000;
+          background: #FFFFFF;
+          border: 2px solid red;
+      }
+      #win2{
+          width: 165px;
+          height:100px;
+          position:absolute;
+          right:10px;
+          top:40px;
+          z-index: 100000;
+          background-color: #FFFFFF;
+          border: 2px solid dodgerblue;
+      }
+  </style>

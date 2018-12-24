@@ -1,0 +1,87 @@
+<div class="easyui-layout">
+	<div data-options="region:'center'">
+		<table id="illegalBusiness" cy-datagrid="optionsIllBusiness" cy-querydata="deptIllBusiness"
+		cy-url="illBusinessConfig/searchIllConfig"></table>
+	</div>
+</div>	
+<script>
+	InitPage([], function($scope) {
+		$scope.load = function() {
+			$scope.$updateData("deptIllBusiness");
+			$scope.$search("deptIllBusiness");
+		};
+		$scope.optionsIllBusiness = {
+			columns : [[
+				    
+			{
+				field : 'configName',
+				title : '配置名称',
+				align : 'center',
+				width : 40
+			}, {
+				field : 'value',
+				title : '值',
+				align : 'center',
+				width : 70
+			},{
+				field : 'cz',
+				title : '操作',
+				align : 'center',
+				formatter : operateIllCode,
+				width : 10
+			}]],
+        pagination:false,
+			
+		};
+		//用户操作栏
+		function operateIllCode(value, row, index) {
+			var button1 = $("<a class='button-edit' cy-click='editIllCode(" + index + ")'></a>");
+			//编辑按钮
+			button1.linkbutton({
+				iconCls : "icon-edit"
+			});
+
+			return $("<span/>").append(button1).html();
+		}
+		$scope.addIllBusiness = function() {
+			$scope.$openDialog("addDialog", {
+				title : "违法代码",
+				width : 800,
+				height : 500,
+				href : "tpls/violationMgr/configManagement/illegal-business-config-add.html"
+			});
+		};
+	    $scope.editIllCode=function(index){
+	        var rowsData=$scope.$("#illegalBusiness").datagrid("getData").rows[index];
+	       var configId=rowsData.configId;
+	        $scope.$setParam("illConfigData",rowsData);
+	           //保存按钮
+            // 通过Ajax提交和后台交互
+            $scope.$setParam("saveData", function(data) {
+                 console.log(data);
+                $scope.$ajaxRequest({
+                    url : $scope.$restRoot + "illBusinessConfig/update",
+                    params : data,
+                    method : "post",
+                    success : function(data) {
+                        $scope.$search("deptIllBusiness");
+                        $scope.$getDialog("editDialog").dialog("close");
+                        $.messager.alert("提示", "保存成功！");
+                    },
+                    fail : function(errMsg) {
+                        $.messager.alert("提示", "保存失败！");
+                    }
+                });
+            });
+	        $scope.$openDialog("editDialog", {
+                title : "违法业务配置",
+                width : 800,
+                height : 500,
+                href : "tpls/violationMgr/configManagement/illegal-business-config-add.html"
+            });
+	    };
+	}); 
+</script>
+<style>
+
+</style>

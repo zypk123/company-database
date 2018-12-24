@@ -1,0 +1,674 @@
+<div id="deviceSysMgr" class="easyui-layout" style="width: 100%;height: 100%">
+    <!--左边列表区 -->
+    <div data-options="region:'west',border:false, title:'导航区域'" style="width: 200px">
+        <div class="easyui-layout">
+            <div data-options="region:'center',border:false,fit:true">
+                <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true">
+                    <div title="按机构">
+                        <ul id="orgTree"></ul>
+                    </div>
+                    <div title="按道路">
+                        <ul id="roadTree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'south',border:false">
+                <div style="color: red">
+                    1、【左键单击】树任意节点，右侧显示该节点下的设备列表。
+                </div>
+                <div style="color: red">
+                    2、【右键单击】树任意节点，显示相应的上下文菜单。
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div data-options="region:'center',border:true">
+        <div class="easyui-layout">
+            <!--查询条件区 -->
+            <div data-options="region:'north',border:false" style="width: 100%">
+                <form method="post" cy-form="formData">
+                    <div class="searchPanel">
+                        <div class="panel_title">查询条件</div>
+                        <div class="table">
+                            <div class="tr">
+                                <div class="td">设备类型：</div>
+                                <div class="td">
+                                    <input class="easyui-combobox" id="deviceType" name="deviceType" style="width:120px"
+                                           data-options="valueField:'code',textField:'name'"/>
+                                </div>
+                                <div class="td">在线情况：</div>
+                                <div class="td">
+                                    <input class="easyui-combobox" id="deviceOnlineStatus" name="deviceOnlineStatus" style="width:70px"
+                                           data-options="valueField:'code',textField:'name'"/>
+                                </div>
+                                <div class="td">使用状态：</div>
+                                <div class="td">
+                                    <input class="easyui-combobox" id="deviceUseStatus" name="useStatus" style="width:70px"
+                                           data-options="valueField:'code',textField:'name'"/>
+                                </div>
+                                <div class="td">设备名称：</div>
+                                <div class="td">
+                                    <input class="easyui-textbox" id="deviceSysName" name="deviceSysName"/>
+                                </div>
+                                <div class="td">
+                                    <a class="easyui-linkbutton button-search" cy-click="searchData"
+                                       data-options="iconCls:'icon-search',plain:true">查询</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!--一行按钮区域-->
+                <div  class="linkbutton_toolbar">
+                    <!--<a class="easyui-linkbutton button-add" cy-click="addData"
+                       data-options="iconCls:'icon-add',plain:true">新增</a>-->
+                    <a class="easyui-splitbutton button-add" cy-click="addData"  id="addDeviceBtn"
+                       data-options="iconCls:'icon-add'" data-value="01" >新增卡口</a>
+                    <a href="#" class="easyui-linkbutton button-enable"
+                       data-options="iconCls:'icon-enable',plain:true" cy-click="startUse">启用</a>
+                    <a href="#" class="easyui-linkbutton button-disable"
+                       data-options="iconCls:'icon-disable',plain:true" cy-click="stopUse">停用</a>
+                    <a href="#" class="easyui-linkbutton button-drop"
+                       data-options="iconCls:'icon-drop',plain:true" cy-click="destroyUse">报废</a>
+                    <a href="#" class="easyui-linkbutton button-remove"
+                       data-options="iconCls:'icon-remove',plain:true" cy-click="deleteTollgate">删除</a>
+                    <a href="#" class="easyui-linkbutton button"
+                       data-options="iconCls:'icon-import',plain:true">导入</a>
+                    <a href="#" class="easyui-linkbutton button"
+                       data-options="iconCls:'icon-export',plain:true">导出</a>
+                </div>
+            </div>
+
+            <!--数据展示区 -->
+            <div data-options="region:'center',border:true">
+                <table id="tollgateGrd" cy-datagrid="options" cy-querydata="formData" cy-url="data/deviceManage/deviceConfig/qryTollgateRecords.json">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="addDeviceMenu">
+        <div cy-click="addDataFromMenu" data-value="01" data-options="iconCls:'icon-add'">卡口</div>
+        <div cy-click="addDataFromMenu" data-value="02" data-options="iconCls:'icon-add'">电警</div>
+        <div cy-click="addDataFromMenu" data-value="03" data-options="iconCls:'icon-add'">视频</div>
+    </div>
+   <!-- 右键菜单定义如下：-->
+    <div id="mmForOrg" style="width:120px;">
+        <div  data-options="iconCls:'icon-add',name:'addMoniterCenter'">添加监控中心</div>
+    </div>
+    <div id="mmForMoniterCenter" style="width:120px;">
+        <div  data-options="iconCls:'icon-add',name:'addImporFlat'">添加接入平台</div>
+        <div  data-options="iconCls:'icon-remove',name:'delMoniterCenter'">删除监控中心</div>
+    </div>
+    <div id="mmForImportFlat" style="width:120px;">
+        <div  data-options="iconCls:'icon-remove',name:'delImporFlat'">删除接入平台</div>
+    </div>
+    <div id="mmForRoad" style="width:120px;">
+        <div  data-options="iconCls:'icon-add',name:'addSite'">添加点位</div>
+    </div>
+    <div id="mmForSite" style="width:120px;">
+        <div  data-options="iconCls:'icon-remove',name:'delSite'">删除点位</div>
+    </div>
+
+    <diV id="deviceInfoDiv">
+        <div><div class="deviceInfoTitle" >编号：</div><a></a></div>
+        <div><div class="deviceInfoTitle" >类型：</div><a></a></div>
+        <div><div class="deviceInfoTitle" >机构：</div><a></a></div>
+        <div><div class="deviceInfoTitle" >I P：</div><a></a></div>
+    </diV>
+    <!--locationInfoDiv-->
+    <diV id="locationInfoDiv">
+        <!--<div><div class="locationInfoTitle" >道路：</div><span></span></div>-->
+        <div><div class="locationInfoTitle" ></div><a style="word-wrap:normal"></a></div>
+        <div><div class="locationInfoTitle" >安装方式：</div><a></a></div>
+    </diV>
+    <!--deviceStatusDiv-->
+    <diV id="deviceStatusDiv">
+        <div>
+            <div class="statusTitle title-width">
+                <div class="statusTitle">在线情况：</div>
+                <a></a>
+            </div>
+            <div class="statusTitle title-margin">
+                <div class="statusTitle">故障情况：</div>
+                <a class="bug-status"></a>
+            </div>
+        </div>
+        <div>
+            <div class="statusTitle title-width">
+                <div class="statusTitle">今日抓拍数：</div>
+                <a class="other-status"></a>条
+            </div>
+            <div class="statusTitle title-margin">
+                <div class="statusTitle">累积积压：</div>
+                <a class="other-status"></a>条
+            </div>
+        </div>
+        <div>
+            <div class="statusTitle">
+                <div>
+                    <div class="statusTitle">
+                        <div class="statusTitle">最近心跳时间：</div>
+                        <a class="other-status"></a>
+                    </div>
+                </div>
+                <div>
+                    <div class="statusTitle">
+                        <div class="statusTitle">最近上传时间：</div>
+                        <a class="other-status"></a>
+                    </div>
+                </div>
+                <div>
+                    <div class="statusTitle">
+                        <div class="statusTitle">最近校时时间：</div>
+                        <a class="other-status"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="statusTitle" style="height: 100%; margin-left: 30px;margin-top:30px">
+                <img src="themes/default/images/a7.png" alt="设备诊断" height="25px" width="25px"/>
+            </div>
+        </div>
+
+    </diV>
+    <!--<diV id="deviceStatusDiv">
+        <div class="deviceSysMgr-table">
+            <div class="deviceSysMgr-tr">
+                <div class="deviceSysMgr-td">在线情况：</div>
+                <div class="deviceSysMgr-td"><a></a></div>
+                <div class="deviceSysMgr-td">故障情况：</div>
+                <div class="deviceSysMgr-td"><a class="bug-status"></a></div>
+            </div>
+            <div class="deviceSysMgr-tr">
+                <div class="deviceSysMgr-td">今日抓拍数：</div>
+                <div class="deviceSysMgr-td"> <a class="other-status"></a>条</div>
+                <div class="deviceSysMgr-td">累积积压：</div>
+                <div class="deviceSysMgr-td"><a class="other-status"></a>条</div>
+            </div>
+            <div class="deviceSysMgr-tr">
+                <div class="deviceSysMgr-td">
+                        <div>
+                            <div class="deviceSysMgr-td">最近心跳时间：</div>
+                            <div class="deviceSysMgr-td"><a class="other-status"></a></div>
+                        </div>
+                        <div>
+                            <div class="deviceSysMgr-td">最近上传时间：</div>
+                            <div class="deviceSysMgr-td"><a class="other-status"></a></div>
+                        </div>
+                </div>
+                <div class="deviceSysMgr-td">
+                    <img src="themes/default/images/a7.png" alt="设备诊断" height="25px" width="25px"/>
+                </div>
+            </div>
+        </div>
+    </diV>-->
+</div>
+<script type="text/javascript" >
+    InitPage([],function($scope){
+
+        $scope.mmForOrg=null;
+        $scope.mmForMoniterCenter=null;
+        $scope.mmForImportFlat=null;
+        $scope.mmForRoad=null;
+        $scope.mmForSite=null;
+        $scope.currentTreeNodeId=null;
+        /**
+         * 页面加载完后一些初始化处理
+         */
+        $scope.load=function(){
+            //关闭左侧菜单栏
+            $scope.$topLayout.layout("collapse","west");
+            //请求页面的数据字典等初始化信息
+            $scope.$ajaxRequest({
+                url: "data/deviceManage/deviceConfig/deviceSysList.json",
+                params: { OrgCode: $scope.UserInfo.OrgCode },
+                success: function (retData) {
+                    if (retData.Error != "") {
+                        alert("初始化页面报错,详细：" + retData.Error);
+                    }
+                    else {
+                        $scope.initCombobox(retData.Result);
+                    }
+                },
+                fail: function (errTxt) {
+                    alert(errTxt);
+                }
+            });
+            $scope.initMenu();
+            //新增按钮菜单初始化
+            $scope.$("#addDeviceBtn").splitbutton({
+                menu : $scope.$("#addDeviceMenu")
+            })
+        };
+
+        //给$scope增加一些属性和方法，也可以使用$scope.XXX = XXX来添加
+        $.extend($scope, {
+            /**
+             * 初始化右键菜单
+             */
+            initMenu:function()
+            {
+                //初始化机构节点右键菜单
+                $scope.mmForOrg = $scope.$('#mmForOrg').menu({
+                    onClick:$scope.contextMenuClick
+                }).menu("hide");
+                //初始化监控中心节点右键菜单
+                $scope.mmForMoniterCenter = $scope.$('#mmForMoniterCenter').menu({
+                    onClick:$scope.contextMenuClick
+                }).menu("hide");
+                //初始化接入平台节点右键菜单
+                $scope.mmForImportFlat = $scope.$('#mmForImportFlat').menu({
+                    onClick:$scope.contextMenuClick
+                }).menu("hide");
+                //初始化道路节点右键菜单
+                $scope.mmForRoad = $scope.$('#mmForRoad').menu({
+                    onClick:$scope.contextMenuClick
+                }).menu("hide");
+                //初始化点位节点右键菜单
+                $scope.mmForSite = $scope.$('#mmForSite').menu({
+                    onClick:$scope.contextMenuClick
+                }).menu("hide");
+            },
+            /**
+             * 将初始化信息绑定到页面控件上
+             * @param retData
+             */
+            initCombobox:function (retData) {
+               // debugger;
+                //在线情况
+                $scope.$('#deviceOnlineStatus').combobox('loadData', retData.dicts["411"]);
+                //使用状态
+                $scope.$('#deviceUseStatus').combobox('loadData', retData.dicts["405"]);
+                //设备类型
+                $scope.$('#deviceType').combobox('loadData', retData.dicts["400"]);
+                //加载机构监控中心树
+                $scope.$("#orgTree").tree({
+                    data: retData.orgTree,
+                    onClick: $scope.treeNodeClick,
+                    onContextMenu: $scope.showTreeContextMenu
+                });
+                //加载道路点位树
+                $scope.$("#roadTree").tree({
+                    data: retData.roadTree,
+                    onClick: $scope.treeNodeClick,
+                    onContextMenu: $scope.showTreeContextMenu
+                });
+            },
+            /**
+             *显示树节点相应的上下文菜单
+             */
+            showTreeContextMenu:function(e,node){
+                e.preventDefault();
+                // 查找节点
+               // $scope.$('#orgTree').tree('select', node.target);
+                var nodeType=node.attributes.nodeType;
+                $scope.currentTreeNodeId=node.id;
+                var mm=null;
+                if(nodeType=="ORG")
+                {
+                   mm= $scope.mmForOrg;
+                }
+                else  if(nodeType=="MONITER_CENTER")
+                {
+                    mm= $scope.mmForMoniterCenter;
+                }
+                else  if(nodeType=="IMPORT_FLAT")
+                {
+                    mm= $scope.mmForImportFlat;
+                }
+                else  if(nodeType=="ROAD")
+                {
+                    mm= $scope.mmForRoad;
+                }
+                else  if(nodeType=="SITE")
+                {
+                    mm= $scope.mmForSite;
+                }
+                if(mm!=null)
+                {
+                    // 显示快捷菜单
+                    mm.menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            },
+            treeNodeClick:function(node){
+               var nodeType=node.attributes.nodeType;
+                var text=node.text;
+                alert("显示【"+text+"】下的所有设备");
+            },
+            contextMenuClick:function(item)
+            {
+              //debugger;
+                switch (item.name){
+                    case "addMoniterCenter":
+                        alert("弹出添加监控中心页面！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                    case "addImporFlat":
+                        alert("弹出添加接入平台页面！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                    case "delMoniterCenter":
+                        alert("删除该监控中心！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                    case "delImporFlat":
+                        alert("删除该接入平台！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                    case "addSite":
+                        alert("弹出添加点位页面！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                    case "delSite":
+                        alert("删除该点位！"+item.name+"&"+$scope.currentTreeNodeId);
+                        break;
+                }
+            },
+            formData :  {
+
+            },
+            /**
+             * 查询卡口数据
+             */
+            searchData : function(){
+                $scope.$search("formData",{
+
+                },function(data){
+
+                });
+            },
+            options : {
+                columns : [[
+/*
+                    {halign:'center',field:"DEVICE_ID",checkbox:true},
+                    {halign:'center',title:"设备编号",field:"DEVICE_NBR",width:100},
+                    {halign:'center',title:"类型",field:"DEVICE_TYPE",width:60},
+                    {halign:'center',title:"管辖机构",field:"ORG_NAME",width:150},
+                    {halign:'center',title:"所在点位",field:"SITE_NAME",width:200},
+                    {halign:'center',title:"设备IP",field:"DEVICE_IP",width:130},
+                    {halign:'center',title:"使用状态",field:"USE_STATUS",width:100},
+                    {halign:'center',title:"在线情况",field:"ONLINE_STATUS",width:100},
+                    {halign:'center',title:"故障情况",field:"BUG_STATUS",width:100},
+                    {halign:'center',title:"最近心跳时间",field:"LATEST_HEARTBEAT",width:120},
+                    {halign:'center',title:"最近上传时间",field:"LATEST_UPTIME",width:120},
+                    {halign:'center',title:"当日抓拍数",field:"SNAP_TOTAL",width:100},
+                    {halign:'center',title:"累计积压",field:"BACKLOG_TOTAL",width:100},
+                    {halign:'center',title:"年检期止",field:"CHECK_DEADTIME",width:120},
+                    {halign:'center',title:"操作",field:"opt",width:120,formatter:opteratersForamt}
+*/
+                    {halign:'center',field:"DEVICE_ID",checkbox:true},
+                    {halign:'center',title:"实景图",field:"IMG_URL",width:100,formatter:devicePhotoFormat},
+                    {halign:'center',title:"设备信息",field:"DEVICE_NAME",width:150,formatter:deviceInfoFormat},
+                    {halign:'center',title:"位置信息",field:"SITE_NAME",width:150,formatter:locationInfoFormat},
+                    {halign:'center',title:"使用状态",field:"USE_STATUS",width:50},
+                    {halign:'center',title:"运行情况",field:"ONLINE_STATUS",width:210,formatter:deviceStatusFormat},
+                    {halign:'center',title:"年检期止",field:"CHECK_DEADTIME",width:60},
+                    {halign:'center',title:"操作",field:"opt",width:60,formatter:opteratersForamt}
+
+                ]]
+            },
+            /**
+             * 新增卡口备案信息
+             * @param event
+             */
+            addData : function(event){
+                var ele = event.currentTarget;
+                var whichType= $(ele).attr("data-value");
+                $scope.showAddDevice(whichType);
+            },
+            addDataFromMenu:function(event)
+            {
+                var ele = event.currentTarget;
+                var whichType= $(ele).attr("data-value");
+                var whichName=$(ele).text();
+                $scope.$("#addDeviceBtn").find(".l-btn-text").text("新增"+whichName);
+                $scope.$("#addDeviceBtn").attr("data-value",whichType);
+                $scope.showAddDevice(whichType);
+            },
+            showAddDevice:function(whichType){
+                var addPageUrl="";
+                /*
+                 * 01 卡口
+                 02 电警
+                 03 视频
+                 04 测速设备
+                 05 气象设备
+                 06 流量检测
+
+                 08 事件监测
+
+                 10 LED屏
+                 11 可变限速牌
+                 * */
+                switch (whichType)
+                {
+                    case "01":
+                        addPageUrl= "tpls/deviceManage/deviceConfig/tollgate-config.html";
+                        break;
+
+                }
+                $scope.$ajaxRequest({
+                    url: "data/deviceManage/deviceConfig/deviceConfigBaseInfo.json",
+                    params: { OrgCode: $scope.UserInfo.OrgCode },
+                    success: function (retData) {
+                        if (retData.Error != "") {
+                            alert("初始化卡口新增页面报错,详细：" + retData.Error);
+                        }
+                        else {
+                            $scope.$setParam("whichType",whichType);//弹出页面要增加的设备类型
+                            $scope.$setParam("initData",retData.Result);
+                            $scope.$setParam("mode","ADD");
+                            $scope.$setParam("closeDialog",$scope.closeTollgateConfig);
+                            $scope.$openDialog("detailDailog",{
+                                title : "卡口设备备案",
+                                width : 900,
+                                height : 550,
+                                href : addPageUrl
+                            });
+                        }
+                    },
+                    fail: function (errTxt) {
+                        alert(errTxt);
+                    }
+                });
+            },
+            /**
+             * 新增窗体关闭回调事件，如果是通过点击保存关闭的，则要刷新该页面的列表信息，否则直接关闭
+             */
+            closeTollgateConfig:function()
+            {
+                //刷新列表记录todo
+
+                //关闭窗体
+                $scope.$getDialog("detailDailog").dialog("destroy");
+                delete $scope.$dialog["detailDailog"];
+            },
+            /**
+             * 启用
+             * @param event
+             */
+            startUse:function(event){
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("设置选择的这"+checkedRows.length+"行记录的使用状态为启用！");
+            },
+            /**
+             * 停用
+             * @param event
+             */
+            stopUse:function(event){
+
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("设置选择的这"+checkedRows.length+"行记录的使用状态为停用！");
+            },
+            /**
+             * 报废
+             * @param event
+             */
+            destroyUse:function(event){
+
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("设置选择的这"+checkedRows.length+"行记录的使用状态为报废！");
+            },
+            /**
+             * 删除
+             * @param event
+             */
+            deleteTollgate:function(event){
+                var checkedRows=$scope.getCheckedRows();
+                //设置选择的这些行的使用状态为启用todo
+                alert("删除这"+checkedRows.length+"行记录！");
+            },
+            /**
+             * 获取选择的行
+             * @returns {*}
+             */
+            getCheckedRows:function(){
+                var checkedRows = $scope.$('#tollgateGrd').datagrid('getChecked');
+                if($.isEmptyObject(checkedRows)||checkedRows.length==0)
+                {
+                    alert("您未选中任何记录");
+                }else
+                {
+                    return checkedRows;
+                }
+            },
+            /**
+             * 编辑卡口备案信息
+             * @param DEVICE_ID
+             */
+            editDevice: function (DEVICE_ID) {
+                // var rowDatas =  $scope.$('#tollgateGrd').datagrid('getData').rows;
+                alert(DEVICE_ID);
+            },
+            /**
+             * 删除卡口备案记录
+             * @param DEVICE_ID
+             */
+            deleteDevice: function (DEVICE_ID) {
+                alert(DEVICE_ID);
+            }
+
+        });
+        /**
+         * 设备照片格式化单元格
+         */
+        function devicePhotoFormat(value, rowData, rowIndex) {
+            var img = $("<img src='' style='height: 90px;width: 100%'></img>");
+            img.attr('src', value);
+            return $("<span/>").append(img).html();
+        }
+        /**
+         * 设备信息格式化单元格
+         */
+        function deviceInfoFormat(value, rowData, rowIndex){
+            var divs =  $scope.$("#deviceInfoDiv").clone();
+            divs.removeAttr("id");
+            var spans=divs.find("a");
+            spans.eq(0).text(rowData.DEVICE_NBR);
+            spans.eq(1).text(rowData.DEVICE_TYPE);
+            spans.eq(2).text(rowData.ORG_NAME);
+            spans.eq(3).text(rowData.DEVICE_IP);
+            return divs.html();
+        }
+        /**
+         * 位置信息格式化单元格
+         */
+        function locationInfoFormat(value, rowData, rowIndex){
+            var divs =  $scope.$("#locationInfoDiv").clone();
+            divs.removeAttr("id");
+            var spans=divs.find("a");
+            //spans.eq(0).text(rowData.ROAD_NAME);
+            spans.eq(0).text(rowData.SITE_NAME);
+            spans.eq(1).text(rowData.INSTALL_TYPE);
+            return divs.html();
+        }
+        /**
+         * 运行状况格式化单元格
+         */
+        function deviceStatusFormat(value, rowData, rowIndex){
+            var divs =  $scope.$("#deviceStatusDiv").clone();
+            divs.removeAttr("id");
+            var spans=divs.find("a");
+            spans.eq(0).text(rowData.ONLINE_STATUS);
+            if(rowData.ONLINE_STATUS=="在线")
+            {
+                spans.eq(0).attr("class","online-status");
+            }
+            else{
+                spans.eq(0).attr("class","offline-status");
+            }
+            spans.eq(1).text(rowData.BUG_STATUS);
+            spans.eq(2).text(rowData.SNAP_TOTAL);
+            spans.eq(3).text(rowData.BACKLOG_TOTAL);
+            spans.eq(4).text(rowData.LATEST_HEARTBEAT);
+            spans.eq(5).text(rowData.LATEST_UPTIME);
+            spans.eq(6).text(rowData.LATEST_ADJUSTTIME);
+            return divs.html();
+        }
+        /**
+         * grid列表中最后一列格式化
+         * @param value  当前单元格值
+         * @param rowData 当前行
+         * @param rowIndex 当前行所在索引值
+         * @returns {*|jQuery}
+         */
+        function opteratersForamt(value,rowData,rowIndex){
+            var editBtn=$("<a  title='编辑' class='button-edit'></a>");
+            editBtn.linkbutton({
+                iconCls:"icon-edit"
+            });
+            editBtn.attr('cy-click',"editDevice('" + rowData.DEVICE_ID + "')");
+            var deleteBtn=$("<a  title='删除' class='button-remove'></a>");
+            deleteBtn.linkbutton({
+                iconCls:"icon-remove"
+            }).attr('cy-click',"deleteDevice('" + rowData.DEVICE_ID + "')");
+            return  $("<span/>").append(editBtn).append("  ").append(deleteBtn).html();
+        }
+
+    });
+</script>
+<style>
+    #deviceSysMgr .td > input[class^='easyui-'] {
+        width: 170px;
+    }
+    #deviceSysMgr .td:nth-child(odd) {
+        margin-left: 15px;
+    }
+    #deviceSysMgr .deviceInfoTitle
+    {
+        float: left;
+        width: 35px;
+        text-align: right;
+    }
+    #deviceSysMgr .locationInfoTitle{
+        float: left;
+    }
+    #deviceSysMgr .statusTitle{
+        float: left;
+    }
+    #deviceSysMgr .title-width{
+        width: 110px;
+    }
+    #deviceSysMgr .title-margin{
+        margin-left: 25px;
+    }
+    #deviceSysMgr .online-status{
+        color: green;
+    }
+    #deviceSysMgr .offline-status{
+        color: silver;
+    }
+    #deviceSysMgr .bug-status{
+        color: red;
+    }
+    #deviceSysMgr .other-status{
+        color: #0000ff;
+        cursor: pointer;
+       text-decoration: underline;
+    }
+
+</style>
+
+

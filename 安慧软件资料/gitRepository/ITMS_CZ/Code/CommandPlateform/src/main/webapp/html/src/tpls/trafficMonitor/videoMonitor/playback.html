@@ -1,0 +1,666 @@
+<!--视频回放-->
+<div id="playbackView" style="height: 100%;">
+    <div class="easyui-layout">
+        <!--机构设备树-->
+        <div data-options="region:'west',border:false, title:'导航区域'" style="width: 220px">
+            <div class="easyui-layout" id="leftLayout">
+                <div data-options="region:'north'">
+                    <div>
+                        <div class="linkbutton_toolbar">
+                            <input id="search" data-options="prompt:'请输入设备或组件名称关键字'" style="width:200px;height:26px"/>
+                            <!--<a id="back" class="easyui-linkbutton" data-options="iconCls:'icon-clear',plain:true" cy-click="clearSearch" style="float:left;margin-right:5px;margin-top:3px;"></a>-->
+                        </div>
+                        <div>
+                            <input type="checkbox" name="chkPlaybackDome" value="0" cy-click="clickChkDome"/>
+                            <input type="checkbox" name="radioPlaybackDome" value="1" cy-click="clickRadioDome"/>球机
+                            <input type="checkbox" name="radioPlaybackDome" value="2" cy-click="clickRadioDome"/>枪机
+                            <input type="checkbox" name="radioPlaybackDome" value="3" cy-click="clickRadioDome"/>组件
+                        </div>
+                    </div>
+                </div>
+                <div data-options="region:'center'">
+                    <!--"-->
+                    <div id="searchResItemDiv" style="display: none">
+                        <div class="searchResItem">
+                            <div class="searchResItemXH" href="#">
+                                1
+                            </div>
+                            <div class="iconStyle" style="float:left">
+                                <span class="icon icon-device-offline"
+                                      style="height: 16px;width:18px;display: inline-block"></span>
+                            </div>
+                    <span class="msg" style="display: block">
+                        西景线(G214)K2056+500固定点香格里拉方向
+                    </span>
+                        </div>
+                    </div>
+
+                    <div id="tollgateTabs" class="easyui-tabs" data-options="fit:true,border:true,plain:true"
+                            >
+                        <!--高度设为100%或者不设，总会导致滚动条下方超出浏览器可见区域-->
+                        <div title="按道路">
+                            <ul id="roadTree"></ul>
+                        </div>
+                        <div title="按机构" style="overflow: auto;margin-bottom: 5px;margin-right: 5px;height:90%">
+                            <ul id="orgTree"></ul>
+                        </div>
+                        <div title="自定义分组" style="overflow: auto;margin-bottom: 5px;margin-right: 5px;height:90%">
+                            <ul id="userGroupTree"></ul>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div data-options="region:'east',border:false,width:'100%',closed:true">
+                    <div id="searchReuslt">
+                        <div style="float:left; color: blue;height: 25px; line-height: 25px;width:100%">
+                            <div style="float:left;width:130px">
+                                共<span id="searchResTotal">6</span>项结果：
+                            </div>
+                            <div style="float:left;">
+                                <a class="easyui-linkbutton" data-options="iconCls:'icon-back'" style="height: 20px;"
+                                   cy-click="searchGoBack">返回</a>
+                            </div>
+                        </div>
+                        <div id="searchReusltDlst" style="width:100%;">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mmGroupAdd" style="width:140px;">
+            <div id="mmf-treeadd" data-options="iconCls:'icon-add'" cy-click="addVideoGroup">新增设备组</div>
+        </div>
+        <div id="mmGroupModify" style="width:140px;">
+            <div id="mmc-treeclose" data-options="iconCls:'icon-remove'" cy-click="removeVideoGroup">删除设备组</div>
+            <div id="mmc-treeedit" data-options="iconCls:'icon-edit'" cy-click="editVideoGroup">编辑设备组</div>
+        </div>
+        <!--控件-->
+        <div data-options="region:'center'" style="overflow: hidden">
+            <iframe id="ifVideo" style="width:100%;height: 100%">
+
+            </iframe>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+
+InitPage([], function ($scope) {
+    $scope.$getData("vio", "VioInit")($scope);
+    $scope.chaoYuanPlayBackSrc = 'tpls/video/chaoYuan/PlayBack.html';
+    $scope.hik8600PlayBackSrc = 'tpls/video/haiKang8600/playBack.html';
+
+    /**
+     * 页面加载完后一些初始化处理
+     */
+    $scope.load = function () {
+        //关闭左侧菜单栏
+        $scope.$topLayout.layout("collapse", "west");
+        $scope.curVideoSuperviseType = "1";
+        $scope.$("#ifVideo").attr('src', $scope.hik8600PlayBackSrc);
+        $scope.videoControl = $scope.$("#ifVideo")[0].contentWindow;
+
+        $scope.mmGroupAdd = $scope.$('#mmGroupAdd').menu().menu("hide");
+        $scope.mmGroupModify = $scope.$('#mmGroupModify').menu().menu("hide");
+        $scope.$("input[name=radioPlaybackDome]").attr({disabled: "disabled"});
+        $scope.loadDeviceTree('roadTree');
+        $scope.$("#tollgateTabs").tabs({
+            onSelect: function (title, index) {
+                switch (title) {
+                    case "按道路":
+                        $scope.loadDeviceTree('roadTree');
+                        break;
+                    case "按机构":
+                        $scope.loadDeviceTree('orgTree');
+                        break;
+                    case "自定义分组":
+                        $scope.loadDeviceTree('userGroupTree');
+                        break;
+                }
+            }
+        })
+        $scope.initSearch();
+    };
+    //关闭
+    $scope.close = function () {
+        if ($scope.devStatusSubObj && $scope.devStatusSubObj != null) {
+            $scope.devStatusSubObj.remove();
+        }
+    };
+    //退出
+    $scope.leave = function () {
+        if ($scope.devStatusSubObj && $scope.devStatusSubObj != null) {
+            $scope.devStatusSubObj.remove();
+        }
+    };
+    //进入
+    $scope.enter = function () {
+        //console.log("enter");
+        $scope.subscribeDevStatus();
+        if ($scope.preViewVideoLst && $scope.preViewVideoLst.length > 0) {
+            for (var i = 0; i < $scope.preViewVideoLst.length; i++) {
+                var video = $scope.preViewVideoLst[i];
+                $scope.previewNodeVideo(video);
+            }
+        }
+    };
+    //订阅设备状态
+    $scope.subscribeDevStatus = function () {
+        var devSysNbrLst = [];
+        var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+        var rootNodes = tree.tree("getRoots");
+        if (rootNodes && rootNodes.length > 0) {
+            for (var i = 0; i < rootNodes.length; ++i) {
+                var devLst = $scope.findDevice(tree.tree("getData", rootNodes[i].target));
+                devSysNbrLst = devSysNbrLst.concat(devLst);
+            }
+        }
+        ;
+        if (!devSysNbrLst || devSysNbrLst.length == 0) {
+            return;
+        }
+        //订阅设备状态
+        $scope.devStatusSubObj = new Subsribe({
+            type: SubsribeType.realVideoMonitor,
+            onMessage: $scope.onReceiveDevStatus,
+            param: {
+                devSysNbrs: devSysNbrLst
+            }
+        });
+    };
+
+    //接收到设备状态
+    $scope.onReceiveDevStatus=function(data)//接收到状态消息
+    {
+        var data = $.parseJSON(data);
+       // console.log(data);
+        //搜索
+        var tree=$($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+        if(data.componentStatusResults&&data.componentStatusResults.length>0)
+        {
+            for(var i=0;i<data.componentStatusResults.length;i++){
+                var component=data.componentStatusResults[i];
+                var id=data.deviceId+component.sysComponentId;
+                $scope.updateStatus(tree,id,component.statusType)
+            }
+        }
+        else{
+            $scope.updateStatus(tree,data.deviceId,data.statusType);
+        }
+        //$scope.$eventProxy();//重新做事件代理/todo
+    };
+    /**
+     * 更新节点记录状态
+     */
+    $scope.updateStatus=function(tree,id,statusType){
+        var node=tree.tree('find',id);
+        if(!node){
+            console.log('树id不存在，id:'+id);
+            return;
+        }
+        var attribute=node.attribute;
+
+        attribute.statusType=statusType;
+        //赋值，更新状态
+        tree.tree("update",{
+            target:node.target,
+            attribute:attribute
+        });
+        //更新统计值
+        var parentNode=tree.tree('getParent',node.target);
+        var nodeId=parentNode.id;
+        while(parentNode){
+            nodeId=parentNode.id;
+            parentNode=tree.tree('getParent',parentNode.target);
+        };
+        var rootNode=tree.tree('find',nodeId);
+        $scope.initTreeStatusStatistic(tree,rootNode);
+    };
+    //递归调用，返回data下所有子结点的设备编号
+    $scope.findDevice = function (data) {
+        var deviceArr = [];
+        if (data.attribute.nodeType == 'device') {
+            deviceArr.push(data.id);
+        }
+        else {
+            for (var i = 0; i < data.children.length; ++i) {
+                var childData = data.children[i];
+                deviceArr = deviceArr.concat($scope.findDevice(childData))
+            }
+        }
+        return deviceArr;
+    };
+
+
+    $.extend($scope, {
+        curVideoDevice: {
+            deviceId: "",
+            deviceSysNbr: "44020000001320000002",
+            cameraServerTypeIp: "192.168.10.39",
+            videoDeviceName: "视频设备名称",
+            videoAccessMode: "5"
+        },
+        //用户自定义组右键菜单绑定实体
+        contextMenuGroup:{
+        },
+        //加载道路树点位
+        loadDeviceTree: function (treeId) {
+            var domeGun = null;
+            if($scope.$("input[name=chkPlaybackDome]").prop("checked")
+                    &&$("input[name=radioPlaybackDome]:checked").length!=3){
+                domeGun='';
+                $("input[name=radioPlaybackDome]:checked").each(function(){
+                    domeGun+=$(this).val()+',';
+                });
+            }
+            var queryParams = {
+                id: "", //默认根节点为空，表示查询基础数据
+                type: treeId,//默认类型为0,
+                isDomeGun: domeGun
+            };
+            $scope.$ajaxRequest({
+                url: $scope.$restRoot + "/video/videoPlay/getVideoDeviceTrees",
+                params: queryParams,
+                method: "post",
+                success: function (result) {
+                    $scope.$("#" + treeId).tree({
+                        data: result,
+                        onDblClick: $scope.treeNodeDblClick,
+                        onContextMenu: $scope.showTreeContextMenu,
+                        onLoadSuccess: function () {
+                            if($(this).tree("getRoots").length>0){
+                                var root = $(this).tree("getRoots")[0];
+                                //收起全部节点
+                                $(this).tree("collapseAll");
+                                //展开根节点
+                                $(this).tree("expand", root.target);
+                                //默认选中根节点
+                                $(this).tree("select", root.target);
+                            }
+                        }
+                    });
+                },
+                fail: function (errMsg) {
+                    alert('加载道路设备树失败，原因：' + errMsg);
+                }
+            });
+        },
+
+        //显示树右键菜单
+        showTreeContextMenu: function (e, node) {
+            //禁用默认右击菜单
+            e.preventDefault();
+            // 查找节点
+            $scope.contextMenuGroup.groupName = node.text.substring(0, node.text.indexOf('('));
+            $scope.contextMenuGroup.groupId = node.id;
+            $scope.contextMenuGroup.groupContent = node.attribute.groupContent;
+
+            // 显示快捷菜单
+            if (node.text && node.text.indexOf('用户自定义设备组') >= 0) {
+                $scope.mmGroupAdd.menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            } else if (node.attribute.nodeType == "deviceGroup") {
+                $scope.mmGroupModify.menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            } else {
+
+            }
+        },
+        //双击树节点事件
+        treeNodeDblClick: function (node) {
+            var nodeType = node.attribute.nodeType;
+            if (nodeType) {
+                if (nodeType == "video" || nodeType == "component") {
+                    $scope.dbClickRow(node);
+                }
+                else {
+                    $(this).tree("expand", node.target);
+                }
+            }
+        },
+        dbClickRow: function (node) {
+            $scope.curVideoDevice = {};
+            $scope.curVideoDevice.deviceId = node.attribute.deviceId;
+            $scope.curVideoDevice.deviceSysNbr = node.attribute.deviceSysNbr;
+            $scope.curVideoDevice.videoDeviceName = node.text;
+            $scope.curVideoDevice.cameraServerTypeIp = node.attribute.cameraServerTypeIp;
+            $scope.curVideoDevice.videoAccessMode = node.attribute.videoAccessMode;
+            $scope.curVideoDevice.preViewParam = node.attribute.preViewParam;
+            $scope.curVideoDevice.playBackParam = node.attribute.playBackParam;
+            $scope.curVideoDevice.sysComponentId = node.attribute.sysComponentId;
+            if ($scope.curVideoDevice.videoAccessMode) {
+                if($scope.curVideoSuperviseType != $scope.curVideoDevice.videoAccessMode){
+                    $.messager.confirm("提示", "该设备的视频监控类型与当前播放视频类型不同，是否关闭当前播放窗口？", function (flag) {
+                        if (flag) {
+                            $scope.curVideoSuperviseType = $scope.curVideoDevice.videoAccessMode;
+                            var src = $scope.chaoYuanPlayBackSrc;
+                            switch ($scope.curVideoDevice.videoAccessMode) {
+                                case "1"://海康平台
+                                case "2"://海康直连设备
+                                    src = $scope.hik8600PlayBackSrc;
+                                    break;
+                                case "3"://大华平台
+                                case "4"://大华直连设备
+                                case "5"://超远平台
+                                    src = $scope.chaoYuanPlayBackSrc;
+                                    break;
+                            }
+
+                            $scope.$("#ifVideo").attr('src', src);
+                            $scope.videoControl = $scope.$("#ifVideo")[0].contentWindow;
+                            setTimeout(function () {
+                                $scope.initControlVideo();
+                            }, 1500);
+                        }
+                        else {
+                            //$scope.previewNodeVideo();
+//                        alert("当前视频类型无法播放");
+                        }
+                    });
+                }
+                else{
+                    $scope.initControlVideo();
+                }
+            }
+            else{
+                $scope.showMessage("该设备的视频监控类型未配置，请至设备管理页面检查配置");
+            }
+        },
+        initControlVideo:function(){
+            $scope.videoControl.initVideo($scope.curVideoDevice);
+        },
+        addVideoGroup: function () {
+            // $scope.$setParam("deviceIds", ['fe5f5a7d935241dfa6d3f6f153cba185','9fff3e4c79534b189ed49c2687771a3a']);
+            // $scope.$openDialog("addDialog", {
+            // title : "修改用户自定义组" ,
+            // width : 900,
+            // height : 550,
+            // href : "tpls/video/popPreView.html"
+            // }, true);
+            // return;
+
+            $scope.$setParam("mode", "add");
+            $scope.$setParam("refresh", $scope.loadUserGroupTree);
+            $scope.$openDialog("addDialog", {
+                title: "新增用户自定义组",
+                width: 900,
+                height: 550,
+                href: "tpls/trafficMonitor/videoMonitor/video-group-modify.html"
+            }, true);
+        },
+        removeVideoGroup: function () {
+            $.messager.confirm("提示", "是否确认删除自定义分组？", function (flag) {
+                if (flag) {
+                    $scope.PostAjax(
+                                    $scope.$restRoot + "/video/cruisePlan/deleteVideoGroup",
+                            {
+                                param: $scope.contextMenuGroup.groupId
+                            },
+                            function (data) {
+
+                                if (data.errorMsg && data.errorMsg != '') {
+                                    alert(data.errorMsg);
+                                }
+                                else {
+                                    //console.log('删除成功');
+                                    $scope.loadUserGroupTree();
+                                }
+                            }
+                    );
+                }
+            });
+        },
+        editVideoGroup: function () {
+            $scope.$setParam("mode", "edit");
+            $scope.$setParam('userGroupDetail', $scope.contextMenuGroup);
+            $scope.$setParam("refresh", $scope.loadUserGroupTree);
+            $scope.$openDialog("addDialog", {
+                title: "修改用户自定义组",
+                width: 900,
+                height: 550,
+                href: "tpls/trafficMonitor/videoMonitor/video-group-modify.html"
+            }, true);
+        },
+        // 统计子结点的设备状态数，及直属结点的设备状态数，并更新结点的状态
+        initTreeStatusStatistic: function (tree, data) {
+            var returnData = {online: 0, offline: 0, fault: 0, abnormal: 0, total: 0};
+            try {
+                var node = tree.tree('find', data.id);
+                var nodeType = data.attribute.nodeType;
+                if (data.children && data.children.length > 0) {
+                    for (var i = 0; i < data.children.length; ++i) {
+                        var statistic = $scope.initTreeStatusStatistic(tree, data.children[i]);
+                        returnData.online += statistic.online;
+                        returnData.offline += statistic.offline;
+                        returnData.fault += statistic.fault;
+                        returnData.abnormal += statistic.abnormal;
+                        returnData.total += statistic.total;
+                    }
+
+                    //更新data的text,attribute
+                    data.attribute.statusStatistic = returnData;
+                    var oriText = data.text;
+                    if (data.text.indexOf("(") > 0) {
+                        oriText = data.text.substring(0, data.text.indexOf("("));
+                    }
+                    var newText = oriText + '(<a id="statusOnline" title="正常:' + returnData.online + '" class="onlineStatus">' + returnData.online + '</a>/' +
+                            '<a title="脱机:' + returnData.offline + '" class="offLineStatus">' + returnData.offline + '</a>/' +
+                            '<a title="故障:' + returnData.fault + '" class="faultStatus">' + returnData.fault + '</a>/' +
+                            '<a title="异常:' + returnData.abnormal + '" class="abnormalStatus">' + returnData.abnormal + '</a>/' +
+                            '<a title="总数:' + returnData.total + '" class="totalStatus">' + returnData.total + '</a>)';
+                    //返回统计的设备状态数{正常,脱机，故障，异常,总数}
+
+                    tree.tree('update', {
+                        target: node.target,
+                        text: newText,
+                        attribute: data.attribute
+                    });
+                }
+                else {
+
+                    var deviceStatus=data.attribute.statusType;
+                    if(deviceStatus==null||deviceStatus==''){
+                        deviceStatus='1';
+                    }
+                    if (deviceStatus == "1") {//1表示正常
+                        returnData.online = 1;
+                    } else if (deviceStatus == "2") {//2表示脱机
+                        returnData.offline = 1;
+                    } else if (deviceStatus == "3") {//3表示故障
+                        returnData.fault = 1;
+                    } else if (deviceStatus == "4") {//异常
+                        returnData.abnormal = 1;
+                    }
+                    returnData.total = 1;
+                    var deviceType=data.attribute.nodeType=='video'?'icon-03-':'icon-component-';
+                    tree.tree("update",{
+                        target:node.target,
+                        iconCls:deviceType+deviceStatus
+                    });
+                }
+            }
+            catch (e) {
+                //console.log("initTreeStatusStatistic exception:");
+                //console.log(e);
+            }
+            return returnData;
+        },
+
+        /**
+         * 初始化查找
+         */
+        initSearch: function () {
+            $scope.$("#search").searchbox({
+                searcher: function () {
+                    var devName = $(this).searchbox("getValue").trim();
+
+                    $scope.$("#leftLayout").layout("panel", "east").panel("open");
+                    $scope.$("#leftLayout").layout("resize");
+                    //显示查询结果
+                    $scope.searchDevice(devName.toUpperCase());
+
+                }
+            });
+        },
+        searchDevice: function (devName) {
+            var searchResult = [];
+            var tree = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1]);
+            var nodes = [];
+            var rootNodes = tree.tree("getRoots");
+            if (rootNodes && rootNodes.length > 0) {
+                for (var i = 0; i < rootNodes.length; ++i) {
+                    var node = rootNodes[i];
+                    nodes = nodes.concat($scope.getSearchData(tree, node, devName));
+                }
+            }
+            var data = {
+                total: nodes.length,
+                rows: nodes
+            };
+            $scope.$("#searchResTotal").text(nodes.length);
+            //console.log(nodes.length);
+            //加载搜索结果列表
+            $scope.$("#searchReusltDlst").datalist({
+                nowrap: false,
+                lines: true,
+                border: true,
+                textFormatter: function (value, rowData, rowIndex) {
+
+                    ////console.log(rowData.attribute.statusType)
+                    //puzzle延迟取值，另外二级属性不可访问
+
+                    var divRow = $scope.$("#searchResItemDiv").clone().show();
+                    divRow.remove("id");
+                    var xh = divRow.find(".searchResItemXH");
+                    xh.eq(0).text(rowIndex + 1);
+                    var icon = divRow.find(".icon");
+                    icon.removeClass("icon-device-offline");
+                    icon.addClass("icon-03-"+rowData.statusType);
+                    var msg = divRow.find(".msg");
+                    msg.text(rowData.text);
+                    return divRow.html();
+                },
+                onDblClickRow: function (index, row) {//点击定位该点位
+                    $scope.dbClickRow(row);
+                },
+                onLoadSuccess: function (data) {
+                    $scope.$("#searchResTotal").text(data.total);
+                }
+            });
+
+            $scope.$("#searchReusltDlst").datagrid('loadData', data);
+        },
+        searchGoBack: function () {
+            // $scope.$('#devTree').show();
+            // $scope.$('#searchReuslt').hide();
+            $scope.$("#leftLayout").layout("panel", "east").panel("close");
+            $scope.$("#leftLayout").layout("resize");
+        },
+
+        /**
+         * 获得查找结果数据
+         */
+        getSearchData: function (tree, node, searchIndex) {
+            var nodes = [];
+            var nodeType = node.attribute.nodeType;
+            if (nodeType) {
+                if (nodeType == "video"||nodeType == "component") {
+                    if (node.text&&node.text.toUpperCase().indexOf(searchIndex) >= 0) {
+                        var listNode = {statusType: node.attribute.statusType};
+                        $.extend(listNode, node);
+                        nodes.push(listNode);
+//                          tree.tree("select",node.target);
+//                          tree.tree("expandTo", node.target);
+                    }
+                }
+                else {
+                    if (node.children && node.children.length > 0) {
+                        for (var index in node.children) {
+                            nodes = nodes.concat($scope.getSearchData(tree, node.children[index], searchIndex));
+                        }
+                    }
+                }
+            }
+            return nodes;
+        },
+        clearSearch: function () {
+            $scope.$("#search").searchbox('clear');
+        },
+        //选择球机或枪机
+        clickChkDome: function () {
+            if ($scope.$("input[name=chkPlaybackDome]").prop("checked")) {
+                $scope.$("input[name=radioPlaybackDome]").removeAttr("disabled");
+                $scope.$("input[name=radioPlaybackDome]:first").prop('checked',true);
+            }
+            else {
+                $scope.$("input[name=radioPlaybackDome]").attr({disabled: "disabled"});
+                $scope.$("input[name=radioPlaybackDome]").prop("checked",false);
+            }
+            var treeID = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+            $scope.loadDeviceTree(treeID);
+        },
+        clickRadioDome: function () {
+            if($scope.$("input[name=radioPlaybackDome]:checked").length==0){
+                $scope.showMessage("选择类型时请至少选择一项!");
+                $(this).prop('checked',true);
+            }
+            else {
+                var treeID = $($scope.$('#tollgateTabs').tabs('getSelected').panel('body')[0].childNodes[1])[0].id;
+                $scope.loadDeviceTree(treeID);
+            }
+        },
+        // 显示信息
+        showMessage: function (msg) {
+            $.messager.show({
+                title: '用户自定义分组',
+                msg: msg,
+                timeout: 3 * 1000,
+                showType: 'slide',
+                style: {
+                    right: '',
+                    top: 220,
+                    bottom: ''
+                }
+            });
+        }
+    });
+});
+</script>
+<style>
+    .divPanel {
+        text-align: center;
+        height: 30px;
+        margin: 5px, 0px;
+        background: #00438a
+    }
+
+    .divPanel > .title {
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 14
+    }
+
+    #playbackView .searchResItemXH {
+        border-radius: 16px;
+        background: #F54336 none repeat scroll 0 0;
+        color: white;
+        float: left;
+        margin: 0 3px;
+        min-width: 18px;
+        text-align: center;
+        margin: 0px 3px;
+    }
+
+    #playbackView #searchResItemDiv .msg{
+        /*float: left;*/
+        overflow: hidden;
+        vertical-align: top;
+    }
+</style>
